@@ -1,0 +1,969 @@
+# SRv6.md - Full Content for LLMs
+
+Generated from https://srv6.md - The open-source SRv6 knowledge base.
+
+---
+
+---
+title: What is SRv6?
+description: Introduction to Segment Routing over IPv6
+tags:
+  - fundamentals
+  - beginner
+  - srv6
+---
+
+# What is SRv6?
+
+**Segment Routing over IPv6 (SRv6)** is a network architecture that leverages the IPv6 data plane to implement source routing and network programming capabilities.
+
+## Overview
+
+SRv6 encodes a list of instructions (called **segments**) in the IPv6 packet header. Each segment is a 128-bit IPv6 address that represents a specific network instruction or behavior.
+
+```mermaid
+graph LR
+    A[Source] -->|SRv6 Path| B[Node 1]
+    B -->|Segment List| C[Node 2]
+    C -->|End.DT4| D[Destination]
+    style A fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style B fill:#4a148c,color:#fff,stroke:#ab47bc
+    style C fill:#4a148c,color:#fff,stroke:#ab47bc
+    style D fill:#7b1fa2,color:#fff,stroke:#ab47bc
+```
+
+## Key Concepts
+
+### Segments
+A **segment** is an IPv6 address that encodes:
+
+- **Locator**: Identifies the node in the network
+- **Function**: Specifies the behavior to apply
+- **Arguments**: Optional parameters for the function
+
+### Segment Routing Header (SRH)
+The SRH is an IPv6 extension header (routing header type 4) that carries the ordered list of segments.
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Next Header  |  Hdr Ext Len  | Routing Type  | Segments Left |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Last Entry   |    Flags      |              Tag              |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|            Segment List[0] (128-bit IPv6 address)             |
+|                                                               |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|            Segment List[1] (128-bit IPv6 address)             |
+|                                                               |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                            ...                                |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+### Source Routing
+
+In SRv6, the **source node** (ingress) determines the entire path through the network by populating the segment list. Intermediate nodes simply process the active segment and forward the packet.
+
+## Benefits
+
+| Feature | Description |
+|---------|-------------|
+| :material-ipv6: **Native IPv6** | No overlay protocol needed, uses IPv6 natively |
+| :material-code-tags: **Programmability** | Network behaviors defined via SRv6 functions |
+| :material-cog: **Simplification** | Eliminates MPLS signaling protocols (LDP, RSVP) |
+| :material-chart-line: **Scalability** | 128-bit SID space supports massive networks |
+| :material-shield-check: **Security** | HMAC TLV support in SRH for authentication |
+
+## How It Works (Simplified)
+
+1. **Ingress node** receives a packet and determines the SRv6 policy
+2. Encapsulates the packet with an outer IPv6 header + SRH
+3. Segment List is populated with the desired path
+4. **Transit nodes** forward based on the IPv6 destination address
+5. **Endpoint nodes** process the active SID and execute the associated behavior
+6. **Egress node** decapsulates and delivers the original packet
+
+!!! example "Simple SRv6 Packet Flow"
+    ```
+    Original:  [IPv4: 10.0.0.1 -> 10.0.0.2][Payload]
+
+    SRv6:      [IPv6: A::1 -> C::100]             <- Outer IPv6
+               [SRH: SL=1, [C::100, B::100]]       <- Segment List
+               [IPv4: 10.0.0.1 -> 10.0.0.2]        <- Original Packet
+               [Payload]
+    ```
+
+## Further Reading
+
+- :material-arrow-right: [SID Structure](sid-structure.md) - Deep dive into the 128-bit SID format
+- :material-arrow-right: [Network Programming](network-programming.md) - SRv6 behaviors and functions
+- :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming specification
+
+---
+
+---
+title: SID Structure
+description: Understanding the 128-bit SRv6 Segment Identifier
+tags:
+  - fundamentals
+  - sid
+---
+
+# SID Structure
+
+An SRv6 **Segment Identifier (SID)** is a 128-bit value, formatted as a standard IPv6 address. It encodes both the location of a node and the behavior to be executed.
+
+## Anatomy of an SRv6 SID
+
+```
+|<------------ 128 bits ------------->|
+|  Locator      | Function | Arguments|
+|<-- L bits --->|<-F bits->|<-A bits->|
+```
+
+| Field | Description | Typical Size |
+|-------|-------------|:------------:|
+| **Locator** | Routable prefix identifying the node | 40-64 bits |
+| **Function** | Identifies the local behavior (End, End.DT4, etc.) | 16-24 bits |
+| **Arguments** | Optional parameters for the function | 0-48 bits |
+
+## Example
+
+```
+SID:  fc00:0:1::100
+
+Breakdown:
+  Locator:  fc00:0:1::/48   (identifies the node)
+  Function: ::100            (End.DT4 - decap and lookup in IPv4 table)
+  Args:     (none)
+```
+
+!!! tip "Locator as an IGP route"
+    The locator block is advertised as a regular IPv6 route in the IGP (IS-IS or OSPFv3). This ensures reachability to any SRv6-capable node in the network.
+
+## SID Block
+
+Organizations typically allocate a **SID block** prefix (e.g., `fc00::/24`) for all SRv6 SIDs in their network. This simplifies:
+
+- ACL and policy management
+- Traffic classification
+- Security filtering
+
+## Further Reading
+
+- :material-arrow-right: [Network Programming](network-programming.md) - How SIDs map to behaviors
+- :material-arrow-right: [What is SRv6?](what-is-srv6.md) - Back to overview
+
+---
+
+---
+title: Network Programming
+description: SRv6 behaviors, functions, and the SRH
+tags:
+  - fundamentals
+  - network-programming
+  - behaviors
+---
+
+# Network Programming
+
+SRv6 Network Programming (defined in RFC 8986) allows network operators to define custom packet processing behaviors using **SRv6 functions** encoded in SIDs.
+
+## Core Behaviors
+
+### Transit Behaviors
+
+Transit nodes forward packets based on the IPv6 destination address without inspecting the SRH.
+
+| Behavior | Description |
+|----------|-------------|
+| `T` | Transit - basic IPv6 forwarding |
+| `T.Insert` | Insert an SRH into the packet |
+| `T.Encaps` | Encapsulate in a new IPv6 header with SRH |
+| `T.Encaps.Red` | Reduced encapsulation (omit last SID from SRH) |
+
+### Endpoint Behaviors
+
+Endpoint nodes process the active SID in the SRH.
+
+| Behavior | Description |
+|----------|-------------|
+| `End` | Endpoint - update SL, copy next SID to DA |
+| `End.X` | Endpoint with Layer-3 cross-connect |
+| `End.T` | Endpoint with specific table lookup |
+| `End.DX4` | Decap and cross-connect to IPv4 adjacency |
+| `End.DX6` | Decap and cross-connect to IPv6 adjacency |
+| `End.DT4` | Decap and lookup in IPv4 table |
+| `End.DT6` | Decap and lookup in IPv6 table |
+| `End.DT46` | Decap and lookup in IPv4 or IPv6 table |
+| `End.B6.Encaps` | Endpoint bound to an SRv6 policy with encap |
+
+!!! info "Behaviors are extensible"
+    New behaviors can be defined and allocated from the IANA SRv6 Endpoint Behaviors registry, making SRv6 future-proof.
+
+## Packet Walk: End.DT4
+
+```mermaid
+sequenceDiagram
+    participant S as Source (Ingress)
+    participant T as Transit Node
+    participant E as Endpoint (Egress)
+    participant D as Destination
+
+    S->>T: IPv6(DA=E::DT4)[SRH(SL=0)][IPv4]
+    T->>E: Forward based on DA
+    E->>E: Match End.DT4 → decap
+    E->>D: IPv4 packet (original)
+```
+
+## Further Reading
+
+- :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming
+- :material-arrow-right: [SID Structure](sid-structure.md) - How SIDs encode behaviors
+
+---
+
+---
+title: SRv6 vs SR-MPLS
+description: Comparing Segment Routing over IPv6 with SR-MPLS
+tags:
+  - fundamentals
+  - comparison
+  - mpls
+---
+
+# SRv6 vs SR-MPLS
+
+Both SRv6 and SR-MPLS implement Segment Routing, but they use different data planes. Here's a practical comparison.
+
+## Comparison Table
+
+| Aspect | SR-MPLS | SRv6 |
+|--------|---------|------|
+| **Data Plane** | MPLS | IPv6 |
+| **Segment ID** | 20-bit label | 128-bit IPv6 address |
+| **SID Space** | ~1M labels | Virtually unlimited |
+| **Encapsulation** | MPLS label stack | SRv6 SRH (IPv6 ext. header) |
+| **Network Programming** | Limited | Rich (End, End.X, End.DT4...) |
+| **MTU Impact** | 4 bytes per label | 40B IPv6 + 8B + 16B per SID |
+| **Existing Infra** | Requires MPLS forwarding | Uses native IPv6 |
+| **Signaling** | None (same as SRv6) | None |
+| **Maturity** | Widely deployed | Growing rapidly |
+
+## When to Choose What
+
+!!! tip "Choose SR-MPLS when..."
+    - You have existing MPLS infrastructure
+    - MTU overhead is a concern
+    - Your use case is primarily TE or VPN
+
+!!! tip "Choose SRv6 when..."
+    - Building a new IPv6-native network
+    - You need advanced network programmability
+    - Simplification and future-proofing are priorities
+    - You want to eliminate MPLS entirely
+
+## Further Reading
+
+- :material-arrow-right: [What is SRv6?](what-is-srv6.md)
+- :material-arrow-right: [Use Cases](../use-cases/index.md)
+
+---
+
+---
+title: Traffic Engineering
+description: SRv6 Traffic Engineering concepts and configuration
+tags:
+  - use-cases
+  - traffic-engineering
+---
+
+# Traffic Engineering with SRv6
+
+SRv6 Traffic Engineering (TE) enables operators to steer traffic along explicit paths through the network, optimizing for latency, bandwidth, or other constraints.
+
+## How It Works
+
+Instead of relying on shortest-path routing alone, SRv6 TE defines **SR Policies** that specify explicit segment lists (paths) for traffic.
+
+```mermaid
+graph LR
+    A[Ingress PE] -->|Low Latency Path| B[P1]
+    B --> C[P2]
+    C --> D[Egress PE]
+    A -->|High BW Path| E[P3]
+    E --> F[P4]
+    F --> D
+    style A fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style D fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style B fill:#4a148c,color:#fff,stroke:#ab47bc
+    style C fill:#4a148c,color:#fff,stroke:#ab47bc
+    style E fill:#4a148c,color:#fff,stroke:#ab47bc
+    style F fill:#4a148c,color:#fff,stroke:#ab47bc
+```
+
+## SR Policy Components
+
+| Component | Description |
+|-----------|-------------|
+| **Headend** | The node where the policy is applied |
+| **Color** | Identifies the intent (e.g., low-latency) |
+| **Endpoint** | Destination of the policy |
+| **Candidate Path** | One or more segment lists for the policy |
+| **Segment List** | Ordered list of SIDs defining the path |
+
+## Use Cases
+
+- **Low-latency routing** for real-time applications
+- **Bandwidth reservation** for critical flows
+- **Disjoint paths** for redundancy
+- **WAN optimization** across multiple domains
+
+## Further Reading
+
+- :material-arrow-right: [VPN Services](vpn-services.md)
+- :material-file-document: [RFC 9256](../rfcs/rfc9256.md) - SR Policy Architecture
+
+---
+
+---
+title: VPN Services
+description: L3VPN and L2VPN services with SRv6
+tags:
+  - use-cases
+  - vpn
+  - l3vpn
+---
+
+# VPN Services with SRv6
+
+SRv6 provides a native mechanism to deliver L3VPN and L2VPN services without MPLS, using SRv6 SIDs as service identifiers.
+
+## SRv6-based L3VPN
+
+SRv6 L3VPN uses `End.DT4` / `End.DT6` behaviors to decapsulate traffic and perform a lookup in the appropriate VRF table.
+
+### How It Works
+
+1. PE router receives customer IPv4/IPv6 traffic
+2. Encapsulates with outer IPv6 header + SRH
+3. Sets destination to the remote PE's VPN SID (`End.DT4`)
+4. Remote PE decapsulates and forwards to the correct VRF
+
+!!! example "BGP VPNv4 with SRv6"
+    ```
+    BGP Update:
+      Prefix: 10.0.0.0/24
+      Next-Hop: 2001:db8::2
+      SRv6 SID: fc00:0:2::DT4  (End.DT4 behavior)
+      VRF: CUSTOMER-A
+    ```
+
+## Comparison with MPLS VPN
+
+| Aspect | MPLS L3VPN | SRv6 L3VPN |
+|--------|-----------|-------------|
+| Label signaling | MP-BGP + LDP/RSVP | MP-BGP only |
+| Service identifier | VPN label | SRv6 SID (End.DT4/DT6) |
+| Transport | MPLS LSP | IPv6 native |
+| Complexity | Higher (multiple protocols) | Lower (IPv6 + BGP) |
+
+## Further Reading
+
+- :material-arrow-right: [Traffic Engineering](traffic-engineering.md)
+- :material-file-document: [RFC 9252](../rfcs/rfc9252.md) - BGP Overlay Services Based on SRv6
+
+---
+
+---
+title: Service Chaining
+description: Network Service Function Chaining with SRv6
+tags:
+  - use-cases
+  - service-chaining
+  - nfv
+---
+
+# Service Chaining with SRv6
+
+SRv6 provides an elegant solution for **Service Function Chaining (SFC)** - steering traffic through an ordered set of network functions (firewalls, IDS, load balancers, etc.).
+
+## How It Works
+
+Each network function is assigned an SRv6 SID. The segment list defines the chain of services the packet must traverse.
+
+```mermaid
+graph LR
+    A[Client] --> B[Ingress]
+    B -->|SID: FW::1| C[Firewall]
+    C -->|SID: IDS::1| D[IDS]
+    D -->|SID: LB::1| E[Load Balancer]
+    E --> F[Server]
+    style A fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style F fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style C fill:#4a148c,color:#fff,stroke:#ab47bc
+    style D fill:#4a148c,color:#fff,stroke:#ab47bc
+    style E fill:#4a148c,color:#fff,stroke:#ab47bc
+    style B fill:#4a148c,color:#fff,stroke:#ab47bc
+```
+
+## Advantages over Traditional SFC
+
+- **No overlay tunnel** between service functions
+- **Topology independent** - services can be anywhere in the network
+- **Dynamic chaining** - change the chain by modifying the segment list
+- **Metadata support** - TLVs in SRH can carry context between functions
+
+## Further Reading
+
+- :material-arrow-right: [Traffic Engineering](traffic-engineering.md)
+- :material-arrow-right: [Network Programming](../fundamentals/network-programming.md)
+
+---
+
+---
+title: Linux Kernel
+description: SRv6 implementation in the Linux kernel
+tags:
+  - implementations
+  - linux
+  - open-source
+---
+
+# SRv6 on Linux Kernel
+
+The Linux kernel has native SRv6 support since **kernel 4.10** and is one of the most complete open-source implementations.
+
+## Supported Behaviors
+
+| Behavior | Kernel Version | Status |
+|----------|:--------------:|:------:|
+| `End` | 4.10+ | :material-check-circle: |
+| `End.X` | 4.10+ | :material-check-circle: |
+| `End.DX4` | 4.14+ | :material-check-circle: |
+| `End.DX6` | 4.10+ | :material-check-circle: |
+| `End.DT4` | 5.11+ | :material-check-circle: |
+| `End.DT6` | 4.14+ | :material-check-circle: |
+| `End.B6.Encaps` | 4.10+ | :material-check-circle: |
+| `H.Encaps` | 4.10+ | :material-check-circle: |
+| `H.Encaps.Red` | 5.0+ | :material-check-circle: |
+
+## Quick Start
+
+### Enable SRv6
+
+```bash
+# Enable IPv6 forwarding
+sysctl -w net.ipv6.conf.all.forwarding=1
+
+# Enable SRv6 on specific interface
+sysctl -w net.ipv6.conf.eth0.seg6_enabled=1
+
+# Enable SRH processing
+sysctl -w net.ipv6.conf.all.seg6_enabled=1
+```
+
+### Configure a Local SID
+
+```bash
+# Add End behavior
+ip -6 route add fc00:0:1::100 encap seg6local action End dev eth0
+
+# Add End.DT4 behavior (decap to IPv4 VRF)
+ip -6 route add fc00:0:1::DT4 encap seg6local action End.DT4 vrftable 100
+
+# Add End.DX6 behavior (cross-connect)
+ip -6 route add fc00:0:1::DX6 encap seg6local action End.DX6 nh6 2001:db8::1 dev eth1
+```
+
+### Configure an SRv6 Policy (Encapsulation)
+
+```bash
+# Encapsulate traffic destined to 10.0.0.0/24 with SRv6
+ip route add 10.0.0.0/24 encap seg6 mode encap segs fc00:0:2::100,fc00:0:3::DT4 dev eth0
+```
+
+### Verify Configuration
+
+```bash
+# Show local SID table
+ip -6 route show | grep seg6local
+
+# Show SRv6 policies
+ip route show | grep seg6
+
+# Monitor SRv6 counters
+cat /proc/net/seg6_local
+```
+
+## Tools
+
+- **iproute2** - Primary CLI for SRv6 configuration
+- **tcpdump** / **tshark** - Packet capture with SRH decoding
+- **scapy** - Python-based packet crafting with SRv6 support
+
+!!! example "Capture SRv6 packets"
+    ```bash
+    tcpdump -i eth0 -v 'ip6 proto 43'
+    ```
+
+## Further Reading
+
+- :material-arrow-right: [Containerlab](../labs/containerlab.md) - Build a Linux SRv6 lab
+- :material-arrow-right: [FRRouting](frrouting.md) - Add routing protocol support
+
+---
+
+---
+title: Cisco IOS-XR
+description: SRv6 on Cisco IOS-XR routers
+tags:
+  - implementations
+  - cisco
+  - ios-xr
+---
+
+# SRv6 on Cisco IOS-XR
+
+Cisco IOS-XR provides comprehensive SRv6 support across NCS and ASR platforms.
+
+## Supported Platforms
+
+- NCS 5500 / 5700 Series
+- NCS 540 Series
+- ASR 9000 Series
+- Cisco 8000 Series (Silicon One)
+
+## Basic Configuration
+
+```cisco
+!! Enable SRv6
+segment-routing
+ srv6
+  locators
+   locator MAIN
+    micro-segment behavior unode psp-usd
+    prefix fc00:0:1::/48
+   !
+  !
+ !
+!
+
+!! Enable SRv6 in IS-IS
+router isis CORE
+ address-family ipv6 unicast
+  segment-routing srv6
+   locator MAIN
+  !
+ !
+!
+
+!! SRv6-based L3VPN
+vrf CUSTOMER-A
+ address-family ipv4 unicast
+  import route-target 100:1
+  export route-target 100:1
+ !
+!
+
+router bgp 65000
+ vrf CUSTOMER-A
+  address-family ipv4 unicast
+   segment-routing srv6
+    locator MAIN
+    alloc mode per-vrf
+   !
+  !
+ !
+!
+```
+
+## Verification Commands
+
+```cisco
+show segment-routing srv6 locator
+show segment-routing srv6 sid
+show segment-routing srv6 manager
+show isis segment-routing srv6 locators
+show bgp vpnv4 unicast vrf CUSTOMER-A
+```
+
+## Further Reading
+
+- :material-arrow-right: [GNS3 Labs](../labs/gns3.md) - Test with IOS-XR images
+- :material-web: [Cisco SRv6 Documentation](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/segment-routing/configuration/guide/)
+
+---
+
+---
+title: Juniper
+description: SRv6 on Juniper Networks routers
+tags:
+  - implementations
+  - juniper
+---
+
+# SRv6 on Juniper
+
+Juniper supports SRv6 on MX Series, PTX Series, and ACX Series platforms.
+
+## Basic Configuration
+
+```junos
+set routing-options source-packet-routing srv6 locator myloc fc00:0:2::/48
+set routing-options source-packet-routing srv6 no-reduced-srh
+
+set protocols isis source-packet-routing srv6 locator myloc end-sid fc00:0:2::1
+
+set routing-instances CUSTOMER-A instance-type vrf
+set routing-instances CUSTOMER-A route-distinguisher 100:1
+set routing-instances CUSTOMER-A vrf-target target:100:1
+set routing-instances CUSTOMER-A protocols bgp source-packet-routing srv6 locator myloc
+```
+
+## Verification
+
+```junos
+show spring-traffic-engineering srv6-sid
+show route table CUSTOMER-A.inet.0
+show isis database extensive | match srv6
+```
+
+## Further Reading
+
+- :material-arrow-right: [Implementations Overview](index.md)
+- :material-web: [Juniper SRv6 TechLibrary](https://www.juniper.net/documentation/)
+
+---
+
+---
+title: FRRouting
+description: SRv6 support in FRRouting (FRR)
+tags:
+  - implementations
+  - frr
+  - open-source
+---
+
+# SRv6 on FRRouting (FRR)
+
+FRRouting is an open-source routing suite that provides SRv6 support through its IS-IS and BGP daemons.
+
+## SRv6 Support Status
+
+| Feature | Status | FRR Version |
+|---------|:------:|:-----------:|
+| IS-IS SRv6 locator | :material-check-circle: | 8.4+ |
+| BGP SRv6 VPN | :material-check-circle: | 8.4+ |
+| SRv6 TE Policy | :material-progress-clock: | In dev |
+
+## Configuration Example
+
+```frr
+! Enable SRv6 in IS-IS
+router isis CORE
+ segment-routing srv6
+  locator MAIN
+ exit
+
+! Define SRv6 locator
+segment-routing
+ srv6
+  locators
+   locator MAIN
+    prefix fc00:0:1::/48 block-len 32 node-len 16 func-bits 16
+   exit
+  exit
+ exit
+```
+
+## Further Reading
+
+- :material-arrow-right: [Linux Kernel](linux-kernel.md) - Data plane for FRR
+- :material-arrow-right: [Containerlab](../labs/containerlab.md) - FRR + Linux labs
+
+---
+
+---
+title: SONiC
+description: SRv6 support in SONiC network operating system
+tags:
+  - implementations
+  - sonic
+  - open-source
+---
+
+# SRv6 on SONiC
+
+SONiC (Software for Open Networking in the Cloud) is actively developing SRv6 support for data center and WAN use cases.
+
+## Current Status
+
+!!! warning "Work in Progress"
+    SRv6 support in SONiC is under active development. Check the SONiC GitHub for the latest status.
+
+## Architecture
+
+SONiC's SRv6 implementation leverages:
+
+- **Linux kernel** SRv6 data plane
+- **FRRouting** for control plane (IS-IS, BGP)
+- **SAI (Switch Abstraction Interface)** for hardware offload
+
+## Further Reading
+
+- :material-arrow-right: [Linux Kernel](linux-kernel.md) - Underlying SRv6 data plane
+- :fontawesome-brands-github: [SONiC SRv6 HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/)
+
+---
+
+---
+title: Containerlab
+description: Build SRv6 labs with Containerlab
+tags:
+  - labs
+  - containerlab
+  - docker
+---
+
+# SRv6 Lab with Containerlab
+
+[Containerlab](https://containerlab.dev) lets you build network topologies using containers. It's the fastest way to get a working SRv6 lab.
+
+## Prerequisites
+
+- Docker installed
+- Containerlab installed (`bash -c "$(curl -sL https://get.containerlab.dev)"`)
+
+## Sample Topology
+
+Create a file `srv6-lab.clab.yml`:
+
+```yaml
+name: srv6-lab
+
+topology:
+  nodes:
+    r1:
+      kind: linux
+      image: frrouting/frr:latest
+      binds:
+        - r1/daemons:/etc/frr/daemons
+        - r1/frr.conf:/etc/frr/frr.conf
+    r2:
+      kind: linux
+      image: frrouting/frr:latest
+      binds:
+        - r2/daemons:/etc/frr/daemons
+        - r2/frr.conf:/etc/frr/frr.conf
+    r3:
+      kind: linux
+      image: frrouting/frr:latest
+      binds:
+        - r3/daemons:/etc/frr/daemons
+        - r3/frr.conf:/etc/frr/frr.conf
+
+  links:
+    - endpoints: ["r1:eth1", "r2:eth1"]
+    - endpoints: ["r2:eth2", "r3:eth1"]
+    - endpoints: ["r1:eth2", "r3:eth2"]
+```
+
+## Deploy
+
+```bash
+# Start the lab
+sudo containerlab deploy -t srv6-lab.clab.yml
+
+# Check status
+sudo containerlab inspect -t srv6-lab.clab.yml
+
+# Connect to a node
+docker exec -it clab-srv6-lab-r1 vtysh
+
+# Destroy the lab
+sudo containerlab destroy -t srv6-lab.clab.yml
+```
+
+## Verify SRv6
+
+```bash
+# On r1: Check SRv6 SIDs
+docker exec clab-srv6-lab-r1 ip -6 route show | grep seg6local
+
+# Ping through SRv6 path
+docker exec clab-srv6-lab-r1 ping6 fc00:0:3::1
+```
+
+## Further Reading
+
+- :material-arrow-right: [Linux Kernel SRv6](../implementations/linux-kernel.md)
+- :material-arrow-right: [FRRouting](../implementations/frrouting.md)
+- :material-web: [Containerlab docs](https://containerlab.dev)
+
+---
+
+---
+title: GNS3
+description: SRv6 labs with GNS3
+tags:
+  - labs
+  - gns3
+---
+
+# SRv6 Lab with GNS3
+
+GNS3 allows you to emulate real vendor router images, making it ideal for testing SRv6 on Cisco IOS-XR, Juniper vMX, and other commercial platforms.
+
+## Prerequisites
+
+- GNS3 installed (server + client)
+- Vendor router images (IOS-XRv, vMX, etc.)
+- Sufficient RAM (8GB+ recommended)
+
+## Topology Design
+
+A minimal SRv6 lab requires at least 3 routers:
+
+```mermaid
+graph LR
+    PE1[PE1<br/>IOS-XRv] --- P1[P1<br/>IOS-XRv]
+    P1 --- PE2[PE2<br/>IOS-XRv]
+    PE1 --- PE2
+    style PE1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style P1 fill:#4a148c,color:#fff,stroke:#ab47bc
+```
+
+## Tips
+
+!!! tip "Resource optimization"
+    - Use IOS-XRv 9000 for the lightest IOS-XR experience
+    - Assign only 3-4 GB RAM per XRv node
+    - Use GNS3 VM on a separate host for better performance
+
+## Further Reading
+
+- :material-arrow-right: [Cisco IOS-XR config](../implementations/cisco-ios-xr.md)
+- :material-arrow-right: [Juniper config](../implementations/juniper.md)
+- :material-web: [GNS3 Documentation](https://docs.gns3.com)
+
+---
+
+---
+title: RFC 8986
+description: SRv6 Network Programming
+tags:
+  - rfcs
+  - network-programming
+---
+
+# RFC 8986 - SRv6 Network Programming
+
+| Field | Value |
+|-------|-------|
+| **Title** | Segment Routing over IPv6 (SRv6) Network Programming |
+| **Authors** | C. Filsfils, et al. |
+| **Date** | February 2021 |
+| **Status** | Proposed Standard |
+| **Link** | [datatracker.ietf.org/doc/rfc8986](https://datatracker.ietf.org/doc/rfc8986/) |
+
+## Summary
+
+RFC 8986 is the foundational specification for SRv6 Network Programming. It defines the set of SRv6 endpoint behaviors that nodes can implement to process packets with SRv6 SIDs.
+
+## Key Behaviors Defined
+
+- **End** - Basic endpoint processing
+- **End.X** - Layer-3 cross-connect
+- **End.T** - Table lookup
+- **End.DX4 / End.DX6** - Decap with IPv4/IPv6 cross-connect
+- **End.DT4 / End.DT6 / End.DT46** - Decap with table lookup
+- **End.B6.Encaps** - Binding SID with encapsulation
+- **Transit behaviors** - T.Insert, T.Encaps, T.Encaps.Red
+
+## Related
+
+- :material-arrow-right: [Network Programming](../fundamentals/network-programming.md) - Detailed explanation
+- :material-arrow-right: [RFC 9252](rfc9252.md) - BGP Overlay Services
+
+---
+
+---
+title: RFC 9252
+description: BGP Overlay Services Based on SRv6
+tags:
+  - rfcs
+  - bgp
+  - vpn
+---
+
+# RFC 9252 - BGP Overlay Services Based on SRv6
+
+| Field | Value |
+|-------|-------|
+| **Title** | BGP Overlay Services Based on Segment Routing over IPv6 (SRv6) |
+| **Authors** | G. Dawra, et al. |
+| **Date** | July 2022 |
+| **Status** | Proposed Standard |
+| **Link** | [datatracker.ietf.org/doc/rfc9252](https://datatracker.ietf.org/doc/rfc9252/) |
+
+## Summary
+
+Defines how BGP carries SRv6 SID information for L3VPN (VPNv4/VPNv6) and L2VPN (EVPN) overlay services, using the SRv6 Services TLVs in BGP updates.
+
+## Key Concepts
+
+- **SRv6 L3 Service TLV** in BGP prefix-SID attribute
+- **Transposition** of SID function into the IPv6 prefix
+- Works with existing BGP VPN address families
+- Enables MPLS-free VPN services
+
+## Related
+
+- :material-arrow-right: [VPN Services](../use-cases/vpn-services.md)
+- :material-arrow-right: [RFC 8986](rfc8986.md) - SRv6 behaviors used by VPNs
+
+---
+
+---
+title: RFC 9256
+description: Segment Routing Policy Architecture
+tags:
+  - rfcs
+  - sr-policy
+  - traffic-engineering
+---
+
+# RFC 9256 - SR Policy Architecture
+
+| Field | Value |
+|-------|-------|
+| **Title** | Segment Routing Policy Architecture |
+| **Authors** | C. Filsfils, et al. |
+| **Date** | July 2022 |
+| **Status** | Proposed Standard |
+| **Link** | [datatracker.ietf.org/doc/rfc9256](https://datatracker.ietf.org/doc/rfc9256/) |
+
+## Summary
+
+Defines the architecture for SR Policies - the mechanism used to steer traffic through specific paths in an SR network. Applicable to both SR-MPLS and SRv6.
+
+## Key Concepts
+
+- **SR Policy** = (headend, color, endpoint)
+- **Candidate Paths** - multiple paths with preferences
+- **Segment Lists** - ordered list of SIDs per candidate path
+- **Binding SID (BSID)** - single SID representing an SR Policy
+
+## Related
+
+- :material-arrow-right: [Traffic Engineering](../use-cases/traffic-engineering.md)
+- :material-arrow-right: [RFC 8986](rfc8986.md) - SRv6 Network Programming
+
