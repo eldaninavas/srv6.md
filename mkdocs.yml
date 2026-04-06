@@ -1,0 +1,189 @@
+# SRv6.md - The Open SRv6 Knowledge Base
+site_name: SRv6.md
+site_url: https://srv6.md
+site_description: The open-source knowledge base for Segment Routing over IPv6 (SRv6)
+site_author: SRv6.md Community
+copyright: >
+  Made with 💜 by the SRv6 community &mdash;
+  <a href="https://github.com/eldaninavas/srv6.md/blob/main/LICENSE">MIT License</a>
+
+repo_url: https://github.com/eldaninavas/srv6.md
+repo_name: eldaninavas/srv6.md
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: en
+  logo: assets/images/logo.svg
+  favicon: assets/images/favicon.svg
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+    admonition:
+      note: material/pencil-circle
+      abstract: material/clipboard-text
+      info: material/information
+      tip: material/fire
+      success: material/check-circle
+      question: material/help-circle
+      warning: material/alert
+      failure: material/close-circle
+      danger: material/lightning-bolt
+      bug: material/bug
+      example: material/test-tube
+      quote: material/format-quote-close
+
+  palette:
+    - scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.action.view
+    - content.tabs.link
+    - content.tooltips
+    - toc.follow
+    - announce.dismiss
+    - header.autohide
+
+extra_css:
+  - assets/stylesheets/custom.css
+
+extra_javascript:
+  - assets/javascripts/custom.js
+
+plugins:
+  - search:
+      separator: '[\s\-\.]+'
+      lang: en
+  - tags: {}
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/eldaninavas/srv6.md
+      name: GitHub
+  generator: false
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+
+nav:
+  - Home:
+    - index.md
+    - tags.md
+  - Fundamentals:
+    - fundamentals/index.md
+    - What is SRv6?: fundamentals/what-is-srv6.md
+    - SID Structure: fundamentals/sid-structure.md
+    - Network Programming: fundamentals/network-programming.md
+    - SRv6 vs SR-MPLS: fundamentals/srv6-vs-sr-mpls.md
+  - Use Cases:
+    - use-cases/index.md
+    - Traffic Engineering: use-cases/traffic-engineering.md
+    - VPN Services: use-cases/vpn-services.md
+    - Service Chaining: use-cases/service-chaining.md
+  - Implementations:
+    - implementations/index.md
+    - Linux Kernel: implementations/linux-kernel.md
+    - Cisco IOS-XR: implementations/cisco-ios-xr.md
+    - Juniper: implementations/juniper.md
+    - FRRouting: implementations/frrouting.md
+    - SONIC: implementations/sonic.md
+  - Labs:
+    - labs/index.md
+    - Containerlab: labs/containerlab.md
+    - GNS3: labs/gns3.md
+  - RFCs & Standards:
+    - rfcs/index.md
+    - RFC 8986: rfcs/rfc8986.md
+    - RFC 9252: rfcs/rfc9252.md
+    - RFC 9256: rfcs/rfc9256.md
+  - Community:
+    - community/index.md
+    - Contributing: community/contributing.md
+    - AI Integrations: community/integrations.md

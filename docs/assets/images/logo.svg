@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ce93d8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7b1fa2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Network nodes -->
+  <circle cx="12" cy="12" r="4" fill="url(#grad)" opacity="0.9"/>
+  <circle cx="36" cy="12" r="4" fill="url(#grad)" opacity="0.9"/>
+  <circle cx="24" cy="24" r="5" fill="url(#grad)"/>
+  <circle cx="12" cy="36" r="4" fill="url(#grad)" opacity="0.9"/>
+  <circle cx="36" cy="36" r="4" fill="url(#grad)" opacity="0.9"/>
+  <!-- Segment routes -->
+  <line x1="12" y1="12" x2="24" y2="24" stroke="#ab47bc" stroke-width="1.5" opacity="0.6"/>
+  <line x1="36" y1="12" x2="24" y2="24" stroke="#ab47bc" stroke-width="1.5" opacity="0.6"/>
+  <line x1="12" y1="36" x2="24" y2="24" stroke="#ab47bc" stroke-width="1.5" opacity="0.6"/>
+  <line x1="36" y1="36" x2="24" y2="24" stroke="#ab47bc" stroke-width="1.5" opacity="0.6"/>
+  <!-- v6 path highlight -->
+  <path d="M12 12 L24 24 L36 36" stroke="#e1bee7" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.8"/>
+</svg>

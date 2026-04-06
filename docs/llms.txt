@@ -1,0 +1,25 @@
+# SRv6.md
+
+> The open-source knowledge base for Segment Routing over IPv6 (SRv6).
+
+SRv6.md is a community-driven wiki covering SRv6 fundamentals, use cases, vendor implementations, hands-on labs, and RFC references.
+
+## Docs
+
+- [What is SRv6?](https://srv6.md/fundamentals/what-is-srv6/)
+- [SID Structure](https://srv6.md/fundamentals/sid-structure/)
+- [Network Programming](https://srv6.md/fundamentals/network-programming/)
+- [SRv6 vs SR-MPLS](https://srv6.md/fundamentals/srv6-vs-sr-mpls/)
+- [Traffic Engineering](https://srv6.md/use-cases/traffic-engineering/)
+- [VPN Services](https://srv6.md/use-cases/vpn-services/)
+- [Service Chaining](https://srv6.md/use-cases/service-chaining/)
+- [Linux Kernel](https://srv6.md/implementations/linux-kernel/)
+- [Cisco IOS-XR](https://srv6.md/implementations/cisco-ios-xr/)
+- [Juniper](https://srv6.md/implementations/juniper/)
+- [FRRouting](https://srv6.md/implementations/frrouting/)
+- [SONiC](https://srv6.md/implementations/sonic/)
+- [Containerlab Labs](https://srv6.md/labs/containerlab/)
+- [GNS3 Labs](https://srv6.md/labs/gns3/)
+- [RFC 8986 - SRv6 Network Programming](https://srv6.md/rfcs/rfc8986/)
+- [RFC 9252 - BGP Overlay Services](https://srv6.md/rfcs/rfc9252/)
+- [RFC 9256 - SR Policy Architecture](https://srv6.md/rfcs/rfc9256/)

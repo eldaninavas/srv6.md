@@ -1,0 +1,28 @@
+{
+  "name": "srv6-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for the SRv6.md knowledge base - query SRv6 documentation from Claude",
+  "main": "src/index.js",
+  "bin": {
+    "srv6-mcp-server": "src/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "prepublishOnly": "rm -rf docs && cp -r ../docs docs"
+  },
+  "keywords": ["srv6", "mcp", "claude", "networking", "segment-routing"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eldaninavas/srv6.md"
+  },
+  "files": [
+    "src/",
+    "docs/"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  }
+}
