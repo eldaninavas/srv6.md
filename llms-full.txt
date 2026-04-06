@@ -638,7 +638,7 @@ show isis database extensive | match srv6
 ## Further Reading
 
 - :material-arrow-right: [Implementations Overview](index.md)
-- :material-web: [Juniper SRv6 TechLibrary](https://www.juniper.net/documentation/)
+- :material-web: [Juniper SRv6 Validated Design](https://www.juniper.net/documentation/us/en/software/jvd/jvd-sp-core-edge-srv6-01-01/service_provider_srv6_core_and_edge_-_phase_1_juniper_validated_design_jvd.html)
 
 ---
 
