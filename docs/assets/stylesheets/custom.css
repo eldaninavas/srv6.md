@@ -482,22 +482,28 @@
 
 /* --- Light mode cards --- */
 [data-md-color-scheme="default"] .srv6-card {
-  background: #fff;
-  border: 1px solid rgba(123, 31, 162, 0.2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: #fff !important;
+  border: 1px solid rgba(123, 31, 162, 0.2) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  color: #333 !important;
 }
 
 [data-md-color-scheme="default"] .srv6-card:hover {
-  border-color: rgba(123, 31, 162, 0.5);
-  box-shadow: 0 8px 30px rgba(123, 31, 162, 0.15);
+  border-color: rgba(123, 31, 162, 0.5) !important;
+  box-shadow: 0 8px 30px rgba(123, 31, 162, 0.15) !important;
 }
 
 [data-md-color-scheme="default"] .srv6-card h3 {
   color: #7b1fa2 !important;
 }
 
-[data-md-color-scheme="default"] .srv6-card p {
-  color: #333;
+[data-md-color-scheme="default"] .srv6-card p,
+[data-md-color-scheme="default"] .srv6-card li {
+  color: #444 !important;
+}
+
+[data-md-color-scheme="default"] .srv6-card a {
+  color: #7b1fa2 !important;
 }
 
 /* --- Light mode hero --- */
@@ -577,6 +583,27 @@
 [data-md-color-scheme="default"] .md-nav__item--active > .md-nav__link {
   color: #7b1fa2;
   border-left: 3px solid #7b1fa2;
+}
+
+/* --- Light mode mermaid --- */
+[data-md-color-scheme="default"] .mermaid text {
+  fill: #333 !important;
+}
+
+/* --- Light mode hero stats --- */
+[data-md-color-scheme="default"] .srv6-stat-label {
+  color: #666;
+}
+
+/* --- Light mode buttons inside cards --- */
+[data-md-color-scheme="default"] .srv6-card .srv6-btn-secondary {
+  color: #7b1fa2 !important;
+  border-color: rgba(123, 31, 162, 0.4) !important;
+  background: transparent !important;
+}
+
+[data-md-color-scheme="default"] .srv6-card .srv6-btn-secondary:hover {
+  background: rgba(123, 31, 162, 0.08) !important;
 }
 
 /* --- Light mode selection --- */
