@@ -57,41 +57,7 @@
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-/* --- Header (Light) --- */
-[data-md-color-scheme="default"] .md-header {
-  background: #fff;
-  box-shadow: none;
-}
-
-[data-md-color-scheme="default"] .md-header[data-md-state="shadow"] {
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
-}
-
-[data-md-color-scheme="default"] .md-header .md-header__title,
-[data-md-color-scheme="default"] .md-header .md-logo {
-  color: #111;
-}
-
-[data-md-color-scheme="default"] .md-header * {
-  color: #333 !important;
-}
-
-[data-md-color-scheme="default"] .md-header svg {
-  fill: #333 !important;
-}
-
-[data-md-color-scheme="default"] .md-header .md-header__topic {
-  color: #111 !important;
-}
-
-[data-md-color-scheme="default"] .md-search__form {
-  background: #f0f0f0 !important;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-md-color-scheme="default"] .md-search__input::placeholder {
-  color: #999 !important;
-}
+/* --- Header (Light) — use Material defaults, don't override --- */
 
 /* --- Tabs (Both modes — GitBook style) --- */
 .md-tabs {
@@ -103,9 +69,7 @@
   background: #0d0d1a;
 }
 
-[data-md-color-scheme="default"] .md-tabs {
-  background: #fff;
-}
+/* Light tabs — use Material defaults */
 
 /* Tab links — neutral grey */
 .md-tabs__link {
@@ -117,9 +81,7 @@
   color: rgba(255, 255, 255, 0.45) !important;
 }
 
-[data-md-color-scheme="default"] .md-tabs__link {
-  color: rgba(0, 0, 0, 0.45) !important;
-}
+/* Light tab links — use Material defaults */
 
 /* Active tab — bold + underline, no color change */
 .md-tabs__link--active {
@@ -132,18 +94,14 @@
   color: #fff !important;
 }
 
-[data-md-color-scheme="default"] .md-tabs__link--active {
-  color: rgba(0, 0, 0, 0.85) !important;
-}
+/* Light active tab — use Material defaults */
 
 /* Hover */
 [data-md-color-scheme="slate"] .md-tabs__link:hover {
   color: rgba(255, 255, 255, 0.8) !important;
 }
 
-[data-md-color-scheme="default"] .md-tabs__link:hover {
-  color: rgba(0, 0, 0, 0.7) !important;
-}
+/* Light tab hover — use Material defaults */
 
 /* --- Navigation Sidebar (Dark Mode) --- */
 [data-md-color-scheme="slate"] .md-sidebar--primary {
