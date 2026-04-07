@@ -378,9 +378,116 @@
   background: rgba(171, 71, 188, 0.5);
 }
 
-/* --- Mermaid Diagrams --- */
-[data-md-color-scheme="slate"] .mermaid {
+/* --- Mermaid Diagrams (Global) --- */
+.mermaid {
   background: transparent !important;
+  font-family: inherit !important;
+}
+
+/* Nodes */
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node polygon {
+  rx: 10 !important;
+  ry: 10 !important;
+  stroke-width: 2px !important;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+  transition: filter 0.2s ease;
+}
+
+/* Node text */
+.mermaid .node .nodeLabel,
+.mermaid .label {
+  font-family: inherit !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+}
+
+/* Edges */
+.mermaid .edgePath path.path {
+  stroke-width: 1.5px !important;
+  stroke-dasharray: none !important;
+}
+
+.mermaid .edgeLabel {
+  font-size: 0.75rem !important;
+  font-family: inherit !important;
+  background: transparent !important;
+}
+
+/* Subgraph styling */
+.mermaid .cluster rect {
+  rx: 12 !important;
+  ry: 12 !important;
+  stroke-width: 1.5px !important;
+  stroke-dasharray: 6 4 !important;
+}
+
+.mermaid .cluster .nodeLabel,
+.mermaid .cluster-label .nodeLabel {
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+}
+
+/* Arrowheads */
+.mermaid .marker {
+  fill: currentColor !important;
+}
+
+/* --- Mermaid Dark Mode --- */
+[data-md-color-scheme="slate"] .mermaid .node rect,
+[data-md-color-scheme="slate"] .mermaid .node circle,
+[data-md-color-scheme="slate"] .mermaid .node polygon {
+  filter: drop-shadow(0 2px 8px rgba(123, 31, 162, 0.3));
+}
+
+[data-md-color-scheme="slate"] .mermaid .node .nodeLabel {
+  color: #e8e6f0 !important;
+}
+
+[data-md-color-scheme="slate"] .mermaid .edgePath path.path {
+  stroke: rgba(206, 147, 216, 0.5) !important;
+}
+
+[data-md-color-scheme="slate"] .mermaid .edgeLabel {
+  color: #b8b4cc !important;
+}
+
+[data-md-color-scheme="slate"] .mermaid .cluster rect {
+  fill: rgba(123, 31, 162, 0.08) !important;
+  stroke: rgba(171, 71, 188, 0.3) !important;
+}
+
+[data-md-color-scheme="slate"] .mermaid .cluster-label .nodeLabel {
+  color: #ce93d8 !important;
+}
+
+/* --- Mermaid Light Mode --- */
+[data-md-color-scheme="default"] .mermaid .node rect,
+[data-md-color-scheme="default"] .mermaid .node circle,
+[data-md-color-scheme="default"] .mermaid .node polygon {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+}
+
+[data-md-color-scheme="default"] .mermaid .node .nodeLabel {
+  color: #fff !important;
+}
+
+[data-md-color-scheme="default"] .mermaid .edgePath path.path {
+  stroke: rgba(123, 31, 162, 0.4) !important;
+}
+
+[data-md-color-scheme="default"] .mermaid .edgeLabel {
+  color: #555 !important;
+}
+
+[data-md-color-scheme="default"] .mermaid .cluster rect {
+  fill: rgba(123, 31, 162, 0.04) !important;
+  stroke: rgba(123, 31, 162, 0.2) !important;
+}
+
+[data-md-color-scheme="default"] .mermaid .cluster-label .nodeLabel {
+  color: #7b1fa2 !important;
 }
 
 /* --- Stats Section --- */
