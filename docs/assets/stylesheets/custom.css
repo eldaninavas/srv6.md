@@ -432,8 +432,17 @@
   font-size: 0.62rem;
 }
 
+/* TOC (right sidebar) — needs more space than left nav */
 .md-sidebar--secondary .md-nav__link {
-  font-size: 0.58rem;
+  font-size: 0.6rem;
+  padding: 0.3rem 0.6rem;
+  line-height: 1.5;
+}
+
+.md-sidebar--secondary .md-nav__title {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.4rem 0.6rem;
 }
 
 .md-sidebar .md-nav__item {
