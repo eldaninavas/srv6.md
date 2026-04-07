@@ -67,7 +67,7 @@
   color: #ce93d8;
 }
 
-/* --- Navigation Sidebar --- */
+/* --- Navigation Sidebar (Dark Mode) --- */
 [data-md-color-scheme="slate"] .md-sidebar--primary {
   background: #151525;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
@@ -78,6 +78,31 @@
   border-left: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+/* Section headers — neutral white, not purple */
+[data-md-color-scheme="slate"] .md-nav__item--section > .md-nav__link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 700;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Nav links — light grey, no purple */
+[data-md-color-scheme="slate"] .md-sidebar .md-nav__link {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+[data-md-color-scheme="slate"] .md-sidebar .md-nav__link:hover {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+[data-md-color-scheme="slate"] .md-sidebar .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-sidebar .md-nav__item--active > .md-nav__link {
+  color: #fff !important;
+  font-weight: 600;
+}
+
+/* --- Navigation Sidebar (Light Mode) --- */
 [data-md-color-scheme="default"] .md-sidebar--primary {
   background: #f7f7f8;
   border-right: 1px solid rgba(0, 0, 0, 0.07);
@@ -86,6 +111,30 @@
 [data-md-color-scheme="default"] .md-sidebar--secondary {
   background: #f7f7f8;
   border-left: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+/* Section headers — black, not purple */
+[data-md-color-scheme="default"] .md-nav__item--section > .md-nav__link {
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-weight: 700;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Nav links — dark grey, no purple */
+[data-md-color-scheme="default"] .md-sidebar .md-nav__link {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-md-color-scheme="default"] .md-sidebar .md-nav__link:hover {
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-md-color-scheme="default"] .md-sidebar .md-nav__link--active,
+[data-md-color-scheme="default"] .md-sidebar .md-nav__item--active > .md-nav__link {
+  color: rgba(0, 0, 0, 0.9) !important;
+  font-weight: 600;
 }
 
 /* --- Search --- */
