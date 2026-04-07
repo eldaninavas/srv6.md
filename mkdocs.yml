@@ -181,6 +181,7 @@ nav:
     - Operations:
       - Security: topics/security.md
       - OAM & Troubleshooting: topics/oam-troubleshooting.md
+      - Performance Measurement (SRPM): topics/srpm.md
       - Telemetry & Monitoring: topics/telemetry.md
       - Performance & Scaling: topics/performance-scaling.md
       - Interworking & Migration: topics/interworking-migration.md
