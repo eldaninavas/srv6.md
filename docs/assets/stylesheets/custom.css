@@ -69,17 +69,13 @@
 
 /* --- Navigation Sidebar (Dark Mode) --- */
 [data-md-color-scheme="slate"] .md-sidebar--primary {
-  background: rgba(13, 13, 26, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-right: 1px solid rgba(171, 71, 188, 0.2);
+  background: #151525;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 [data-md-color-scheme="slate"] .md-sidebar--secondary {
-  background: rgba(13, 13, 26, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-left: 1px solid rgba(171, 71, 188, 0.15);
+  background: #151525;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* Section headers (Foundations, Architecture, etc.) */
@@ -122,17 +118,13 @@
 
 /* --- Navigation Sidebar (Light Mode) --- */
 [data-md-color-scheme="default"] .md-sidebar--primary {
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-right: 1px solid rgba(123, 31, 162, 0.15);
+  background: #f5f3f7;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 [data-md-color-scheme="default"] .md-sidebar--secondary {
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-left: 1px solid rgba(123, 31, 162, 0.1);
+  background: #f5f3f7;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 [data-md-color-scheme="default"] .md-nav--lifted > .md-nav__list > .md-nav__item > .md-nav__link,
