@@ -441,37 +441,13 @@
   filter: drop-shadow(0 2px 8px rgba(123, 31, 162, 0.3));
 }
 
-[data-md-color-scheme="slate"] .mermaid .node .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid .node span,
-[data-md-color-scheme="slate"] .mermaid .node div,
-[data-md-color-scheme="slate"] .mermaid .node foreignObject,
-[data-md-color-scheme="slate"] .mermaid .node foreignObject *,
-[data-md-color-scheme="slate"] .mermaid .label,
-[data-md-color-scheme="slate"] .mermaid .label *,
-[data-md-color-scheme="slate"] .mermaid .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid [class*="node"] .label,
-[data-md-color-scheme="slate"] .mermaid [class*="node"] .label *,
-[data-md-color-scheme="slate"] .mermaid .node text,
-[data-md-color-scheme="slate"] .mermaid .node tspan {
-  color: #fff !important;
-  fill: #fff !important;
-}
-
 [data-md-color-scheme="slate"] .mermaid .edgePath path.path {
   stroke: rgba(206, 147, 216, 0.5) !important;
-}
-
-[data-md-color-scheme="slate"] .mermaid .edgeLabel {
-  color: #b8b4cc !important;
 }
 
 [data-md-color-scheme="slate"] .mermaid .cluster rect {
   fill: rgba(123, 31, 162, 0.08) !important;
   stroke: rgba(171, 71, 188, 0.3) !important;
-}
-
-[data-md-color-scheme="slate"] .mermaid .cluster-label .nodeLabel {
-  color: #ce93d8 !important;
 }
 
 /* --- Mermaid Light Mode --- */
@@ -481,44 +457,13 @@
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
 }
 
-/* Force white text inside all mermaid nodes in light mode */
-[data-md-color-scheme="default"] .mermaid .node .nodeLabel,
-[data-md-color-scheme="default"] .mermaid .node span,
-[data-md-color-scheme="default"] .mermaid .node p,
-[data-md-color-scheme="default"] .mermaid .node div,
-[data-md-color-scheme="default"] .mermaid .node foreignObject,
-[data-md-color-scheme="default"] .mermaid .node foreignObject *,
-[data-md-color-scheme="default"] .mermaid .label,
-[data-md-color-scheme="default"] .mermaid .label div,
-[data-md-color-scheme="default"] .mermaid .label span,
-[data-md-color-scheme="default"] .mermaid .nodeLabel,
-[data-md-color-scheme="default"] .mermaid [class*="node"] .label,
-[data-md-color-scheme="default"] .mermaid [class*="node"] .label * {
-  color: #fff !important;
-  fill: #fff !important;
-}
-
-/* Also force it via the SVG text elements directly */
-[data-md-color-scheme="default"] .mermaid .node text,
-[data-md-color-scheme="default"] .mermaid .node tspan {
-  fill: #fff !important;
-}
-
 [data-md-color-scheme="default"] .mermaid .edgePath path.path {
   stroke: rgba(123, 31, 162, 0.4) !important;
-}
-
-[data-md-color-scheme="default"] .mermaid .edgeLabel {
-  color: #555 !important;
 }
 
 [data-md-color-scheme="default"] .mermaid .cluster rect {
   fill: rgba(123, 31, 162, 0.04) !important;
   stroke: rgba(123, 31, 162, 0.2) !important;
-}
-
-[data-md-color-scheme="default"] .mermaid .cluster-label .nodeLabel {
-  color: #7b1fa2 !important;
 }
 
 /* --- Stats Section --- */
@@ -721,11 +666,6 @@
 [data-md-color-scheme="default"] .md-nav__item--active > .md-nav__link {
   color: #7b1fa2;
   border-left: 3px solid #7b1fa2;
-}
-
-/* --- Light mode mermaid --- */
-[data-md-color-scheme="default"] .mermaid text {
-  fill: #333 !important;
 }
 
 /* --- Light mode hero stats --- */
