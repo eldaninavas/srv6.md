@@ -308,6 +308,11 @@
   background: rgba(171, 71, 188, 0.05);
 }
 
+/* --- Content Width --- */
+.md-grid {
+  max-width: 1440px;
+}
+
 /* --- Content Typography --- */
 .md-typeset h1 {
   font-weight: 800;
