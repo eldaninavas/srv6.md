@@ -336,7 +336,16 @@ document.addEventListener("fullscreenchange", () => {{
 """
 
     os.makedirs(os.path.dirname(js_path), exist_ok=True)
-    with open(js_path, "w", encoding="utf-8") as f:
-        f.write(js_content)
 
-    log.info(f"Knowledge graph generated: {len(nodes)} nodes, {len(links)} links")
+    # Only write if content changed — prevents MkDocs live reload loop
+    existing = ""
+    if os.path.exists(js_path):
+        with open(js_path, "r", encoding="utf-8") as f:
+            existing = f.read()
+
+    if existing != js_content:
+        with open(js_path, "w", encoding="utf-8") as f:
+            f.write(js_content)
+        log.info(f"Knowledge graph updated: {len(nodes)} nodes, {len(links)} links")
+    else:
+        log.info(f"Knowledge graph unchanged: {len(nodes)} nodes, {len(links)} links")
