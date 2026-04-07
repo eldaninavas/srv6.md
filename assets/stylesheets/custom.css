@@ -72,6 +72,17 @@
   color: #111;
 }
 
+[data-md-color-scheme="default"] .md-header .md-header__button,
+[data-md-color-scheme="default"] .md-header .md-icon,
+[data-md-color-scheme="default"] .md-header .md-search__icon {
+  color: #333 !important;
+}
+
+[data-md-color-scheme="default"] .md-search__form {
+  background: #f0f0f0 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 /* --- Tabs (Both modes — GitBook style) --- */
 .md-tabs {
   border-bottom: 1px solid rgba(128, 128, 128, 0.15);
