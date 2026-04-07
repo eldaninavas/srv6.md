@@ -38,6 +38,7 @@ SRv6 is in production at some of the world's largest networks. The following is 
 | **Bell Canada** | SRv6 uSID deployment with P4 programmable edge | [:material-open-in-new:](https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf) |
 | **Telefonica VIVO** (Brazil) | Multi-vendor SRv6 uSID deployment | [:material-open-in-new:](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) |
 | **Telecom District** (Americas) | The future of routing built on SRv6 | [:material-open-in-new:](https://en.telecomdistrict.com/blog/el-futuro-del-enrutamiento-construido-sobre-srv6) |
+| **CTX Reflector** (Americas) | Cloud-native SRv6 enablement on AWS | [:material-open-in-new:](https://tryctx.com/reflector/) |
 
 ## Cloud & Technology Companies
 
