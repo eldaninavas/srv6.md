@@ -156,7 +156,7 @@ extra:
 nav:
   - Home:
     - index.md
-  - Fundamentals:
+  - Topics:
     - fundamentals/index.md
     - What is SRv6?: fundamentals/what-is-srv6.md
     - SID Structure: fundamentals/sid-structure.md

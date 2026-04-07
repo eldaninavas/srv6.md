@@ -47,7 +47,7 @@ hide:
 
 <div class="srv6-card" markdown>
 
-### :material-book-open-variant: Fundamentals
+### :material-book-open-variant: Topics
 
 New to SRv6? Start here. Understand the core concepts of Segment Routing over IPv6, SID structure, and network programming.
 

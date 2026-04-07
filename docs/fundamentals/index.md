@@ -1,12 +1,12 @@
 ---
-title: Fundamentals
-description: Core concepts of Segment Routing over IPv6
+title: Topics
+description: Complete SRv6 topic index — from basics to advanced operations
 tags:
   - fundamentals
-  - beginner
+  - topics
 ---
 
-# :material-book-open-variant: SRv6 Fundamentals
+# :material-book-open-variant: SRv6 Topics
 
 Welcome to the fundamentals section. Whether you're a network engineer new to SRv6 or looking to solidify your understanding, start here.
 
