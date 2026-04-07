@@ -33,7 +33,15 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/fundamentals/clos-glb/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/fundamentals/flex-algorithm/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/fundamentals/host-based-srv6/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -42,6 +50,10 @@
     </url>
     <url>
          <loc>https://srv6.md/fundamentals/sid-structure/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/fundamentals/sonic-sai/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
