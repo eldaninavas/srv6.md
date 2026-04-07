@@ -308,6 +308,19 @@
   background: rgba(171, 71, 188, 0.05);
 }
 
+/* --- Sidebar & TOC Typography --- */
+.md-sidebar .md-nav__link {
+  font-size: 0.72rem;
+}
+
+.md-sidebar .md-nav__item--nested > .md-nav__link {
+  font-size: 0.75rem;
+}
+
+.md-sidebar--secondary .md-nav__link {
+  font-size: 0.68rem;
+}
+
 /* --- Content Width --- */
 .md-grid {
   max-width: 1440px;
