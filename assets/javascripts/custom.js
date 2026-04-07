@@ -2,6 +2,7 @@
 
 // Smooth scroll offset for fixed header
 document.addEventListener("DOMContentLoaded", function () {
-  // Add loaded class for animations
   document.body.classList.add("srv6-loaded");
 });
+
+// Mermaid theme is configured in overrides/main.html
