@@ -39,6 +39,16 @@ Welcome to the fundamentals section. Whether you're a network engineer new to SR
 | [SONiC & SAI](sonic-sai.md) | Open-source NOS with hardware-abstracted SRv6 |
 | [Host-Based SRv6 & Open Source](host-based-srv6.md) | SRv6 on Linux kernel, eBPF, VPP, and the open-source ecosystem |
 
+### :material-numeric-4-circle: Operations & Architecture
+
+| Topic | Description |
+|-------|-------------|
+| [OAM & Troubleshooting](oam-troubleshooting.md) | SRv6 ping, traceroute, IOAM, path tracing, and debugging |
+| [Security](security.md) | HMAC, infrastructure ACLs, attack vectors, and best practices |
+| [Interworking & Migration](interworking-migration.md) | SR-MPLS ↔ SRv6 gateways, brownfield coexistence |
+| [Telemetry & Monitoring](telemetry.md) | IPFIX, YANG models, streaming telemetry, alerting |
+| [Performance & Scaling](performance-scaling.md) | MTU impact, encapsulation overhead, hardware forwarding, FIB scale |
+
 ## Prerequisites
 
 To get the most from this section, you should be familiar with:
