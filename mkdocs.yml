@@ -197,12 +197,20 @@ nav:
     - GNS3: labs/gns3.md
   - RFCs & Standards:
     - rfcs/index.md
-    - RFC 8754: rfcs/rfc8754.md
-    - RFC 8986: rfcs/rfc8986.md
-    - RFC 9252: rfcs/rfc9252.md
-    - RFC 9256: rfcs/rfc9256.md
-    - RFC 9259: rfcs/rfc9259.md
-    - RFC 9352: rfcs/rfc9352.md
+    - RFC 8402 - SR Architecture: rfcs/rfc8402.md
+    - RFC 8754 - SRH: rfcs/rfc8754.md
+    - RFC 8986 - Network Programming: rfcs/rfc8986.md
+    - RFC 9252 - BGP Overlay Services: rfcs/rfc9252.md
+    - RFC 9256 - SR Policy: rfcs/rfc9256.md
+    - RFC 9259 - OAM: rfcs/rfc9259.md
+    - RFC 9350 - Flex-Algorithm: rfcs/rfc9350.md
+    - RFC 9352 - IS-IS Extensions: rfcs/rfc9352.md
+    - RFC 9433 - Mobile User Plane: rfcs/rfc9433.md
+    - RFC 9487 - IPFIX for SRv6: rfcs/rfc9487.md
+    - RFC 9513 - OSPFv3 Extensions: rfcs/rfc9513.md
+    - RFC 9514 - BGP-LS Extensions: rfcs/rfc9514.md
+    - RFC 9800 - SRv6 Compression: rfcs/rfc9800.md
+    - RFC 9855 - TI-LFA: rfcs/rfc9855.md
   - Community:
     - community/index.md
     - Contributing: community/contributing.md
