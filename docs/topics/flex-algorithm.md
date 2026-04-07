@@ -34,6 +34,7 @@ Each algorithm produces its own set of SRv6 SIDs, creating independent forwardin
 ## How It Works
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     A[PE1] -->|10ms, BW:100G| B[P1]
     A -->|2ms, BW:10G| C[P2]
@@ -70,6 +71,7 @@ To steer traffic on the low-latency path, simply use the Algo 128 SID as the des
 Flex-Algo is the foundation of **SRv6 network slicing** for 5G and enterprise services:
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph Physical Network
         direction LR

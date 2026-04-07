@@ -41,6 +41,7 @@ In SRv6 networks, traffic follows explicit segment lists through the fabric. Kno
 **Simple Two-Way Active Measurement Protocol** is the modern standard for active probing in SRv6 networks. It replaces older TWAMP with a simpler, stateless design.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     S[Sender PE] -->|"STAMP Probe (UDP)"| R[Reflector PE]
     R -->|"STAMP Reply + Timestamps"| S
@@ -49,7 +50,7 @@ graph LR
     style S fill:#4a148c,color:#fff,stroke:#ab47bc
     style R fill:#4a148c,color:#fff,stroke:#ab47bc
     style M fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style T fill:#1a1a2e,color:#ce93d8,stroke:#ab47bc
+    style T fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 How it works:

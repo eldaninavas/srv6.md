@@ -48,6 +48,7 @@ Endpoint nodes process the active SID in the SRH.
 ## Packet Walk: End.DT4
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 sequenceDiagram
     participant S as Source (Ingress)
     participant T as Transit Node

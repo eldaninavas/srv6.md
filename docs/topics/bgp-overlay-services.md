@@ -16,6 +16,7 @@ SRv6 provides a clean, unified underlay for delivering **L3VPN** and **L2VPN (EV
 ## Architecture Overview
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph Overlay - BGP Control Plane
         BGP1[PE1 BGP] <-->|MP-BGP with SRv6 SIDs| BGP2[PE2 BGP]
@@ -32,8 +33,8 @@ graph TB
     style PE1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
     style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
     style P1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style CE1 fill:#1a1a3e,color:#e1bee7,stroke:#ab47bc
-    style CE2 fill:#1a1a3e,color:#e1bee7,stroke:#ab47bc
+    style CE1 fill:#4a148c,color:#fff,stroke:#ab47bc
+    style CE2 fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 **Key principle:** BGP carries service information (VPN prefixes, EVPN routes) with SRv6 SIDs instead of MPLS labels. The SRv6 SID tells the remote PE exactly what to do with the packet (decap to which VRF, cross-connect to which interface, etc.).

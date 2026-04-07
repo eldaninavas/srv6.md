@@ -154,6 +154,7 @@ The original IPv4 packet is delivered to destination `10.0.0.2` as if SRv6 was n
 ## Packet Walk Sequence Diagram
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 sequenceDiagram
     participant A as Source A
     participant B as Node B (End)

@@ -83,6 +83,7 @@ The outer DSCP is set independently of the inner packet. This allows the SRv6 do
 4. SRv6 SIDs are allocated per Flex-Algo — traffic steered to the appropriate SID automatically follows the constrained path
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     PE1[PE1] -->|Algo 128: Low Latency| P1[P1] -->|10ms| PE2[PE2]
     PE1 -->|Algo 129: High BW| P2[P2] -->|100Gbps| PE2

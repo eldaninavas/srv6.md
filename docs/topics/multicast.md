@@ -31,6 +31,7 @@ SRv6's source-routing model pushes complexity to the edges, which conflicts with
 The simplest approach — the ingress PE replicates the packet and sends a **separate unicast SRv6 copy** to each egress PE.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     SRC[Source] --> PE1[Ingress PE]
     PE1 -->|Unicast SRv6| PE2[Egress PE2]
@@ -69,6 +70,7 @@ The IETF has defined **replication segments** that enable packet replication at 
 3. This creates an **overlay replication tree** encoded entirely in the SRH
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TD
     PE1[Ingress PE] -->|SRv6 + Replicate SID| R1[Replication Node 1]
     R1 -->|Copy 1| PE2[Egress PE2]
@@ -110,6 +112,7 @@ Tree-SID pre-computes a multicast distribution tree and assigns a single **Tree-
 3. The ingress PE encapsulates with just the Tree-SID — transit nodes replicate based on their local state
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TD
     CTRL[Controller / PCE] -.->|Programs tree| P1
     CTRL -.->|Programs tree| P2
@@ -122,7 +125,7 @@ graph TD
     P2 -->|Replicate| P3[P3]
     P3 --> PE4[Egress PE4]
 
-    style CTRL fill:#1a1a3e,color:#ce93d8,stroke:#ab47bc
+    style CTRL fill:#4a148c,color:#fff,stroke:#ab47bc
     style PE1 fill:#4a148c,color:#fff,stroke:#ab47bc
     style P1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
     style P2 fill:#7b1fa2,color:#fff,stroke:#ab47bc

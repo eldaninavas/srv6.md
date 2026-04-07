@@ -21,6 +21,7 @@ EVPN-based All-Active Multihoming enables a CE (Customer Edge) device to connect
 Traditional single-homed CE connections create a single point of failure. With All-Active multihoming, traffic flows across all PE links simultaneously:
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     CE[CE Router] -->|Active| PE1[PE1]
     CE -->|Active| PE2[PE2]
@@ -33,7 +34,7 @@ graph LR
     style PE1 fill:#4a148c,color:#fff,stroke:#ab47bc
     style PE2 fill:#4a148c,color:#fff,stroke:#ab47bc
     style PE3 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style CORE fill:#1a1a2e,color:#ce93d8,stroke:#ab47bc
+    style CORE fill:#4a148c,color:#fff,stroke:#ab47bc
     style RCE fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 

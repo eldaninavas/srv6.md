@@ -74,6 +74,7 @@ Some operators skip SR-MPLS entirely and go directly from traditional MPLS to SR
 A gateway node translates between SR-MPLS and SRv6 at the domain boundary:
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     subgraph SR-MPLS Domain
         A[PE1] -->|MPLS Labels| B[P1]
@@ -288,6 +289,7 @@ BSID provides **domain isolation**: neither domain needs to understand the other
 In a multi-domain network, each domain boundary has a gateway that owns a BSID. Traffic is stitched from one domain to the next by chaining BSIDs:
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     PE1[PE1<br/>SR-MPLS] -->|"Label stack: [16002, BSID-A]"| GW1[Gateway 1<br/>BSID-A = 24999]
     GW1 -->|"SRv6: [fcbb:bb01:0005::1, BSID-B]"| GW2[Gateway 2<br/>BSID-B = fcbb:bb02:0001::PE]

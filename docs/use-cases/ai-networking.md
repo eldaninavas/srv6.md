@@ -24,6 +24,7 @@ AI training workloads (like LLM training) use synchronized **all-to-all** commun
 - **Wasted bandwidth** — up to 40-60% of fabric capacity underutilized
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph Traditional ECMP - The Problem
         G1[GPU 1] -->|Flow A| S1[Spine 1]
@@ -45,6 +46,7 @@ graph TB
 With SRv6 uSID, the source (GPU host or controller) **explicitly programs the exact path** each flow takes through the fabric. No hashing, no collisions, no wasted capacity.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph SRv6 Deterministic - The Solution
         G1[GPU 1] -->|SID→Spine1| S1[Spine 1]

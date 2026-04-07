@@ -86,6 +86,7 @@ SONiC uses **FRRouting (FRR)** as its routing engine. FRR provides:
 - **Zebra** for programming SRv6 routes into the kernel and SAI
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     FRR[FRRouting] -->|Routes + SIDs| Zebra[Zebra]
     Zebra -->|Netlink| Kernel[Linux Kernel]

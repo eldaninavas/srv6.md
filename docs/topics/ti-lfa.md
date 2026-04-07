@@ -17,6 +17,7 @@ tags:
 When a link or node fails, the IGP needs time to converge (detect failure, flood LSPs, recompute SPF). During this convergence window (typically 200ms-2s), traffic is blackholed.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     A[Source] -->|Primary| B[Node B]
     B -->|X FAIL| C[Node C]
@@ -77,6 +78,7 @@ TI-LFA backup (pre-computed on B):
 ```
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 sequenceDiagram
     participant A as Node A
     participant B as Node B

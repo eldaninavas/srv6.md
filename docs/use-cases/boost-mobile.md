@@ -27,6 +27,7 @@ A typical cloud-hosted mobile core uses a multi-tier topology:
 - **National DCs** — IMS/VoLTE, messaging, SBC interconnects
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     EDGE_A[Edge DC<br/>Market A] -->|GRE Tunnels| REG[Regional DC]
     EDGE_B[Edge DC<br/>Market B] -->|GRE Tunnels| REG
@@ -57,6 +58,7 @@ In this model, vRouters interconnect via **GRE tunnels** carrying SR-MPLS, and o
 Replacing the SR-MPLS/GRE stack with a single SRv6 domain eliminates these constraints:
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     VR1[vRouter<br/>Edge DC A] <-->|Native IPv6| VR2[vRouter<br/>Edge DC B]
     VR1 <-->|Native IPv6| VR3[vRouter<br/>Regional DC]

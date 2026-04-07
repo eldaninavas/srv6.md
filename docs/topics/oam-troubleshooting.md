@@ -25,6 +25,7 @@ SRv6 ping uses **ICMPv6 Echo Request/Reply** with the SRH to verify reachability
 4. Reply returns via normal IPv6 routing (not the reverse SRv6 path)
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 sequenceDiagram
     participant S as Source
     participant A as Node A (End)
@@ -273,6 +274,7 @@ The following table clarifies what happens at each type of node:
 | **Egress / Decapsulating node** | Extracts IOAM data, exports to collector | Processes final SID, removes SRH |
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 flowchart LR
     A["Ingress<br/>(IOAM encap +<br/>SRH encap)"] --> B["Transit Node<br/>(IOAM: write trace<br/>SRH: ignore)"]
     B --> C["SRv6 Endpoint<br/>(IOAM: write trace<br/>SRH: update DA)"]
@@ -512,6 +514,7 @@ The following scenarios cover the most common SRv6 operational issues with step-
 **Diagnostic Flow:**
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 flowchart TD
     A["VPN traffic not reaching destination"] --> B{"Is the SRv6 SID<br/>installed on egress PE?"}
     B -->|No| C["Fix: Check BGP SRv6 locator<br/>and SID allocation"]

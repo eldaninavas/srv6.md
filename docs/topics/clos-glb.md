@@ -18,6 +18,7 @@ Modern data center networks use **CLOS (Spine-Leaf)** topologies with multiple e
 A CLOS fabric provides full bisectional bandwidth between any two leaf switches through multiple spine switches:
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     S1[Spine 1] --- L1[Leaf 1]
     S1 --- L2[Leaf 2]

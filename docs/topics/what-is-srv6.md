@@ -19,6 +19,7 @@ tags:
 SRv6 encodes a list of instructions (called **segments**) in the IPv6 packet header. Each segment is a 128-bit IPv6 address that represents a specific network instruction or behavior.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     A[Source] -->|SRv6 Path| B[Node 1]
     B -->|Segment List| C[Node 2]

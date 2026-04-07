@@ -27,6 +27,7 @@ SRv6 (particularly uSID) is rapidly becoming the preferred transport technology 
 ## Architecture
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     RU[Radio Unit] -->|Fronthaul| DU[Distributed Unit]
     DU -->|Midhaul| CU[Centralized Unit]
