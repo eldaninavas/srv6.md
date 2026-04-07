@@ -467,3 +467,119 @@
 [data-md-color-scheme="slate"] .md-typeset .tabbed-labels > .tabbed-control {
   color: #ab47bc;
 }
+
+/* ============================================
+   Light Mode Overrides
+   ============================================ */
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #7b1fa2;
+  --md-primary-fg-color--light: #9c27b0;
+  --md-primary-fg-color--dark: #4a148c;
+  --md-accent-fg-color: #7b1fa2;
+  --md-typeset-a-color: #7b1fa2;
+}
+
+/* --- Light mode cards --- */
+[data-md-color-scheme="default"] .srv6-card {
+  background: #fff;
+  border: 1px solid rgba(123, 31, 162, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+[data-md-color-scheme="default"] .srv6-card:hover {
+  border-color: rgba(123, 31, 162, 0.5);
+  box-shadow: 0 8px 30px rgba(123, 31, 162, 0.15);
+}
+
+[data-md-color-scheme="default"] .srv6-card h3 {
+  color: #7b1fa2 !important;
+}
+
+[data-md-color-scheme="default"] .srv6-card p {
+  color: #333;
+}
+
+/* --- Light mode hero --- */
+[data-md-color-scheme="default"] .srv6-hero {
+  background: linear-gradient(180deg, rgba(123, 31, 162, 0.08) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(123, 31, 162, 0.1);
+}
+
+[data-md-color-scheme="default"] .srv6-hero h1 {
+  background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 50%, #ab47bc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-md-color-scheme="default"] .srv6-hero .srv6-tagline {
+  color: #555;
+}
+
+/* --- Light mode buttons --- */
+[data-md-color-scheme="default"] .srv6-btn-secondary {
+  color: #7b1fa2 !important;
+  border-color: rgba(123, 31, 162, 0.5);
+}
+
+[data-md-color-scheme="default"] .srv6-btn-secondary:hover {
+  background: rgba(123, 31, 162, 0.08);
+}
+
+/* --- Light mode headings --- */
+[data-md-color-scheme="default"] .md-typeset h2 {
+  color: #7b1fa2;
+  border-bottom: 1px solid rgba(123, 31, 162, 0.15);
+}
+
+/* --- Light mode tags --- */
+[data-md-color-scheme="default"] .md-tag {
+  background: rgba(123, 31, 162, 0.1);
+  color: #7b1fa2;
+  border: 1px solid rgba(123, 31, 162, 0.25);
+}
+
+/* --- Light mode tables --- */
+[data-md-color-scheme="default"] .md-typeset table:not([class]) th {
+  background: rgba(123, 31, 162, 0.1);
+  color: #4a148c;
+}
+
+/* --- Light mode code --- */
+[data-md-color-scheme="default"] .md-typeset code {
+  background: rgba(123, 31, 162, 0.08);
+  color: #6a1b9a;
+  border: 1px solid rgba(123, 31, 162, 0.1);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+}
+
+/* --- Light mode admonitions --- */
+[data-md-color-scheme="default"] .admonition,
+[data-md-color-scheme="default"] details {
+  border-radius: 8px;
+}
+
+/* --- Light mode stats --- */
+[data-md-color-scheme="default"] .srv6-stat-number {
+  background: linear-gradient(135deg, #7b1fa2 0%, #ab47bc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- Light mode nav active --- */
+[data-md-color-scheme="default"] .md-nav__link--active {
+  color: #7b1fa2 !important;
+}
+
+[data-md-color-scheme="default"] .md-nav__item--active > .md-nav__link {
+  color: #7b1fa2;
+  border-left: 3px solid #7b1fa2;
+}
+
+/* --- Light mode selection --- */
+[data-md-color-scheme="default"] ::selection {
+  background: rgba(123, 31, 162, 0.2);
+}
