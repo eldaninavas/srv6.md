@@ -45,7 +45,23 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/fundamentals/interworking-migration/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/fundamentals/network-programming/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/fundamentals/oam-troubleshooting/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/fundamentals/performance-scaling/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/fundamentals/security/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -62,6 +78,10 @@
     </url>
     <url>
          <loc>https://srv6.md/fundamentals/srv6-vs-sr-mpls/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/fundamentals/telemetry/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
