@@ -180,9 +180,12 @@ nav:
     - GNS3: labs/gns3.md
   - RFCs & Standards:
     - rfcs/index.md
+    - RFC 8754: rfcs/rfc8754.md
     - RFC 8986: rfcs/rfc8986.md
     - RFC 9252: rfcs/rfc9252.md
     - RFC 9256: rfcs/rfc9256.md
+    - RFC 9259: rfcs/rfc9259.md
+    - RFC 9352: rfcs/rfc9352.md
   - Community:
     - community/index.md
     - Contributing: community/contributing.md
