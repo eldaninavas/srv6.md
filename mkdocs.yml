@@ -10,6 +10,9 @@ copyright: >
 
 repo_url: https://github.com/eldaninavas/srv6.md
 repo_name: eldaninavas/srv6.md
+
+hooks:
+  - hooks/generate_graph.py
 edit_uri: edit/main/docs/
 
 theme:
@@ -156,6 +159,7 @@ extra:
 nav:
   - Home:
     - index.md
+    - Knowledge Graph: knowledge-graph.md
   - Topics:
     - fundamentals/index.md
     - What is SRv6?: fundamentals/what-is-srv6.md

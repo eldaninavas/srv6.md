@@ -1,0 +1,342 @@
+"""
+MkDocs hook: Auto-generate knowledge graph data from docs/ structure.
+Runs on every build — scans all .md files for cross-references and
+generates the D3.js node/link data automatically.
+"""
+
+import os
+import re
+import json
+import logging
+
+log = logging.getLogger("mkdocs.hooks.generate_graph")
+
+# Group classification based on directory
+DIR_TO_GROUP = {
+    "fundamentals": "core",
+    "use-cases": "usecase",
+    "rfcs": "rfc",
+    "implementations": "impl",
+    "labs": "impl",
+}
+
+GROUP_COLORS = {
+    "core": "#ab47bc",
+    "usecase": "#5c6bc0",
+    "rfc": "#66bb6a",
+    "impl": "#ff9800",
+}
+
+GROUP_NAMES = {
+    "core": "Topic",
+    "usecase": "Use Case",
+    "rfc": "RFC",
+    "impl": "Implementation",
+}
+
+# Files to skip
+SKIP_FILES = {"index.md", "tags.md", "knowledge-graph.md", "CNAME"}
+SKIP_DIRS = {"assets", "community"}
+
+
+def on_pre_build(config, **kwargs):
+    """Scan docs and generate knowledge-graph.js before build."""
+    docs_dir = config["docs_dir"]
+    nodes = []
+    links = []
+    node_ids = set()
+    file_to_id = {}
+
+    # Pass 1: Discover all pages and create nodes
+    for root, dirs, files in os.walk(docs_dir):
+        # Skip certain directories
+        rel_dir = os.path.relpath(root, docs_dir)
+        top_dir = rel_dir.split(os.sep)[0] if rel_dir != "." else ""
+
+        if top_dir in SKIP_DIRS:
+            continue
+
+        for fname in files:
+            if fname in SKIP_FILES or not fname.endswith(".md"):
+                continue
+
+            filepath = os.path.join(root, fname)
+            rel_path = os.path.relpath(filepath, docs_dir)
+
+            # Determine group
+            group = DIR_TO_GROUP.get(top_dir, None)
+            if group is None:
+                continue
+
+            # Read file to extract title
+            with open(filepath, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            # Extract title from frontmatter or first heading
+            title_match = re.search(r"^title:\s*(.+)$", content, re.MULTILINE)
+            if not title_match:
+                title_match = re.search(r"^#\s+(.+)$", content, re.MULTILINE)
+
+            if not title_match:
+                continue
+
+            title = title_match.group(1).strip()
+            # Clean title: remove markdown icons like :material-xxx:
+            title = re.sub(r":[a-z-]+:", "", title).strip()
+
+            # Create node ID from filename
+            node_id = fname.replace(".md", "").replace("-", "_")
+
+            # Build URL path
+            url_path = rel_path.replace(".md", "/").replace(os.sep, "/")
+
+            nodes.append({
+                "id": node_id,
+                "label": title,
+                "group": group,
+                "url": url_path,
+            })
+            node_ids.add(node_id)
+            file_to_id[rel_path] = node_id
+
+    # Pass 2: Discover links between pages
+    seen_links = set()
+    for root, dirs, files in os.walk(docs_dir):
+        rel_dir = os.path.relpath(root, docs_dir)
+        top_dir = rel_dir.split(os.sep)[0] if rel_dir != "." else ""
+        if top_dir in SKIP_DIRS:
+            continue
+
+        for fname in files:
+            if fname in SKIP_FILES or not fname.endswith(".md"):
+                continue
+
+            filepath = os.path.join(root, fname)
+            rel_path = os.path.relpath(filepath, docs_dir)
+            source_id = file_to_id.get(rel_path)
+            if not source_id:
+                continue
+
+            with open(filepath, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            # Find all markdown links to other .md files
+            # Matches: [text](path.md) and [text](../path.md)
+            link_pattern = re.findall(r"\[[^\]]*\]\(([^)]+\.md)\)", content)
+
+            for link_target in link_pattern:
+                # Resolve relative path
+                if link_target.startswith("../"):
+                    resolved = os.path.normpath(
+                        os.path.join(os.path.dirname(rel_path), link_target)
+                    )
+                elif link_target.startswith("./"):
+                    resolved = os.path.normpath(
+                        os.path.join(os.path.dirname(rel_path), link_target)
+                    )
+                else:
+                    resolved = os.path.normpath(
+                        os.path.join(os.path.dirname(rel_path), link_target)
+                    )
+
+                target_id = file_to_id.get(resolved)
+                if target_id and target_id != source_id:
+                    link_key = tuple(sorted([source_id, target_id]))
+                    if link_key not in seen_links:
+                        seen_links.add(link_key)
+                        links.append({
+                            "source": source_id,
+                            "target": target_id,
+                        })
+
+    # Generate JS file
+    js_path = os.path.join(docs_dir, "assets", "javascripts", "knowledge-graph.js")
+
+    js_content = f"""// AUTO-GENERATED by hooks/generate_graph.py — DO NOT EDIT MANUALLY
+// Generated from {len(nodes)} pages and {len(links)} connections
+
+let graphSvg, graphSimulation, graphZoom, graphG;
+let activeFilters = new Set(["core", "usecase", "rfc", "impl"]);
+
+document.addEventListener("DOMContentLoaded", function () {{
+  const container = document.getElementById("knowledge-graph");
+  if (!container) return;
+  initGraph(container);
+}});
+
+function initGraph(container) {{
+  const width = container.clientWidth || 960;
+  const height = container.clientHeight || 600;
+
+  const nodes = {json.dumps(nodes, indent=2)};
+
+  const links = {json.dumps(links, indent=2)};
+
+  const colors = {json.dumps(GROUP_COLORS)};
+  const groupNames = {json.dumps(GROUP_NAMES)};
+
+  container.innerHTML = "";
+
+  graphSvg = d3.select(container)
+    .append("svg")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox", [0, 0, width, height]);
+
+  graphG = graphSvg.append("g");
+
+  graphZoom = d3.zoom()
+    .scaleExtent([0.2, 5])
+    .on("zoom", (event) => graphG.attr("transform", event.transform));
+
+  graphSvg.call(graphZoom);
+
+  const s = 0.8;
+  graphSvg.call(graphZoom.transform, d3.zoomIdentity.translate(width*(1-s)/2, height*(1-s)/2).scale(s));
+
+  const link = graphG.append("g")
+    .selectAll("line").data(links).join("line")
+    .attr("stroke", "rgba(171,71,188,0.12)")
+    .attr("stroke-width", 1.2);
+
+  const node = graphG.append("g")
+    .selectAll("g").data(nodes).join("g")
+    .attr("class", d => "node-" + d.group)
+    .style("cursor", "pointer")
+    .call(d3.drag()
+      .on("start", (e) => {{ if (!e.active) graphSimulation.alphaTarget(0.3).restart(); e.subject.fx = e.subject.x; e.subject.fy = e.subject.y; }})
+      .on("drag", (e) => {{ e.subject.fx = e.x; e.subject.fy = e.y; }})
+      .on("end", (e) => {{ if (!e.active) graphSimulation.alphaTarget(0); e.subject.fx = null; e.subject.fy = null; }})
+    );
+
+  const centralNode = "what_is_srv6";
+  node.append("circle")
+    .attr("r", d => d.id === centralNode ? 30 : 20)
+    .attr("fill", d => colors[d.group])
+    .attr("stroke", d => colors[d.group])
+    .attr("stroke-width", 2)
+    .attr("fill-opacity", 0.12)
+    .attr("stroke-opacity", 0.7);
+
+  node.each(function(d) {{
+    const words = d.label.split(" ");
+    const g = d3.select(this);
+    const fontSize = d.id === centralNode ? "9px" : "7px";
+    const fontWeight = d.id === centralNode ? "700" : "500";
+    if (words.length <= 2) {{
+      words.forEach((w, i) => {{
+        g.append("text").attr("text-anchor","middle")
+          .attr("dy", (i - (words.length-1)/2) * 1.15 + 0.35 + "em")
+          .attr("font-size", fontSize).attr("font-weight", fontWeight)
+          .attr("fill","#e8e6f0").attr("pointer-events","none").text(w);
+      }});
+    }} else {{
+      const mid = Math.ceil(words.length / 2);
+      [words.slice(0,mid).join(" "), words.slice(mid).join(" ")].forEach((line, i) => {{
+        g.append("text").attr("text-anchor","middle")
+          .attr("dy", (i - 0.5) * 1.15 + 0.35 + "em")
+          .attr("font-size", "6.5px").attr("font-weight","500")
+          .attr("fill","#e8e6f0").attr("pointer-events","none").text(line);
+      }});
+    }}
+  }});
+
+  const tooltip = document.getElementById("node-tooltip");
+  node.on("mouseover", function(event, d) {{
+    d3.select(this).select("circle").transition().duration(150)
+      .attr("fill-opacity", 0.35).attr("r", d.id === centralNode ? 34 : 24);
+    link.attr("stroke", l => l.source.id===d.id||l.target.id===d.id ? colors[d.group] : "rgba(171,71,188,0.05)")
+      .attr("stroke-width", l => l.source.id===d.id||l.target.id===d.id ? 2.5 : 0.8);
+    if (tooltip) {{
+      tooltip.querySelector(".tooltip-title").textContent = d.label;
+      tooltip.querySelector(".tooltip-group").textContent = groupNames[d.group] || d.group;
+      tooltip.style.display = "block";
+      tooltip.style.left = event.clientX + 12 + "px";
+      tooltip.style.top = event.clientY - 10 + "px";
+    }}
+  }}).on("mousemove", function(event) {{
+    if (tooltip) {{ tooltip.style.left = event.clientX+12+"px"; tooltip.style.top = event.clientY-10+"px"; }}
+  }}).on("mouseout", function(event, d) {{
+    d3.select(this).select("circle").transition().duration(150)
+      .attr("fill-opacity", 0.12).attr("r", d.id === centralNode ? 30 : 20);
+    link.attr("stroke","rgba(171,71,188,0.12)").attr("stroke-width",1.2);
+    if (tooltip) tooltip.style.display = "none";
+  }}).on("click", function(event, d) {{
+    if (d.url) {{
+      const base = window.location.pathname.replace(/knowledge-graph\\/?$/, "");
+      window.location.href = base + d.url;
+    }}
+  }});
+
+  const legend = graphG.append("g").attr("transform", "translate(20, 20)");
+  Object.entries(groupNames).forEach(([key, label], i) => {{
+    const g = legend.append("g").attr("transform", "translate(0," + (i*22) + ")");
+    g.append("circle").attr("r",5).attr("fill",colors[key]).attr("fill-opacity",0.3).attr("stroke",colors[key]).attr("stroke-width",1.5);
+    g.append("text").attr("x",12).attr("dy","0.35em").attr("font-size","10px").attr("fill","#b8b4cc").text(label);
+  }});
+
+  graphSimulation = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id(d => d.id).distance(90))
+    .force("charge", d3.forceManyBody().strength(-300))
+    .force("center", d3.forceCenter(width/2, height/2))
+    .force("collision", d3.forceCollide().radius(30))
+    .force("x", d3.forceX(width/2).strength(0.06))
+    .force("y", d3.forceY(height/2).strength(0.06));
+
+  graphSimulation.on("tick", () => {{
+    link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+      .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    node.attr("transform", d => "translate("+d.x+","+d.y+")");
+  }});
+
+  window._graphNodes = node;
+  window._graphLinks = link;
+  window._graphData = {{ nodes, links }};
+}}
+
+function resetZoom() {{
+  if (!graphSvg || !graphZoom) return;
+  const c = document.getElementById("knowledge-graph");
+  const w = c.clientWidth, h = c.clientHeight, s = 0.8;
+  graphSvg.transition().duration(500)
+    .call(graphZoom.transform, d3.zoomIdentity.translate(w*(1-s)/2, h*(1-s)/2).scale(s));
+}}
+
+function toggleFilter(btn) {{
+  const group = btn.dataset.group;
+  btn.classList.toggle("active");
+  if (activeFilters.has(group)) activeFilters.delete(group);
+  else activeFilters.add(group);
+  if (window._graphNodes) {{
+    window._graphNodes.style("opacity", d => activeFilters.has(d.group) ? 1 : 0.08);
+    window._graphLinks.style("opacity", l => {{
+      const sn = window._graphData.nodes.find(n => n.id === (typeof l.source==="object"?l.source.id:l.source));
+      const tn = window._graphData.nodes.find(n => n.id === (typeof l.target==="object"?l.target.id:l.target));
+      return (sn && activeFilters.has(sn.group)) && (tn && activeFilters.has(tn.group)) ? 1 : 0.05;
+    }});
+  }}
+}}
+
+function toggleFullscreen() {{
+  const c = document.getElementById("knowledge-graph");
+  if (!document.fullscreenElement) {{
+    c.requestFullscreen().catch(() => {{
+      c.style.position="fixed"; c.style.top="0"; c.style.left="0";
+      c.style.width="100vw"; c.style.height="100vh"; c.style.zIndex="9999";
+      c.style.borderRadius="0"; c.style.margin="0";
+      document.getElementById("fs-btn").textContent="Exit";
+    }});
+  }} else document.exitFullscreen();
+}}
+
+document.addEventListener("fullscreenchange", () => {{
+  const btn = document.getElementById("fs-btn");
+  if (btn) btn.textContent = document.fullscreenElement ? "Exit" : "Fullscreen";
+}});
+"""
+
+    os.makedirs(os.path.dirname(js_path), exist_ok=True)
+    with open(js_path, "w", encoding="utf-8") as f:
+        f.write(js_content)
+
+    log.info(f"Knowledge graph generated: {len(nodes)} nodes, {len(links)} links")
