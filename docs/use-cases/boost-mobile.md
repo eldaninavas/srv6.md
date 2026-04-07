@@ -11,7 +11,7 @@ tags:
   - service-provider
 ---
 
-# :material-cloud-outline: Cloud-Native SRv6 Backbone
+# Cloud-Native SRv6 Backbone
 
 Running SRv6 natively inside a public cloud eliminates the tunnel complexity of traditional SR-MPLS deployments. Instead of layering MPLS over GRE over the hyperscaler underlay, operators can build a **single SRv6 domain** that spans on-prem, cloud regions, availability zones, and even multiple clouds — using nothing but IPv6.
 
