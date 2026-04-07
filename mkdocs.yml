@@ -83,7 +83,7 @@ theme:
     - header.autohide
 
 extra_css:
-  - assets/stylesheets/custom.css
+  - assets/stylesheets/custom.css?v=20260408
 
 extra_javascript:
   - assets/javascripts/custom.js
