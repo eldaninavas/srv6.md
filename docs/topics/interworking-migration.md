@@ -24,7 +24,7 @@ Day 0: Deploy SRv6 from scratch
        No MPLS, no LDP, no RSVP-TE
 ```
 
-**Who chose this:** Iliad (Italy), Rakuten Mobile (Japan) — both started as new operators and deployed SRv6-only networks from day one.
+**Who chose this:** Iliad (Italy), Rakuten Mobile (Japan), Telecom District (Mexico) — all started as new operators and deployed SRv6-only networks from day one.
 
 **Pros:** Simplest architecture, no interworking complexity
 **Cons:** Only possible for new networks
