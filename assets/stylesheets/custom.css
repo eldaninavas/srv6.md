@@ -82,9 +82,10 @@
 [data-md-color-scheme="slate"] .md-nav__item--section > .md-nav__link {
   color: rgba(255, 255, 255, 0.9) !important;
   font-weight: 700;
-  font-size: 0.65rem !important;
+  font-size: 0.55rem !important;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  margin-top: 0.6rem;
 }
 
 /* Nav links — light grey, no purple */
@@ -117,9 +118,10 @@
 [data-md-color-scheme="default"] .md-nav__item--section > .md-nav__link {
   color: rgba(0, 0, 0, 0.85) !important;
   font-weight: 700;
-  font-size: 0.65rem !important;
+  font-size: 0.55rem !important;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  margin-top: 0.6rem;
 }
 
 /* Nav links — dark grey, no purple */
@@ -357,25 +359,43 @@
   background: rgba(171, 71, 188, 0.05);
 }
 
-/* --- Sidebar & TOC Typography --- */
+/* --- Sidebar & TOC Typography (GitBook-like compact) --- */
 .md-sidebar .md-nav__link {
-  font-size: 0.7rem;
-  padding: 0.25em 0.5em;
-  line-height: 1.4;
+  font-size: 0.62rem;
+  padding: 0.2rem 0.6rem;
+  line-height: 1.3;
+  margin: 0;
 }
 
 .md-sidebar .md-nav__item--nested > .md-nav__link {
-  font-size: 0.7rem;
+  font-size: 0.62rem;
 }
 
 .md-sidebar--secondary .md-nav__link {
-  font-size: 0.65rem;
+  font-size: 0.58rem;
 }
 
-/* Tighter spacing between nav items */
 .md-sidebar .md-nav__item {
   margin: 0;
   padding: 0;
+}
+
+/* Kill Material's shadow/elevation on nav labels */
+.md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link,
+.md-nav--lifted .md-nav[data-md-level="1"] {
+  box-shadow: none !important;
+}
+
+.md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Remove the shadow bar above section content in sidebar */
+.md-sidebar .md-nav--lifted::before,
+.md-sidebar .md-nav--lifted > .md-nav__list::before {
+  display: none !important;
+  box-shadow: none !important;
 }
 
 /* --- Content Width & Spacing --- */
