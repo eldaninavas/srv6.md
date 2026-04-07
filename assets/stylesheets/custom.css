@@ -450,6 +450,15 @@
   padding: 0;
 }
 
+/* Sticky nav title needs solid background to not overlap on scroll */
+[data-md-color-scheme="slate"] .md-sidebar--primary .md-nav__title {
+  background: #151525;
+}
+
+[data-md-color-scheme="default"] .md-sidebar--primary .md-nav__title {
+  background: #f7f7f8;
+}
+
 /* Kill ALL Material elevation/shadow/background on lifted nav */
 .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
   box-shadow: none !important;
