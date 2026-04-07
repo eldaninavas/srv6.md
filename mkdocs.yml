@@ -156,7 +156,6 @@ extra:
 nav:
   - Home:
     - index.md
-    - tags.md
   - Fundamentals:
     - fundamentals/index.md
     - What is SRv6?: fundamentals/what-is-srv6.md
