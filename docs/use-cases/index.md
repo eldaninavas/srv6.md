@@ -1,8 +1,11 @@
 ---
 title: Use Cases
-description: Real-world SRv6 applications and deployment scenarios
+description: Discover SRv6 use cases and real-world applications. See how Segment Routing over IPv6 powers traffic engineering, VPNs, and service chaining.
 tags:
   - use-cases
+  - SRv6
+  - SRv6 use cases
+  - SRv6 real-world applications
 ---
 
 # :material-traffic-light: Use Cases

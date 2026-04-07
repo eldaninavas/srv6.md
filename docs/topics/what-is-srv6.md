@@ -1,10 +1,13 @@
 ---
-title: What is SRv6?
-description: Introduction to Segment Routing over IPv6
+title: What is SRv6? - Segment Routing over IPv6 Explained
+description: Learn what SRv6 is, how Segment Routing over IPv6 works, its key concepts (SID, SRH, network programming), benefits over MPLS, and real-world use cases.
 tags:
   - topics
   - beginner
   - srv6
+  - what is srv6
+  - srv6 explained
+  - segment routing ipv6
 ---
 
 # What is SRv6?
@@ -93,11 +96,18 @@ In SRv6, the **source node** (ingress) determines the entire path through the ne
                [Payload]
     ```
 
+## SRv6 vs MPLS
+
+SRv6 fundamentally changes how networks are programmed compared to traditional MPLS. While MPLS uses 20-bit labels with signaling protocols (LDP, RSVP-TE), SRv6 uses 128-bit IPv6 addresses as segment identifiers, enabling a programmable network fabric without overlay complexity. See the detailed comparison in [Interworking & Migration](interworking-migration.md).
+
 ## Further Reading
 
-- :material-arrow-right: [SID Structure](sid-structure.md) - Deep dive into the 128-bit SID format
-- :material-arrow-right: [Network Programming](network-programming.md) - SRv6 behaviors and functions
-- :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming specification
+- :material-arrow-right: [SID Structure](sid-structure.md) — Deep dive into the 128-bit SRv6 SID format (Locator, Function, Arguments)
+- :material-arrow-right: [Network Programming](network-programming.md) — SRv6 behaviors and functions (End, End.DT4, End.DX6, etc.)
+- :material-arrow-right: [Traffic Engineering](../use-cases/traffic-engineering.md) — How SRv6 enables flexible traffic engineering
+- :material-arrow-right: [SRv6 on Linux](../implementations/linux-kernel.md) — Get hands-on with SRv6 on the Linux kernel
+- :material-arrow-right: [Build an SRv6 Lab](../labs/index.md) — Hands-on SRv6 labs with Containerlab and GNS3
+- :material-file-document: [RFC 8986](../rfcs/rfc8986.md) — SRv6 Network Programming specification
 
 ## References
 

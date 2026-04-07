@@ -1,9 +1,12 @@
 ---
 title: SID Structure
-description: Understanding the 128-bit SRv6 Segment Identifier
+description: Understand the SRv6 SID structure. Learn how the 128-bit Segment Identifier encodes locator, function, and arguments in Segment Routing over IPv6.
 tags:
   - topics
   - sid
+  - SRv6
+  - SRv6 SID structure
+  - 128-bit SID
 ---
 
 # SID Structure

@@ -1,8 +1,11 @@
 ---
 title: Topics
-description: Complete SRv6 topic index — from basics to advanced operations
+description: Learn SRv6 from the ground up. Explore Segment Routing over IPv6 topics covering SID structure, network programming, and packet processing.
 tags:
   - topics
+  - SRv6
+  - Segment Routing over IPv6
+  - learn SRv6
 ---
 
 # :material-book-open-variant: SRv6 Topics

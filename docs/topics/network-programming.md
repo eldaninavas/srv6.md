@@ -1,10 +1,12 @@
 ---
 title: Network Programming
-description: SRv6 behaviors, functions, and the SRH
+description: Explore SRv6 network programming and SRv6 behaviors defined in RFC 8986. Learn how Segment Routing over IPv6 functions process packets.
 tags:
   - topics
   - network-programming
   - behaviors
+  - SRv6
+  - SRv6 network programming
 ---
 
 # Network Programming

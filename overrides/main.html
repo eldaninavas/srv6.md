@@ -2,15 +2,16 @@
 
 {% block extrahead %}
   <meta property="og:type" content="website">
-  <meta property="og:title" content="{{ page.title }} - SRv6.md">
-  <meta property="og:description" content="{{ config.site_description }}">
+  <meta property="og:title" content="{{ page.title }} | SRv6.md">
+  <meta property="og:description" content="{{ page.meta.get('description', config.site_description) if page.meta else config.site_description }}">
   <meta property="og:image" content="https://srv6.md/assets/images/og-image.png">
   <meta property="og:url" content="{{ page.canonical_url }}">
   <meta property="og:site_name" content="SRv6.md">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ page.title }} - SRv6.md">
-  <meta name="twitter:description" content="{{ config.site_description }}">
+  <meta name="twitter:title" content="{{ page.title }} | SRv6.md">
+  <meta name="twitter:description" content="{{ page.meta.get('description', config.site_description) if page.meta else config.site_description }}">
   <meta name="twitter:image" content="https://srv6.md/assets/images/og-image.png">
+  <meta name="keywords" content="SRv6, Segment Routing, IPv6, network programming, SID, SRH, {{ page.meta.get('tags', []) | join(', ') if page.meta else 'networking' }}">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -33,6 +34,7 @@
     "url": "{{ page.canonical_url }}",
     "description": "{{ page.meta.get('description', config.site_description) if page.meta else config.site_description }}",
     "image": "https://srv6.md/assets/images/og-image.png",
+    "dateModified": "{{ page.update_date if page.update_date else '2026-04-07' }}",
     "author": {
       "@type": "Organization",
       "name": "SRv6.md Community",
@@ -56,68 +58,130 @@
     }
   }
   </script>
+  {% if page.canonical_url == "https://srv6.md/" or page.canonical_url == "https://srv6.md/topics/what-is-srv6/" %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is SRv6?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SRv6 (Segment Routing over IPv6) is a network architecture that leverages the IPv6 data plane to implement source routing and network programming. It encodes forwarding instructions as segments directly in IPv6 addresses, eliminating the need for MPLS labels."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does SRv6 work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SRv6 works by encoding a list of segments (128-bit IPv6 addresses) in the Segment Routing Header (SRH). The ingress node determines the path, populates the segment list, and each node along the path processes its active segment and forwards the packet to the next hop."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between SRv6 and MPLS?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SRv6 uses native IPv6 addresses as segment identifiers instead of MPLS labels, eliminating the need for LDP and RSVP signaling protocols. SRv6 provides a 128-bit SID space (vs 20-bit MPLS labels), built-in network programmability, and simpler operations by unifying the control and data planes on IPv6."
+        }
+      }
+    ]
+  }
+  </script>
+  {% endif %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "SRv6.md",
+        "item": "https://srv6.md/"
+      }
+      {% if page.parent %}
+      ,{
+        "@type": "ListItem",
+        "position": 2,
+        "name": "{{ page.parent.title }}",
+        "item": "https://srv6.md/{{ page.parent.url }}"
+      }
+      ,{
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ page.title }}"
+      }
+      {% elif page.title != config.site_name %}
+      ,{
+        "@type": "ListItem",
+        "position": 2,
+        "name": "{{ page.title }}"
+      }
+      {% endif %}
+    ]
+  }
+  </script>
 {% endblock %}
 
 {% block libs %}
   {{ super() }}
   <script>
-    document$.subscribe(function() {
-      if (typeof mermaid !== "undefined") {
-        var isDark = document.body.getAttribute("data-md-color-scheme") === "slate";
-        mermaid.initialize({
-          startOnLoad: false,
-          theme: "base",
-          themeVariables: isDark ? {
-            primaryColor: "#7b1fa2",
-            primaryTextColor: "#fff",
-            primaryBorderColor: "#ab47bc",
-            lineColor: "#ab47bc",
-            secondaryColor: "#1a1a3e",
-            secondaryTextColor: "#e8e6f0",
-            secondaryBorderColor: "#ce93d8",
-            tertiaryColor: "#12122a",
-            tertiaryTextColor: "#ce93d8",
-            tertiaryBorderColor: "#ab47bc",
-            mainBkg: "#7b1fa2",
-            nodeBorder: "#ab47bc",
-            clusterBkg: "rgba(123,31,162,0.08)",
-            clusterBorder: "rgba(171,71,188,0.3)",
-            titleColor: "#ce93d8",
-            edgeLabelBackground: "transparent",
-            fontFamily: "inherit",
-            fontSize: "14px",
-            noteBkgColor: "#1a1a3e",
-            noteTextColor: "#e1bee7",
-            noteBorderColor: "#ab47bc",
-            background: "#0d0d1a"
-          } : {
-            primaryColor: "#9c27b0",
-            primaryTextColor: "#fff",
-            primaryBorderColor: "#7b1fa2",
-            lineColor: "#7b1fa2",
-            secondaryColor: "#f3e5f5",
-            secondaryTextColor: "#333",
-            secondaryBorderColor: "#ab47bc",
-            tertiaryColor: "#ede7f6",
-            tertiaryTextColor: "#4a148c",
-            tertiaryBorderColor: "#ce93d8",
-            mainBkg: "#9c27b0",
-            nodeBorder: "#7b1fa2",
-            clusterBkg: "rgba(123,31,162,0.05)",
-            clusterBorder: "rgba(123,31,162,0.25)",
-            titleColor: "#4a148c",
-            edgeLabelBackground: "transparent",
-            fontFamily: "inherit",
-            fontSize: "14px",
-            noteBkgColor: "#f3e5f5",
-            noteTextColor: "#4a148c",
-            noteBorderColor: "#ab47bc",
-            background: "#ffffff"
-          },
-          flowchart: { curve: "basis", padding: 20, htmlLabels: true, useMaxWidth: true }
-        });
+    /* Fix mermaid text visibility in both light and dark modes.
+       Runs after mermaid renders and forces correct text colors
+       directly on DOM elements, bypassing all CSS specificity issues. */
+    (function() {
+      function fixMermaidText() {
+        /* Node labels: white text (all nodes have dark purple backgrounds) */
+        var nodes = document.querySelectorAll('g.node foreignObject');
+        for (var i = 0; i < nodes.length; i++) {
+          var els = nodes[i].getElementsByTagName('*');
+          for (var j = 0; j < els.length; j++) {
+            els[j].style.setProperty('color', '#fff', 'important');
+          }
+        }
+        /* Edge labels: ensure readable with a background pill */
+        var edges = document.querySelectorAll('g.edgeLabel foreignObject');
+        for (var i = 0; i < edges.length; i++) {
+          var els = edges[i].getElementsByTagName('*');
+          for (var j = 0; j < els.length; j++) {
+            if (els[j].tagName.toLowerCase() === 'div') {
+              els[j].style.setProperty('background', 'var(--md-default-bg-color, #fff)');
+              els[j].style.setProperty('padding', '1px 6px');
+              els[j].style.setProperty('border-radius', '4px');
+            }
+            els[j].style.setProperty('color', 'var(--md-default-fg-color, #333)', 'important');
+          }
+        }
       }
-    });
+
+      /* Observe DOM for mermaid SVGs being inserted */
+      var observer = new MutationObserver(function(mutations) {
+        for (var i = 0; i < mutations.length; i++) {
+          for (var j = 0; j < mutations[i].addedNodes.length; j++) {
+            var node = mutations[i].addedNodes[j];
+            if (node.tagName === 'svg' || (node.querySelector && node.querySelector('svg'))) {
+              fixMermaidText();
+              return;
+            }
+          }
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      /* Also run on load and theme switch */
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(fixMermaidText, 500);
+      });
+      var toggles = document.querySelectorAll('[data-md-color-scheme]');
+      if (toggles.length) {
+        new MutationObserver(function() { setTimeout(fixMermaidText, 300); })
+          .observe(document.body, { attributes: true, attributeFilter: ['data-md-color-scheme'] });
+      }
+    })();
   </script>
 {% endblock %}
 

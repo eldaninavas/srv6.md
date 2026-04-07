@@ -1,8 +1,13 @@
 ---
 title: Implementations
-description: SRv6 implementation guides across platforms
+description: SRv6 implementations on Linux, Cisco IOS-XR, Juniper, FRRouting, and SONiC. Practical deployment guides for Segment Routing over IPv6.
 tags:
   - implementations
+  - SRv6
+  - SRv6 implementations
+  - SRv6 Linux
+  - SRv6 Cisco
+  - SRv6 Juniper
 ---
 
 # :material-server-network: Implementations

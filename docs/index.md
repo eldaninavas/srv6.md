@@ -1,21 +1,23 @@
 ---
-title: SRv6.md - The Open SRv6 Knowledge Base
-description: Open-source wiki for Segment Routing over IPv6 (SRv6). Learn, build, and contribute.
+title: SRv6 - Segment Routing over IPv6 Knowledge Base
+description: The definitive open-source guide to SRv6 (Segment Routing over IPv6). Learn what SRv6 is, how it works, use cases, implementations, labs, and RFCs.
 tags:
   - home
   - srv6
   - segment-routing
+  - what is srv6
+  - srv6 tutorial
 hide:
   - toc
 ---
 
 <div class="srv6-hero" markdown>
 
-# SRv6.md
+# SRv6: Segment Routing over IPv6
 
 <p class="srv6-tagline">
-  The open-source knowledge base for <strong>Segment Routing over IPv6</strong>.<br>
-  Learn. Build. Contribute.
+  The definitive open-source knowledge base for <strong>SRv6</strong>.<br>
+  Learn how SRv6 works. Build labs. Contribute.
 </p>
 
 [:material-rocket-launch: &nbsp; Get Started](topics/index.md){ .srv6-btn .srv6-btn-primary }
@@ -109,17 +111,24 @@ Join the community! Learn how to contribute, report issues, or suggest new conte
 
 ---
 
-## :material-head-question: Why SRv6?
+## :material-head-question: What is SRv6 and How Does It Work?
 
-SRv6 (Segment Routing over IPv6) represents a paradigm shift in network programming. By encoding forwarding instructions directly in the IPv6 header, it enables:
+**SRv6 (Segment Routing over IPv6)** is a next-generation network architecture that encodes forwarding instructions directly in IPv6 packet headers. Instead of relying on MPLS labels and complex signaling protocols like LDP or RSVP, SRv6 uses native 128-bit IPv6 addresses as **Segment Identifiers (SIDs)** to program network paths and behaviors.
 
-- **Simplified operations** - No more MPLS label management
-- **Native IPv6** - Uses the existing IPv6 data plane
-- **Network programmability** - Define custom network behaviors with SRv6 functions
-- **Scalability** - Designed for modern, large-scale networks
+SRv6 works by inserting a **Segment Routing Header (SRH)** into IPv6 packets. The source node populates a segment list that defines the packet's path and processing at each hop. This enables powerful capabilities like traffic engineering, VPN services, and service function chaining — all without overlay protocols.
+
+**Why choose SRv6 over traditional MPLS?**
+
+- **Simplified operations** — No more MPLS label management, LDP, or RSVP
+- **Native IPv6** — Uses the existing IPv6 data plane with no overlays
+- **Network programmability** — Define custom network behaviors with SRv6 functions (End, End.DT4, End.DX6, etc.)
+- **Scalability** — 128-bit SID space supports massive networks and micro-segmentation
+- **Unified data plane** — Single protocol stack for transport, VPN, and TE services
+
+[:material-arrow-right: Learn what SRv6 is in detail](topics/what-is-srv6.md){ .md-button }  &nbsp; [:material-arrow-right: See how SRv6 works](topics/network-programming.md){ .md-button }
 
 !!! tip "This is a community project"
-    SRv6.md is built and maintained by the networking community. Every page has an **edit button** (:material-pencil:) - if you spot an error or want to add content, we welcome your contributions!
+    SRv6.md is built and maintained by the networking community. Every page has an **edit button** (:material-pencil:) — if you spot an error or want to add content, we welcome your contributions!
 
 ---
 
