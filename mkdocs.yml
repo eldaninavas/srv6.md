@@ -166,39 +166,39 @@ nav:
       - What is SRv6?: topics/what-is-srv6.md
       - SID Structure: topics/sid-structure.md
       - Network Programming: topics/network-programming.md
-      - SRH Mechanics & Packet Walk: topics/srh-packet-walk.md
+      - SRH & Packet Walk: topics/srh-packet-walk.md
       - SRv6 vs SR-MPLS: topics/srv6-vs-sr-mpls.md
     - Architecture:
-      - uSID / SRv6 Compression: topics/usid-compression.md
+      - uSID Compression: topics/usid-compression.md
       - Flex-Algorithm: topics/flex-algorithm.md
-      - BGP Overlay Services: topics/bgp-overlay-services.md
+      - BGP Overlay: topics/bgp-overlay-services.md
       - TI-LFA: topics/ti-lfa.md
-      - CLOS Fabrics & Load Balancing: topics/clos-glb.md
+      - CLOS & Load Balancing: topics/clos-glb.md
     - Services:
       - EVPN Multihoming: topics/evpn-multihoming.md
-      - QoS & Traffic Classification: topics/qos.md
-      - Multicast & Broadcast: topics/multicast.md
+      - QoS: topics/qos.md
+      - Multicast: topics/multicast.md
     - Operations:
       - Security: topics/security.md
-      - OAM & Troubleshooting: topics/oam-troubleshooting.md
-      - Performance Measurement (SRPM): topics/srpm.md
-      - Telemetry & Monitoring: topics/telemetry.md
-      - Performance & Scaling: topics/performance-scaling.md
-      - Interworking & Migration: topics/interworking-migration.md
+      - OAM: topics/oam-troubleshooting.md
+      - SRPM: topics/srpm.md
+      - Telemetry: topics/telemetry.md
+      - Performance: topics/performance-scaling.md
+      - Migration: topics/interworking-migration.md
     - Platforms:
       - SONiC & SAI: topics/sonic-sai.md
-      - Host-Based SRv6 & Open Source: topics/host-based-srv6.md
+      - Host SRv6: topics/host-based-srv6.md
   - Use Cases:
     - use-cases/index.md
     - Traffic Engineering: use-cases/traffic-engineering.md
     - VPN Services: use-cases/vpn-services.md
     - Service Chaining: use-cases/service-chaining.md
-    - Satellite Connectivity: use-cases/satellite-connectivity.md
+    - Satellite: use-cases/satellite-connectivity.md
     - 5G Transport: use-cases/5g-transport.md
-    - AI/ML Training Networks: use-cases/ai-networking.md
-    - SD-WAN & SRv6: use-cases/sd-wan.md
-    - Cloud-Native Backbone: use-cases/boost-mobile.md
-    - Real-World Deployments: use-cases/deployments.md
+    - AI/ML Networks: use-cases/ai-networking.md
+    - SD-WAN: use-cases/sd-wan.md
+    - Cloud Backbone: use-cases/boost-mobile.md
+    - Deployments: use-cases/deployments.md
   - Implementations:
     - implementations/index.md
     - Linux Kernel: implementations/linux-kernel.md
