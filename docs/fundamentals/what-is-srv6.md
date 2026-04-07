@@ -68,7 +68,7 @@ In SRv6, the **source node** (ingress) determines the entire path through the ne
 
 | Feature | Description |
 |---------|-------------|
-| :material-ipv6: **Native IPv6** | No overlay protocol needed, uses IPv6 natively |
+| :material-ip-network: **Native IPv6** | No overlay protocol needed, uses IPv6 natively |
 | :material-code-tags: **Programmability** | Network behaviors defined via SRv6 functions |
 | :material-cog: **Simplification** | Eliminates MPLS signaling protocols (LDP, RSVP) |
 | :material-chart-line: **Scalability** | 128-bit SID space supports massive networks |
