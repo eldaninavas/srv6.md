@@ -12,12 +12,29 @@ Welcome to the fundamentals section. Whether you're a network engineer new to SR
 
 ## Learning Path
 
-| Order | Topic | Description |
-|:-----:|-------|-------------|
-| 1 | [What is SRv6?](what-is-srv6.md) | High-level overview and motivation |
-| 2 | [SID Structure](sid-structure.md) | Understanding the 128-bit SRv6 SID |
-| 3 | [Network Programming](network-programming.md) | SRv6 behaviors and the SRH |
-| 4 | [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md) | Comparing the two SR approaches |
+### :material-numeric-1-circle: Start Here
+
+| Topic | Description |
+|-------|-------------|
+| [What is SRv6?](what-is-srv6.md) | High-level overview and motivation |
+| [SID Structure](sid-structure.md) | Understanding the 128-bit SRv6 SID |
+| [Network Programming](network-programming.md) | SRv6 behaviors and functions |
+| [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md) | Comparing the two SR approaches |
+
+### :material-numeric-2-circle: Deep Dive
+
+| Topic | Description |
+|-------|-------------|
+| [SRH Mechanics & Packet Walk](srh-packet-walk.md) | Step-by-step packet processing through the SRH |
+| [uSID / SRv6 Compression](usid-compression.md) | Micro-SID for efficient header encoding (RFC 9800) |
+| [Flex-Algorithm](flex-algorithm.md) | Constraint-based path computation and network slicing |
+
+### :material-numeric-3-circle: Advanced Topics
+
+| Topic | Description |
+|-------|-------------|
+| [BGP Overlay Services](bgp-overlay-services.md) | EVPN and L3VPN over SRv6 with BGP (RFC 9252) |
+| [TI-LFA](ti-lfa.md) | Sub-50ms fast reroute with topology-independent protection |
 
 ## Prerequisites
 
