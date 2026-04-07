@@ -78,42 +78,18 @@
   border-left: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Section headers (Foundations, Architecture, etc.) */
-[data-md-color-scheme="slate"] .md-nav--lifted > .md-nav__list > .md-nav__item > .md-nav__link,
-[data-md-color-scheme="slate"] .md-nav__item--section > .md-nav__link {
-  color: #ab47bc !important;
-  font-weight: 700;
-  font-size: 0.65rem !important;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  opacity: 1;
-}
-
-/* Nav links default state */
-[data-md-color-scheme="slate"] .md-nav__link {
-  color: rgba(206, 147, 216, 0.7);
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
 [data-md-color-scheme="slate"] .md-nav__link:hover {
-  color: #ce93d8;
-  background: rgba(171, 71, 188, 0.08);
+  color: #e1bee7;
 }
 
-/* Active link */
 [data-md-color-scheme="slate"] .md-nav__link--active {
-  color: #ce93d8 !important;
+  color: #fff !important;
   font-weight: 600;
-  background: rgba(171, 71, 188, 0.12);
 }
 
 [data-md-color-scheme="slate"] .md-nav__item--active > .md-nav__link {
-  color: #ce93d8;
-  border-left: 3px solid #ab47bc;
-  padding-left: 0.6rem;
-  margin-left: -3px;
-  background: rgba(171, 71, 188, 0.1);
+  color: #fff;
+  font-weight: 600;
 }
 
 /* --- Navigation Sidebar (Light Mode) --- */
@@ -127,38 +103,18 @@
   border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-[data-md-color-scheme="default"] .md-nav--lifted > .md-nav__list > .md-nav__item > .md-nav__link,
-[data-md-color-scheme="default"] .md-nav__item--section > .md-nav__link {
-  color: #7b1fa2 !important;
-  font-weight: 700;
-  font-size: 0.65rem !important;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-[data-md-color-scheme="default"] .md-nav__link {
-  color: #4a148c;
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
 [data-md-color-scheme="default"] .md-nav__link:hover {
-  color: #7b1fa2;
-  background: rgba(123, 31, 162, 0.06);
+  color: #4a148c;
 }
 
 [data-md-color-scheme="default"] .md-nav__link--active {
-  color: #7b1fa2 !important;
+  color: #4a148c !important;
   font-weight: 600;
-  background: rgba(123, 31, 162, 0.08);
 }
 
 [data-md-color-scheme="default"] .md-nav__item--active > .md-nav__link {
-  color: #7b1fa2;
-  border-left: 3px solid #9c27b0;
-  padding-left: 0.6rem;
-  margin-left: -3px;
-  background: rgba(123, 31, 162, 0.06);
+  color: #4a148c;
+  font-weight: 600;
 }
 
 /* --- Search --- */
