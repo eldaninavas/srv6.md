@@ -359,16 +359,23 @@
 
 /* --- Sidebar & TOC Typography --- */
 .md-sidebar .md-nav__link {
-  font-size: 0.76rem;
-  padding: 0.35em 0.6em;
+  font-size: 0.7rem;
+  padding: 0.25em 0.5em;
+  line-height: 1.4;
 }
 
 .md-sidebar .md-nav__item--nested > .md-nav__link {
-  font-size: 0.78rem;
+  font-size: 0.7rem;
 }
 
 .md-sidebar--secondary .md-nav__link {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
+}
+
+/* Tighter spacing between nav items */
+.md-sidebar .md-nav__item {
+  margin: 0;
+  padding: 0;
 }
 
 /* --- Content Width & Spacing --- */
