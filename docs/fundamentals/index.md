@@ -35,6 +35,9 @@ Welcome to the fundamentals section. Whether you're a network engineer new to SR
 |-------|-------------|
 | [BGP Overlay Services](bgp-overlay-services.md) | EVPN and L3VPN over SRv6 with BGP (RFC 9252) |
 | [TI-LFA](ti-lfa.md) | Sub-50ms fast reroute with topology-independent protection |
+| [CLOS Fabrics & Load Balancing](clos-glb.md) | SRv6 in data center CLOS topologies, GLB, and flowlets |
+| [SONiC & SAI](sonic-sai.md) | Open-source NOS with hardware-abstracted SRv6 |
+| [Host-Based SRv6 & Open Source](host-based-srv6.md) | SRv6 on Linux kernel, eBPF, VPP, and the open-source ecosystem |
 
 ## Prerequisites
 
