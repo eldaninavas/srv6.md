@@ -78,14 +78,16 @@
   border-left: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Section headers — neutral white, not purple */
+/* Section headers — small, muted, separated */
 [data-md-color-scheme="slate"] .md-nav__item--section > .md-nav__link {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 700;
-  font-size: 0.55rem !important;
-  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-weight: 600;
+  font-size: 0.52rem !important;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-top: 0.6rem;
+  margin-top: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* Nav links — light grey, no purple */
@@ -114,14 +116,16 @@
   border-left: 1px solid rgba(0, 0, 0, 0.07);
 }
 
-/* Section headers — black, not purple */
+/* Section headers — small, muted, separated */
 [data-md-color-scheme="default"] .md-nav__item--section > .md-nav__link {
-  color: rgba(0, 0, 0, 0.85) !important;
-  font-weight: 700;
-  font-size: 0.55rem !important;
-  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.35) !important;
+  font-weight: 600;
+  font-size: 0.52rem !important;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-top: 0.6rem;
+  margin-top: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 /* Nav links — dark grey, no purple */
@@ -362,7 +366,7 @@
 /* --- Sidebar & TOC Typography (GitBook-like compact) --- */
 .md-sidebar .md-nav__link {
   font-size: 0.62rem;
-  padding: 0.2rem 0.6rem;
+  padding: 0.2rem 0.6rem 0.2rem 1rem;
   line-height: 1.3;
   margin: 0;
 }
