@@ -2,7 +2,7 @@
 title: SID Structure
 description: Understanding the 128-bit SRv6 Segment Identifier
 tags:
-  - fundamentals
+  - topics
   - sid
 ---
 

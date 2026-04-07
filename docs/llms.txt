@@ -6,10 +6,10 @@ SRv6.md is a community-driven wiki covering SRv6 fundamentals, use cases, vendor
 
 ## Docs
 
-- [What is SRv6?](https://srv6.md/fundamentals/what-is-srv6/)
-- [SID Structure](https://srv6.md/fundamentals/sid-structure/)
-- [Network Programming](https://srv6.md/fundamentals/network-programming/)
-- [SRv6 vs SR-MPLS](https://srv6.md/fundamentals/srv6-vs-sr-mpls/)
+- [What is SRv6?](https://srv6.md/topics/what-is-srv6/)
+- [SID Structure](https://srv6.md/topics/sid-structure/)
+- [Network Programming](https://srv6.md/topics/network-programming/)
+- [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/)
 - [Traffic Engineering](https://srv6.md/use-cases/traffic-engineering/)
 - [VPN Services](https://srv6.md/use-cases/vpn-services/)
 - [Service Chaining](https://srv6.md/use-cases/service-chaining/)

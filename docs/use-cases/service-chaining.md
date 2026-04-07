@@ -187,10 +187,10 @@ The same packet can be steered through a specific network path **and** a specifi
 
 ## Further Reading
 
-- :material-arrow-right: [Network Programming](../fundamentals/network-programming.md) - SRv6 behaviors including End.AD, End.AS
-- :material-arrow-right: [SRH Mechanics & Packet Walk](../fundamentals/srh-packet-walk.md) - How SRH forwarding works
+- :material-arrow-right: [Network Programming](../topics/network-programming.md) - SRv6 behaviors including End.AD, End.AS
+- :material-arrow-right: [SRH Mechanics & Packet Walk](../topics/srh-packet-walk.md) - How SRH forwarding works
 - :material-arrow-right: [Traffic Engineering](traffic-engineering.md) - Combining TE with service chains
-- :material-arrow-right: [Host-Based SRv6](../fundamentals/host-based-srv6.md) - VPP and eBPF for service functions
+- :material-arrow-right: [Host-Based SRv6](../topics/host-based-srv6.md) - VPP and eBPF for service functions
 
 ## References
 

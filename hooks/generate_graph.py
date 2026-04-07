@@ -12,7 +12,7 @@ import logging
 log = logging.getLogger("mkdocs.hooks.generate_graph")
 
 DIR_TO_GROUP = {
-    "fundamentals": "core",
+    "topics": "core",
     "use-cases": "usecase",
     "rfcs": "rfc",
     "implementations": "impl",

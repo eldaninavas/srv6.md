@@ -2,7 +2,7 @@
 title: Flex-Algorithm
 description: IGP Flexible Algorithm for constraint-based SRv6 path computation
 tags:
-  - fundamentals
+  - topics
   - flex-algo
   - network-slicing
   - traffic-engineering

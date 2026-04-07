@@ -18,7 +18,7 @@ hide:
   Learn. Build. Contribute.
 </p>
 
-[:material-rocket-launch: &nbsp; Get Started](fundamentals/index.md){ .srv6-btn .srv6-btn-primary }
+[:material-rocket-launch: &nbsp; Get Started](topics/index.md){ .srv6-btn .srv6-btn-primary }
 &nbsp;&nbsp;
 [:fontawesome-brands-github: &nbsp; Contribute](https://github.com/eldaninavas/srv6.md){ .srv6-btn .srv6-btn-secondary }
 
@@ -51,7 +51,7 @@ hide:
 
 New to SRv6? Start here. Understand the core concepts of Segment Routing over IPv6, SID structure, and network programming.
 
-[:material-arrow-right: Learn the basics](fundamentals/index.md){ .md-button }
+[:material-arrow-right: Learn the basics](topics/index.md){ .md-button }
 
 </div>
 

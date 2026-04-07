@@ -2,7 +2,7 @@
 title: Performance & Scaling
 description: MTU impact, hardware support, overhead analysis, and scaling considerations for SRv6
 tags:
-  - fundamentals
+  - topics
   - performance
   - mtu
   - scaling

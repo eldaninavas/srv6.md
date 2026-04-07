@@ -2,7 +2,7 @@
 title: BGP Overlay Services
 description: EVPN and L3VPN overlay services over SRv6 transport
 tags:
-  - fundamentals
+  - topics
   - bgp
   - evpn
   - l3vpn

@@ -2,7 +2,7 @@
 title: Interworking & Migration
 description: Strategies for migrating from MPLS to SRv6 and coexistence between SR-MPLS and SRv6
 tags:
-  - fundamentals
+  - topics
   - migration
   - interworking
   - mpls

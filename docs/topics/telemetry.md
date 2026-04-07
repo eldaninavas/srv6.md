@@ -2,7 +2,7 @@
 title: Telemetry & Monitoring
 description: SRv6 telemetry with IPFIX, YANG models, streaming telemetry, and network monitoring
 tags:
-  - fundamentals
+  - topics
   - telemetry
   - monitoring
   - ipfix

@@ -2,7 +2,7 @@
 title: Host-Based SRv6
 description: SRv6 at the host level with Linux kernel, eBPF, VPP, and the open-source ecosystem
 tags:
-  - fundamentals
+  - topics
   - host-based
   - linux
   - ebpf

@@ -2,7 +2,7 @@
 title: OAM & Troubleshooting
 description: SRv6 Operations, Administration, Maintenance, and debugging techniques
 tags:
-  - fundamentals
+  - topics
   - oam
   - troubleshooting
   - ioam

@@ -2,7 +2,7 @@
 title: SRH Mechanics & Packet Walk
 description: Deep dive into the Segment Routing Header and step-by-step packet processing
 tags:
-  - fundamentals
+  - topics
   - srh
   - packet-walk
 ---

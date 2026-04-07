@@ -76,7 +76,7 @@ Multiple vendors and operators have demonstrated or deployed SRv6 over satellite
 
 - :material-arrow-right: [VPN Services](vpn-services.md) - SRv6 L3VPN and L2VPN fundamentals
 - :material-arrow-right: [Traffic Engineering](traffic-engineering.md) - SR Policies for path optimization
-- :material-arrow-right: [uSID / SRv6 Compression](../fundamentals/usid-compression.md) - Reducing overhead for constrained links
+- :material-arrow-right: [uSID / SRv6 Compression](../topics/usid-compression.md) - Reducing overhead for constrained links
 - :material-file-document: [RFC 9252](../rfcs/rfc9252.md) - BGP Overlay Services (EVPN with SRv6)
 
 ## References

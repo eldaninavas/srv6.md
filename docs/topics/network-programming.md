@@ -2,7 +2,7 @@
 title: Network Programming
 description: SRv6 behaviors, functions, and the SRH
 tags:
-  - fundamentals
+  - topics
   - network-programming
   - behaviors
 ---

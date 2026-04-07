@@ -2,7 +2,7 @@
 title: uSID / SRv6 Compression
 description: Micro-SID (uSID) and SRv6 header compression for efficient forwarding
 tags:
-  - fundamentals
+  - topics
   - usid
   - compression
   - rfc9800

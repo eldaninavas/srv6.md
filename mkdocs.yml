@@ -161,24 +161,24 @@ nav:
     - index.md
     - Knowledge Graph: knowledge-graph.md
   - Topics:
-    - fundamentals/index.md
-    - What is SRv6?: fundamentals/what-is-srv6.md
-    - SID Structure: fundamentals/sid-structure.md
-    - Network Programming: fundamentals/network-programming.md
-    - SRH Mechanics & Packet Walk: fundamentals/srh-packet-walk.md
-    - uSID / SRv6 Compression: fundamentals/usid-compression.md
-    - Flex-Algorithm: fundamentals/flex-algorithm.md
-    - BGP Overlay Services: fundamentals/bgp-overlay-services.md
-    - TI-LFA: fundamentals/ti-lfa.md
-    - CLOS Fabrics & Load Balancing: fundamentals/clos-glb.md
-    - SONiC & SAI: fundamentals/sonic-sai.md
-    - Host-Based SRv6 & Open Source: fundamentals/host-based-srv6.md
-    - OAM & Troubleshooting: fundamentals/oam-troubleshooting.md
-    - Security: fundamentals/security.md
-    - Interworking & Migration: fundamentals/interworking-migration.md
-    - Telemetry & Monitoring: fundamentals/telemetry.md
-    - Performance & Scaling: fundamentals/performance-scaling.md
-    - SRv6 vs SR-MPLS: fundamentals/srv6-vs-sr-mpls.md
+    - topics/index.md
+    - What is SRv6?: topics/what-is-srv6.md
+    - SID Structure: topics/sid-structure.md
+    - Network Programming: topics/network-programming.md
+    - SRH Mechanics & Packet Walk: topics/srh-packet-walk.md
+    - uSID / SRv6 Compression: topics/usid-compression.md
+    - Flex-Algorithm: topics/flex-algorithm.md
+    - BGP Overlay Services: topics/bgp-overlay-services.md
+    - TI-LFA: topics/ti-lfa.md
+    - CLOS Fabrics & Load Balancing: topics/clos-glb.md
+    - SONiC & SAI: topics/sonic-sai.md
+    - Host-Based SRv6 & Open Source: topics/host-based-srv6.md
+    - OAM & Troubleshooting: topics/oam-troubleshooting.md
+    - Security: topics/security.md
+    - Interworking & Migration: topics/interworking-migration.md
+    - Telemetry & Monitoring: topics/telemetry.md
+    - Performance & Scaling: topics/performance-scaling.md
+    - SRv6 vs SR-MPLS: topics/srv6-vs-sr-mpls.md
   - Use Cases:
     - use-cases/index.md
     - Traffic Engineering: use-cases/traffic-engineering.md

@@ -2,7 +2,7 @@
 title: CLOS Fabrics & Load Balancing
 description: SRv6 in CLOS data center topologies with Global Load Balancing and flowlets
 tags:
-  - fundamentals
+  - topics
   - clos
   - data-center
   - load-balancing

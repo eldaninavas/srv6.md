@@ -2,7 +2,7 @@
 title: What is SRv6?
 description: Introduction to Segment Routing over IPv6
 tags:
-  - fundamentals
+  - topics
   - beginner
   - srv6
 ---

@@ -2,7 +2,7 @@
 title: Security
 description: SRv6 security considerations, HMAC, filtering, and attack mitigation
 tags:
-  - fundamentals
+  - topics
   - security
   - hmac
   - acl

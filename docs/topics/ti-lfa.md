@@ -2,7 +2,7 @@
 title: TI-LFA
 description: Topology Independent Loop-Free Alternate for sub-50ms SRv6 fast reroute
 tags:
-  - fundamentals
+  - topics
   - ti-lfa
   - fast-reroute
   - protection

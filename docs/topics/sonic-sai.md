@@ -2,7 +2,7 @@
 title: SONiC & SAI
 description: SRv6 on SONiC OS with the Switch Abstraction Interface
 tags:
-  - fundamentals
+  - topics
   - sonic
   - sai
   - open-source

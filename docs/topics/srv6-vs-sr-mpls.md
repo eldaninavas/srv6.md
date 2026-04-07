@@ -2,7 +2,7 @@
 title: SRv6 vs SR-MPLS
 description: Comparing Segment Routing over IPv6 with SR-MPLS
 tags:
-  - fundamentals
+  - topics
   - comparison
   - mpls
 ---

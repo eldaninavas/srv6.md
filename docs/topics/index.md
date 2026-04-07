@@ -2,7 +2,7 @@
 title: Topics
 description: Complete SRv6 topic index — from basics to advanced operations
 tags:
-  - fundamentals
+  - topics
   - topics
 ---
 
