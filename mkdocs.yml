@@ -5,7 +5,8 @@ site_description: The open-source knowledge base for Segment Routing over IPv6 (
 site_author: SRv6.md Community
 copyright: >
   Made with 💜 by the SRv6 community &mdash;
-  <a href="https://github.com/eldaninavas/srv6.md/blob/main/LICENSE">MIT License</a>
+  <a href="https://github.com/eldaninavas/srv6.md/blob/main/LICENSE">MIT License</a> &middot;
+  <a href="/community/legal/">Legal & Disclaimer</a>
 
 repo_url: https://github.com/eldaninavas/srv6.md
 repo_name: eldaninavas/srv6.md
@@ -199,3 +200,4 @@ nav:
     - community/index.md
     - Contributing: community/contributing.md
     - AI Integrations: community/integrations.md
+    - Legal & Disclaimer: community/legal.md
