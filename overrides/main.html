@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ page.title }} - SRv6.md">
+  <meta property="og:description" content="{{ config.site_description }}">
+  <meta property="og:image" content="https://srv6.md/assets/images/og-image.png">
+  <meta property="og:url" content="{{ page.canonical_url }}">
+  <meta property="og:site_name" content="SRv6.md">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title }} - SRv6.md">
+  <meta name="twitter:description" content="{{ config.site_description }}">
+  <meta name="twitter:image" content="https://srv6.md/assets/images/og-image.png">
+{% endblock %}
+
 {% block announce %}
   <strong>SRv6.md</strong> is under active development &mdash;
   <a href="https://github.com/eldaninavas/srv6.md">
