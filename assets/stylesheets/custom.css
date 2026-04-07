@@ -450,21 +450,30 @@
   padding: 0;
 }
 
-/* Kill Material's shadow/elevation on nav labels */
-.md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link,
-.md-nav--lifted .md-nav[data-md-level="1"] {
-  box-shadow: none !important;
-}
-
+/* Kill ALL Material elevation/shadow/background on lifted nav */
 .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
   box-shadow: none !important;
   background: transparent !important;
 }
 
-/* Remove the shadow bar above section content in sidebar */
-.md-sidebar .md-nav--lifted::before,
-.md-sidebar .md-nav--lifted > .md-nav__list::before {
+.md-nav--lifted .md-nav[data-md-level="1"],
+.md-nav--lifted .md-nav[data-md-level="1"] > .md-nav__list {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.md-nav--lifted::before,
+.md-nav--lifted > .md-nav__list::before,
+.md-nav--lifted > .md-nav__list > .md-nav__item::before,
+.md-nav--lifted > .md-nav__list > .md-nav__item--active::before {
   display: none !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+
+/* Remove any pseudo-element overlays from sidebar nav */
+.md-sidebar .md-nav *::before,
+.md-sidebar .md-nav *::after {
   box-shadow: none !important;
 }
 
