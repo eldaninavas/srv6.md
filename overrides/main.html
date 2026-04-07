@@ -11,6 +11,51 @@
   <meta name="twitter:title" content="{{ page.title }} - SRv6.md">
   <meta name="twitter:description" content="{{ config.site_description }}">
   <meta name="twitter:image" content="https://srv6.md/assets/images/og-image.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "SRv6.md",
+    "url": "https://srv6.md",
+    "description": "{{ config.site_description }}",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://srv6.md/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "{{ page.title }}",
+    "url": "{{ page.canonical_url }}",
+    "description": "{{ page.meta.get('description', config.site_description) if page.meta else config.site_description }}",
+    "image": "https://srv6.md/assets/images/og-image.png",
+    "author": {
+      "@type": "Organization",
+      "name": "SRv6.md Community",
+      "url": "https://srv6.md"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "SRv6.md",
+      "url": "https://srv6.md",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://srv6.md/assets/images/og-image.png"
+      }
+    },
+    "isAccessibleForFree": true,
+    "license": "https://opensource.org/licenses/MIT",
+    "inLanguage": "en",
+    "about": {
+      "@type": "Thing",
+      "name": "Segment Routing over IPv6 (SRv6)"
+    }
+  }
+  </script>
 {% endblock %}
 
 {% block libs %}
