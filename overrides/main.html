@@ -13,6 +13,69 @@
   <meta name="twitter:image" content="https://srv6.md/assets/images/og-image.png">
 {% endblock %}
 
+{% block libs %}
+  {{ super() }}
+  <script>
+    document$.subscribe(function() {
+      if (typeof mermaid !== "undefined") {
+        var isDark = document.body.getAttribute("data-md-color-scheme") === "slate";
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "base",
+          themeVariables: isDark ? {
+            primaryColor: "#7b1fa2",
+            primaryTextColor: "#fff",
+            primaryBorderColor: "#ab47bc",
+            lineColor: "#ab47bc",
+            secondaryColor: "#1a1a3e",
+            secondaryTextColor: "#e8e6f0",
+            secondaryBorderColor: "#ce93d8",
+            tertiaryColor: "#12122a",
+            tertiaryTextColor: "#ce93d8",
+            tertiaryBorderColor: "#ab47bc",
+            mainBkg: "#7b1fa2",
+            nodeBorder: "#ab47bc",
+            clusterBkg: "rgba(123,31,162,0.08)",
+            clusterBorder: "rgba(171,71,188,0.3)",
+            titleColor: "#ce93d8",
+            edgeLabelBackground: "transparent",
+            fontFamily: "inherit",
+            fontSize: "14px",
+            noteBkgColor: "#1a1a3e",
+            noteTextColor: "#e1bee7",
+            noteBorderColor: "#ab47bc",
+            background: "#0d0d1a"
+          } : {
+            primaryColor: "#9c27b0",
+            primaryTextColor: "#fff",
+            primaryBorderColor: "#7b1fa2",
+            lineColor: "#7b1fa2",
+            secondaryColor: "#f3e5f5",
+            secondaryTextColor: "#333",
+            secondaryBorderColor: "#ab47bc",
+            tertiaryColor: "#ede7f6",
+            tertiaryTextColor: "#4a148c",
+            tertiaryBorderColor: "#ce93d8",
+            mainBkg: "#9c27b0",
+            nodeBorder: "#7b1fa2",
+            clusterBkg: "rgba(123,31,162,0.05)",
+            clusterBorder: "rgba(123,31,162,0.25)",
+            titleColor: "#4a148c",
+            edgeLabelBackground: "transparent",
+            fontFamily: "inherit",
+            fontSize: "14px",
+            noteBkgColor: "#f3e5f5",
+            noteTextColor: "#4a148c",
+            noteBorderColor: "#ab47bc",
+            background: "#ffffff"
+          },
+          flowchart: { curve: "basis", padding: 20, htmlLabels: true, useMaxWidth: true }
+        });
+      }
+    });
+  </script>
+{% endblock %}
+
 {% block announce %}
   <strong>SRv6.md</strong> is under active development &mdash;
   <a href="https://github.com/eldaninavas/srv6.md">
