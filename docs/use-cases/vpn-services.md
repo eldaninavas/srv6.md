@@ -44,3 +44,9 @@ SRv6 L3VPN uses `End.DT4` / `End.DT6` behaviors to decapsulate traffic and perfo
 
 - :material-arrow-right: [Traffic Engineering](traffic-engineering.md)
 - :material-file-document: [RFC 9252](../rfcs/rfc9252.md) - BGP Overlay Services Based on SRv6
+
+## References
+
+1. [RFC 9252 - BGP Overlay Services Based on SRv6](https://datatracker.ietf.org/doc/rfc9252/) - IETF standard defining BGP signaling for SRv6-based L3VPN, EVPN, and internet services
+2. [RFC 4364 - BGP/MPLS IP Virtual Private Networks (VPNs)](https://datatracker.ietf.org/doc/html/rfc4364) - The foundational MPLS L3VPN RFC, useful for comparison with SRv6 VPN approaches
+3. [Configure SRv6 with Full-Length SIDs - Cisco 8000 Series, IOS XR](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/24xx/configuration/guide/b-segment-routing-cg-cisco8000-24xx/configuring-segment-routing-over-ipv6-srv6-full-length-sids.html) - Cisco IOS XR configuration guide for SRv6 L3VPN on Cisco 8000 series routers

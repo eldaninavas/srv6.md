@@ -125,3 +125,10 @@ AI-native cloud provider using SRv6 uSID for DC-to-WAN bridging, overlay network
 - :material-arrow-right: [Traffic Engineering](traffic-engineering.md) - SR Policies for path control
 - :material-web: [IETF Draft: SRv6 AI Backend](https://datatracker.ietf.org/doc/draft-filsfils-srv6ops-srv6-ai-backend/)
 - :material-web: [SONiC 202505 Release - SRv6 for AI Fabrics](https://sonicfoundation.dev/sonic-202505-powering-ai-fabrics-and-enterprise-networks-with-precision-and-insight/)
+
+## References
+
+1. [draft-filsfils-srv6ops-srv6-ai-backend - SRv6 for Deterministic Path Placement in AI Backends](https://datatracker.ietf.org/doc/draft-filsfils-srv6ops-srv6-ai-backend/) - IETF draft specifying how SRv6 uSID enables NIC-driven deterministic path placement for RoCEv2 traffic in GPU fabrics
+2. [Towards Fully-Controllable Packet Steering for AI Backend Networks with SRv6 - Microsoft Research](https://www.microsoft.com/en-us/research/publication/towards-fully-controllable-packet-steering-for-ai-backend-networks-with-srv6/) - Microsoft Research paper on leveraging SRv6 for traffic controllability in AI backend networks
+3. [SONiC 202505: Powering AI Fabrics and Enterprise Networks](https://sonicfoundation.dev/sonic-202505-powering-ai-fabrics-and-enterprise-networks-with-precision-and-insight/) - SONiC Foundation announcement of SRv6 uSID support for source-routed AI backend networks
+4. [NANOG 96: AI Backend - Deploying SRv6 uSID and SONiC for Deterministic Load Balancing](https://storage.googleapis.com/site-media-prod/meetings/NANOG96/5611/20260202_Camarillo_Ai_Backend_Deploying_v1.pdf) - Presentation by Pablo Camarillo (Cisco) and Rita Hui (Microsoft) on production SRv6 deployment for AI workloads

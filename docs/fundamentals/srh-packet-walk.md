@@ -242,3 +242,10 @@ Reduced:    SRH contains [SID-2, SID-1], DA = SID-3  ← SID-3 not in SRH
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - Micro-SID optimization
 - :material-file-document: [RFC 8754](../rfcs/rfc8754.md) - SRH specification
 - :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming
+
+## References
+
+1. [RFC 8754 - IPv6 Segment Routing Header (SRH)](https://www.rfc-editor.org/rfc/rfc8754.html) - Full specification of the SRH format, fields, and packet processing rules
+2. [RFC 8986 - SRv6 Network Programming](https://datatracker.ietf.org/doc/rfc8986/) - Defines SRv6 endpoint behaviors including End, End.X, End.DT4, PSP, USP, and USD flavors
+3. [SRv6 Linux Kernel Implementation](https://segment-routing.org/index.php/implementation/configuration) - Configuration guide for seg6 and seg6local lightweight tunnels in the Linux kernel
+4. [Cisco IOS-XR: Configure Segment Routing over IPv6 (SRv6)](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/72x/b-segment-routing-cg-ncs5500-72x/configure-segment-routing-over-ipv6.html) - Cisco IOS-XR SRv6 configuration guide for NCS 5500 routers

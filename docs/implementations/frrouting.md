@@ -43,3 +43,11 @@ segment-routing
 
 - :material-arrow-right: [Linux Kernel](linux-kernel.md) - Data plane for FRR
 - :material-arrow-right: [Containerlab](../labs/containerlab.md) - FRR + Linux labs
+
+## References
+
+1. [FRRouting User Guide](https://docs.frrouting.org/en/stable-10.3/) - Official FRR documentation portal with SRv6 configuration guides
+2. [FRRouting ISIS Documentation](https://docs.frrouting.org/en/latest/isisd.html) - IS-IS daemon docs covering SRv6 locator and SID advertisement
+3. [FRRouting GitHub Repository](https://github.com/FRRouting/frr) - Source code and releases for the FRRouting project
+4. [Add Support for SRv6 IPv4 L3VPN - FRR PR #9649](https://github.com/FRRouting/frr/pull/9649) - Pull request adding SRv6 VPNv4 support to FRR
+5. [Add Support for SRv6 uSID Behaviors - FRR PR #12219](https://github.com/FRRouting/frr/pull/12219) - Pull request adding SRv6 micro-SID behavior support

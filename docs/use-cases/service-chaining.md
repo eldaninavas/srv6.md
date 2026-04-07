@@ -41,3 +41,9 @@ graph LR
 
 - :material-arrow-right: [Traffic Engineering](traffic-engineering.md)
 - :material-arrow-right: [Network Programming](../fundamentals/network-programming.md)
+
+## References
+
+1. [RFC 8986 - SRv6 Network Programming](https://datatracker.ietf.org/doc/rfc8986/) - IETF standard defining the SRv6 network programming framework and base set of SRv6 endpoint behaviors
+2. [RFC 7665 - Service Function Chaining (SFC) Architecture](https://datatracker.ietf.org/doc/html/rfc7665) - IETF informational RFC describing the architecture for creating and maintaining Service Function Chains
+3. [draft-ietf-spring-sr-service-programming - Service Programming with Segment Routing](https://datatracker.ietf.org/doc/draft-ietf-spring-sr-service-programming/) - IETF draft defining data plane functionality for service segments and SR-based service programming

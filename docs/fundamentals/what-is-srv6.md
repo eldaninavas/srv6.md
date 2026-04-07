@@ -98,3 +98,10 @@ In SRv6, the **source node** (ingress) determines the entire path through the ne
 - :material-arrow-right: [SID Structure](sid-structure.md) - Deep dive into the 128-bit SID format
 - :material-arrow-right: [Network Programming](network-programming.md) - SRv6 behaviors and functions
 - :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming specification
+
+## References
+
+1. [RFC 8402 - Segment Routing Architecture](https://www.rfc-editor.org/rfc/rfc8402) - Defines the Segment Routing architecture, including both MPLS and IPv6 data plane instantiations
+2. [RFC 8754 - IPv6 Segment Routing Header (SRH)](https://www.rfc-editor.org/rfc/rfc8754.html) - Specifies the Segment Routing Header used in the IPv6 data plane
+3. [RFC 8986 - SRv6 Network Programming](https://datatracker.ietf.org/doc/rfc8986/) - Defines the SRv6 Network Programming framework and base set of SRv6 endpoint behaviors
+4. [What is SRv6 network programming? - APNIC Blog](https://blog.apnic.net/2020/05/01/what-is-srv6-network-programming/) - Accessible introduction to SRv6 network programming concepts

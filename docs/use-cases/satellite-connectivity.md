@@ -113,3 +113,9 @@ The Cisco NCS 540 Series is purpose-built for this type of deployment:
 - :material-file-document: [RFC 9252](../rfcs/rfc9252.md) - BGP Overlay Services (EVPN with SRv6)
 - :material-web: [Cisco Non-Terrestrial Networking White Paper](https://www.cisco.com/c/en/us/solutions/collateral/service-provider/networking/beyond-terrestrial-architecture-leo-satellite-connectivity-wp.html)
 - :material-web: [SRv6 on NCS 540 - XRdocs](https://xrdocs.io/ncs5500/tutorials/srv6-transport-on-ncs-part-1)
+
+## References
+
+1. [Beyond Terrestrial Limits: Cisco's Validated Architecture for LEO Satellite Connectivity](https://www.cisco.com/c/en/us/solutions/collateral/service-provider/networking/beyond-terrestrial-architecture-leo-satellite-connectivity-wp.html) - Cisco white paper on the validated architecture for SRv6/EVPN over Starlink LEO satellite links
+2. [Cisco Live BRKMSI-1000: Connecting the Unconnected With Starlink and Cisco Validated Solution](https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKMSI-1000.pdf) - Cisco Live 2025 presentation detailing the Starlink + NCS 540 validated design
+3. [Cisco NCS 540 Series Routers Data Sheets](https://www.cisco.com/c/en/us/products/routers/network-convergence-system-540-series-routers/datasheet-listing.html) - Official data sheets for the NCS 540 platform used in satellite connectivity deployments

@@ -184,3 +184,9 @@ Backup with uSID: DA = fcbb:bbbb:PQ:PE2:0000:: (2 micro-instructions, zero SRH n
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - Efficient backup segment encoding
 - :material-arrow-right: [Traffic Engineering](../use-cases/traffic-engineering.md) - SR Policies for explicit paths
 - :material-file-document: [RFC 9352](../rfcs/rfc9352.md) - IS-IS Extensions for SRv6
+
+## References
+
+1. [RFC 9855 - Topology Independent Fast Reroute Using Segment Routing](https://datatracker.ietf.org/doc/rfc9855/) - Standards track RFC defining TI-LFA FRR for node and adjacency segment protection within the SR framework
+2. [draft-ietf-rtgwg-segment-routing-ti-lfa](https://datatracker.ietf.org/doc/draft-ietf-rtgwg-segment-routing-ti-lfa/) - IETF draft (now RFC 9855) detailing TI-LFA algorithms and repair segment computation
+3. [Cisco IOS-XR: Configure TI-LFA](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/24xx/configuration/guide/b-segment-routing-cg-cisco8000-24xx/configuring-topology-independent-loop-free-alternate.html) - Cisco IOS-XR configuration guide for TI-LFA link, node, and SRLG protection on Cisco 8000 routers

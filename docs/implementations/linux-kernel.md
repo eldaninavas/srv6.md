@@ -88,3 +88,11 @@ cat /proc/net/seg6_local
 
 - :material-arrow-right: [Containerlab](../labs/containerlab.md) - Build a Linux SRv6 lab
 - :material-arrow-right: [FRRouting](frrouting.md) - Add routing protocol support
+
+## References
+
+1. [Seg6 Sysfs Variables - Linux Kernel Documentation](https://www.kernel.org/doc/html/v6.1/networking/seg6-sysctl.html) - Official kernel.org documentation for seg6 sysctl parameters
+2. [ip-route(8) Linux Manual Page](https://man7.org/linux/man-pages/man8/ip-route.8.html) - iproute2 man page covering seg6 and seg6local encapsulation options
+3. [SRv6 - Linux Kernel Implementation](https://segment-routing.org/) - Community resource for SRv6 installation, configuration, and advanced usage on Linux
+4. [IPv6 Segment Routing - LWN.net](https://lwn.net/Articles/722804/) - LWN.net coverage of SRv6 merging into the Linux kernel in version 4.10
+5. [SRv6 Network Programming in Linux Kernel - Netdev 0x16](https://netdevconf.info/0x16/sessions/workshop/srv6-network-programming-in-linux-kernel.html) - Workshop on SRv6 network programming at the Netdev conference

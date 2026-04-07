@@ -42,3 +42,9 @@ Both SRv6 and SR-MPLS implement Segment Routing, but they use different data pla
 
 - :material-arrow-right: [What is SRv6?](what-is-srv6.md)
 - :material-arrow-right: [Use Cases](../use-cases/index.md)
+
+## References
+
+1. [RFC 8402 - Segment Routing Architecture](https://www.rfc-editor.org/rfc/rfc8402) - Defines the SR architecture covering both MPLS and IPv6 data planes
+2. [RFC 8660 - Segment Routing with the MPLS Data Plane](https://datatracker.ietf.org/doc/html/rfc8660) - Specifies SR-MPLS forwarding behavior and MPLS label-based segment encoding
+3. [Cisco Segment Routing Overview and Migration Guidelines](https://www.cisco.com/c/en/us/support/docs/multiprotocol-label-switching-mpls/mpls/215215-segment-routing-overview-and-migration-g.html) - Practical overview of SR deployment and migration from traditional MPLS

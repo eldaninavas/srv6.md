@@ -191,3 +191,11 @@ To save space in BGP updates, the **function** part of the SID can be transposed
 - :material-arrow-right: [SRH Mechanics](srh-packet-walk.md) - Packet-level details
 - :material-file-document: [RFC 9252](../rfcs/rfc9252.md) - BGP Overlay Services Based on SRv6
 - :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming
+
+## References
+
+1. [RFC 9252 - BGP Overlay Services Based on SRv6](https://datatracker.ietf.org/doc/rfc9252/) - Defines SRv6 Service TLVs in BGP for L3VPN, EVPN, and Internet services over SRv6
+2. [RFC 8986 - SRv6 Network Programming](https://datatracker.ietf.org/doc/rfc8986/) - Defines End.DT4, End.DT6, End.DX2, and other service endpoint behaviors
+3. [RFC 7432 - BGP MPLS-Based Ethernet VPN](https://datatracker.ietf.org/doc/html/rfc7432) - Foundational EVPN specification defining route types and MAC learning in the control plane
+4. [Cisco XRdocs: Implementing EVPN ELAN over SRv6 Transport](https://xrdocs.io/ncs5500/tutorials/srv6-transport-on-ncs-part-6) - Step-by-step tutorial for configuring EVPN multipoint L2 service over SRv6 uSID
+5. [Cisco XRdocs: SRv6 Transport on NCS5500 - Part 1](https://xrdocs.io/ncs5500/tutorials/srv6-transport-on-ncs-part-1) - Tutorial covering SRv6 transport fundamentals and L3VPN configuration on NCS 5500

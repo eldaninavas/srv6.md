@@ -42,3 +42,10 @@ graph LR
 - :material-arrow-right: [Cisco IOS-XR config](../implementations/cisco-ios-xr.md)
 - :material-arrow-right: [Juniper config](../implementations/juniper.md)
 - :material-web: [GNS3 Documentation](https://docs.gns3.com)
+
+## References
+
+1. [GNS3 Documentation](https://docs.gns3.com/docs/) - Official GNS3 getting started guide and reference documentation
+2. [Cisco IOS XRv 9000 - GNS3 Marketplace](https://www.gns3.com/marketplace/appliances/cisco-ios-xrv-9000) - GNS3 appliance page for downloading and configuring IOS XRv 9000 images
+3. [Cisco IOS XRv - GNS3 Marketplace](https://gns3.com/marketplace/appliances/cisco-ios-xrv) - GNS3 appliance page for the standard IOS XRv image
+4. [Install an Appliance from the GNS3 Marketplace](https://docs.gns3.com/docs/using-gns3/beginners/install-from-marketplace/) - Step-by-step guide for importing vendor appliances into GNS3

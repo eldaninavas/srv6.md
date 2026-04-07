@@ -81,3 +81,10 @@ docker exec clab-srv6-lab-r1 ping6 fc00:0:3::1
 - :material-arrow-right: [Linux Kernel SRv6](../implementations/linux-kernel.md)
 - :material-arrow-right: [FRRouting](../implementations/frrouting.md)
 - :material-web: [Containerlab docs](https://containerlab.dev)
+
+## References
+
+1. [Containerlab Documentation](https://containerlab.dev) - Official Containerlab documentation site with installation, usage, and topology reference
+2. [Containerlab GitHub Repository](https://github.com/srl-labs/containerlab) - Source code, releases, and issue tracking for Containerlab
+3. [Containerlab Lab Examples](https://containerlab.dev/lab-examples/lab-examples/) - Curated collection of lab topology examples for various network scenarios
+4. [SRv6 Labs Repository (segmentrouting/srv6-labs)](https://github.com/segmentrouting/srv6-labs) - Containerlab-based SRv6 test topologies with starter configs and use-case scenarios

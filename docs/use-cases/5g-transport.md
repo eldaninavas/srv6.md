@@ -83,3 +83,10 @@ One of the most significant innovations is **SRv6 MUP** (RFC 9433), pioneered by
 - :material-arrow-right: [VPN Services](vpn-services.md) - L3VPN for 5G core connectivity
 - :material-arrow-right: [Real-World Deployments](deployments.md) - Detailed operator case studies
 - :material-file-document: [RFC 9252](../rfcs/rfc9252.md) - BGP Overlay Services
+
+## References
+
+1. [RFC 9433 - Segment Routing over IPv6 for the Mobile User Plane](https://datatracker.ietf.org/doc/html/rfc9433) - IETF informational RFC defining SRv6 MUP endpoint behaviors for mobile 5G user-plane functions
+2. [SoftBank: World's First SRv6 MUP Services on 5G Commercial Network](https://www.softbank.jp/en/corp/news/press/sbkk/2025/20251218_01/) - SoftBank press release on the first commercial deployment of SRv6 MUP on a live 5G network
+3. [Cisco Converged 5G xHaul Transport](https://www.cisco.com/site/us/en/solutions/service-provider/5g-network-architecture/5g-transport/converged-5g-xhaul-transport/index.html) - Cisco solution page for SRv6 uSID-based converged fronthaul, midhaul, and backhaul transport
+4. [ETSI ISG IPE: 5G Transport over IPv6 and SRv6](https://www.etsi.org/newsroom/blogs/technologies/entry/etsi-isg-ipe-publishes-the-latest-ipv6-enhanced-innovation-report-5g-transport-over-ipv6-and-srv6) - ETSI IPv6 Enhanced Innovation report on building 5G-ready packet networks with SRv6

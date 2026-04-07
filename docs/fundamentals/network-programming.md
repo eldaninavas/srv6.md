@@ -62,3 +62,9 @@ sequenceDiagram
 
 - :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming
 - :material-arrow-right: [SID Structure](sid-structure.md) - How SIDs encode behaviors
+
+## References
+
+1. [RFC 8986 - SRv6 Network Programming](https://datatracker.ietf.org/doc/rfc8986/) - Defines the SRv6 Network Programming framework and all base endpoint behaviors
+2. [RFC 8754 - IPv6 Segment Routing Header (SRH)](https://www.rfc-editor.org/rfc/rfc8754.html) - Specifies the SRH that carries the ordered list of SRv6 segments
+3. [IANA Segment Routing Parameters - SRv6 Endpoint Behaviors](https://www.iana.org/assignments/segment-routing/segment-routing.xhtml) - Official IANA registry of SRv6 endpoint behavior codepoints

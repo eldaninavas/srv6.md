@@ -153,3 +153,13 @@ SRv6 for low-latency multicast in financial trading infrastructure.
 - :material-arrow-right: [AI/ML Training](ai-networking.md) - SRv6 for GPU fabrics
 - :material-arrow-right: [Satellite Connectivity](satellite-connectivity.md) - SRv6 over Starlink
 - :material-web: [segment-routing.net](https://www.segment-routing.net) - Community news and conference talks
+
+## References
+
+1. [Rakuten Mobile and Cisco Revolutionize Business Landscape with SRv6 uSID Deployment](https://corp.mobile.rakuten.co.jp/english/news/press/2024/0729_01/) - Rakuten Mobile press release on completing one of the world's largest SRv6 uSID IP transport migrations
+2. [SoftBank: World's First SRv6 MUP Services on 5G Commercial Network](https://www.softbank.jp/en/corp/news/press/sbkk/2025/20251218_01/) - SoftBank press release on the first commercial SRv6 MUP deployment
+3. [SRv6: Deployed Use-Cases - APNIC Blog](https://blog.apnic.net/2020/05/08/srv6-deployed-use-cases/) - Overview of early SRv6 production deployments across eight large-scale commercial networks
+4. [Implementation of SRv6 uSID in Telefonica VIVO's Infrastructure - LACNIC Blog](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) - Detailed account of VIVO's multi-vendor SRv6 uSID deployment in Brazil
+5. [Swisscom: Introducing SRv6 to an Existing Network - segment-routing.net](https://www.segment-routing.net/conferences/2023-02-10-SRv6-deployment-swisscom/) - Swisscom presentation on migrating five MPLS networks to a single SRv6 uSID fabric
+6. [Iliad Launches 5G Ready IP Network Architecture with SRv6 in Italy - Cisco Newsroom](https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2019/m04/iliad-launches-5g-ready-ip-network-architecture-with-segment-routing-ipv6-in-italy.html) - Cisco announcement of Iliad's greenfield zero-MPLS SRv6 network in Italy
+7. [Bell Canada SRv6-uSID Deployment - segment-routing.net (PDF)](https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf) - Daniel Voyer's presentation on Bell Canada's SRv6 uSID production deployment with P4 programmable edge

@@ -148,3 +148,10 @@ uSID has been validated at massive scale:
 - :material-arrow-right: [SID Structure](sid-structure.md) - Classic SID format
 - :material-arrow-right: [Real-World Deployments](../use-cases/deployments.md) - Who's running uSID
 - :material-file-document: [RFC 8754](../rfcs/rfc8754.md) - SRH specification
+
+## References
+
+1. [RFC 9800 - Compressed SRv6 Segment List Encoding](https://datatracker.ietf.org/doc/rfc9800/) - Standards track RFC defining NEXT-C-SID and Replace-C-SID flavors for SRv6 compression
+2. [draft-filsfils-spring-net-pgm-extension-srv6-usid - SRv6 uSID Instruction](https://datatracker.ietf.org/doc/draft-filsfils-spring-net-pgm-extension-srv6-usid/) - Original IETF draft introducing the micro-SID (uSID) network programming extension
+3. [Bell Canada SRv6-uSID Deployment (PDF)](https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf) - Daniel Voyer's presentation on Bell Canada's operational SRv6 uSID deployment
+4. [Segment Routing - SRv6 uSID L3VPN Interoperability](https://www.segment-routing.net/demos/2020-12-22-SRv6-uSID-L3VPN-interoperability/) - Demo showing SRv6 uSID multi-vendor L3VPN interoperability on segment-routing.net
