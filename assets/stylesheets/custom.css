@@ -46,25 +46,82 @@
 }
 
 /* --- Header --- */
+/* --- Header (Dark) --- */
 [data-md-color-scheme="slate"] .md-header {
-  background: linear-gradient(135deg, #0d0d1a 0%, #1a0a2e 100%);
-  border-bottom: 1px solid rgba(171, 71, 188, 0.2);
-  backdrop-filter: blur(10px);
+  background: #0d0d1a;
+  border-bottom: none;
+  box-shadow: none;
 }
 
 [data-md-color-scheme="slate"] .md-header[data-md-state="shadow"] {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 40px rgba(123, 31, 162, 0.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-/* --- Tabs --- */
+/* --- Header (Light) --- */
+[data-md-color-scheme="default"] .md-header {
+  background: #fff;
+  box-shadow: none;
+}
+
+[data-md-color-scheme="default"] .md-header[data-md-state="shadow"] {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+[data-md-color-scheme="default"] .md-header .md-header__title,
+[data-md-color-scheme="default"] .md-header .md-logo {
+  color: #111;
+}
+
+/* --- Tabs (Both modes — GitBook style) --- */
+.md-tabs {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+  font-size: 0.72rem;
+}
+
 [data-md-color-scheme="slate"] .md-tabs {
-  background: rgba(13, 13, 26, 0.95);
-  border-bottom: 1px solid rgba(171, 71, 188, 0.1);
+  background: #0d0d1a;
 }
 
-[data-md-color-scheme="slate"] .md-tabs__link--active,
+[data-md-color-scheme="default"] .md-tabs {
+  background: #fff;
+}
+
+/* Tab links — neutral grey */
+.md-tabs__link {
+  opacity: 1 !important;
+  font-weight: 400;
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link {
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Active tab — bold + underline, no color change */
+.md-tabs__link--active {
+  font-weight: 600;
+  border-bottom: 2px solid currentColor;
+  padding-bottom: calc(0.4rem - 2px);
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link--active {
+  color: #fff !important;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link--active {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Hover */
 [data-md-color-scheme="slate"] .md-tabs__link:hover {
-  color: #ce93d8;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link:hover {
+  color: rgba(0, 0, 0, 0.7) !important;
 }
 
 /* --- Navigation Sidebar (Dark Mode) --- */
