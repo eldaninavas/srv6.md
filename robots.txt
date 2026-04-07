@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://srv6.md/sitemap.xml

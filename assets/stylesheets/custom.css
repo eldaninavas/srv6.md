@@ -384,16 +384,6 @@
   font-family: inherit !important;
 }
 
-/* Force node label text to inherit color from parent span.
-   Mermaid sets inline style="color:#fff" on .nodeLabel but the <p>
-   inside uses browser default color. This forces inheritance. */
-/* Force white text in mermaid node labels - both themes use dark node backgrounds */
-.mermaid .nodeLabel p,
-.mermaid .nodeLabel span,
-.mermaid .nodeLabel div {
-  color: #fff !important;
-}
-
 /* Nodes */
 .mermaid .node rect,
 .mermaid .node circle,
@@ -451,13 +441,6 @@
   filter: drop-shadow(0 2px 8px rgba(123, 31, 162, 0.3));
 }
 
-[data-md-color-scheme="slate"] .mermaid .node .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid .node .nodeLabel p,
-[data-md-color-scheme="slate"] .mermaid .node .nodeLabel span,
-[data-md-color-scheme="slate"] .mermaid .node .nodeLabel div {
-  color: #fff !important;
-}
-
 [data-md-color-scheme="slate"] .mermaid .edgePath path.path {
   stroke: rgba(206, 147, 216, 0.5) !important;
 }
@@ -472,13 +455,6 @@
 [data-md-color-scheme="default"] .mermaid .node circle,
 [data-md-color-scheme="default"] .mermaid .node polygon {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
-}
-
-[data-md-color-scheme="default"] .mermaid .node .nodeLabel,
-[data-md-color-scheme="default"] .mermaid .node .nodeLabel p,
-[data-md-color-scheme="default"] .mermaid .node .nodeLabel span,
-[data-md-color-scheme="default"] .mermaid .node .nodeLabel div {
-  color: #fff !important;
 }
 
 [data-md-color-scheme="default"] .mermaid .edgePath path.path {
