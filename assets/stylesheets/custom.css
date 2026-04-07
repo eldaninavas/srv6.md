@@ -69,13 +69,14 @@
 
 /* --- Navigation Sidebar (Dark Mode) --- */
 [data-md-color-scheme="slate"] .md-sidebar--primary {
-  background: #0a0a18;
-  border-right: 1px solid rgba(171, 71, 188, 0.15);
+  background: #100e20;
+  border-right: 1px solid rgba(171, 71, 188, 0.25);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
 }
 
 [data-md-color-scheme="slate"] .md-sidebar--secondary {
-  background: #0a0a18;
-  border-left: 1px solid rgba(171, 71, 188, 0.1);
+  background: #100e20;
+  border-left: 1px solid rgba(171, 71, 188, 0.15);
 }
 
 /* Section headers (Foundations, Architecture, etc.) */
@@ -118,13 +119,14 @@
 
 /* --- Navigation Sidebar (Light Mode) --- */
 [data-md-color-scheme="default"] .md-sidebar--primary {
-  background: #faf5fc;
-  border-right: 1px solid rgba(123, 31, 162, 0.12);
+  background: #f3e8f9;
+  border-right: 1px solid rgba(123, 31, 162, 0.2);
+  box-shadow: 4px 0 12px rgba(123, 31, 162, 0.06);
 }
 
 [data-md-color-scheme="default"] .md-sidebar--secondary {
-  background: #faf5fc;
-  border-left: 1px solid rgba(123, 31, 162, 0.08);
+  background: #f3e8f9;
+  border-left: 1px solid rgba(123, 31, 162, 0.12);
 }
 
 [data-md-color-scheme="default"] .md-nav--lifted > .md-nav__list > .md-nav__item > .md-nav__link,
