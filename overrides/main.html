@@ -131,40 +131,45 @@
   {{ super() }}
   <script>
     /* Fix mermaid text visibility in both light and dark modes.
-       Runs after mermaid renders and forces correct text colors
-       directly on DOM elements, bypassing all CSS specificity issues. */
+       Walks every SVG on the page, finds foreignObject elements,
+       and forces white text on node labels. */
     (function() {
       function fixMermaidText() {
-        /* Node labels: white text (all nodes have dark purple backgrounds) */
-        var nodes = document.querySelectorAll('g.node foreignObject');
-        for (var i = 0; i < nodes.length; i++) {
-          var els = nodes[i].getElementsByTagName('*');
-          for (var j = 0; j < els.length; j++) {
-            els[j].style.setProperty('color', '#fff', 'important');
-          }
-        }
-        /* Edge labels: ensure readable with a background pill */
-        var edges = document.querySelectorAll('g.edgeLabel foreignObject');
-        for (var i = 0; i < edges.length; i++) {
-          var els = edges[i].getElementsByTagName('*');
-          for (var j = 0; j < els.length; j++) {
-            if (els[j].tagName.toLowerCase() === 'div') {
-              els[j].style.setProperty('background', 'var(--md-default-bg-color, #fff)');
-              els[j].style.setProperty('padding', '1px 6px');
-              els[j].style.setProperty('border-radius', '4px');
+        var svgs = document.querySelectorAll('svg');
+        for (var s = 0; s < svgs.length; s++) {
+          var fos = svgs[s].getElementsByTagName('foreignObject');
+          for (var i = 0; i < fos.length; i++) {
+            var fo = fos[i];
+            /* Check if this foreignObject is inside a node (not an edge label) */
+            var parent = fo.parentElement;
+            var isNode = false;
+            while (parent && parent !== svgs[s]) {
+              if (parent.classList && parent.classList.contains('node')) {
+                isNode = true;
+                break;
+              }
+              parent = parent.parentElement;
             }
-            els[j].style.setProperty('color', 'var(--md-default-fg-color, #333)', 'important');
+            var els = fo.getElementsByTagName('*');
+            for (var j = 0; j < els.length; j++) {
+              if (isNode) {
+                els[j].style.setProperty('color', '#fff', 'important');
+              } else {
+                /* Edge labels: use theme foreground color */
+                els[j].style.setProperty('color', 'var(--md-default-fg-color, #333)', 'important');
+              }
+            }
           }
         }
       }
 
-      /* Observe DOM for mermaid SVGs being inserted */
+      /* Run after mermaid renders (multiple timing strategies) */
       var observer = new MutationObserver(function(mutations) {
         for (var i = 0; i < mutations.length; i++) {
           for (var j = 0; j < mutations[i].addedNodes.length; j++) {
             var node = mutations[i].addedNodes[j];
             if (node.tagName === 'svg' || (node.querySelector && node.querySelector('svg'))) {
-              fixMermaidText();
+              setTimeout(fixMermaidText, 100);
               return;
             }
           }
@@ -172,15 +177,16 @@
       });
       observer.observe(document.body, { childList: true, subtree: true });
 
-      /* Also run on load and theme switch */
+      /* Run on load, after delay, and on theme switch */
       document.addEventListener('DOMContentLoaded', function() {
         setTimeout(fixMermaidText, 500);
+        setTimeout(fixMermaidText, 1500);
+        setTimeout(fixMermaidText, 3000);
       });
-      var toggles = document.querySelectorAll('[data-md-color-scheme]');
-      if (toggles.length) {
-        new MutationObserver(function() { setTimeout(fixMermaidText, 300); })
-          .observe(document.body, { attributes: true, attributeFilter: ['data-md-color-scheme'] });
-      }
+      new MutationObserver(function() {
+        setTimeout(fixMermaidText, 300);
+        setTimeout(fixMermaidText, 1000);
+      }).observe(document.body, { attributes: true, attributeFilter: ['data-md-color-scheme'] });
     })();
   </script>
 {% endblock %}
