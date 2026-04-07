@@ -187,6 +187,7 @@ nav:
     - Satellite Connectivity: use-cases/satellite-connectivity.md
     - 5G Transport: use-cases/5g-transport.md
     - AI/ML Training Networks: use-cases/ai-networking.md
+    - Boost Mobile Cloud Backbone: use-cases/boost-mobile.md
     - Real-World Deployments: use-cases/deployments.md
   - Implementations:
     - implementations/index.md
