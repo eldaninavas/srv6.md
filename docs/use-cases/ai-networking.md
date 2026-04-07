@@ -80,16 +80,11 @@ graph TB
 | **No protocol overhead** | uSID fits in a single 128-bit IPv6 address |
 | **Works with existing hardware** | Runs on standard Broadcom/Cisco Silicon One ASICs |
 
-## Real-World Deployments
+## Public Announcements
 
-### Microsoft Azure
-Microsoft is deploying SRv6 uSID via SONiC for AI backend fabrics in Azure data centers. The SONiC 202505 release includes official SRv6 support designed specifically for AI training clusters.
-
-### Alibaba Cloud
-Alibaba deployed SRv6 uSID in production on SONiC whitebox routers for their "eCore" DCI network and cloud infrastructure. Full-stack SRv6 deployment using SAI + SONiC + FRR since 2023.
-
-### Nebius
-AI-native cloud provider using SRv6 uSID for DC-to-WAN bridging, overlay networks, and service chaining in their GPU cloud infrastructure.
+- **Microsoft** — published research on SRv6 for AI backend packet steering ([source](https://www.microsoft.com/en-us/research/publication/towards-fully-controllable-packet-steering-for-ai-backend-networks-with-srv6/)); co-presented SRv6 uSID + SONiC deployment at NANOG 96 ([source](https://storage.googleapis.com/site-media-prod/meetings/NANOG96/5611/20260202_Camarillo_Ai_Backend_Deploying_v1.pdf))
+- **Alibaba** — co-developed SRv6 support in SONiC with Cisco, announced by SONiC Foundation ([source](https://sonicfoundation.dev/driving-innovation-alibaba-and-cisco-co-dev-srv6-sonic-router/))
+- **SONiC 202505 release** — includes official SRv6 uSID support for AI backend fabrics ([source](https://sonicfoundation.dev/sonic-202505-powering-ai-fabrics-and-enterprise-networks-with-precision-and-insight/))
 
 ## Technology Stack
 
@@ -105,8 +100,7 @@ AI-native cloud provider using SRv6 uSID for DC-to-WAN bridging, overlay network
 ├─────────────────────────────┤
 │  SONiC + FRR (Control Plane)│
 ├─────────────────────────────┤
-│  Memory (Silicon One, Memory,│
-│  etc.)                      │
+│  Switching ASIC               │
 └─────────────────────────────┘
 ```
 
@@ -116,7 +110,7 @@ AI-native cloud provider using SRv6 uSID for DC-to-WAN bridging, overlay network
 - **RFC 9800** — SRv6 SID Compression (uSID), enabling efficient encapsulation
 
 !!! tip "The fastest-growing SRv6 use case"
-    As of 2025-2026, AI networking is driving more SRv6 adoption than any other use case. The combination of SONiC (open-source NOS) + SRv6 uSID is becoming the de facto standard for AI backend fabrics.
+    As of 2025-2026, AI networking is one of the fastest-growing areas of SRv6 adoption. The combination of SONiC (open-source NOS) + SRv6 uSID is emerging as a leading approach for AI backend fabrics.
 
 ## Further Reading
 

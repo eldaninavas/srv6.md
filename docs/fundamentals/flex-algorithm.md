@@ -166,8 +166,8 @@ graph TB
     show spring-traffic-engineering srv6-sid
     ```
 
-!!! tip "SoftBank world first"
-    SoftBank was the first operator to deploy SRv6 Flex-Algo on a commercial 5G network (April 2022), enabling per-slice path computation for their network slicing services.
+!!! tip "Production validated"
+    According to a [joint announcement by Cisco and SoftBank](https://news-blogs.cisco.com/apjc/2022/04/27/cisco-marks-worlds-first1-with-the-deployment-of-srv6-flex-algo-on-softbanks-5g-commercial-network/), SRv6 Flex-Algo was deployed on a commercial 5G network in April 2022.
 
 ## Further Reading
 

@@ -104,7 +104,7 @@ Two compression approaches emerged and are now unified under **RFC 9800**:
 | **Processing** | Shift-and-lookup | Replace-and-lookup |
 | **uSID size** | 16 or 32 bits | 16 or 32 bits |
 | **RFC** | RFC 9800 | RFC 9800 |
-| **Deployments** | Rakuten, SoftBank, Bell, Swisscom, Iliad, VIVO | China Mobile, China Unicom, MTN |
+| **Adoption** | Multiple global operators | Multiple global operators |
 
 Both are now standardized in **RFC 9800** (SRv6 SID Compression), ensuring interoperability.
 
@@ -133,14 +133,9 @@ Both are now standardized in **RFC 9800** (SRv6 SID Compression), ensuring inter
       segs fcbb:bbbb:0001:0002:0003:: dev eth0
     ```
 
-## Real-World Impact
+## Industry Adoption
 
-uSID has been validated at massive scale:
-
-- **Bell Canada:** 26 uSIDs pushed at line rate on NCS 5700
-- **Rakuten Mobile:** World's largest uSID IP transport migration
-- **Swisscom:** Consolidated 5 MPLS networks into 1 SRv6 uSID network
-- **40+ vendors** support RFC 9800 commercially as of 2025
+Multiple operators have publicly announced SRv6 uSID deployments. See [Real-World Deployments](../use-cases/deployments.md) for a directory of public announcements with links to original sources.
 
 ## Further Reading
 

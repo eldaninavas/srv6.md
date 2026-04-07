@@ -64,18 +64,18 @@ One of the most significant innovations is **SRv6 MUP** (RFC 9433), pioneered by
 - Reduces cost and operational complexity
 - Enables seamless MEC (Multi-access Edge Computing) integration
 
-## Real-World 5G Deployments
+## Public Deployment Announcements
 
-| Operator | Country | Scale | Key Achievement |
-|----------|---------|-------|-----------------|
-| **SoftBank** | Japan | Nationwide 5G (90%+ pop.) | World's first SRv6 Flex-Algo and MUP on commercial 5G |
-| **Rakuten Mobile** | Japan | 7M+ subscribers | World's largest SRv6 uSID IP transport migration |
-| **Iliad** | Italy | 8.5M subscribers | Greenfield 5G network, zero MPLS from day one |
-| **MTN Uganda** | Uganda | National core | 5G-ready SRv6 core, speeds from 20→286 Mbps |
-| **Chinese Operators** | China | 1B+ mobile users | G-SRv6 across nationwide 5G transport |
+Several operators have publicly announced SRv6 deployments for 5G transport:
 
-!!! tip "SRv6 uSID meets all 5G transport requirements"
-    Validated against eCPRI, O-RAN Alliance, ITU-T, and 3GPP standards for latency, jitter, synchronization, and convergence per service slice.
+- **SoftBank** (Japan) — announced SRv6 Flex-Algo and MUP on their commercial 5G network ([source](https://www.softbank.jp/en/corp/news/press/sbkk/2025/20251218_01/))
+- **Rakuten Mobile** (Japan) — announced SRv6 uSID IP transport migration ([source](https://corp.mobile.rakuten.co.jp/english/news/press/2024/0729_01/))
+- **Iliad** (Italy) — announced greenfield SRv6 5G-ready network with no MPLS ([source](https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2019/m04/iliad-launches-5g-ready-ip-network-architecture-with-segment-routing-ipv6-in-italy.html))
+
+See [Real-World Deployments](deployments.md) for a full directory with links to original announcements.
+
+!!! tip "SRv6 uSID meets 5G transport requirements"
+    SRv6 uSID has been validated against eCPRI, O-RAN Alliance, ITU-T, and 3GPP standards for latency, jitter, synchronization, and convergence per service slice.
 
 ## Further Reading
 

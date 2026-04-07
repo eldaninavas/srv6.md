@@ -23,7 +23,6 @@ SRv6 is in production at some of the world's largest networks. The following is 
 | **Rakuten Mobile** (Japan) | SRv6 uSID IP transport network migration completed | [:material-open-in-new:](https://corp.mobile.rakuten.co.jp/english/news/press/2024/0729_01/) |
 | **SoftBank** (Japan) | SRv6 commercial network completed; world's first SRv6 Flex-Algo on 5G | [:material-open-in-new:](https://www.softbank.jp/en/corp/news/press/sbkk/2022/20220426_01/) |
 | **SoftBank** (Japan) | World's first SRv6 MUP on commercial 5G network | [:material-open-in-new:](https://www.softbank.jp/en/corp/news/press/sbkk/2025/20251218_01/) |
-| **Reliance Jio** (India) | End-to-end SRv6 with Cisco 8000 Series | [:material-open-in-new:](https://www.cisco.com/site/us/en/about/case-studies-customer-stories/reliance-jio.html) |
 
 ### Europe
 
@@ -38,12 +37,6 @@ SRv6 is in production at some of the world's largest networks. The following is 
 |----------|-------------|:------:|
 | **Bell Canada** | SRv6 uSID deployment with P4 programmable edge | [:material-open-in-new:](https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf) |
 | **Telefonica VIVO** (Brazil) | Multi-vendor SRv6 uSID deployment | [:material-open-in-new:](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) |
-
-### Africa
-
-| Operator | Announcement | Source |
-|----------|-------------|:------:|
-| **MTN Uganda** | SRv6 on national core network | [:material-open-in-new:](https://www.huawei.com/en/technology-insights/industry-insights/outlook/mobile-broadband/xlabs/use-cases/mtn-uganda-5g-network-deployment) |
 
 ## Cloud & Technology Companies
 
