@@ -162,26 +162,31 @@ nav:
     - Knowledge Graph: knowledge-graph.md
   - Topics:
     - topics/index.md
+    # Foundations
     - What is SRv6?: topics/what-is-srv6.md
     - SID Structure: topics/sid-structure.md
     - Network Programming: topics/network-programming.md
     - SRH Mechanics & Packet Walk: topics/srh-packet-walk.md
+    - SRv6 vs SR-MPLS: topics/srv6-vs-sr-mpls.md
+    # Architecture
     - uSID / SRv6 Compression: topics/usid-compression.md
     - Flex-Algorithm: topics/flex-algorithm.md
     - BGP Overlay Services: topics/bgp-overlay-services.md
     - TI-LFA: topics/ti-lfa.md
     - CLOS Fabrics & Load Balancing: topics/clos-glb.md
-    - SONiC & SAI: topics/sonic-sai.md
-    - Host-Based SRv6 & Open Source: topics/host-based-srv6.md
-    - OAM & Troubleshooting: topics/oam-troubleshooting.md
-    - Security: topics/security.md
-    - Interworking & Migration: topics/interworking-migration.md
-    - Telemetry & Monitoring: topics/telemetry.md
-    - Performance & Scaling: topics/performance-scaling.md
+    # Services
     - EVPN Multihoming: topics/evpn-multihoming.md
     - QoS & Traffic Classification: topics/qos.md
     - Multicast & Broadcast: topics/multicast.md
-    - SRv6 vs SR-MPLS: topics/srv6-vs-sr-mpls.md
+    # Operations
+    - Security: topics/security.md
+    - OAM & Troubleshooting: topics/oam-troubleshooting.md
+    - Telemetry & Monitoring: topics/telemetry.md
+    - Performance & Scaling: topics/performance-scaling.md
+    - Interworking & Migration: topics/interworking-migration.md
+    # Platforms
+    - SONiC & SAI: topics/sonic-sai.md
+    - Host-Based SRv6 & Open Source: topics/host-based-srv6.md
   - Use Cases:
     - use-cases/index.md
     - Traffic Engineering: use-cases/traffic-engineering.md
