@@ -178,6 +178,7 @@ nav:
     - Interworking & Migration: topics/interworking-migration.md
     - Telemetry & Monitoring: topics/telemetry.md
     - Performance & Scaling: topics/performance-scaling.md
+    - EVPN Multihoming: topics/evpn-multihoming.md
     - SRv6 vs SR-MPLS: topics/srv6-vs-sr-mpls.md
   - Use Cases:
     - use-cases/index.md
