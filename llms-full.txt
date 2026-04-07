@@ -423,7 +423,7 @@ graph LR
 ## Further Reading
 
 - :material-arrow-right: [Traffic Engineering](traffic-engineering.md)
-- :material-arrow-right: [Network Programming](../fundamentals/network-programming.md)
+- :material-arrow-right: [Network Programming](../topics/network-programming.md)
 
 ---
 
@@ -890,7 +890,7 @@ RFC 8986 is the foundational specification for SRv6 Network Programming. It defi
 
 ## Related
 
-- :material-arrow-right: [Network Programming](../fundamentals/network-programming.md) - Detailed explanation
+- :material-arrow-right: [Network Programming](../topics/network-programming.md) - Detailed explanation
 - :material-arrow-right: [RFC 9252](rfc9252.md) - BGP Overlay Services
 
 ---
