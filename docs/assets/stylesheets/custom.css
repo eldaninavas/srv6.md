@@ -441,8 +441,20 @@
   filter: drop-shadow(0 2px 8px rgba(123, 31, 162, 0.3));
 }
 
-[data-md-color-scheme="slate"] .mermaid .node .nodeLabel {
-  color: #e8e6f0 !important;
+[data-md-color-scheme="slate"] .mermaid .node .nodeLabel,
+[data-md-color-scheme="slate"] .mermaid .node span,
+[data-md-color-scheme="slate"] .mermaid .node div,
+[data-md-color-scheme="slate"] .mermaid .node foreignObject,
+[data-md-color-scheme="slate"] .mermaid .node foreignObject *,
+[data-md-color-scheme="slate"] .mermaid .label,
+[data-md-color-scheme="slate"] .mermaid .label *,
+[data-md-color-scheme="slate"] .mermaid .nodeLabel,
+[data-md-color-scheme="slate"] .mermaid [class*="node"] .label,
+[data-md-color-scheme="slate"] .mermaid [class*="node"] .label *,
+[data-md-color-scheme="slate"] .mermaid .node text,
+[data-md-color-scheme="slate"] .mermaid .node tspan {
+  color: #fff !important;
+  fill: #fff !important;
 }
 
 [data-md-color-scheme="slate"] .mermaid .edgePath path.path {
@@ -469,12 +481,26 @@
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
 }
 
+/* Force white text inside all mermaid nodes in light mode */
 [data-md-color-scheme="default"] .mermaid .node .nodeLabel,
 [data-md-color-scheme="default"] .mermaid .node span,
 [data-md-color-scheme="default"] .mermaid .node p,
 [data-md-color-scheme="default"] .mermaid .node div,
-[data-md-color-scheme="default"] .mermaid .node foreignObject * {
+[data-md-color-scheme="default"] .mermaid .node foreignObject,
+[data-md-color-scheme="default"] .mermaid .node foreignObject *,
+[data-md-color-scheme="default"] .mermaid .label,
+[data-md-color-scheme="default"] .mermaid .label div,
+[data-md-color-scheme="default"] .mermaid .label span,
+[data-md-color-scheme="default"] .mermaid .nodeLabel,
+[data-md-color-scheme="default"] .mermaid [class*="node"] .label,
+[data-md-color-scheme="default"] .mermaid [class*="node"] .label * {
   color: #fff !important;
+  fill: #fff !important;
+}
+
+/* Also force it via the SVG text elements directly */
+[data-md-color-scheme="default"] .mermaid .node text,
+[data-md-color-scheme="default"] .mermaid .node tspan {
   fill: #fff !important;
 }
 
