@@ -539,8 +539,18 @@
   transition: filter 0.2s ease;
 }
 
-/* Node text */
+/* Node text — safety net to ensure white text on colored nodes */
 .mermaid .node .nodeLabel,
+.mermaid .node .nodeLabel span,
+.mermaid .node .nodeLabel p,
+.mermaid .node .nodeLabel div {
+  color: #fff !important;
+  font-family: inherit !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+}
+
+/* Edge & general labels — inherit theme foreground */
 .mermaid .label {
   font-family: inherit !important;
   font-size: 0.85rem !important;
