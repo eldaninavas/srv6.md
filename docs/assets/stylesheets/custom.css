@@ -69,13 +69,16 @@
 
 /* --- Navigation Sidebar (Dark Mode) --- */
 [data-md-color-scheme="slate"] .md-sidebar--primary {
-  background: #100e20;
-  border-right: 1px solid rgba(171, 71, 188, 0.25);
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+  background: rgba(13, 13, 26, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(171, 71, 188, 0.2);
 }
 
 [data-md-color-scheme="slate"] .md-sidebar--secondary {
-  background: #100e20;
+  background: rgba(13, 13, 26, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-left: 1px solid rgba(171, 71, 188, 0.15);
 }
 
@@ -119,14 +122,17 @@
 
 /* --- Navigation Sidebar (Light Mode) --- */
 [data-md-color-scheme="default"] .md-sidebar--primary {
-  background: #f3e8f9;
-  border-right: 1px solid rgba(123, 31, 162, 0.2);
-  box-shadow: 4px 0 12px rgba(123, 31, 162, 0.06);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(123, 31, 162, 0.15);
 }
 
 [data-md-color-scheme="default"] .md-sidebar--secondary {
-  background: #f3e8f9;
-  border-left: 1px solid rgba(123, 31, 162, 0.12);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-left: 1px solid rgba(123, 31, 162, 0.1);
 }
 
 [data-md-color-scheme="default"] .md-nav--lifted > .md-nav__list > .md-nav__item > .md-nav__link,
