@@ -167,6 +167,7 @@ nav:
     - Traffic Engineering: use-cases/traffic-engineering.md
     - VPN Services: use-cases/vpn-services.md
     - Service Chaining: use-cases/service-chaining.md
+    - Satellite Connectivity: use-cases/satellite-connectivity.md
   - Implementations:
     - implementations/index.md
     - Linux Kernel: implementations/linux-kernel.md

@@ -32,4 +32,11 @@ Chain network functions (firewalls, load balancers) in a defined order.
 [:material-arrow-right: Learn more](service-chaining.md)
 </div>
 
+<div class="srv6-card" markdown>
+### :material-satellite-variant: Satellite Connectivity
+SRv6/EVPN overlay services over LEO satellite links (Starlink + Cisco NCS 540).
+
+[:material-arrow-right: Learn more](satellite-connectivity.md)
+</div>
+
 </div>
