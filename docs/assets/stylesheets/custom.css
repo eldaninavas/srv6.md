@@ -384,6 +384,14 @@
   font-family: inherit !important;
 }
 
+/* Force node label text to inherit color from parent span.
+   Mermaid sets inline style="color:#fff" on .nodeLabel but the <p>
+   inside uses browser default color. This forces inheritance. */
+.mermaid .nodeLabel p,
+.mermaid .nodeLabel span {
+  color: inherit !important;
+}
+
 /* Nodes */
 .mermaid .node rect,
 .mermaid .node circle,
