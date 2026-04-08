@@ -50,6 +50,13 @@ SRv6 as the converged transport for 5G backhaul, midhaul, and fronthaul with nat
 </div>
 
 <div class="srv6-card" markdown>
+### :material-layers-triple: Network Slicing
+End-to-end slicing with Flex-Algorithm, QoS, and color steering for 5G, enterprise, and data center.
+
+[:material-arrow-right: Learn more](network-slicing.md)
+</div>
+
+<div class="srv6-card" markdown>
 ### :material-chip: AI/ML Training Networks
 Deterministic path placement for GPU cluster fabrics. Solving ECMP hash collisions in AI backends.
 

@@ -81,6 +81,7 @@ See [Real-World Deployments](deployments.md) for a full directory with links to 
 ## Further Reading
 
 - :material-arrow-right: [Traffic Engineering](traffic-engineering.md) - SR Policies for 5G slicing
+- :material-arrow-right: [Network Slicing](network-slicing.md) - End-to-end slicing with Flex-Algo, QoS, and color steering
 - :material-arrow-right: [VPN Services](vpn-services.md) - L3VPN for 5G core connectivity
 - :material-arrow-right: [Real-World Deployments](deployments.md) - Detailed operator case studies
 - :material-file-document: [RFC 9252](../rfcs/rfc9252.md) - BGP Overlay Services

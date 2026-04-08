@@ -157,6 +157,7 @@ When a binding SID triggers re-encapsulation, the QoS policy can dictate how the
 ## Further Reading
 
 - :material-arrow-right: [Flex-Algorithm](flex-algorithm.md) — Constraint-based path computation
+- :material-arrow-right: [Network Slicing](../use-cases/network-slicing.md) — End-to-end slicing combining Flex-Algo + QoS + color steering
 - :material-arrow-right: [Traffic Engineering](../use-cases/traffic-engineering.md) — SR Policies and path control
 - :material-arrow-right: [5G Transport](../use-cases/5g-transport.md) — Network slicing for mobile
 - :material-arrow-right: [Performance & Scaling](performance-scaling.md) — MTU and encapsulation overhead

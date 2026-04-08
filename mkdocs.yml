@@ -173,6 +173,8 @@ nav:
       - Flex-Algorithm: topics/flex-algorithm.md
       - BGP Overlay: topics/bgp-overlay-services.md
       - TI-LFA: topics/ti-lfa.md
+      - SR Policy: topics/sr-policy.md
+      - Micro-Loop Avoidance: topics/micro-loop-avoidance.md
       - CLOS & Load Balancing: topics/clos-glb.md
     - Services:
       - EVPN Multihoming: topics/evpn-multihoming.md
@@ -184,6 +186,7 @@ nav:
       - SRPM: topics/srpm.md
       - Telemetry: topics/telemetry.md
       - Performance: topics/performance-scaling.md
+      - Inter-Domain SRv6: topics/inter-domain.md
       - Migration: topics/interworking-migration.md
     - Platforms:
       - SONiC & SAI: topics/sonic-sai.md
@@ -195,6 +198,7 @@ nav:
     - Service Chaining: use-cases/service-chaining.md
     - Satellite: use-cases/satellite-connectivity.md
     - 5G Transport: use-cases/5g-transport.md
+    - Network Slicing: use-cases/network-slicing.md
     - AI/ML Networks: use-cases/ai-networking.md
     - SD-WAN: use-cases/sd-wan.md
     - Cloud Backbone: use-cases/boost-mobile.md

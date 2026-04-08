@@ -53,6 +53,7 @@ graph LR
 ## Further Reading
 
 - :material-arrow-right: [VPN Services](vpn-services.md)
+- :material-arrow-right: [SR Policy](../topics/sr-policy.md) - Deep dive into ODN, PCE, BSID, and color steering
 - :material-file-document: [RFC 9256](../rfcs/rfc9256.md) - SR Policy Architecture
 
 ## References

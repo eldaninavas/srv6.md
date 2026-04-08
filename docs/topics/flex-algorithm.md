@@ -174,6 +174,8 @@ graph TB
 ## Further Reading
 
 - :material-arrow-right: [Traffic Engineering](../use-cases/traffic-engineering.md) - SR Policies for TE
+- :material-arrow-right: [SR Policy](sr-policy.md) - Color steering and ODN for Flex-Algo-based policies
+- :material-arrow-right: [Network Slicing](../use-cases/network-slicing.md) - End-to-end slicing with Flex-Algo + QoS + color
 - :material-arrow-right: [5G Transport](../use-cases/5g-transport.md) - Network slicing for 5G
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - Efficient SID encoding
 - :material-file-document: [RFC 9352](../rfcs/rfc9352.md) - IS-IS Extensions for SRv6

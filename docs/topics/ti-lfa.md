@@ -185,6 +185,7 @@ Backup with uSID: DA = fcbb:bbbb:PQ:PE2:0000:: (2 micro-instructions, zero SRH n
 - :material-arrow-right: [SRH Mechanics & Packet Walk](srh-packet-walk.md) - How backup segments are processed
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - Efficient backup segment encoding
 - :material-arrow-right: [Traffic Engineering](../use-cases/traffic-engineering.md) - SR Policies for explicit paths
+- :material-arrow-right: [Micro-Loop Avoidance](micro-loop-avoidance.md) - Preventing loops during the convergence window after TI-LFA
 - :material-file-document: [RFC 9352](../rfcs/rfc9352.md) - IS-IS Extensions for SRv6
 
 ## References

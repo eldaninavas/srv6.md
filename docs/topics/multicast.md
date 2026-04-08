@@ -57,6 +57,36 @@ graph LR
 - EVPN BUM (Broadcast, Unknown unicast, Multicast) in L2VPN
 - Control plane traffic (e.g., ARP/ND flooding in EVPN)
 
+### Configuration
+
+=== "Cisco IOS-XR"
+
+    ```cisco
+    !! Ingress replication is the default for EVPN BUM traffic
+    !! Enable via EVPN EVI configuration
+    evpn
+     evi 100
+      bgp
+       route-target import 65000:100
+       route-target export 65000:100
+      !
+      advertise-mac
+      !
+     !
+    !
+
+    !! Verify ingress replication peers
+    show evpn evi 100 inclusive-multicast detail
+    ```
+
+=== "Juniper"
+
+    ```junos
+    # Ingress replication is default when using EVPN
+    set routing-instances EVPN-A protocols evpn default-gateway no-gateway-community
+    set routing-instances EVPN-A protocols evpn replication-type ingress
+    ```
+
 ## Approach 2: SRv6 Replication Segments (End.Replicate)
 
 The IETF has defined **replication segments** that enable packet replication at intermediate nodes along the SRv6 path.
@@ -101,6 +131,9 @@ graph TD
 !!! info "Standards reference"
     Replication segments are defined in [draft-ietf-spring-sr-replication-segment](https://datatracker.ietf.org/doc/draft-ietf-spring-sr-replication-segment/).
 
+!!! warning "Not yet available in production"
+    Replication segments are still in IETF draft status. Configuration examples will be added when vendor implementations become available.
+
 ## Approach 3: Tree-SID
 
 Tree-SID pre-computes a multicast distribution tree and assigns a single **Tree-SID** identifier that represents the entire tree. The ingress PE only needs to push one SID.
@@ -144,6 +177,52 @@ graph TD
 !!! info "Standards reference"
     Tree-SID is defined in [draft-ietf-pce-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-pce-sr-p2mp-policy/).
 
+### Configuration
+
+=== "Cisco IOS-XR"
+
+    ```cisco
+    !! SR-PCE Tree-SID configuration (on PCE)
+    pce
+     address ipv6 2001:db8:ffff::1
+     segment-routing
+      traffic-eng
+       p2mp
+        policy MCAST-TREE-1
+         source ipv6 2001:db8::1
+         color 1000
+         treesid srv6
+         candidate-paths
+          preference 100
+           dynamic
+           !
+          !
+         endpoint-set RECEIVERS
+          ipv6 2001:db8::2
+          ipv6 2001:db8::3
+          ipv6 2001:db8::4
+         !
+        !
+       !
+      !
+     !
+    !
+    ```
+
+### Verification
+
+=== "Cisco IOS-XR"
+
+    ```cisco
+    !! On PCE
+    show pce lsp p2mp
+    show pce lsp p2mp detail
+
+    !! On head-end
+    show segment-routing traffic-eng tree-sid all
+    show segment-routing traffic-eng tree-sid color 1000
+    ```
+
 ## Approach 4: BIER with SRv6
 
 **BIER (Bit Index Explicit Replication)** encodes the set of egress routers as a **bitmask** in the packet header. Each bit represents a specific egress PE. Transit nodes use the bitmask to determine where to replicate — no per-group multicast state needed.
@@ -165,6 +244,47 @@ IPv6 Header → SRH [SRv6 SIDs] → BIER Header [Bitmask] → Payload
 
 !!! info "Standards reference"
     BIER is defined in [RFC 8279](https://datatracker.ietf.org/doc/rfc8279/). The SRv6 integration is being developed in [draft-ietf-bier-srv6-requirements](https://datatracker.ietf.org/doc/draft-ietf-bier-srv6-requirements/).
+
+### Configuration
+
+=== "Cisco IOS-XR"
+
+    ```cisco
+    !! BIER sub-domain and bit-position assignment
+    router isis CORE
+     address-family ipv6 unicast
+      bier
+       sub-domain 0
+        bit-position 1   !! unique per BFR in the domain
+        bfr-prefix 2001:db8::1/128
+       !
+      !
+     !
+    !
+
+    !! BIER with EVPN (multicast overlay)
+    evpn
+     evi 200
+      bgp
+       route-target import 65000:200
+       route-target export 65000:200
+      !
+      multicast bier
+      !
+     !
+    !
+    ```
+
+### Verification
+
+=== "Cisco IOS-XR"
+
+    ```cisco
+    show bier sub-domain 0
+    show bier topology
+    show bier bfr-prefix
+    show evpn evi 200 multicast detail
+    ```
 
 ## Broadcast in SRv6
 
@@ -190,9 +310,53 @@ Broadcast is not applicable in L3VPN — ARP/ND is handled via EVPN proxy (suppr
 | **Tree-SID** | Per-tree | High (optimal tree) | Large scale | Draft |
 | **BIER** | BIER tables (no per-group) | High | Very large | Early deployment |
 
+## Deployment Considerations
+
+### Choosing the Right Approach
+
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
+graph TD
+    START[Multicast Needed] -->|How many receivers?| FEW{< 20 receivers?}
+    FEW -->|Yes| IR[Ingress Replication]
+    FEW -->|No| BW{Bandwidth critical?}
+    BW -->|Yes| HW{BIER hardware?}
+    HW -->|Yes| BIER[BIER]
+    HW -->|No| TREE[Tree-SID + PCE]
+    BW -->|No| IR
+
+    style START fill:#4a148c,color:#fff,stroke:#ab47bc
+    style FEW fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style BW fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style HW fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style IR fill:#4a148c,color:#fff,stroke:#ab47bc
+    style BIER fill:#4a148c,color:#fff,stroke:#ab47bc
+    style TREE fill:#4a148c,color:#fff,stroke:#ab47bc
+```
+
+### Scaling Considerations
+
+| Approach | Max Receivers | Controller Required | Hardware Dependency | Production Ready |
+|----------|:------------:|:-------------------:|:-------------------:|:----------------:|
+| **Ingress Replication** | ~20 per group | No | Any SRv6 | Yes |
+| **Replication Segments** | Medium | No | Replication-capable | No (draft) |
+| **Tree-SID** | Thousands | Yes (PCE) | Any SRv6 | Early |
+| **BIER** | 256-4096 per set | No | BIER ASIC | Early |
+
+### Migration from PIM/mLDP
+
+1. **Phase 1:** Deploy SRv6 underlay alongside existing PIM/mLDP
+2. **Phase 2:** Migrate EVPN BUM to ingress replication (no multicast tree needed)
+3. **Phase 3:** For remaining multicast services, evaluate Tree-SID or BIER based on scale
+4. **Phase 4:** Decommission PIM/mLDP when all services are migrated
+
+!!! tip "Start with ingress replication"
+    Most EVPN deployments work well with ingress replication for BUM traffic. Only invest in Tree-SID or BIER when ingress replication becomes a bandwidth bottleneck.
+
 ## Further Reading
 
 - :material-arrow-right: [BGP Overlay Services](bgp-overlay-services.md) — EVPN and L3VPN including BUM handling
+- :material-arrow-right: [VPN Services](../use-cases/vpn-services.md) — L2VPN and BUM handling in EVPN-ELAN
 - :material-arrow-right: [EVPN Multihoming](evpn-multihoming.md) — All-Active multihoming with BUM traffic considerations
 - :material-arrow-right: [Network Programming](network-programming.md) — SRv6 behaviors including replication
 - :material-arrow-right: [5G Transport](../use-cases/5g-transport.md) — Multicast requirements for mobile networks

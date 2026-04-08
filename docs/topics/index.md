@@ -34,6 +34,8 @@ How SRv6 networks are designed and built.
 | [Flex-Algorithm](flex-algorithm.md) | Constraint-based path computation and network slicing |
 | [BGP Overlay Services](bgp-overlay-services.md) | EVPN and L3VPN over SRv6 with BGP (RFC 9252) |
 | [TI-LFA](ti-lfa.md) | Sub-50ms fast reroute with topology-independent protection |
+| [SR Policy](sr-policy.md) | ODN, PCE, Binding SID, color steering, and dynamic path computation |
+| [Micro-Loop Avoidance](micro-loop-avoidance.md) | Preventing transient forwarding loops during IGP convergence |
 | [CLOS Fabrics & Load Balancing](clos-glb.md) | SRv6 in data center CLOS topologies, GLB, and flowlets |
 
 ## Services
@@ -56,6 +58,7 @@ Running, securing, and monitoring SRv6 in production.
 | [OAM & Troubleshooting](oam-troubleshooting.md) | SRv6 ping, traceroute, IOAM, path tracing, and debugging |
 | [Telemetry & Monitoring](telemetry.md) | IPFIX, YANG models, streaming telemetry, alerting |
 | [Performance & Scaling](performance-scaling.md) | MTU impact, encapsulation overhead, hardware forwarding, FIB scale |
+| [Inter-Domain SRv6](inter-domain.md) | Multi-domain design patterns, BSID stitching, BGP-LS controllers |
 | [Interworking & Migration](interworking-migration.md) | SR-MPLS ↔ SRv6 gateways, brownfield coexistence |
 
 ## Platforms
