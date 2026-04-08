@@ -180,7 +180,7 @@ Each slice provides **hard isolation** — traffic in one slice cannot impact an
 - :material-arrow-right: [VPN Services](vpn-services.md) — L3VPN and L2VPN over SRv6
 - :material-arrow-right: [QoS & Traffic Classification](../topics/qos.md) — DSCP, Flex-Algo constraints, and network slicing
 - :material-arrow-right: [Flex-Algorithm](../topics/flex-algorithm.md) — Constraint-based path computation
-- :material-arrow-right: [Cloud-Native Backbone](boost-mobile.md) — SRv6 in public cloud environments
+- :material-arrow-right: [Cloud-Native Backbone](cloud-native-backbone.md) — SRv6 in public cloud environments
 - :material-arrow-right: [5G Transport](5g-transport.md) — SRv6 for mobile network transport
 
 ## References

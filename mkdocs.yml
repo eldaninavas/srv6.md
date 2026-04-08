@@ -201,7 +201,7 @@ nav:
     - Network Slicing: use-cases/network-slicing.md
     - AI/ML Networks: use-cases/ai-networking.md
     - SD-WAN: use-cases/sd-wan.md
-    - Cloud Backbone: use-cases/boost-mobile.md
+    - Cloud Backbone: use-cases/cloud-native-backbone.md
     - Deployments: use-cases/deployments.md
   - Implementations:
     - implementations/index.md
