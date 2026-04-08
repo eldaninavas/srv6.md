@@ -20,6 +20,17 @@
   --srv6-gradient-subtle: linear-gradient(135deg, rgba(123, 31, 162, 0.15) 0%, rgba(171, 71, 188, 0.08) 100%);
 }
 
+/* --- Status Icon Colors --- */
+.srv6-green {
+  color: #4caf50 !important;
+}
+.srv6-red {
+  color: #f44336 !important;
+}
+.srv6-yellow {
+  color: #ff9800 !important;
+}
+
 /* --- Dark Slate Scheme Overrides --- */
 [data-md-color-scheme="slate"] {
   --md-default-bg-color: #0d0d1a;
