@@ -121,6 +121,63 @@ segment-routing
 !!! note "Liveness detection"
     PM liveness probes can trigger **fast path protection**. If a probe fails, the SR Policy switches to an alternate candidate path within milliseconds, complementing [TI-LFA](ti-lfa.md) for end-to-end protection.
 
+### Anomaly Thresholds and Metric Fallback
+
+When a PM session detects degradation, the router can **advertise an anomaly** and automatically raise the IS-IS metric on the affected interface to steer traffic away. The key to doing this without flapping is the **hysteresis band** — a pair of thresholds that separate the "enter anomaly" and "exit anomaly" conditions.
+
+```
+performance-measurement
+ delay-profile interfaces default
+  advertisement
+   anomaly-loss
+    upper-bound 30      ← anomaly declared when loss exceeds 30%
+    lower-bound 20      ← anomaly cleared only when loss drops below 20%
+   !
+  !
+ !
+
+router isis 1
+ interface GigabitEthernet0/2/0/1
+  point-to-point
+  address-family ipv4 unicast
+   metric fallback anomaly loss increment 500
+  !
+  address-family ipv6 unicast
+   metric fallback anomaly loss increment 500
+  !
+ !
+```
+
+**How the hysteresis band works:**
+
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
+graph LR
+    A["Loss < 20%<br/>(Normal)"] -->|"Loss rises above 30%"| B["Loss > 30%<br/>(Anomaly declared)"]
+    B -->|"Metric += 500<br/>advertised in IS-IS"| C["Traffic rerouted"]
+    C -->|"Loss drops below 20%"| D["Anomaly cleared<br/>Metric restored"]
+    D --> A
+    B -->|"Loss between 20–30%<br/>no state change"| B
+    style A fill:#4a148c,color:#fff,stroke:#ab47bc
+    style B fill:#b71c1c,color:#fff,stroke:#ef9a9a
+    style C fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style D fill:#1b5e20,color:#fff,stroke:#a5d6a7
+```
+
+The gap between `upper-bound` and `lower-bound` is the **dead band** (also called **hysteresis zone**). Loss oscillating in that range — say between 21% and 29% — does not trigger any state change, preventing metric flapping. Without hysteresis, a link hovering at exactly the threshold would cause the IS-IS metric to oscillate continuously.
+
+| Threshold | Role | Tuning guidance |
+|-----------|------|----------------|
+| `upper-bound` | Declares anomaly — triggers metric increment | Set above your worst acceptable loss for the SLA class |
+| `lower-bound` | Clears anomaly — restores original metric | Set far enough below `upper-bound` to absorb normal measurement variance |
+| `increment` | How much to raise the IS-IS metric | Must exceed existing metric differences between paths to actually reroute traffic |
+
+!!! tip "Fine-tuning the band"
+    A wider band (e.g., 20/40 instead of 20/30) reduces false positives at the cost of slower recovery detection. A narrower band (e.g., 25/30) reacts faster but risks flapping on lossy links with high variance. Start with a 10-point spread and adjust based on observed measurement jitter.
+
+!!! note "Relationship to SRPM"
+    This mechanism is part of Cisco's **SRPM anomaly advertisement** feature. The `performance-measurement` block configures the PM thresholds; the `metric fallback anomaly` in IS-IS configures the reaction. Together they close the loop: PM detects the problem, IS-IS redistributes around it.
+
 ### Streaming PM Data
 
 PM results are exported via streaming telemetry for real-time dashboards and alerting. See [Telemetry & Monitoring](telemetry.md) for collector setup.
