@@ -127,8 +127,28 @@ Both can carry L3 reachability for SRv6 tenants, but they are completely differe
 | Valid for SRv6 L3VPN? | ✅ Yes | ✅ Yes (RFC 9252 §5) |
 | Cilium uses it? | ✅ Yes | ❌ No (implementation choice) |
 
-!!! info "Both are valid for SRv6 L3VPN"
-    EVPN Type 5 (IP Prefix routes) over SRv6 is a fully supported and widely deployed option — RFC 9252 covers both VPNv6 and EVPN as valid BGP overlay services for SRv6. Many carrier and DC deployments use EVPN Type 5 precisely because their fabric already runs EVPN for L2 services, so adding L3VPN on top is natural. Cilium's choice of VPNv6 is an implementation decision, not a statement that EVPN is unsuitable.
+!!! info "Both are valid for SRv6 L3VPN — but Cilium only speaks VPNv6"
+    EVPN Type 5 (IP Prefix routes) over SRv6 is fully valid per RFC 9252 and widely deployed in carrier and DC fabrics. However, **Cilium's BGP control plane does not implement AFI 25 / SAFI 70 (L2VPN EVPN)**. It only negotiates VPNv6 (AFI 2 / SAFI 128). If your SRv6 fabric uses EVPN Type 5 for L3VPN, Cilium cannot peer directly with those PE routers.
+
+### Interoperability Gap: Cilium ↔ EVPN Fabrics
+
+This is a real-world limitation. If your network already runs EVPN Type 5 over SRv6 (common in DC fabrics using SONiC, Juniper, or Cisco NCS), you have three options:
+
+| Option | How | Trade-off |
+|--------|-----|-----------|
+| **Route Reflector translation** | Deploy an RR (e.g. FRRouting) between Cilium and the PE. The RR peers with Cilium via VPNv6 and re-advertises towards the fabric via EVPN Type 5 | Extra hop in control plane; RR becomes a dependency |
+| **Dual address-family on the PE** | Configure the PE to peer with Cilium using VPNv6 *and* continue using EVPN with the rest of the fabric | Requires PE support; routes must be redistributed between AFIs on the PE |
+| **Wait for Cilium EVPN support** | EVPN is on the Cilium roadmap but not yet implemented for SRv6 | No ETA as of Cilium 1.15 |
+
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
+graph LR
+    C["Cilium Node\nVPNv6 only\nAFI 2/128"] -->|"VPNv6"| RR["Route Reflector\nFRRouting\n(bridge)"]
+    RR -->|"EVPN Type 5\nAFI 25/70"| PE["PE Router\nEVPN fabric"]
+    style C fill:#4a148c,color:#fff,stroke:#ab47bc
+    style RR fill:#1b5e20,color:#fff,stroke:#a5d6a7
+    style PE fill:#7b1fa2,color:#fff,stroke:#ab47bc
+```
 
 ## Installation
 
