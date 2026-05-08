@@ -82,6 +82,54 @@ Cilium uses an integrated BGP control plane (backed by **GoBGP** or **FRRouting*
 
 No external router daemon required — Cilium manages BGP sessions directly via `CiliumBGPPeeringPolicy` CRDs.
 
+### One BGP Session — All VRFs
+
+!!! warning "Common misconception"
+    Cilium does **not** open one BGP session per VRF, nor does it use BGP EVPN (L2VPN AFI 25). It behaves exactly like a traditional PE router: **one BGP session per peer**, carrying routes for all VRFs simultaneously over the **VPNv6 address family** (AFI 2 / SAFI 128).
+
+A single `CiliumBGPPeeringPolicy` neighbor entry covers every tenant/VRF on that node:
+
+```
+Cilium Node (worker-1)  ←──── 1 TCP session (port 179) ────→  PE Router
+                                         │
+                         BGP UPDATE messages contain:
+                         ┌─────────────────────────────────────────┐
+                         │ AFI 2 / SAFI 128 (VPNv6)               │
+                         │                                         │
+                         │  RD 65100:100 | RT 65000:100           │
+                         │    prefix: 10.0.1.0/24                  │
+                         │    next-hop SRv6 SID: fc00:0:10::dt6:100│ ← VRF Tenant-A
+                         │                                         │
+                         │  RD 65100:200 | RT 65000:200           │
+                         │    prefix: 10.0.2.0/24                  │
+                         │    next-hop SRv6 SID: fc00:0:10::dt6:200│ ← VRF Tenant-B
+                         │                                         │
+                         │  RD 65100:300 | RT 65000:300           │
+                         │    prefix: 10.0.3.0/24                  │
+                         │    next-hop SRv6 SID: fc00:0:10::dt6:300│ ← VRF Tenant-C
+                         └─────────────────────────────────────────┘
+```
+
+The PE router uses the **Route Target (RT)** to import each prefix into the correct VRF — no separate BGP session needed.
+
+### VPNv6 vs BGP EVPN — Key Differences
+
+Both can carry L3 reachability for SRv6 tenants, but they are completely different address families:
+
+| | **BGP VPNv6** (Cilium) | **BGP EVPN Type 5** |
+|---|---|---|
+| AFI / SAFI | 2 / 128 | 25 / 70 |
+| NLRI type | VPNv6 prefix + RD | EVPN Route Type 5 (IP Prefix) |
+| Original purpose | MPLS L3VPN (adapted for SRv6) | Data center fabric, VXLAN/SRv6 overlay |
+| Next-hop encoding | SRv6 SID as BGP next-hop | SRv6 SID in PMSI / Tunnel Encap attr |
+| VRF signaling | Route Target extended community | Route Target extended community |
+| MAC/L2 info | ❌ None — L3 only | ✅ Carries MAC+IP (Type 2) |
+| Typical use | WAN L3VPN (carrier-grade) | DC fabric, cloud-native workloads |
+| Cilium uses it? | ✅ Yes | ❌ No |
+
+!!! tip "Why not EVPN?"
+    EVPN was designed for data center environments where L2 adjacency and MAC mobility matter. Cilium's SRv6 L3VPN targets carrier/WAN use cases where only IP reachability is needed — VPNv6 is simpler, more scalable, and maps directly onto the RFC 9252 model that SRv6 PE routers already implement.
+
 ## Installation
 
 ### Enable SRv6 via Helm
