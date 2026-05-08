@@ -123,9 +123,9 @@ Both can carry L3 reachability for SRv6 tenants, but they are completely differe
 | Original purpose | MPLS L3VPN (adapted for SRv6) | L2VPN, extended to L3 via Type 5 |
 | Next-hop encoding | SRv6 SID as BGP next-hop | SRv6 SID in Tunnel Encap attribute |
 | VRF signaling | Route Target extended community | Route Target extended community |
-| MAC/L2 info | ❌ None — L3 only | ✅ Carries MAC+IP (Type 2) |
-| Valid for SRv6 L3VPN? | ✅ Yes | ✅ Yes (RFC 9252 §5) |
-| Cilium uses it? | ✅ Yes | ❌ No (implementation choice) |
+| MAC/L2 info | :material-close-circle: None — L3 only | :material-check-circle: Carries MAC+IP (Type 2) |
+| Valid for SRv6 L3VPN? | :material-check-circle: Yes | :material-check-circle: Yes (RFC 9252 §5) |
+| Cilium uses it? | :material-check-circle: Yes | :material-close-circle: No (implementation choice) |
 
 !!! info "Both are valid for SRv6 L3VPN — but Cilium only speaks VPNv6"
     EVPN Type 5 (IP Prefix routes) over SRv6 is fully valid per RFC 9252 and widely deployed in carrier and DC fabrics. However, **Cilium's BGP control plane does not implement AFI 25 / SAFI 70 (L2VPN EVPN)**. It only negotiates VPNv6 (AFI 2 / SAFI 128). If your SRv6 fabric uses EVPN Type 5 for L3VPN, Cilium cannot peer directly with those PE routers.
