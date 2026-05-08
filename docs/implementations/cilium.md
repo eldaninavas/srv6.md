@@ -120,15 +120,15 @@ Both can carry L3 reachability for SRv6 tenants, but they are completely differe
 |---|---|---|
 | AFI / SAFI | 2 / 128 | 25 / 70 |
 | NLRI type | VPNv6 prefix + RD | EVPN Route Type 5 (IP Prefix) |
-| Original purpose | MPLS L3VPN (adapted for SRv6) | Data center fabric, VXLAN/SRv6 overlay |
-| Next-hop encoding | SRv6 SID as BGP next-hop | SRv6 SID in PMSI / Tunnel Encap attr |
+| Original purpose | MPLS L3VPN (adapted for SRv6) | L2VPN, extended to L3 via Type 5 |
+| Next-hop encoding | SRv6 SID as BGP next-hop | SRv6 SID in Tunnel Encap attribute |
 | VRF signaling | Route Target extended community | Route Target extended community |
 | MAC/L2 info | ❌ None — L3 only | ✅ Carries MAC+IP (Type 2) |
-| Typical use | WAN L3VPN (carrier-grade) | DC fabric, cloud-native workloads |
-| Cilium uses it? | ✅ Yes | ❌ No |
+| Valid for SRv6 L3VPN? | ✅ Yes | ✅ Yes (RFC 9252 §5) |
+| Cilium uses it? | ✅ Yes | ❌ No (implementation choice) |
 
-!!! tip "Why not EVPN?"
-    EVPN was designed for data center environments where L2 adjacency and MAC mobility matter. Cilium's SRv6 L3VPN targets carrier/WAN use cases where only IP reachability is needed — VPNv6 is simpler, more scalable, and maps directly onto the RFC 9252 model that SRv6 PE routers already implement.
+!!! info "Both are valid for SRv6 L3VPN"
+    EVPN Type 5 (IP Prefix routes) over SRv6 is a fully supported and widely deployed option — RFC 9252 covers both VPNv6 and EVPN as valid BGP overlay services for SRv6. Many carrier and DC deployments use EVPN Type 5 precisely because their fabric already runs EVPN for L2 services, so adding L3VPN on top is natural. Cilium's choice of VPNv6 is an implementation decision, not a statement that EVPN is unsuitable.
 
 ## Installation
 
