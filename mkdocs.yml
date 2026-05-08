@@ -206,6 +206,7 @@ nav:
   - Implementations:
     - implementations/index.md
     - Linux Kernel: implementations/linux-kernel.md
+    - Cilium (eBPF): implementations/cilium.md
     - Cisco IOS-XR: implementations/cisco-ios-xr.md
     - Juniper: implementations/juniper.md
     - FRRouting: implementations/frrouting.md
