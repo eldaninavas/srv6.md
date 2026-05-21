@@ -140,9 +140,9 @@ SRv6.md is written and maintained by network engineers around the world. No vend
   <span class="srv6-contributor-loading">Loading contributors…</span>
 </div>
 
-<p style="text-align: center; margin-top: 1.5rem;">
-<a href="https://github.com/eldaninavas/srv6.md" class="srv6-btn srv6-btn-secondary" target="_blank" rel="noopener">:fontawesome-brands-github: &nbsp; Become a contributor</a>
-</p>
+<div style="text-align: center; margin-top: 1.5rem;" markdown>
+[:fontawesome-brands-github: &nbsp; Become a contributor](https://github.com/eldaninavas/srv6.md){ .srv6-btn .srv6-btn-secondary target=_blank rel=noopener }
+</div>
 
 ---
 

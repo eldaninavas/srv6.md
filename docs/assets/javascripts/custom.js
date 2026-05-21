@@ -7,8 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
 // --- Top Contributors (GitHub API) ---
 
 function loadContributors() {
-  const container = document.getElementById("srv6-contributors");
+  var container = document.getElementById("srv6-contributors");
   if (!container) return;
+
+  // Already loaded (avoid re-fetching on instant navigation back)
+  if (container.dataset.loaded) return;
+  container.dataset.loaded = "1";
 
   fetch("https://api.github.com/repos/eldaninavas/srv6.md/contributors?per_page=30")
     .then(function (res) {
@@ -18,10 +22,10 @@ function loadContributors() {
     .then(function (contributors) {
       container.innerHTML = "";
       contributors.forEach(function (c) {
-        // Skip bots (GitHub Actions, dependabot, etc.)
-        if (c.type === "Bot" || c.login.endsWith("[bot]")) return;
+        // Skip bots
+        if (c.type === "Bot" || c.login.indexOf("[bot]") !== -1) return;
 
-        const card = document.createElement("a");
+        var card = document.createElement("a");
         card.href = c.html_url;
         card.target = "_blank";
         card.rel = "noopener noreferrer";
@@ -35,7 +39,6 @@ function loadContributors() {
         container.appendChild(card);
       });
 
-      // If no contributors rendered (all bots), hide section
       if (container.children.length === 0) container.style.display = "none";
     })
     .catch(function () {
@@ -45,10 +48,13 @@ function loadContributors() {
     });
 }
 
-// MkDocs Material uses instant navigation (SPA-like) — document$ fires on every navigation.
-// Fall back to DOMContentLoaded for non-Material builds.
-if (typeof document$ !== "undefined") {
-  document$.subscribe(loadContributors);
-} else {
-  document.addEventListener("DOMContentLoaded", loadContributors);
-}
+// MkDocs Material exposes document$ as a global RxJS observable for instant navigation.
+// We wait for DOMContentLoaded first, then check if document$ is available.
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof document$ !== "undefined") {
+    // Subscribe to every page load (initial + SPA navigations)
+    document$.subscribe(function () { loadContributors(); });
+  } else {
+    loadContributors();
+  }
+});
