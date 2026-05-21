@@ -48,9 +48,9 @@ hide:
     <span class="srv6-contributors-card-title">Top Contributors</span>
     <a href="https://github.com/eldaninavas/srv6.md/graphs/contributors" target="_blank" rel="noopener" class="srv6-contributors-card-link">View all</a>
   </div>
-  <a href="https://github.com/eldaninavas/srv6.md/graphs/contributors" target="_blank" rel="noopener">
-    <img src="https://contrib.rocks/image?repo=eldaninavas/srv6.md" alt="Top contributors to SRv6.md" class="srv6-contributors-img" loading="lazy" />
-  </a>
+  <ul id="srv6-contributors" class="srv6-contributors-list">
+    <li class="srv6-contributor-loading">Loading…</li>
+  </ul>
   <a href="https://github.com/eldaninavas/srv6.md" target="_blank" rel="noopener" class="srv6-contributors-join">+ Become a contributor</a>
 </div>
 
