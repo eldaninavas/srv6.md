@@ -132,6 +132,20 @@ SRv6 works by inserting a **Segment Routing Header (SRH)** into IPv6 packets. Th
 
 ---
 
+## :material-account-group: Built by the Community
+
+SRv6.md is written and maintained by network engineers around the world. No vendor, no company — just people who care about SRv6.
+
+<div id="srv6-contributors" class="srv6-contributors">
+  <span class="srv6-contributor-loading">Loading contributors…</span>
+</div>
+
+<p style="text-align: center; margin-top: 1.5rem;">
+<a href="https://github.com/eldaninavas/srv6.md" class="srv6-btn srv6-btn-secondary" target="_blank" rel="noopener">:fontawesome-brands-github: &nbsp; Become a contributor</a>
+</p>
+
+---
+
 <p style="text-align: center; color: var(--md-default-fg-color--lighter); font-size: 0.85rem;">
   SRv6.md is not affiliated with any vendor. Content is provided under the MIT License.
 </p>
