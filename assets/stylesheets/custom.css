@@ -854,16 +854,18 @@
   background: rgba(123, 31, 162, 0.2);
 }
 
-/* --- Contributors Card (Home Page, top-right float) --- */
+/* --- Contributors Card (Home Page, right-aligned) --- */
 .srv6-contributors-card {
-  float: right;
-  clear: right;
-  width: 210px;
+  display: block;
+  width: fit-content;
+  min-width: 200px;
+  max-width: 340px;
+  margin-left: auto;
+  margin-bottom: 2rem;
   background: rgba(26, 26, 62, 0.5);
   border: 1px solid rgba(171, 71, 188, 0.2);
   border-radius: 12px;
   padding: 1rem;
-  margin: 0 0 2rem 2rem;
   font-size: 0.8rem;
 }
 
@@ -895,74 +897,18 @@
   color: #ce93d8 !important;
 }
 
-/* List of contributors inside the card */
-.srv6-contributors {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin-bottom: 0.75rem;
-}
-
-.srv6-contributor {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.35rem 0.5rem;
+/* contrib.rocks image */
+.srv6-contributors-img {
+  display: block;
+  width: 100%;
+  height: auto;
   border-radius: 8px;
-  text-decoration: none !important;
-  transition: background 0.2s ease;
-  background: transparent;
+  margin-bottom: 0.75rem;
+  transition: opacity 0.2s ease;
 }
 
-.srv6-contributor:hover {
-  background: rgba(171, 71, 188, 0.1);
-}
-
-.srv6-contributor img {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(171, 71, 188, 0.25);
-  flex-shrink: 0;
-  transition: border-color 0.2s;
-}
-
-.srv6-contributor:hover img {
-  border-color: #ab47bc;
-}
-
-.srv6-contributor-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.srv6-contributor-name {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--md-default-fg-color) !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.srv6-contributor-commits {
-  font-size: 0.65rem;
-  color: var(--md-default-fg-color--lighter);
-}
-
-.srv6-contributor-loading {
-  font-size: 0.78rem;
-  color: var(--md-default-fg-color--lighter);
-  font-style: italic;
-  padding: 0.5rem;
-}
-
-.srv6-contributors-fallback {
-  font-size: 0.75rem;
-  color: var(--md-default-fg-color--lighter);
-  margin: 0;
+.srv6-contributors-img:hover {
+  opacity: 0.85;
 }
 
 .srv6-contributors-join {
