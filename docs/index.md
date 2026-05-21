@@ -43,6 +43,17 @@ hide:
 
 ---
 
+<div class="srv6-contributors-card">
+  <div class="srv6-contributors-card-header">
+    <span class="srv6-contributors-card-title">Top Contributors</span>
+    <a href="https://github.com/eldaninavas/srv6.md/graphs/contributors" target="_blank" rel="noopener" class="srv6-contributors-card-link">View all</a>
+  </div>
+  <div id="srv6-contributors" class="srv6-contributors">
+    <span class="srv6-contributor-loading">Loading…</span>
+  </div>
+  <a href="https://github.com/eldaninavas/srv6.md" target="_blank" rel="noopener" class="srv6-contributors-join">+ Become a contributor</a>
+</div>
+
 ## :material-compass: Explore
 
 <div class="srv6-grid" markdown>
@@ -129,20 +140,6 @@ SRv6 works by inserting a **Segment Routing Header (SRH)** into IPv6 packets. Th
 
 !!! tip "This is a community project"
     SRv6.md is built and maintained by the networking community. Every page has an **edit button** (:material-pencil:) — if you spot an error or want to add content, we welcome your contributions!
-
----
-
-## :material-account-group: Built by the Community
-
-SRv6.md is written and maintained by network engineers around the world. No vendor, no company — just people who care about SRv6.
-
-<div id="srv6-contributors" class="srv6-contributors">
-  <span class="srv6-contributor-loading">Loading contributors…</span>
-</div>
-
-<div style="text-align: center; margin-top: 1.5rem;" markdown>
-[:fontawesome-brands-github: &nbsp; Become a contributor](https://github.com/eldaninavas/srv6.md){ .srv6-btn .srv6-btn-secondary target=_blank rel=noopener }
-</div>
 
 ---
 

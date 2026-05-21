@@ -10,19 +10,18 @@ function loadContributors() {
   var container = document.getElementById("srv6-contributors");
   if (!container) return;
 
-  // Already loaded (avoid re-fetching on instant navigation back)
-  if (container.dataset.loaded) return;
+  // Prevent duplicate fetches on the same page render
+  if (container.dataset.loaded === "1") return;
   container.dataset.loaded = "1";
 
-  fetch("https://api.github.com/repos/eldaninavas/srv6.md/contributors?per_page=30")
+  fetch("https://api.github.com/repos/eldaninavas/srv6.md/contributors?per_page=20")
     .then(function (res) {
-      if (!res.ok) throw new Error("GitHub API error: " + res.status);
+      if (!res.ok) throw new Error("status " + res.status);
       return res.json();
     })
     .then(function (contributors) {
       container.innerHTML = "";
       contributors.forEach(function (c) {
-        // Skip bots
         if (c.type === "Bot" || c.login.indexOf("[bot]") !== -1) return;
 
         var card = document.createElement("a");
@@ -31,10 +30,15 @@ function loadContributors() {
         card.rel = "noopener noreferrer";
         card.className = "srv6-contributor";
         card.title = c.login + " — " + c.contributions + " commit" + (c.contributions !== 1 ? "s" : "");
-        card.innerHTML =
-          '<img src="' + c.avatar_url + '&s=128" alt="' + c.login + '" width="64" height="64" loading="lazy">' +
+
+        var info = '<span class="srv6-contributor-info">' +
           '<span class="srv6-contributor-name">' + c.login + "</span>" +
-          '<span class="srv6-contributor-commits">' + c.contributions + " commit" + (c.contributions !== 1 ? "s" : "") + "</span>";
+          '<span class="srv6-contributor-commits">' + c.contributions + " commit" + (c.contributions !== 1 ? "s" : "") + "</span>" +
+          "</span>";
+
+        card.innerHTML =
+          '<img src="' + c.avatar_url + '&s=64" alt="' + c.login + '" width="28" height="28" loading="lazy">' +
+          info;
 
         container.appendChild(card);
       });
@@ -43,18 +47,21 @@ function loadContributors() {
     })
     .catch(function () {
       container.innerHTML =
-        '<p class="srv6-contributors-fallback">Could not load contributors &mdash; ' +
-        '<a href="https://github.com/eldaninavas/srv6.md/graphs/contributors" target="_blank" rel="noopener">view on GitHub</a></p>';
+        '<p class="srv6-contributors-fallback">' +
+        '<a href="https://github.com/eldaninavas/srv6.md/graphs/contributors" target="_blank" rel="noopener">View on GitHub</a></p>';
     });
 }
 
-// MkDocs Material exposes document$ as a global RxJS observable for instant navigation.
-// We wait for DOMContentLoaded first, then check if document$ is available.
-document.addEventListener("DOMContentLoaded", function () {
-  if (typeof document$ !== "undefined") {
-    // Subscribe to every page load (initial + SPA navigations)
-    document$.subscribe(function () { loadContributors(); });
-  } else {
+// MkDocs Material instant navigation: document$ is a global RxJS observable.
+// It fires on every page load (initial + SPA navigations).
+// IMPORTANT: subscribe at top level — by the time scripts run (defer),
+// document$ is defined but the initial emission has already fired,
+// so we also call loadContributors() immediately.
+if (typeof document$ !== "undefined") {
+  document$.subscribe(function () {
     loadContributors();
-  }
-});
+  });
+}
+
+// Immediate call covers the initial page load (works with or without document$)
+loadContributors();
