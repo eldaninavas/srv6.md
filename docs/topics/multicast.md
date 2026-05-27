@@ -14,6 +14,9 @@ tags:
 
 SRv6 is inherently a unicast transport — packets follow a segment list from source to destination. Delivering multicast and broadcast traffic over an SRv6 network requires additional mechanisms to replicate packets to multiple receivers without reverting to traditional PIM/mLDP trees.
 
+!!! warning "Illustrative Configurations"
+    The configuration examples in this document are pseudo-configurations intended for conceptual and illustrative purposes only. They are not production-ready or fully validated configurations and must be adapted to your network design and specific vendor platform/software version.
+
 Several approaches have emerged, each with different trade-offs.
 
 ## The Challenge
