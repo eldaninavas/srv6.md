@@ -26,27 +26,6 @@ The combination is an open-source SRv6 router: every route the protocols compute
 
 Cilium brought SRv6 to eBPF for Kubernetes, but its BGP control plane only *advertises* routes — it never installs learned routes into the data path. zebra-rs approaches it from the routing side: a full multi-protocol routing stack (IS-IS, OSPFv3, BGP with VPNv4/VPNv6/EVPN/SR Policy address families) is the source of truth, and the eBPF engine is simply its FIB.
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
-graph LR
-    subgraph zebra-rs control plane
-        P1["IS-IS\nRFC 9352"] --> RIB["RIB +\nSRv6 SID manager"]
-        P2["OSPFv3\nRFC 9513"] --> RIB
-        P3["BGP\nRFC 9252"] --> RIB
-    end
-    RIB -->|netlink| K["Linux kernel FIB\n(seg6 / seg6local)"]
-    RIB -->|"gRPC FIB tee\n(cradle.v1)"| C["cradle daemon"]
-    subgraph cradle-rs eBPF data plane
-        C --> M["eBPF maps\nSRV6_LOCALSID · SRV6_ENCAP\nFIB4_VRF · FIB6_VRF · FDB"]
-        M --> PR["cradle_xdp (decap)\ncradle_tc (encap + forward)"]
-    end
-    C -.->|"WatchFdb stream\n(MAC learn / age)"| P3
-    style RIB fill:#4a148c,color:#fff,stroke:#ab47bc
-    style C fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style M fill:#1b5e20,color:#fff,stroke:#a5d6a7
-    style PR fill:#1b5e20,color:#fff,stroke:#a5d6a7
-```
-
 What makes it distinctive:
 
 - **Learned routes program eBPF.** IS-IS SRv6 locators, BGP L3VPN (VPNv4/VPNv6 with SRv6 SIDs), and BGP EVPN over SRv6 all land in the eBPF FIB through a gRPC tee — the direction Cilium's BGP control plane doesn't support.
