@@ -20,6 +20,7 @@ Practical guides for deploying SRv6 on different platforms.
 | [Cisco IOS-XR](cisco-ios-xr.md) | Commercial | End, End.X, End.DT4/6/46, End.DX2/4/6, End.DT2U/M | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
 | [Juniper](juniper.md) | Commercial | End, End.X, End.DT4/6, End.DX2/4/6 | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
 | [FRRouting](frrouting.md) | Open Source | End, End.DT4/6 | :material-check-circle:{ .srv6-green } | :material-close-circle:{ .srv6-red } |
+| [zebra-rs (eBPF)](zebra-rs.md) | Open Source | End, End.X, End.T, End.DT4/6/46, End.DX2/4/6, End.DT2U/M, End.B6, End.M | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
 | [SONiC](sonic.md) | Open Source | End, End.DT4/6, End.DX4/6 | :material-check-circle:{ .srv6-green } | :material-progress-clock: Partial |
 
 !!! tip "Contribute your experience"
