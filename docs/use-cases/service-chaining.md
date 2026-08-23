@@ -49,7 +49,6 @@ The packet traverses the chain by following the SRv6 forwarding mechanics (decre
 ### Architecture
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     C[Client] --> I[Ingress PE]
     I -->|"DA=FW::1<br/>SL=3"| FW[Firewall]
@@ -57,14 +56,6 @@ graph LR
     IDS -->|"DA=LB::1<br/>SL=1"| LB[Load Balancer]
     LB -->|"DA=Egress::DT4<br/>SL=0"| E[Egress PE]
     E --> S[Server]
-
-    style C fill:#4a148c,color:#fff,stroke:#ab47bc
-    style S fill:#4a148c,color:#fff,stroke:#ab47bc
-    style I fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style E fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style FW fill:#4a148c,color:#fff,stroke:#ab47bc
-    style IDS fill:#4a148c,color:#fff,stroke:#ab47bc
-    style LB fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ## Packet Walk: Service Chain
@@ -133,7 +124,6 @@ The key innovation for service chaining is the set of **proxy behaviors** define
 ### End.AD (Dynamic Proxy) — Most Common
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 sequenceDiagram
     participant Net as Network
     participant Proxy as SRv6 Proxy Node

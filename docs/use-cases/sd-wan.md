@@ -18,7 +18,6 @@ Traditional SD-WAN solutions build encrypted overlays (IPsec/GRE) on top of the 
 In a conventional SD-WAN deployment, an orchestrator pushes policies to edge devices (CPEs) that build overlay tunnels across one or more WAN transports:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     B1[Branch 1] -->|IPsec Tunnel| INET((Internet))
     B1 -->|IPsec Tunnel| MPLS((MPLS WAN))
@@ -29,12 +28,8 @@ graph LR
     ORCH[Orchestrator] -.->|Policies| B1
     ORCH -.->|Policies| B2
 
-    style B1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style B2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style HUB fill:#4a148c,color:#fff,stroke:#ab47bc
-    style ORCH fill:#4a148c,color:#fff,stroke:#ab47bc
-    style INET fill:#5c6bc0,color:#fff,stroke:#7986cb
-    style MPLS fill:#5c6bc0,color:#fff,stroke:#7986cb
+    style INET fill:#5c6bc026,stroke:#5c6bc0
+    style MPLS fill:#5c6bc026,stroke:#5c6bc0
 ```
 
 ### Limitations
@@ -52,7 +47,6 @@ graph LR
 With SRv6, the service provider's network becomes an active participant in SD-WAN policy enforcement:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     B1[Branch 1<br/>CPE] -->|SRv6 Policy| PE1[PE1]
     B2[Branch 2<br/>CPE] -->|SRv6 Policy| PE2[PE2]
@@ -62,15 +56,6 @@ graph LR
     CORE <-->|SRv6| CLOUD[Cloud]
     CTRL[SD-WAN Controller] -.->|SR Policies| PE1
     CTRL -.->|SR Policies| PE2
-
-    style B1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style B2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style CORE fill:#4a148c,color:#fff,stroke:#ab47bc
-    style DC fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style CLOUD fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style CTRL fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ### Key benefits
@@ -149,7 +134,6 @@ Each application class maps to a different SR Policy with a specific Flex-Algo c
 SRv6 network slicing creates dedicated virtual networks per customer or application tier:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph SD-WAN Slices
         S1[Slice 1: Real-Time<br/>Algo 128 - Low Latency]
@@ -165,11 +149,9 @@ graph TB
     S2 --> DC
     S3 --> DC
 
-    style CPE fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style S1 fill:#66bb6a,color:#fff,stroke:#81c784
-    style S2 fill:#5c6bc0,color:#fff,stroke:#7986cb
-    style S3 fill:#ff9800,color:#fff,stroke:#ffa726
-    style DC fill:#4a148c,color:#fff,stroke:#ab47bc
+    style S1 fill:#66bb6a26,stroke:#66bb6a
+    style S2 fill:#5c6bc026,stroke:#5c6bc0
+    style S3 fill:#ff980026,stroke:#ff9800
 ```
 
 Each slice provides **hard isolation** — traffic in one slice cannot impact another, and each has its own topology computed by the IGP.

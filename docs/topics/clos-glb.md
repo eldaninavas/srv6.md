@@ -18,7 +18,6 @@ Modern data center networks use **CLOS (Spine-Leaf)** topologies with multiple e
 A CLOS fabric provides full bisectional bandwidth between any two leaf switches through multiple spine switches:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     S1[Spine 1] --- L1[Leaf 1]
     S1 --- L2[Leaf 2]
@@ -32,14 +31,6 @@ graph TB
     S3 --- L2
     S3 --- L3
     S3 --- L4
-
-    style S1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style S2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style S3 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style L1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style L2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style L3 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style L4 fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ## The ECMP Problem

@@ -32,19 +32,12 @@ Modern SRv6 deployments use **model-driven streaming telemetry** instead of SNMP
 ### Architecture
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     R1[Router 1] -->|gRPC/gNMI| C[Telemetry Collector]
     R2[Router 2] -->|gRPC/gNMI| C
     R3[Router 3] -->|gRPC/gNMI| C
     C --> TS[(Time-Series DB)]
     TS --> G[Grafana / Dashboard]
-
-    style C fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style G fill:#4a148c,color:#fff,stroke:#ab47bc
-    style R1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style R2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style R3 fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ### Protocols

@@ -32,7 +32,6 @@ LEO satellites offer low-latency broadband to locations where fiber is impractic
 A typical SRv6-over-satellite architecture uses SRv6/EVPN as the overlay, with the satellite link as one of potentially multiple underlay transport options:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     RS1[Remote Site 1] -->|LEO Satellite| HQ[Head Office / Hub]
     RS2[Remote Site 2] -->|LEO Satellite| HQ
@@ -43,10 +42,6 @@ graph LR
         RS2
         HQ
     end
-
-    style RS1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style RS2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style HQ fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ### Key Design Elements

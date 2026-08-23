@@ -52,7 +52,6 @@ IS-IS Level-1/Level-2 or OSPF multi-area. SRv6 locators are redistributed or lea
 Separate IGP domains with **Binding SID (BSID)** at boundaries. Each domain's ASBR advertises a BSID that abstracts the internal path. Remote domains reference the BSID without knowing the internal topology.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     PE1[PE1] -->|Internal SIDs| ASBR1[ASBR1<br/>BSID-A]
     ASBR1 -->|Inter-domain link| ASBR2[ASBR2<br/>BSID-B]
@@ -67,11 +66,6 @@ graph LR
         ASBR2
         PE2
     end
-
-    style PE1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style ASBR1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style ASBR2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 **Segment list at PE1:** `[ASBR1::1, BSID-B, PE2::DT4]`
@@ -85,19 +79,12 @@ For BSID mechanics, see [SR Policy](sr-policy.md). For BSID in migration scenari
 Each domain exports its topology to a centralized controller via **BGP-LS** (RFC 9514). The controller computes end-to-end paths and installs them via PCEP or BGP SR Policy.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     CTRL[SDN Controller / SR-PCE]
     CTRL <-->|BGP-LS| D1[Domain 1]
     CTRL <-->|BGP-LS| D2[Domain 2]
     CTRL <-->|BGP-LS| D3[Domain 3]
     CTRL -->|PCEP / BGP SR Policy| PE1[Headend PEs]
-
-    style CTRL fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style D1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style D2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style D3 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE1 fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 | Pros | Cons |

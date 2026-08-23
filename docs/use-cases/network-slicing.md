@@ -38,7 +38,6 @@ A network slice is an end-to-end logical partition that provides:
 SRv6 network slicing combines three mechanisms:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph Slice Architecture
         FA[Flex-Algorithm<br/>Topology Slicing] --> SLICE[Network Slice]
@@ -48,14 +47,6 @@ graph TB
     SLICE --> S1[Slice 1: Low Latency]
     SLICE --> S2[Slice 2: High Bandwidth]
     SLICE --> S3[Slice 3: Best Effort]
-
-    style FA fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style QOS fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style COLOR fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style SLICE fill:#4a148c,color:#fff,stroke:#ab47bc
-    style S1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style S2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style S3 fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ### 1. Flex-Algorithm (Topology Slicing)
@@ -103,17 +94,11 @@ For full details, see [SR Policy](../topics/sr-policy.md).
 ### End-to-End 5G Slice
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     RAN[RAN / gNB] -->|URLLC: Algo 128| TR1[Transport PE]
     RAN -->|eMBB: Algo 129| TR1
     TR1 -->|Slice-specific path| CORE((SRv6 Core))
     CORE --> UPF[UPF / Core PE]
-
-    style RAN fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style TR1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style CORE fill:#4a148c,color:#fff,stroke:#ab47bc
-    style UPF fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 The SRv6 MUP (Mobile User Plane) behaviors from [RFC 9433](../rfcs/rfc9433.md) integrate with Flex-Algo slicing to provide end-to-end slice awareness from RAN to core.

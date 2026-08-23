@@ -41,16 +41,11 @@ In SRv6 networks, traffic follows explicit segment lists through the fabric. Kno
 **Simple Two-Way Active Measurement Protocol** is the modern standard for active probing in SRv6 networks. It replaces older TWAMP with a simpler, stateless design.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     S[Sender PE] -->|"STAMP Probe (UDP)"| R[Reflector PE]
     R -->|"STAMP Reply + Timestamps"| S
     S --- M((PM Engine))
     M -->|"Delay, Loss, Jitter"| T[Telemetry Collector]
-    style S fill:#4a148c,color:#fff,stroke:#ab47bc
-    style R fill:#4a148c,color:#fff,stroke:#ab47bc
-    style M fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style T fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 How it works:
@@ -151,17 +146,14 @@ router isis 1
 **How the hysteresis band works:**
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     A["Loss < 20%<br/>(Normal)"] -->|"Loss rises above 30%"| B["Loss > 30%<br/>(Anomaly declared)"]
     B -->|"Metric += 500<br/>advertised in IS-IS"| C["Traffic rerouted"]
     C -->|"Loss drops below 20%"| D["Anomaly cleared<br/>Metric restored"]
     D --> A
     B -->|"Loss between 20–30%<br/>no state change"| B
-    style A fill:#4a148c,color:#fff,stroke:#ab47bc
-    style B fill:#b71c1c,color:#fff,stroke:#ef9a9a
-    style C fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style D fill:#1b5e20,color:#fff,stroke:#a5d6a7
+    style B fill:#b71c1c26,stroke:#b71c1c
+    style D fill:#1b5e2026,stroke:#1b5e20
 ```
 
 The gap between `upper-bound` and `lower-bound` is the **dead band** (also called **hysteresis zone**). Loss oscillating in that range — say between 21% and 29% — does not trigger any state change, preventing metric flapping. Without hysteresis, a link hovering at exactly the threshold would cause the IS-IS metric to oscillate continuously.

@@ -55,7 +55,6 @@ Each candidate path can contain multiple **segment lists** with weights for weig
 ### SR Policy Lifecycle
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TD
     H[Headend Router] -->|1. Policy created| CP1[Candidate Path 1 - Pref 200]
     H -->|1. Policy created| CP2[Candidate Path 2 - Pref 100]
@@ -64,14 +63,6 @@ graph TD
     CP2 -->|Standby| SL3[Segment List C]
     SL1 -->|3. Active - ECMP| FWD[Forwarding]
     SL2 -->|3. Active - ECMP| FWD
-
-    style H fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style CP1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style CP2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style SL1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style SL2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style SL3 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style FWD fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 ## Policy Instantiation Methods
@@ -135,20 +126,12 @@ The BGP update carries:
 An SR-PCE (Path Computation Element) computes constrained paths using topology learned via BGP-LS (RFC 9514) and installs them on headends via PCEP.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     BGP_LS[BGP-LS Topology] -->|RFC 9514| PCE[SR-PCE Controller]
     PCE -->|PCEP - Computed Path| PE1[Headend PE1]
     PE1 -->|SRv6 Segment List| P1[P1]
     P1 --> P3[P3]
     P3 --> PE2[Egress PE2]
-
-    style BGP_LS fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PCE fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style P1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style P3 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 === "Cisco IOS-XR"
@@ -179,19 +162,12 @@ ODN dynamically creates SR Policies when a BGP prefix with a **color community**
 4. The policy is computed locally or delegated to PCE based on template configuration
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     CE1[CE1] --> PE1[PE1 - Headend]
     PE1 -->|ODN creates SR Policy| CORE((SRv6 Core))
     CORE --> PE2[PE2 - Egress]
     PE2 --> CE2[CE2]
     PE2 -.->|BGP: prefix + color 100| PE1
-
-    style CE1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style CORE fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style CE2 fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ### ODN Configuration

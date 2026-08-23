@@ -17,17 +17,11 @@ tags:
 When a link or node fails, the IGP needs time to converge (detect failure, flood LSPs, recompute SPF). During this convergence window (typically 200ms-2s), traffic is blackholed.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     A[Source] -->|Primary| B[Node B]
     B -->|X FAIL| C[Node C]
     B -.->|Backup?| D[Node D]
     D --> C
-
-    style B fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style C fill:#4a148c,color:#fff,stroke:#ab47bc
-    style A fill:#4a148c,color:#fff,stroke:#ab47bc
-    style D fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 Traditional LFA (RFC 5286) only works if a neighbor has a loop-free path — which depends on topology. In many real-world topologies, LFA coverage is only 40-80%.
@@ -78,7 +72,6 @@ TI-LFA backup (pre-computed on B):
 ```
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 sequenceDiagram
     participant A as Node A
     participant B as Node B

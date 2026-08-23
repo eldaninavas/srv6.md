@@ -34,17 +34,11 @@ Each algorithm produces its own set of SRv6 SIDs, creating independent forwardin
 ## How It Works
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     A[PE1] -->|10ms, BW:100G| B[P1]
     A -->|2ms, BW:10G| C[P2]
     B -->|5ms, BW:100G| D[PE2]
     C -->|3ms, BW:10G| D
-
-    style A fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style D fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style B fill:#4a148c,color:#fff,stroke:#ab47bc
-    style C fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 | Algorithm | Metric | Best Path PE1→PE2 | Use Case |
@@ -71,7 +65,6 @@ To steer traffic on the low-latency path, simply use the Algo 128 SID as the des
 Flex-Algo is the foundation of **SRv6 network slicing** for 5G and enterprise services:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph Physical Network
         direction LR
@@ -88,15 +81,12 @@ graph TB
         S2R1[R1] -.-> S2R2[R2] -.-> S2R3[R3]
     end
 
-    style R1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style R2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style R3 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style S1R1 fill:#1565c0,color:#fff
-    style S1R2 fill:#1565c0,color:#fff
-    style S1R3 fill:#1565c0,color:#fff
-    style S2R1 fill:#2e7d32,color:#fff
-    style S2R2 fill:#2e7d32,color:#fff
-    style S2R3 fill:#2e7d32,color:#fff
+    style S1R1 fill:#1565c026,stroke:#1565c0
+    style S1R2 fill:#1565c026,stroke:#1565c0
+    style S1R3 fill:#1565c026,stroke:#1565c0
+    style S2R1 fill:#2e7d3226,stroke:#2e7d32
+    style S2R2 fill:#2e7d3226,stroke:#2e7d32
+    style S2R3 fill:#2e7d3226,stroke:#2e7d32
 ```
 
 ## Configuration

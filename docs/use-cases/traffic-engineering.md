@@ -17,7 +17,6 @@ SRv6 Traffic Engineering (TE) enables operators to steer traffic along explicit 
 Instead of relying on shortest-path routing alone, SRv6 TE defines **SR Policies** that specify explicit segment lists (paths) for traffic.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     A[Ingress PE] -->|Low Latency Path| B[P1]
     B --> C[P2]
@@ -25,12 +24,6 @@ graph LR
     A -->|High BW Path| E[P3]
     E --> F[P4]
     F --> D
-    style A fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style D fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style B fill:#4a148c,color:#fff,stroke:#ab47bc
-    style C fill:#4a148c,color:#fff,stroke:#ab47bc
-    style E fill:#4a148c,color:#fff,stroke:#ab47bc
-    style F fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ## SR Policy Components

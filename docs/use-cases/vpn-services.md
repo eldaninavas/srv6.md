@@ -125,18 +125,11 @@ EVPN uses five route types to signal L2 reachability. In an SRv6 context, the SR
 EVPN-VPWS provides **point-to-point L2 connectivity** — the SRv6 equivalent of a traditional pseudowire. Each direction uses an `End.DX2` SID for cross-connection.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     CE1[CE1] -->|Eth Frame| PE1[PE1]
     PE1 -->|SRv6 DA=PE2::DX2| CORE((SRv6 Core))
     CORE --> PE2[PE2]
     PE2 -->|Eth Frame| CE2[CE2]
-
-    style CE1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style CORE fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style CE2 fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ### VPWS Configuration
@@ -197,7 +190,6 @@ graph LR
 EVPN-ELAN provides **multipoint L2 connectivity** — a virtual switch spanning multiple sites. MAC addresses are learned via EVPN Type-2 routes in the control plane, and BUM traffic is handled via ingress replication.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     CE1[CE1] --- PE1[PE1]
     CE2[CE2] --- PE2[PE2]
@@ -205,13 +197,6 @@ graph TB
     PE1 <-->|SRv6 End.DT2U| PE2
     PE2 <-->|SRv6 End.DT2U| PE3
     PE1 <-->|SRv6 End.DT2U| PE3
-
-    style CE1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style CE2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style CE3 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE3 fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 ### MAC Learning

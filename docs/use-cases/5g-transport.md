@@ -27,7 +27,6 @@ SRv6 (particularly uSID) is rapidly becoming the preferred transport technology 
 ## Architecture
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     RU[Radio Unit] -->|Fronthaul| DU[Distributed Unit]
     DU -->|Midhaul| CU[Centralized Unit]
@@ -37,11 +36,6 @@ graph LR
         DU
         CU
     end
-
-    style RU fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style CORE fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style DU fill:#4a148c,color:#fff,stroke:#ab47bc
-    style CU fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ## SRv6 MUP (Mobile User Plane)

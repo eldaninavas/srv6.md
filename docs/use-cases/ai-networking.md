@@ -24,7 +24,6 @@ AI training workloads (like LLM training) use synchronized **all-to-all** commun
 - **Wasted bandwidth** — up to 40-60% of fabric capacity underutilized
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph Traditional ECMP - The Problem
         G1[GPU 1] -->|Flow A| S1[Spine 1]
@@ -33,12 +32,7 @@ graph TB
         G4[GPU 4] -.->|Idle| S2[Spine 2]
     end
 
-    style S1 fill:#ef5350,color:#fff
-    style S2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style G1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style G2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style G3 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style G4 fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style S1 fill:#ef535026,stroke:#ef5350
 ```
 
 ## The Solution: SRv6 Deterministic Path Placement
@@ -46,7 +40,6 @@ graph TB
 With SRv6 uSID, the source (GPU host or controller) **explicitly programs the exact path** each flow takes through the fabric. No hashing, no collisions, no wasted capacity.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph SRv6 Deterministic - The Solution
         G1[GPU 1] -->|SID→Spine1| S1[Spine 1]
@@ -54,15 +47,6 @@ graph TB
         G3[GPU 3] -->|SID→Spine3| S3[Spine 3]
         G4[GPU 4] -->|SID→Spine4| S4[Spine 4]
     end
-
-    style S1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style S2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style S3 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style S4 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style G1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style G2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style G3 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style G4 fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 ### How It Works

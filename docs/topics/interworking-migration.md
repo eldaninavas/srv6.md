@@ -74,7 +74,6 @@ Some operators skip SR-MPLS entirely and go directly from traditional MPLS to SR
 A gateway node translates between SR-MPLS and SRv6 at the domain boundary:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     subgraph SR-MPLS Domain
         A[PE1] -->|MPLS Labels| B[P1]
@@ -86,12 +85,6 @@ graph LR
         GW -->|SRv6 SIDs| C[P2]
         C --> D[PE2]
     end
-
-    style A fill:#4a148c,color:#fff,stroke:#ab47bc
-    style D fill:#4a148c,color:#fff,stroke:#ab47bc
-    style GW fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style B fill:#4a148c,color:#fff,stroke:#ab47bc
-    style C fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 #### What the Gateway Does
@@ -289,16 +282,10 @@ BSID provides **domain isolation**: neither domain needs to understand the other
 In a multi-domain network, each domain boundary has a gateway that owns a BSID. Traffic is stitched from one domain to the next by chaining BSIDs:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     PE1[PE1<br/>SR-MPLS] -->|"Label stack: [16002, BSID-A]"| GW1[Gateway 1<br/>BSID-A = 24999]
     GW1 -->|"SRv6: [fcbb:bb01:0005::1, BSID-B]"| GW2[Gateway 2<br/>BSID-B = fcbb:bb02:0001::PE]
     GW2 -->|"Final SRv6 SID list"| PE2[PE2<br/>SRv6]
-
-    style PE1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style GW1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style GW2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 1. **PE1** pushes `[16002, BSID-A(24999)]` -- transport to Gateway 1, then the BSID

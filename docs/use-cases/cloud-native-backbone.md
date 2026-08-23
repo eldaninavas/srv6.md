@@ -27,19 +27,12 @@ A typical cloud-hosted mobile core uses a multi-tier topology:
 - **National DCs** — IMS/VoLTE, messaging, SBC interconnects
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     EDGE_A[Edge DC<br/>Market A] -->|GRE Tunnels| REG[Regional DC]
     EDGE_B[Edge DC<br/>Market B] -->|GRE Tunnels| REG
     REG -->|GRE Tunnels| NAT[National DC]
     ONPREM[On-Prem PE] -->|DX + GRE<br/>Inter-AS Opt A| EDGE_A
     ONPREM -->|DX + GRE<br/>Inter-AS Opt A| EDGE_B
-
-    style EDGE_A fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style EDGE_B fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style REG fill:#4a148c,color:#fff,stroke:#ab47bc
-    style NAT fill:#4a148c,color:#fff,stroke:#ab47bc
-    style ONPREM fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 In this model, vRouters interconnect via **GRE tunnels** carrying SR-MPLS, and on-prem connections use per-VRF BGP (Inter-AS Option A) over GRE across Direct Connect.
@@ -58,7 +51,6 @@ In this model, vRouters interconnect via **GRE tunnels** carrying SR-MPLS, and o
 Replacing the SR-MPLS/GRE stack with a single SRv6 domain eliminates these constraints:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     VR1[vRouter<br/>Edge DC A] <-->|Native IPv6| VR2[vRouter<br/>Edge DC B]
     VR1 <-->|Native IPv6| VR3[vRouter<br/>Regional DC]
@@ -73,12 +65,6 @@ graph LR
         VR3
         VR4
     end
-
-    style VR1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style VR2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style VR3 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style VR4 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style ONPREM fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ### Design principles

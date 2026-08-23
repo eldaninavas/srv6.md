@@ -21,14 +21,10 @@ GNS3 allows you to emulate real vendor router images, making it ideal for testin
 A minimal SRv6 lab requires at least 3 routers:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     PE1[PE1<br/>IOS-XRv] --- P1[P1<br/>IOS-XRv]
     P1 --- PE2[PE2<br/>IOS-XRv]
     PE1 --- PE2
-    style PE1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style P1 fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ## Tips

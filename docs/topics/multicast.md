@@ -34,18 +34,11 @@ SRv6's source-routing model pushes complexity to the edges, which conflicts with
 The simplest approach — the ingress PE replicates the packet and sends a **separate unicast SRv6 copy** to each egress PE.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     SRC[Source] --> PE1[Ingress PE]
     PE1 -->|Unicast SRv6| PE2[Egress PE2]
     PE1 -->|Unicast SRv6| PE3[Egress PE3]
     PE1 -->|Unicast SRv6| PE4[Egress PE4]
-
-    style SRC fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE3 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE4 fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 | Pros | Cons |
@@ -106,20 +99,12 @@ The IETF has defined **replication segments** that enable packet replication at 
 3. This creates an **overlay replication tree** encoded entirely in the SRH
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TD
     PE1[Ingress PE] -->|SRv6 + Replicate SID| R1[Replication Node 1]
     R1 -->|Copy 1| PE2[Egress PE2]
     R1 -->|Copy 2 + Next SID| R2[Replication Node 2]
     R2 -->|Copy 1| PE3[Egress PE3]
     R2 -->|Copy 2| PE4[Egress PE4]
-
-    style PE1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style R1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style R2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE3 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE4 fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 | Pros | Cons |
@@ -151,7 +136,6 @@ Tree-SID pre-computes a multicast distribution tree and assigns a single **Tree-
 3. The ingress PE encapsulates with just the Tree-SID — transit nodes replicate based on their local state
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TD
     CTRL[Controller / PCE] -.->|Programs tree| P1
     CTRL -.->|Programs tree| P2
@@ -163,15 +147,6 @@ graph TD
     P2 -->|Replicate| PE3[Egress PE3]
     P2 -->|Replicate| P3[P3]
     P3 --> PE4[Egress PE4]
-
-    style CTRL fill:#4a148c,color:#fff,stroke:#ab47bc
-    style PE1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style P1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style P2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style P3 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE3 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style PE4 fill:#7b1fa2,color:#fff,stroke:#ab47bc
 ```
 
 | Pros | Cons |
@@ -321,7 +296,6 @@ Broadcast is not applicable in L3VPN — ARP/ND is handled via EVPN proxy (suppr
 ### Choosing the Right Approach
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TD
     START[Multicast Needed] -->|How many receivers?| FEW{< 20 receivers?}
     FEW -->|Yes| IR[Ingress Replication]
@@ -330,14 +304,6 @@ graph TD
     HW -->|Yes| BIER[BIER]
     HW -->|No| TREE[Tree-SID + PCE]
     BW -->|No| IR
-
-    style START fill:#4a148c,color:#fff,stroke:#ab47bc
-    style FEW fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style BW fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style HW fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style IR fill:#4a148c,color:#fff,stroke:#ab47bc
-    style BIER fill:#4a148c,color:#fff,stroke:#ab47bc
-    style TREE fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 ### Scaling Considerations

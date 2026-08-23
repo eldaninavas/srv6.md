@@ -20,16 +20,10 @@ After a link or node failure, IGP routers recompute their forwarding tables at d
 When a topology change occurs, each router independently runs SPF and updates its FIB. Routers closer to the failure detect and converge faster than distant routers. This temporal mismatch creates loops:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     A[R1 - Converged] -->|Sends to R2| B[R2 - Not yet converged]
     B -->|Sends back to R1| A
     C[R3] -->|X FAIL| D[R4]
-
-    style A fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style B fill:#4a148c,color:#fff,stroke:#ab47bc
-    style C fill:#4a148c,color:#fff,stroke:#ab47bc
-    style D fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 **Timeline of a micro-loop:**
@@ -54,16 +48,10 @@ graph LR
 TI-LFA and micro-loop avoidance solve **different phases** of convergence:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     FAIL[Failure] --> TILFA[TI-LFA Backup<br/>0 - 50ms]
     TILFA --> MLA[Micro-Loop Window<br/>50ms - 2s]
     MLA --> CONV[Fully Converged]
-
-    style FAIL fill:#4a148c,color:#fff,stroke:#ab47bc
-    style TILFA fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style MLA fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style CONV fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 | Aspect | TI-LFA | Micro-Loop Avoidance |

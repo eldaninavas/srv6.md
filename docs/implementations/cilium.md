@@ -23,7 +23,6 @@ tags:
 Traditional SRv6 implementations (Cisco, Juniper, FRRouting) live on routers. Cilium extends the SRv6 fabric **into the Kubernetes node** — each worker node becomes an SRv6 endpoint with its own locator, SIDs, and BGP session.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph TB
     subgraph K8s Cluster A
         P1[Pod] --> N1["K8s Node\n(Cilium agent\n+ eBPF SRv6)"]
@@ -36,12 +35,8 @@ graph TB
     subgraph K8s Cluster B
         N2["K8s Node\n(Cilium agent\n+ eBPF SRv6)"] --> P2[Pod]
     end
-    style N1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style N2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style R1 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style R2 fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style P1 fill:#1b5e20,color:#fff,stroke:#a5d6a7
-    style P2 fill:#1b5e20,color:#fff,stroke:#a5d6a7
+    style P1 fill:#1b5e2026,stroke:#1b5e20
+    style P2 fill:#1b5e2026,stroke:#1b5e20
 ```
 
 This makes each K8s node a first-class SRv6 PE — pod traffic is natively encapsulated into SRv6 by eBPF before it leaves the NIC, integrating seamlessly with a carrier-grade SRv6 underlay.
@@ -141,13 +136,10 @@ This is a real-world limitation. If your network already runs EVPN Type 5 over S
 | **Wait for Cilium EVPN support** | EVPN is on the Cilium roadmap but not yet implemented for SRv6 | No ETA as of Cilium 1.15 |
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     C["Cilium Node\nVPNv6 only\nAFI 2/128"] -->|"VPNv6"| RR["Route Reflector\nFRRouting\n(bridge)"]
     RR -->|"EVPN Type 5\nAFI 25/70"| PE["PE Router\nEVPN fabric"]
-    style C fill:#4a148c,color:#fff,stroke:#ab47bc
-    style RR fill:#1b5e20,color:#fff,stroke:#a5d6a7
-    style PE fill:#7b1fa2,color:#fff,stroke:#ab47bc
+    style RR fill:#1b5e2026,stroke:#1b5e20
 ```
 
 ## Installation
@@ -254,7 +246,6 @@ cilium bgp routes received  ipv6 vpn-unicast
 ## Full Traffic Walk
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 sequenceDiagram
     participant Pod as Pod A (10.0.1.5)
     participant eBPF as eBPF TC (egress)

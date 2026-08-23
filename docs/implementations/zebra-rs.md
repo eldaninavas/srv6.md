@@ -266,7 +266,6 @@ Every `show ebpf` command takes a trailing `json` for machine-readable output.
 An L3VPN packet through a uSID fabric — ingress imposition in TC, everything else in XDP:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 sequenceDiagram
     participant CE1 as CE A
     participant PE1 as PE1 cradle_tc<br/>(H.Encaps.Red)
