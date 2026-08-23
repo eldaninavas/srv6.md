@@ -481,10 +481,23 @@ SRv6 and MPLS share a common security foundation (the trusted domain model) but 
 
 ---
 
+## Post-Quantum Transport Encryption
+
+SRv6 provides integrity mechanisms (HMAC) but **no confidentiality** — payload encryption is always a separate transport layer (MACsec on links, IPsec over untrusted transits). That layer now faces its own deadline: adversaries running **Harvest Now, Decrypt Later** campaigns archive encrypted traffic today to decrypt it once quantum computers can break classical key exchange (RSA/DH/ECDH). For data that stays sensitive for a decade or more, classical IPsec is already insufficient.
+
+The first validated design pairing SRv6 with post-quantum cryptography is Cisco's 2026 mission-critical CVD, which runs the SRv6 fabric over:
+
+- **WAN MACsec** authenticated via EAP-TLS with **ML-KEM** (FIPS 203) key exchange on private links
+- **GRE over IPsec** with IKEv2 hybrid key exchange (RFC 9370: classical ECDH + ML-KEM-1024) on untrusted transits
+- IS-IS **link affinities** tagging encrypted vs. unencrypted interfaces, so Flex-Algo and SR-TE policies can treat encryption as a routing constraint
+
+See [Mission-Critical Networks](../use-cases/mission-critical.md) for the full architecture, including the IKEv2 fragmentation gotcha that comes with ML-KEM's large keys.
+
 ## Further Reading
 
 - :material-arrow-right: [SRH Mechanics & Packet Walk](srh-packet-walk.md) - SRH format including HMAC TLV
 - :material-arrow-right: [OAM & Troubleshooting](oam-troubleshooting.md) - Detecting SRv6 issues
+- :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) - Quantum-safe SRv6 fabric design (PQC MACsec/IPsec)
 - :material-file-document: [RFC 8754](../rfcs/rfc8754.md) - SRH specification including HMAC
 
 ## References
@@ -492,3 +505,4 @@ SRv6 and MPLS share a common security foundation (the trusted domain model) but 
 1. [RFC 8754 - IPv6 Segment Routing Header](https://datatracker.ietf.org/doc/rfc8754/) - Section 7 defines HMAC TLV and security considerations for SRH
 2. [RFC 8402 - Segment Routing Architecture](https://datatracker.ietf.org/doc/rfc8402/) - Section 8 covers SR security properties and the trusted domain model
 3. [draft-ietf-spring-srv6-security](https://datatracker.ietf.org/doc/draft-ietf-spring-srv6-security/) - IETF draft on security considerations specific to SRv6 deployments
+4. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) - Validated design running SRv6 over post-quantum MACsec and IPsec transport

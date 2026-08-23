@@ -197,6 +197,7 @@ nav:
     - VPN Services: use-cases/vpn-services.md
     - Service Chaining: use-cases/service-chaining.md
     - Satellite: use-cases/satellite-connectivity.md
+    - Mission-Critical: use-cases/mission-critical.md
     - 5G Transport: use-cases/5g-transport.md
     - Network Slicing: use-cases/network-slicing.md
     - AI/ML Networks: use-cases/ai-networking.md
@@ -210,6 +211,7 @@ nav:
     - zebra-rs (eBPF): implementations/zebra-rs.md
     - Vinbero (eBPF/Go): implementations/vinbero.md
     - Cisco IOS-XR: implementations/cisco-ios-xr.md
+    - Cisco IOS-XE: implementations/cisco-ios-xe.md
     - Juniper: implementations/juniper.md
     - FRRouting: implementations/frrouting.md
     - SONIC: implementations/sonic.md

@@ -43,6 +43,13 @@ SRv6/EVPN overlay services over LEO satellite links (Starlink + Cisco NCS 540).
 </div>
 
 <div class="srv6-card" markdown>
+### :material-shield-lock: Mission-Critical Networks
+Quantum-safe SRv6 fabrics for defense and tactical WANs — DDIL survivability, PQC transport, red/black isolation.
+
+[:material-arrow-right: Learn more](mission-critical.md)
+</div>
+
+<div class="srv6-card" markdown>
 ### :material-cellphone-arrow-down: 5G Transport
 SRv6 as the converged transport for 5G backhaul, midhaul, and fronthaul with native network slicing.
 

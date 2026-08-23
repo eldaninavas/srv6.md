@@ -177,6 +177,7 @@ graph TB
 - :material-arrow-right: [SR Policy](sr-policy.md) - Color steering and ODN for Flex-Algo-based policies
 - :material-arrow-right: [Network Slicing](../use-cases/network-slicing.md) - End-to-end slicing with Flex-Algo + QoS + color
 - :material-arrow-right: [5G Transport](../use-cases/5g-transport.md) - Network slicing for 5G
+- :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) - Validated secure/low-latency dual-slice design with per-algorithm locators
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - Efficient SID encoding
 - :material-file-document: [RFC 9352](../rfcs/rfc9352.md) - IS-IS Extensions for SRv6
 
@@ -185,3 +186,4 @@ graph TB
 1. [RFC 9350 - IGP Flexible Algorithm](https://datatracker.ietf.org/doc/rfc9350/) - Defines Flex-Algo extensions for IS-IS, OSPFv2, and OSPFv3 enabling custom path computation with constraint-based metrics
 2. [Cisco Marks World's First SRv6 Flex-Algo Deployment on SoftBank's 5G Network](https://news-blogs.cisco.com/apjc/2022/04/27/cisco-marks-worlds-first1-with-the-deployment-of-srv6-flex-algo-on-softbanks-5g-commercial-network/) - Cisco blog announcing the first commercial SRv6 Flex-Algo deployment for 5G network slicing
 3. [Cisco IOS-XR: Enabling Segment Routing Flexible Algorithm](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/72x/b-segment-routing-cg-ncs5500-72x/enabling-segment-routing-flexible-algorithm.html) - Cisco IOS-XR configuration guide for Flex-Algo on NCS 5500 routers
+4. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) - Validated Flex-Algo 128/129 slicing design (secure + low-latency) with dedicated locator blocks per algorithm on IOS-XE

@@ -90,6 +90,9 @@ graph LR
     set routing-instances EVPN-A protocols evpn replication-type ingress
     ```
 
+!!! note "Validated for L3VPN multicast too"
+    Ingress replication isn't limited to EVPN BUM. Cisco's 2026 mission-critical CVD validates **BGP MVPN with partitioned ingress replication** over SRv6 on IOS-XE: receiver interest is signaled via MVPN Type 4 leaf routes carrying an `End.DTMC4` Service SID (the multicast counterpart of `uDT4` — decap + IPv4 multicast lookup in the VRF), and the ingress PE replicates only toward PEs with active receivers. Anycast RP + MSDP at the hubs provide RP redundancy while the core stays multicast-stateless. See [Mission-Critical Networks](../use-cases/mission-critical.md).
+
 ## Approach 2: SRv6 Replication Segments (End.Replicate)
 
 The IETF has defined **replication segments** that enable packet replication at intermediate nodes along the SRv6 path.
@@ -363,6 +366,7 @@ graph TD
 - :material-arrow-right: [EVPN Multihoming](evpn-multihoming.md) — All-Active multihoming with BUM traffic considerations
 - :material-arrow-right: [Network Programming](network-programming.md) — SRv6 behaviors including replication
 - :material-arrow-right: [5G Transport](../use-cases/5g-transport.md) — Multicast requirements for mobile networks
+- :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) — Validated MVPN ingress replication design with End.DTMC4
 
 ## References
 
@@ -371,3 +375,4 @@ graph TD
 3. [RFC 8279](https://datatracker.ietf.org/doc/rfc8279/) — Multicast Using Bit Index Explicit Replication (BIER)
 4. [RFC 9252](https://datatracker.ietf.org/doc/rfc9252/) — BGP Overlay Services Based on SRv6
 5. [draft-ietf-bier-srv6-requirements](https://datatracker.ietf.org/doc/draft-ietf-bier-srv6-requirements/) — BIER in SRv6 Requirements
+6. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) — Validated BGP MVPN ingress replication with End.DTMC4, Anycast RP, and MSDP over SRv6 on IOS-XE
