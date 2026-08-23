@@ -534,6 +534,28 @@
 }
 
 /* --- Mermaid Diagrams (Global) --- */
+/* Material renders mermaid inside a *closed* shadow root, so regular CSS rules
+   (like the .nodeLabel overrides below) never reach the SVG. The supported way
+   to theme diagrams is via the --md-mermaid-* custom properties, which inherit
+   through the shadow boundary. Diagrams must NOT hardcode fills/colors in
+   `style`/`%%{init}%%` directives — those force dark fills under the light
+   scheme's dark labels and become unreadable. */
+[data-md-color-scheme="default"] {
+  --md-mermaid-edge-color: #7b1fa2;
+  --md-mermaid-node-bg-color: #f3e5f5;
+  --md-mermaid-node-fg-color: #7b1fa2;
+  --md-mermaid-label-bg-color: var(--md-default-bg-color);
+  --md-mermaid-label-fg-color: #33203b;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-mermaid-edge-color: #ce93d8;
+  --md-mermaid-node-bg-color: #4a148c;
+  --md-mermaid-node-fg-color: #ab47bc;
+  --md-mermaid-label-bg-color: var(--md-default-bg-color);
+  --md-mermaid-label-fg-color: #f5eefa;
+}
+
 .mermaid {
   background: transparent !important;
   font-family: inherit !important;
