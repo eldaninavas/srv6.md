@@ -51,7 +51,6 @@ SRv6 itself provides no encryption ([it never did](../topics/security.md)) — t
 The design is a single IS-IS Level-2 domain carrying **uSID (F3216)** locators, with all services delivered as BGP overlays — no LDP, RSVP-TE, or BGP-LU anywhere:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
 graph LR
     FS[Field Site<br/>tactical edge] -->|MACsec E-Line| HUB1[DC Hub 1]
     FS -->|PQC GRE/IPsec<br/>over internet| HUB2[DC Hub 2]
@@ -59,12 +58,6 @@ graph LR
     SPC -->|PQC IPsec| HUB2
     HUB1 --- RR[Route Reflector]
     HUB2 --- RR
-
-    style FS fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style SPC fill:#7b1fa2,color:#fff,stroke:#ab47bc
-    style HUB1 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style HUB2 fill:#4a148c,color:#fff,stroke:#ab47bc
-    style RR fill:#4a148c,color:#fff,stroke:#ab47bc
 ```
 
 Key building blocks, each covered in depth elsewhere on this site:
