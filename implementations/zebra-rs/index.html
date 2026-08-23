@@ -162,8 +162,7 @@
 </span><span id=__span-6-9><a id=__codelineno-6-9 name=__codelineno-6-9 href=#__codelineno-6-9></a>zebra&gt; show ebpf srv6        # SRv6 local SIDs and transit encaps
 </span><span id=__span-6-10><a id=__codelineno-6-10 name=__codelineno-6-10 href=#__codelineno-6-10></a>zebra&gt; show ebpf ipv6 vrf vrf1
 </span><span id=__span-6-11><a id=__codelineno-6-11 name=__codelineno-6-11 href=#__codelineno-6-11></a>zebra&gt; show ebpf stats       # datapath counters, per-behavior
-</span></code></pre></div> <p>Every <code>show ebpf</code> command takes a trailing <code>json</code> for machine-readable output.</p> <h2 id=full-traffic-walk>Full Traffic Walk<a class=headerlink href=#full-traffic-walk title="Permanent link">&para;</a></h2> <p>An L3VPN packet through a uSID fabric — ingress imposition in TC, everything else in XDP:</p> <pre class=mermaid><code>%%{init: {"theme": "base", "themeVariables": {"primaryTextColor": "#fff", "lineColor": "#ce93d8", "textColor": "#fff"}}}%%
-sequenceDiagram
+</span></code></pre></div> <p>Every <code>show ebpf</code> command takes a trailing <code>json</code> for machine-readable output.</p> <h2 id=full-traffic-walk>Full Traffic Walk<a class=headerlink href=#full-traffic-walk title="Permanent link">&para;</a></h2> <p>An L3VPN packet through a uSID fabric — ingress imposition in TC, everything else in XDP:</p> <pre class=mermaid><code>sequenceDiagram
     participant CE1 as CE A
     participant PE1 as PE1 cradle_tc&lt;br/&gt;(H.Encaps.Red)
     participant P as P router cradle_xdp&lt;br/&gt;(uN)
