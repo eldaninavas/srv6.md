@@ -45,6 +45,7 @@ SRv6 is in production at some of the world's largest networks. The following is 
 
 | Company | Announcement | Source |
 |---------|-------------|:------:|
+| **OpenAI** | MRC: static SRv6 source routing on 100K+ GPU AI supercomputers (with Microsoft, AMD, Broadcom, NVIDIA) | [:material-open-in-new:](https://openai.com/index/mrc-supercomputer-networking/) |
 | **Alibaba Cloud** | Full-stack SRv6 on SONiC whitebox routers | [:material-open-in-new:](https://sonicfoundation.dev/driving-innovation-alibaba-and-cisco-co-dev-srv6-sonic-router/) |
 | **LINE Corporation** (Japan) | SRv6 overlay for data center networking | [:material-open-in-new:](https://www.segment-routing.net/conferences/2019-09-20-SRv6-LINE-DC/) |
 
