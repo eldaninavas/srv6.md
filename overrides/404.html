@@ -1,0 +1,21 @@
+{% extends "main.html" %}
+
+{% block content %}
+  <h1>404 - Not found</h1>
+  <p id="srv6-404-hint" hidden>Redirecting you to the page…</p>
+  <script>
+    /* Tolerant URLs: people paste repo source paths (/docs/foo/bar.md) or
+       .md-style paths (/foo/bar.md). Rewrite them to the published page URL
+       (/foo/bar/) and redirect. Targets that still miss will land back here
+       without ".md", so this cannot loop. */
+    (function () {
+      var m = location.pathname.match(/^\/(?:docs\/)?(.*)\.md\/?$/i);
+      if (!m) return;
+      var p = m[1].replace(/(^|\/)index$/i, "$1");
+      var target = "/" + (p ? p.replace(/\/*$/, "/") : "");
+      if (target === location.pathname) return;
+      document.getElementById("srv6-404-hint").hidden = false;
+      location.replace(target + location.search + location.hash);
+    })();
+  </script>
+{% endblock %}
