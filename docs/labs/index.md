@@ -23,6 +23,13 @@ Build lightweight SRv6 topologies with Docker containers. Ideal for Linux-native
 </div>
 
 <div class="srv6-card" markdown>
+### :material-monitor: netlab
+Build complete, preconfigured SRv6 topologies using FRRouting, Cisco IOS XE, Cisco IOS XR, or Junos containers or virtual machines.
+
+[:material-arrow-right: Start lab](netlab.md)
+</div>
+
+<div class="srv6-card" markdown>
 ### :material-monitor: GNS3
 Emulate vendor routers (IOS-XR, Junos) for realistic SRv6 testing.
 

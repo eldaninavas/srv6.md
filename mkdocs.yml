@@ -218,6 +218,7 @@ nav:
   - Labs:
     - labs/index.md
     - Containerlab: labs/containerlab.md
+    - netlab: labs/netlab.md
     - GNS3: labs/gns3.md
   - RFCs & Standards:
     - rfcs/index.md
