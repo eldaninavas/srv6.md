@@ -5,7 +5,7 @@ parameters:
   locator_prefix: "fcbb:bb00:1::/48"
 notes:
   - Node locator is a /48 inside a /32 uSID block (F3216 - 32-bit block, 16-bit uSIDs).
-  - "psp-usd" enables penultimate segment pop and ultimate segment decapsulation flavors.
+  - The psp-usd keyword enables penultimate segment pop and ultimate segment decapsulation flavors.
 template: |
   segment-routing
    srv6

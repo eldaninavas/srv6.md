@@ -10,7 +10,17 @@ An [MCP](https://modelcontextprotocol.io) server over the [srv6.md](https://srv6
 
 Config templates exist today for `cisco-iosxr` and `frrouting`: `basic-srv6-locator`, `usid-locator`, `isis-srv6`, `l3vpn-dt4`. Other vendors return the list of what is available. Templates are starting points; verify syntax against your software release.
 
-## Setup
+## Hosted (free)
+
+No install needed. The server is also deployed as a Cloudflare Worker (stateless Streamable HTTP, rate limited):
+
+```bash
+claude mcp add --transport http srv6 https://mcp.srv6.md/mcp
+```
+
+Deploy your own: `npx wrangler login`, then `npm run deploy:worker` (builds, bundles `docs/` into the Worker, typechecks, deploys). Config is in `wrangler.jsonc`; change the `routes` entry to your domain.
+
+## Setup (local, stdio)
 
 From the repo root:
 
@@ -23,7 +33,7 @@ node dist/index.js --docs-path ../docs
 
 `--docs-path` defaults to the `docs/` directory next to this package (the srv6.md repo layout). A relative value is resolved against the current working directory. Logs go to stderr; stdout is reserved for the MCP transport.
 
-Once published, `npx @srv6md/mcp-server --docs-path /path/to/srv6.md/docs` works the same way. The published package does not bundle `docs/`, so `--docs-path` is required there.
+Once published, `npx -y @srv6md/mcp-server` works the same way. The npm package bundles `docs/` at publish time (`prepack`), so no flag is needed there; `--docs-path` overrides it.
 
 ## Connect
 

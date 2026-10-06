@@ -57,51 +57,52 @@ Now every conversation in that project has full SRv6 knowledge.
 
 ---
 
-## Option 3: MCP Server (Claude Code / Claude Desktop)
+## Option 3: MCP Server (Claude, Cursor, any MCP client)
 
-The **MCP (Model Context Protocol)** server gives Claude direct tool access to search and read the wiki.
+The **MCP (Model Context Protocol)** server gives your AI assistant direct tool access to the SRv6.md knowledge base. It is **free and hosted**: nothing to install, just add the URL.
+
+```
+https://mcp.srv6.md/mcp
+```
 
 ### Available Tools
 
 | Tool | Description |
 |------|-------------|
-| `search_srv6` | Search the knowledge base by keyword |
-| `list_srv6_pages` | List all available wiki pages |
-| `read_srv6_page` | Read a specific page by its path |
+| `search_srv6_docs` | Full-text search across topics, use cases, implementations, RFCs, and labs |
+| `get_endpoint_behavior` | Definition, pseudocode, use cases, and vendor support for End, End.X, End.DT4, uN, H.Encaps.Red, and more |
+| `get_vendor_config` | Config templates for Cisco IOS-XR and FRRouting (locator, uSID, IS-IS, L3VPN) |
 
-### Setup for Claude Desktop
+### Setup for Claude Code
 
-Add to your `claude_desktop_config.json`:
+```bash
+claude mcp add --transport http srv6 https://mcp.srv6.md/mcp
+```
+
+### Setup for Claude Desktop, claude.ai, and other clients
+
+Add a **remote MCP server** (custom connector) with the URL `https://mcp.srv6.md/mcp`. Clients that only support local servers can bridge it with `mcp-remote`:
 
 ```json
 {
   "mcpServers": {
     "srv6": {
       "command": "npx",
-      "args": ["srv6-mcp-server"]
+      "args": ["-y", "mcp-remote", "https://mcp.srv6.md/mcp"]
     }
   }
 }
 ```
 
-### Setup for Claude Code
-
-```bash
-claude mcp add srv6 npx srv6-mcp-server
-```
-
 ### What You Can Ask
-
-Once the MCP server is connected, Claude can directly query the knowledge base:
 
 - *"What SRv6 behaviors does the Linux kernel support?"*
 - *"Show me the IOS-XR config for SRv6 L3VPN"*
 - *"What's the difference between End.DX4 and End.DT4?"*
-- *"How do I build an SRv6 lab with Containerlab?"*
+- *"Give me an FRR uSID locator template with prefix fcbb:bb00:2::/48"*
 
-### Source Code
-
-The MCP server source is in the [`mcp-server/`](https://github.com/eldaninavas/srv6.md/tree/main/mcp-server) directory of the repository.
+!!! note "Fair use"
+    The hosted server is read-only and rate limited per IP. To run your own copy, see the source in [`srv6-mcp-server/`](https://github.com/eldaninavas/srv6.md/tree/main/srv6-mcp-server).
 
 ---
 
@@ -116,7 +117,7 @@ The content is available in multiple formats:
 | Raw Markdown | [GitHub `docs/`](https://github.com/eldaninavas/srv6.md/tree/main/docs) | Custom parsers, RAG pipelines |
 | `llms.txt` | `https://srv6.md/llms.txt` | LLM index discovery |
 | `llms-full.txt` | `https://srv6.md/llms-full.txt` | Single-file ingestion |
-| MCP Server | `npx srv6-mcp-server` | Claude integrations |
+| MCP Server | `https://mcp.srv6.md/mcp` | Claude, Cursor, and other MCP clients |
 | Website | `https://srv6.md` | Human browsing |
 
 ### RAG Pipeline Example

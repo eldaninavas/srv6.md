@@ -12,44 +12,54 @@ export const VENDORS = [
 ] as const;
 export type Vendor = (typeof VENDORS)[number];
 
-interface Template {
+export interface Template {
   description: string;
   notes?: string[];
   parameters: Record<string, string | number>; // defaults
   template: string;
 }
 
-async function listFeatures(dir: string): Promise<string[]> {
-  try {
-    return (await fs.readdir(dir)).filter((f) => f.endsWith(".yaml")).map((f) => f.replace(/\.yaml$/, "")).sort();
-  } catch {
-    return [];
+/** vendor -> feature -> template */
+export type TemplateStore = Record<string, Record<string, Template>>;
+
+export async function loadTemplates(knowledgeDir: string): Promise<TemplateStore> {
+  const root = path.join(knowledgeDir, "config-templates");
+  const store: TemplateStore = {};
+  for (const vendor of await fs.readdir(root)) {
+    const dir = path.join(root, vendor);
+    if (!(await fs.stat(dir)).isDirectory()) continue;
+    store[vendor] = {};
+    for (const file of await fs.readdir(dir)) {
+      if (!file.endsWith(".yaml")) continue;
+      store[vendor][file.replace(/\.yaml$/, "")] = YAML.parse(await fs.readFile(path.join(dir, file), "utf8")) as Template;
+    }
   }
+  return store;
 }
 
-export async function getVendorConfig(
-  knowledgeDir: string,
+export function getVendorConfig(
+  store: TemplateStore,
   vendor: Vendor,
   feature: string,
   params: Record<string, unknown> = {},
-): Promise<string> {
-  const vendorDir = path.join(knowledgeDir, "config-templates", vendor);
-  const available = await listFeatures(vendorDir);
+): string {
+  const features = store[vendor] ?? {};
+  const available = Object.keys(features).sort();
   const key = feature.trim().toLowerCase().replace(/[\s_]+/g, "-");
+  const tpl = Object.hasOwn(features, key) ? features[key] : undefined;
 
-  if (!/^[a-z0-9-]+$/.test(key) || !available.includes(key)) {
+  if (!tpl) {
     return available.length
       ? `No template "${feature}" for ${vendor}. Available features: ${available.join(", ")}`
-      : `No templates for ${vendor} yet. Templates currently exist for: cisco-iosxr, frrouting.`;
+      : `No templates for ${vendor} yet. Templates currently exist for: ${Object.keys(store).sort().join(", ")}.`;
   }
 
-  const tpl = YAML.parse(await fs.readFile(path.join(vendorDir, `${key}.yaml`), "utf8")) as Template;
   const values: Record<string, string> = {};
   for (const [k, v] of Object.entries({ ...tpl.parameters, ...params })) values[k] = String(v);
 
   const unresolved = new Set<string>();
   const config = tpl.template.replace(/\{\{\s*([\w]+)\s*\}\}/g, (_, name: string) => {
-    if (name in values) return values[name];
+    if (Object.hasOwn(values, name)) return values[name];
     unresolved.add(name);
     return `{{${name}}}`;
   });

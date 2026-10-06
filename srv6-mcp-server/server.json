@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.eldaninavas/srv6",
+  "title": "SRv6.md",
+  "description": "SRv6 knowledge base for network engineers: docs search, behaviors, vendor configs.",
+  "websiteUrl": "https://srv6.md",
+  "repository": {
+    "url": "https://github.com/eldaninavas/srv6.md",
+    "source": "github",
+    "subfolder": "srv6-mcp-server"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@srv6md/mcp-server",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.srv6.md/mcp"
+    }
+  ]
+}

@@ -6,9 +6,12 @@ export interface SearchState {
   pages: Map<string, DocPage>;
 }
 
-export async function createSearchState(docsPath: string): Promise<SearchState> {
-  const pages = await loadDocs(docsPath);
+export function createSearchStateFromPages(pages: DocPage[]): SearchState {
   return { index: buildIndex(pages), pages: new Map(pages.map((p) => [p.id, p])) };
+}
+
+export async function createSearchState(docsPath: string): Promise<SearchState> {
+  return createSearchStateFromPages(await loadDocs(docsPath));
 }
 
 export type { DocPage };

@@ -10,7 +10,13 @@
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('dist/index.js', 0o755)\"",
     "start": "node dist/index.js",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "bundle:data": "node scripts/bundle-data.mjs",
+    "typecheck:worker": "tsc -p worker",
+    "dev:worker": "npm run build && npm run bundle:data && wrangler dev",
+    "deploy:worker": "npm run build && npm run bundle:data && npm run typecheck:worker && wrangler deploy",
+    "prepack": "npm run build && rm -rf docs && cp -r ../docs docs",
+    "postpack": "rm -rf docs"
   },
   "keywords": [
     "srv6",
@@ -22,11 +28,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/eldaninavas/srv6.md"
+    "url": "https://github.com/eldaninavas/srv6.md",
+    "directory": "srv6-mcp-server"
   },
   "files": [
     "dist/",
-    "knowledge/"
+    "knowledge/",
+    "docs/"
   ],
   "engines": {
     "node": ">=18"
@@ -39,6 +47,9 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
-    "typescript": "^7.0.2"
-  }
+    "typescript": "^7.0.2",
+    "wrangler": "^4.147.0"
+  },
+  "mcpName": "io.github.eldaninavas/srv6",
+  "homepage": "https://srv6.md"
 }
