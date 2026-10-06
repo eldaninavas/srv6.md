@@ -1,0 +1,46 @@
+description: IPv4 L3VPN over SRv6 on IOS-XR (per-VRF End.DT4 / uDT4 SID).
+parameters:
+  asn: 65000
+  router_id: "10.0.0.1"
+  vrf_name: CUST-A
+  rd: "65000:100"
+  rt: "65000:100"
+  locator_name: MAIN
+  neighbor: "2001:db8:0:2::1"
+notes:
+  - alloc mode per-vrf allocates one End.DT4 (or uDT4) SID per VRF from the locator.
+  - The remote PE must run the same locator-based service SID model; VPNv4 NLRI carries the SID (RFC 9252).
+template: |
+  vrf {{vrf_name}}
+   address-family ipv4 unicast
+    import route-target
+     {{rt}}
+    !
+    export route-target
+     {{rt}}
+    !
+   !
+  !
+  router bgp {{asn}}
+   bgp router-id {{router_id}}
+   segment-routing srv6
+    locator {{locator_name}}
+   !
+   address-family vpnv4 unicast
+   !
+   neighbor {{neighbor}}
+    remote-as {{asn}}
+    update-source Loopback0
+    address-family vpnv4 unicast
+    !
+   !
+   vrf {{vrf_name}}
+    rd {{rd}}
+    address-family ipv4 unicast
+     segment-routing srv6
+      alloc mode per-vrf
+     !
+     redistribute connected
+    !
+   !
+  !

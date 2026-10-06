@@ -1,0 +1,22 @@
+description: uSID (micro-SID) locator on IOS-XR using the default F3216 format.
+parameters:
+  source_address: "2001:db8:0:1::1"
+  locator_name: MAIN
+  locator_prefix: "fcbb:bb00:1::/48"
+notes:
+  - Node locator is a /48 inside a /32 uSID block (F3216 - 32-bit block, 16-bit uSIDs).
+  - "psp-usd" enables penultimate segment pop and ultimate segment decapsulation flavors.
+template: |
+  segment-routing
+   srv6
+    encapsulation
+     source-address {{source_address}}
+    !
+    locators
+     locator {{locator_name}}
+      micro-segment behavior unode psp-usd
+      prefix {{locator_prefix}}
+     !
+    !
+   !
+  !

@@ -1,0 +1,22 @@
+description: IS-IS with SRv6 locator advertisement on FRRouting.
+parameters:
+  isis_instance: CORE
+  net: "49.0001.0000.0000.0001.00"
+  locator_name: MAIN
+  interface: eth0
+notes:
+  - The locator must already exist under segment-routing srv6 (see basic-srv6-locator or usid-locator).
+template: |
+  router isis {{isis_instance}}
+   net {{net}}
+   is-type level-2-only
+   metric-style wide
+   segment-routing srv6
+    locator {{locator_name}}
+   exit
+  exit
+  !
+  interface {{interface}}
+   ipv6 router isis {{isis_instance}}
+   isis network point-to-point
+  exit

@@ -1,0 +1,25 @@
+description: Classic SRv6 locator on FRRouting (zebra) with encapsulation source address.
+parameters:
+  source_address: "2001:db8:0:1::1"
+  locator_name: MAIN
+  locator_prefix: "fcbb:bb00:1::/48"
+  block_len: 32
+  node_len: 16
+  func_bits: 16
+notes:
+  - "Linux prerequisites: sysctl net.ipv6.conf.all.seg6_enabled=1 and net.ipv6.conf.<if>.seg6_enabled=1 on ingress interfaces."
+  - "End.DT4/DT6 per-VRF also needs sysctl net.vrf.strict_mode=1."
+  - Requires FRR 10.x or later for the segment-routing srv6 CLI.
+template: |
+  segment-routing
+   srv6
+    encapsulation
+     source-address {{source_address}}
+    exit
+    locators
+     locator {{locator_name}}
+      prefix {{locator_prefix}} block-len {{block_len}} node-len {{node_len}} func-bits {{func_bits}}
+     exit
+    exit
+   exit
+  exit

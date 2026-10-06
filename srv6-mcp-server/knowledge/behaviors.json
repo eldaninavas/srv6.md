@@ -1,0 +1,395 @@
+{
+  "_note": "Pseudocode is condensed from RFC 8986 / RFC 9800. Vendor support is indicative; check docs/implementations for versions.",
+  "behaviors": [
+    {
+      "name": "End",
+      "rfc": "RFC 8986, Section 4.1",
+      "category": "Endpoint",
+      "summary": "Plain endpoint: advance to the next segment and forward on the IPv6 FIB.",
+      "definition": "The SID is a node SID. The node updates the IPv6 DA to the next SID in the SRH and forwards the packet using a regular IPv6 FIB lookup. Flavors (PSP, USP, USD) from RFC 8986 modify SRH handling at the penultimate/ultimate hop.",
+      "pseudocode": [
+        "S01. If (Segments Left == 0) -> stop SRH processing, process next header",
+        "S02. If (Hop Limit <= 1) -> ICMP Time Exceeded (code 0), discard",
+        "S03. If (Last Entry > max_LE or Segments Left > Last Entry+1) -> ICMP Parameter Problem, discard",
+        "S04. Decrement Hop Limit; decrement Segments Left",
+        "S05. DA = SegmentList[Segments Left]",
+        "S06. Lookup DA in the IPv6 FIB and forward"
+      ],
+      "use_cases": [
+        "Node steering in a segment list",
+        "Loose-hop waypoint (prefix SID equivalent)",
+        "Base for TI-LFA repair paths"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "Juniper Junos",
+        "FRRouting",
+        "Linux kernel",
+        "SONiC"
+      ],
+      "aliases": [
+        "End.PSP"
+      ]
+    },
+    {
+      "name": "End.X",
+      "rfc": "RFC 8986, Section 4.2",
+      "category": "Endpoint",
+      "summary": "Endpoint with cross-connect to a specific layer-3 adjacency.",
+      "definition": "Like End, but instead of an FIB lookup the packet is forwarded out a specific layer-3 adjacency (interface plus next hop). Equivalent to an adjacency SID.",
+      "pseudocode": [
+        "S01. If (Segments Left == 0) -> stop SRH processing, process next header",
+        "S02. If (Hop Limit <= 1) -> ICMP Time Exceeded (code 0), discard",
+        "S03. If (Last Entry > max_LE or Segments Left > Last Entry+1) -> ICMP Parameter Problem, discard",
+        "S04. Decrement Hop Limit; decrement Segments Left",
+        "S05. DA = SegmentList[Segments Left]",
+        "S06. Forward the packet to the L3 adjacency J bound to this SID (no FIB lookup)"
+      ],
+      "use_cases": [
+        "Strict-hop path steering",
+        "Adjacency-level traffic engineering",
+        "TI-LFA repair segments (link-protection)"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "Juniper Junos",
+        "FRRouting",
+        "Linux kernel",
+        "SONiC"
+      ]
+    },
+    {
+      "name": "End.T",
+      "rfc": "RFC 8986, Section 4.3",
+      "category": "Endpoint",
+      "summary": "Endpoint with specific IPv6 table lookup.",
+      "definition": "Like End, but the next-hop lookup is performed in a specific IPv6 table T instead of the default FIB.",
+      "pseudocode": [
+        "S01. If (Segments Left == 0) -> stop SRH processing, process next header",
+        "S02. If (Hop Limit <= 1) -> ICMP Time Exceeded (code 0), discard",
+        "S03. If (Last Entry > max_LE or Segments Left > Last Entry+1) -> ICMP Parameter Problem, discard",
+        "S04. Decrement Hop Limit; decrement Segments Left",
+        "S05. DA = SegmentList[Segments Left]",
+        "S06. Lookup DA in IPv6 table T and forward"
+      ],
+      "use_cases": [
+        "Per-VRF/per-slice underlay forwarding",
+        "Multi-topology steering"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "FRRouting",
+        "Linux kernel"
+      ]
+    },
+    {
+      "name": "End.DX6",
+      "rfc": "RFC 8986, Section 4.4",
+      "category": "Endpoint with decapsulation",
+      "summary": "Decapsulate and cross-connect to a layer-3 IPv6 adjacency.",
+      "definition": "Terminates the SRv6 tunnel: removes the outer IPv6 header (with SRH) and forwards the inner IPv6 packet to a specific layer-3 adjacency. Used for per-CE VPN SIDs.",
+      "pseudocode": [
+        "S01. If (Next Header != SRH or Segments Left == 0) -> proceed; else discard (ICMP Parameter Problem)",
+        "S02. If (Upper-layer header type == 41 IPv6) -> pop the outer IPv6 header and its extension headers",
+        "S03. Forward the resulting packet to L3 adjacency J (no FIB lookup)",
+        "S04. Else discard"
+      ],
+      "use_cases": [
+        "L3VPN per-CE IPv6 service",
+        "Per-adjacency decap for CE-facing links"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "FRRouting",
+        "Linux kernel",
+        "SONiC"
+      ]
+    },
+    {
+      "name": "End.DX4",
+      "rfc": "RFC 8986, Section 4.5",
+      "category": "Endpoint with decapsulation",
+      "summary": "Decapsulate and cross-connect to a layer-3 IPv4 adjacency.",
+      "definition": "Same as End.DX6 but the inner packet is IPv4 and is forwarded to an IPv4 adjacency.",
+      "pseudocode": [
+        "S01. If (Next Header != SRH or Segments Left == 0) -> proceed; else discard (ICMP Parameter Problem)",
+        "S02. If (Upper-layer header type == 4 IPv4) -> pop the outer IPv6 header and its extension headers",
+        "S03. Forward the resulting IPv4 packet via IPv4 adjacency J",
+        "S04. Else discard"
+      ],
+      "use_cases": [
+        "L3VPN per-CE IPv4 service",
+        "IPv4 CE attachment over an IPv6 core"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "FRRouting",
+        "Linux kernel",
+        "SONiC"
+      ]
+    },
+    {
+      "name": "End.DT6",
+      "rfc": "RFC 8986, Section 4.6",
+      "category": "Endpoint with decapsulation",
+      "summary": "Decapsulate and specific IPv6 table lookup.",
+      "definition": "Terminates the tunnel and looks up the inner IPv6 destination in a specific IPv6 table (typically a VRF). The common per-VRF SID for IPv6 L3VPN.",
+      "pseudocode": [
+        "S01. If (Next Header != SRH or Segments Left == 0) -> proceed; else discard (ICMP Parameter Problem)",
+        "S02. If (Upper-layer header type == 41 IPv6) -> pop the outer IPv6 header and its extension headers",
+        "S03. Set the packet's associated FIB table to T",
+        "S04. Lookup the inner destination in table T and forward",
+        "S05. Else discard"
+      ],
+      "use_cases": [
+        "L3VPN per-VRF IPv6 service",
+        "Internet in a VRF",
+        "Service SID advertised via BGP (RFC 9252)"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "Juniper Junos",
+        "FRRouting",
+        "Linux kernel",
+        "SONiC"
+      ]
+    },
+    {
+      "name": "End.DT4",
+      "rfc": "RFC 8986, Section 4.7",
+      "category": "Endpoint with decapsulation",
+      "summary": "Decapsulate and specific IPv4 table lookup.",
+      "definition": "Terminates the tunnel and looks up the inner IPv4 destination in a specific IPv4 table (typically a VRF). The common per-VRF SID for IPv4 L3VPN.",
+      "pseudocode": [
+        "S01. If (Next Header != SRH or Segments Left == 0) -> proceed; else discard (ICMP Parameter Problem)",
+        "S02. If (Upper-layer header type == 4 IPv4) -> pop the outer IPv6 header and its extension headers",
+        "S03. Set the packet's associated FIB table to T",
+        "S04. Lookup the inner destination in IPv4 table T and forward",
+        "S05. Else discard"
+      ],
+      "use_cases": [
+        "L3VPN per-VRF IPv4 service",
+        "Replacement for VPNv4 MPLS labels",
+        "Service SID advertised via BGP (RFC 9252)"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "Juniper Junos",
+        "FRRouting",
+        "Linux kernel",
+        "SONiC"
+      ]
+    },
+    {
+      "name": "End.B6.Encaps",
+      "rfc": "RFC 8986, Section 4.13",
+      "category": "Binding SID",
+      "summary": "Endpoint bound to an SR Policy, with encapsulation.",
+      "definition": "A Binding SID. When the packet arrives, the node advances the segment list, then encapsulates the packet in a new outer IPv6 header carrying the SRH of the bound SR policy and forwards it. Hides the policy's segment list from upstream nodes.",
+      "pseudocode": [
+        "S01. If (Segments Left == 0) -> discard (ICMP Parameter Problem)",
+        "S02. If (Hop Limit <= 1) -> ICMP Time Exceeded, discard",
+        "S03. Decrement Hop Limit; decrement Segments Left; DA = SegmentList[Segments Left]",
+        "S04. Push a new outer IPv6 header with SRH containing the bound SR Policy's segment list",
+        "S05. Set outer Source Address = this node; outer DA = first SID of the policy",
+        "S06. Lookup outer DA in the FIB and forward"
+      ],
+      "use_cases": [
+        "Segment-list stitching across domains",
+        "Hiding long segment lists / reducing SRH size (MSD limits)",
+        "Inter-domain SR policy chaining"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "FRRouting (partial)",
+        "Linux kernel"
+      ],
+      "aliases": [
+        "End.B6"
+      ]
+    },
+    {
+      "name": "End.B6.Encaps.Red",
+      "rfc": "RFC 8986, Section 4.14",
+      "category": "Binding SID",
+      "summary": "End.B6.Encaps with a reduced SRH (first SID carried only in the DA).",
+      "definition": "Same as End.B6.Encaps, but the first SID of the policy is placed only in the outer DA and omitted from the new SRH, saving 16 bytes.",
+      "pseudocode": [
+        "S01-S03. As End.B6.Encaps",
+        "S04. Push a new outer IPv6 header with a reduced SRH (policy segment list minus its first SID)",
+        "S05. Outer DA = first SID of the policy",
+        "S06. Lookup outer DA in the FIB and forward"
+      ],
+      "use_cases": [
+        "Same as End.B6.Encaps where header overhead matters (MTU, ASIC parsing depth)"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Linux kernel"
+      ]
+    },
+    {
+      "name": "H.Encaps",
+      "rfc": "RFC 8986, Section 5.1",
+      "category": "Headend",
+      "summary": "SR headend with encapsulation in an SR policy.",
+      "definition": "Headend behavior: the ingress node steers a packet into an SR policy by pushing an outer IPv6 header and an SRH containing the full segment list.",
+      "pseudocode": [
+        "S01. Push an outer IPv6 header with SRH containing the SR Policy segment list",
+        "S02. Outer Source Address = encapsulating node address; outer DA = first SID",
+        "S03. Set Next Header per payload (IPv4/IPv6/Ethernet); Hop Limit per policy",
+        "S04. Lookup outer DA in the FIB and forward"
+      ],
+      "use_cases": [
+        "Steering traffic into SR policies (BGP color, ODN, static)",
+        "L3VPN/EVPN ingress PE encapsulation"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "Juniper Junos",
+        "FRRouting",
+        "Linux kernel",
+        "SONiC"
+      ]
+    },
+    {
+      "name": "H.Encaps.Red",
+      "rfc": "RFC 8986, Section 5.2",
+      "category": "Headend",
+      "summary": "H.Encaps with a reduced SRH.",
+      "definition": "Same as H.Encaps but the first SID is carried only in the outer DA, so the SRH holds one fewer entry. With a single-SID policy the SRH can be omitted entirely.",
+      "pseudocode": [
+        "S01. Push an outer IPv6 header; first SID goes to the outer DA only",
+        "S02. If the policy has more than one SID, add an SRH with the remaining SIDs",
+        "S03. Lookup outer DA in the FIB and forward"
+      ],
+      "use_cases": [
+        "Default for most L3VPN deployments to minimize overhead",
+        "Short segment lists with no SRH"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "Juniper Junos",
+        "FRRouting",
+        "Linux kernel",
+        "SONiC"
+      ]
+    },
+    {
+      "name": "uN",
+      "rfc": "RFC 9800 (NEXT-C-SID flavor of End)",
+      "category": "uSID endpoint",
+      "summary": "Compressed node SID: shift the next micro-SID into the active position.",
+      "definition": "uN is the NEXT-C-SID flavor of End. A uSID carrier (an IPv6 address) holds a locator block followed by several 16-bit micro-SIDs. The node matching the first uSID shifts the remaining uSIDs left and forwards; no SRH is needed for short paths.",
+      "pseudocode": [
+        "S01. DA = [Block | active uSID | uSID2 | uSID3 | ... | 0]",
+        "S02. If (Hop Limit <= 1) -> ICMP Time Exceeded, discard",
+        "S03. If (remaining uSIDs after the active one are all zero) -> behave as classic End (use SRH if present)",
+        "S04. Else DA = [Block | uSID2 | uSID3 | ... | 0 | 0]   (shift left by one uSID, pad with zeros)",
+        "S05. Decrement Hop Limit; lookup new DA in the FIB and forward"
+      ],
+      "use_cases": [
+        "Compressed SR paths in a single 128-bit carrier (up to ~6 uSIDs for F3216)",
+        "Data center and WAN uSID deployments",
+        "Reducing header overhead versus classic SRH"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "Juniper Junos",
+        "FRRouting",
+        "Linux kernel",
+        "SONiC"
+      ],
+      "aliases": [
+        "uSID-uN",
+        "End with NEXT-CSID"
+      ]
+    },
+    {
+      "name": "uA",
+      "rfc": "RFC 9800 (NEXT-C-SID flavor of End.X)",
+      "category": "uSID endpoint",
+      "summary": "Compressed adjacency SID: shift and forward over a specific adjacency.",
+      "definition": "uA is the NEXT-C-SID flavor of End.X: it shifts the uSID carrier like uN but forwards over a specific layer-3 adjacency instead of an FIB lookup.",
+      "pseudocode": [
+        "S01. Same shift logic as uN (S02-S04)",
+        "S02. Forward the packet to the L3 adjacency bound to the uA uSID (no FIB lookup)"
+      ],
+      "use_cases": [
+        "Strict-hop steering in compressed paths",
+        "TI-LFA repair paths with uSID"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "FRRouting",
+        "Linux kernel"
+      ],
+      "aliases": [
+        "uSID-uA",
+        "End.X with NEXT-CSID"
+      ]
+    },
+    {
+      "name": "uDT4",
+      "rfc": "RFC 9800 (NEXT-C-SID flavor of End.DT4)",
+      "category": "uSID endpoint with decapsulation",
+      "summary": "Compressed IPv4 per-VRF decap SID.",
+      "definition": "The terminating uSID for IPv4 L3VPN. As the last uSID in the carrier it is processed like End.DT4: decapsulate and look up the inner IPv4 packet in the VRF table.",
+      "pseudocode": [
+        "S01. DA matches [Block | Node | uDT4 function]; no further uSIDs follow",
+        "S02. Pop the outer IPv6 header (and SRH if present)",
+        "S03. Lookup the inner IPv4 destination in VRF table T and forward"
+      ],
+      "use_cases": [
+        "IPv4 L3VPN service SID advertised via BGP with uSID",
+        "Per-VRF decap in compressed networks"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "Juniper Junos",
+        "FRRouting",
+        "Linux kernel"
+      ],
+      "aliases": [
+        "uSID-uDT4",
+        "End.DT4 with NEXT-CSID"
+      ]
+    },
+    {
+      "name": "uDT6",
+      "rfc": "RFC 9800 (NEXT-C-SID flavor of End.DT6)",
+      "category": "uSID endpoint with decapsulation",
+      "summary": "Compressed IPv6 per-VRF decap SID.",
+      "definition": "Same as uDT4 for IPv6: terminating uSID that decapsulates and looks up the inner IPv6 packet in a VRF table.",
+      "pseudocode": [
+        "S01. DA matches [Block | Node | uDT6 function]; no further uSIDs follow",
+        "S02. Pop the outer IPv6 header (and SRH if present)",
+        "S03. Lookup the inner IPv6 destination in VRF table T and forward"
+      ],
+      "use_cases": [
+        "IPv6 L3VPN service SID with uSID",
+        "Global-table or VRF decap in compressed networks"
+      ],
+      "vendor_support": [
+        "Cisco IOS-XR",
+        "Cisco IOS-XE",
+        "Juniper Junos",
+        "FRRouting",
+        "Linux kernel"
+      ],
+      "aliases": [
+        "uSID-uDT6",
+        "End.DT6 with NEXT-CSID"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+description: Classic SRv6 with one locator and an encapsulation source address on IOS-XR.
+parameters:
+  source_address: "2001:db8:0:1::1"
+  locator_name: MAIN
+  locator_prefix: "fcbb:bb00:1::/48"
+notes:
+  - The locator prefix must be advertised in the IGP (see isis-srv6).
+  - Use the same block across the SR domain so it can be filtered at the boundary.
+template: |
+  segment-routing
+   srv6
+    encapsulation
+     source-address {{source_address}}
+    !
+    locators
+     locator {{locator_name}}
+      prefix {{locator_prefix}}
+     !
+    !
+   !
+  !

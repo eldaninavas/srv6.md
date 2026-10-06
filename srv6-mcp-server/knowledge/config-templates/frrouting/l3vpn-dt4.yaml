@@ -1,0 +1,39 @@
+description: IPv4 L3VPN over SRv6 on FRRouting (per-VRF End.DT4 SID exported via BGP).
+parameters:
+  asn: 65000
+  router_id: "10.0.0.1"
+  vrf_name: CUST-A
+  rd: "65000:100"
+  rt: "65000:100"
+  locator_name: MAIN
+  neighbor: "2001:db8:0:2::1"
+notes:
+  - "Create the VRF in Linux first (ip link add {{vrf_name}} type vrf table <N>) and enable net.vrf.strict_mode=1."
+  - "'sid vpn export auto' allocates a per-VRF SID from the locator."
+template: |
+  router bgp {{asn}}
+   bgp router-id {{router_id}}
+   no bgp default ipv4-unicast
+   segment-routing srv6
+    locator {{locator_name}}
+   exit
+   neighbor {{neighbor}} remote-as {{asn}}
+   neighbor {{neighbor}} update-source lo
+   !
+   address-family ipv4 vpn
+    neighbor {{neighbor}} activate
+   exit-address-family
+  exit
+  !
+  router bgp {{asn}} vrf {{vrf_name}}
+   bgp router-id {{router_id}}
+   !
+   address-family ipv4 unicast
+    redistribute connected
+    sid vpn export auto
+    rd vpn export {{rd}}
+    rt vpn both {{rt}}
+    import vpn
+    export vpn
+   exit-address-family
+  exit

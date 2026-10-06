@@ -1,0 +1,24 @@
+description: IS-IS with SRv6 locator advertisement on IOS-XR.
+parameters:
+  isis_instance: CORE
+  net: "49.0001.0000.0000.0001.00"
+  locator_name: MAIN
+  interface: HundredGigE0/0/0/0
+notes:
+  - The locator named here must already exist under segment-routing srv6 (see basic-srv6-locator or usid-locator).
+template: |
+  router isis {{isis_instance}}
+   is-type level-2-only
+   net {{net}}
+   address-family ipv6 unicast
+    metric-style wide
+    segment-routing srv6
+     locator {{locator_name}}
+    !
+   !
+   interface {{interface}}
+    point-to-point
+    address-family ipv6 unicast
+    !
+   !
+  !
