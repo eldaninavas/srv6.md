@@ -22,6 +22,7 @@ Comprehensive reference for all SRv6-related IETF RFCs, with summaries, behavior
 |-----|-------|:----:|---------|
 | [RFC 8754](rfc8754.md) | IPv6 Segment Routing Header (SRH) | Mar 2020 | SRH format, processing rules, HMAC security |
 | [RFC 8986](rfc8986.md) | SRv6 Network Programming | Feb 2021 | All SRv6 behaviors (End, End.X, End.DT4, PSP/USP/USD...) |
+| [RFC 9602](rfc9602.md) | SRv6 SIDs in the IPv6 Addressing Architecture | Oct 2024 | IANA `5f00::/16` block for SRv6 SIDs |
 | [RFC 9800](rfc9800.md) | Compressed SRv6 Segment List Encoding | Jun 2025 | uSID / micro-SID compression (NEXT-C-SID, REPLACE-C-SID) |
 
 ## Routing Protocol Extensions

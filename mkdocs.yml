@@ -227,6 +227,7 @@ nav:
     - SRv6 Data Plane:
       - RFC 8754 - SRH: rfcs/rfc8754.md
       - RFC 8986 - Network Programming: rfcs/rfc8986.md
+      - RFC 9602 - SRv6 SIDs in IPv6 Addressing: rfcs/rfc9602.md
       - RFC 9800 - SRv6 Compression: rfcs/rfc9800.md
     - Routing Protocol Extensions:
       - RFC 9352 - IS-IS Extensions: rfcs/rfc9352.md
