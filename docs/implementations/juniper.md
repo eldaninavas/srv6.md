@@ -44,3 +44,5 @@ show isis database extensive | match srv6
 3. [SRv6 Network Programming and Layer 3 Services in BGP Networks](https://www.juniper.net/documentation/us/en/software/junos/segment-routing/topics/topic-map/bgp-srv6-network-programming.html) - TechLibrary guide for SRv6 L3VPN services with BGP
 4. [Day One: Introduction to SRv6 (PDF)](https://www.juniper.net/documentation/en_US/day-one-books/DayOne-Intro-SRv6.pdf) - Juniper Day One book introducing SRv6 concepts and configuration
 5. [Day One: Inside Segment Routing](https://www.juniper.net/documentation/en_US/day-one-books/information-products/pathway-pages/day-one-inside-segment-routing.html) - Day One book covering advanced segment routing use cases and deployment
+6. [Configuring SRv6 on Junos (ipSpace.net)](https://blog.ipspace.net/2026/09/srv6-junos/) - Hands-on walkthrough of SRv6 locator and IGP configuration on Junos, tested in a netlab topology
+7. [Configuring SRv6 Layer-3 Services on Junos (ipSpace.net)](https://blog.ipspace.net/2026/10/junos-srv6-layer3-services/) - Follow-up covering SRv6 L3VPN service configuration on Junos

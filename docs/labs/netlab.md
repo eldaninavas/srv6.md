@@ -94,6 +94,28 @@ netlab connect pe1 vtysh -c "show ipv6 route"
 netlab connect pe1 vtysh -c "show isis database detail"
 ```
 
+## Ready-Made SRv6 Topologies
+
+Instead of writing your own topology, you can start from the [ipspace/srv6-examples](https://github.com/ipspace/srv6-examples) collection — ready-to-run netlab topologies published by Ivan Pepelnjak ([announcement](https://blog.ipspace.net/2026/10/srv6-examples/)) and organized in two tracks:
+
+**Introductory**
+
+| Topology | What it demonstrates | Lab |
+|----------|---------------------|:---:|
+| **SRv6 with IS-IS** | Basic SRv6 forwarding with IS-IS as the IGP | [:material-github:](https://github.com/ipspace/srv6-examples/blob/main/1-intro/1-isis) |
+| **Unnumbered core** | SRv6 over core links with link-local addresses only | [:material-github:](https://github.com/ipspace/srv6-examples/blob/main/1-intro/2-unnumbered) |
+| **Multivendor SRv6** | Interoperability across different vendor platforms | [:material-github:](https://github.com/ipspace/srv6-examples/blob/main/1-intro/3-multivendor) |
+
+**Services**
+
+| Topology | What it demonstrates | Lab |
+|----------|---------------------|:---:|
+| **IPv4 islands** | IPv4 networks carried over an SRv6-enabled IPv6 core | [:material-github:](https://github.com/ipspace/srv6-examples/blob/main/2-services/1-ipv4-islands) |
+| **BGP-free IPv6 core** | IPv6 core with no BGP on transit nodes | [:material-github:](https://github.com/ipspace/srv6-examples/blob/main/2-services/2-bgp-free-ipv6) |
+| **L3VPN over SRv6** | MPLS-style L3VPN services over an SRv6 core | [:material-github:](https://github.com/ipspace/srv6-examples/blob/main/2-services/3-mpls-vpn) |
+
+Each lab directory is self-contained; see the collection's [getting started guide](https://github.com/ipspace/srv6-examples/blob/main/docs/use.md) and the [netlab SRv6 module](https://netlab.tools/module/srv6/#module-srv6-platform) for the list of supported platforms.
+
 ## Further Reading
 
 - :material-arrow-right: [Linux Kernel SRv6](../implementations/linux-kernel.md)
@@ -105,5 +127,7 @@ netlab connect pe1 vtysh -c "show isis database detail"
 
 1. [netlab Documentation](https://netlab.tools) - Official netlab documentation site with installation, usage, and topology reference
 2. [netlab GitHub Repository](https://github.com/ipspace/netlab) - Source code, releases, and issue tracking for netlab
-3. [Sample netlab SRv6 lab topologies](https://github.com/ipspace/srv6-examples)
-3. [More netlab Examples](https://github.com/ipspace/netlab-examples) - Curated collection of lab topology examples for various network scenarios
+3. [Sample netlab SRv6 lab topologies](https://github.com/ipspace/srv6-examples) - Ready-to-run introductory and services topologies
+4. [Sample netlab SRv6 Lab Topologies (ipSpace.net)](https://blog.ipspace.net/2026/10/srv6-examples/) - Ivan Pepelnjak's announcement post for the srv6-examples collection
+5. [netlab 26.10 Release Notes](https://blog.ipspace.net/2026/10/netlab-26-10/) - Release adding the SRv6 configuration module
+6. [More netlab Examples](https://github.com/ipspace/netlab-examples) - Curated collection of lab topology examples for various network scenarios

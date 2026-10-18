@@ -40,9 +40,9 @@ Emulate vendor routers (IOS-XR, Junos) for realistic SRv6 testing.
 
 ## Quick Comparison
 
-| Feature | Containerlab | GNS3 |
-|---------|:------------:|:----:|
-| Resource usage | Low | High |
-| Vendor images | Linux/FRR | IOS-XR, Junos, etc. |
-| Setup time | Minutes | Longer |
-| Best for | Learning, CI/CD | Vendor-specific testing |
+| Feature | Containerlab | netlab | GNS3 |
+|---------|:------------:|:------:|:----:|
+| Resource usage | Low | Low (containers) to high (VMs) | High |
+| Vendor images | Linux/FRR | FRR, IOS XE/XR, Junos, and more | IOS-XR, Junos, etc. |
+| Setup time | Minutes | Minutes — devices come preconfigured | Longer |
+| Best for | Learning, CI/CD | Ready-made multi-vendor SRv6 labs | Vendor-specific testing |
