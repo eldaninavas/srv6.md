@@ -21,6 +21,7 @@ SRv6 is in production at some of the world's largest networks. The following is 
 | Operator | Announcement | Source |
 |----------|-------------|:------:|
 | **Rakuten Mobile** (Japan) | SRv6 uSID IP transport network migration completed | [:material-open-in-new:](https://corp.mobile.rakuten.co.jp/english/news/press/2024/0729_01/) |
+| **Reliance Jio** (India) | Converged IP network adopting end-to-end SRv6 | [:material-open-in-new:](https://www.cisco.com/site/us/en/about/case-studies-customer-stories/reliance-jio.html) |
 | **SoftBank** (Japan) | SRv6 commercial network completed; world's first SRv6 Flex-Algo on 5G | [:material-open-in-new:](https://www.softbank.jp/en/corp/news/press/sbkk/2022/20220426_01/) |
 | **SoftBank** (Japan) | World's first SRv6 MUP on commercial 5G network | [:material-open-in-new:](https://www.softbank.jp/en/corp/news/press/sbkk/2025/20251218_01/) |
 
@@ -39,12 +40,22 @@ SRv6 is in production at some of the world's largest networks. The following is 
 | **Boost Mobile** (United States) | Cloud-native SRv6 backbone in AWS — migrated from SR-MPLS/GRE to single SRv6 domain | [:material-open-in-new:](cloud-native-backbone.md) |
 | **Telefonica VIVO** (Brazil) | Multi-vendor SRv6 uSID deployment | [:material-open-in-new:](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) |
 | **Telecom District** (Mexico) | The future of routing built on SRv6 | [:material-open-in-new:](https://en.telecomdistrict.com/blog/el-futuro-del-enrutamiento-construido-sobre-srv6) |
+| **Telecom District** (Mexico) | Driven by SRv6: Inside Telecom District's Network — segment-routing.net feature | [:material-open-in-new:](https://www.segment-routing.net/conferences/2026-09-28-srv6-at-telecom-district-mexico/) |
 | **CTX Reflector** | Cloud-native SRv6 enablement on AWS | [:material-open-in-new:](https://tryctx.com/reflector/) |
+
+## Public Sector
+
+| Organization | Announcement | Source |
+|--------------|-------------|:------:|
+| **Rijkswaterstaat** (Netherlands) | National infrastructure agency backbone migrated from MPLS to SRv6 uSID end-to-end | [:material-open-in-new:](https://www.segment-routing.net/conferences/20250213-cleur-rws-srv6-deployment/) |
 
 ## Cloud & Technology Companies
 
 | Company | Announcement | Source |
 |---------|-------------|:------:|
+| **Meta** | SRv6-powered backbone networks — SRv6 TE in production on regional backbone rings (OCP Global Summit 2026) | [:material-open-in-new:](https://www.segment-routing.net/conferences/2026-10-15-ocp-summit26-meta-srv6-backbone/) |
+| **Google** | Virgo AI fabric — SRv6 source routing for bare-metal customers (OCP Global Summit 2026) | [:material-open-in-new:](https://www.segment-routing.net/conferences/2026-10-15-ocp-summit26-google-virgo/) |
+| **Microsoft** | SRv6 powers Fairwater, the largest AI datacenter in the world (OCP Global Summit 2025) | [:material-open-in-new:](https://www.segment-routing.net/news/2025-10-13-Microsoft-SRv6-powers-the-largest-AI-DC-in-the-world/) |
 | **OpenAI** | MRC: static SRv6 source routing on 100K+ GPU AI supercomputers (with Microsoft, AMD, Broadcom, NVIDIA) | [:material-open-in-new:](https://openai.com/index/mrc-supercomputer-networking/) |
 | **Alibaba Cloud** | Full-stack SRv6 on SONiC whitebox routers | [:material-open-in-new:](https://sonicfoundation.dev/driving-innovation-alibaba-and-cisco-co-dev-srv6-sonic-router/) |
 | **LINE Corporation** (Japan) | SRv6 overlay for data center networking | [:material-open-in-new:](https://www.segment-routing.net/conferences/2019-09-20-SRv6-LINE-DC/) |

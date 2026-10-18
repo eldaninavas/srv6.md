@@ -325,6 +325,9 @@ graph TD
 !!! tip "Start with ingress replication"
     Most EVPN deployments work well with ingress replication for BUM traffic. Only invest in Tree-SID or BIER when ingress replication becomes a bandwidth bottleneck.
 
+!!! note "Industry interest: low-latency multicast"
+    Multicast over SRv6 is drawing attention beyond service providers. At the MPLS & SRv6 World Congress Paris 2025, Goldman Sachs presented ["SRv6 for Low-Latency Multicast"](https://www.segment-routing.net/conferences/Paris25-Goldman-Sachs-Michael-Valentine/) — a financial-industry perspective where deterministic, low-latency multicast delivery (e.g., market data distribution) is a core requirement.
+
 ## Further Reading
 
 - :material-arrow-right: [BGP Overlay Services](bgp-overlay-services.md) — EVPN and L3VPN including BUM handling
@@ -342,3 +345,4 @@ graph TD
 4. [RFC 9252](https://datatracker.ietf.org/doc/rfc9252/) — BGP Overlay Services Based on SRv6
 5. [draft-ietf-bier-srv6-requirements](https://datatracker.ietf.org/doc/draft-ietf-bier-srv6-requirements/) — BIER in SRv6 Requirements
 6. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) — Validated BGP MVPN ingress replication with End.DTMC4, Anycast RP, and MSDP over SRv6 on IOS-XE
+7. [Goldman Sachs: SRv6 for Low-Latency Multicast — MPLS & SRv6 World Congress Paris 2025](https://www.segment-routing.net/conferences/Paris25-Goldman-Sachs-Michael-Valentine/) — Mike Valentine (Goldman Sachs) on SRv6 for low-latency multicast in financial networks

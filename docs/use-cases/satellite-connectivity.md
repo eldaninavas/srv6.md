@@ -65,6 +65,8 @@ graph LR
 
 Multiple vendors and operators have demonstrated or deployed SRv6 over satellite transport, including validated architectures combining compact router platforms with LEO satellite connectivity for enterprise and telecom use cases. These are typically showcased at industry events such as Cisco Live and Mobile World Congress.
 
+In 2026, **Rivada Space Networks and Cisco** published a joint whitepaper, ["Creating a Blueprint for Advanced Data Networking from Space"](https://rivadaspace.com/blog/rivada-cisco-whitepaper-advanced-data-networking), outlining a secure, resilient space-based enterprise network built on a LEO constellation with Cisco routing technology — a transport profile where the overlay design principles on this page apply directly.
+
 !!! tip "Overhead matters over satellite"
     Satellite bandwidth is expensive. SRv6 uSID compression (RFC 9800) is especially valuable here — it reduces SRv6 overhead by up to 83% compared to classic SRv6, making it practical even on bandwidth-constrained satellite links.
 
@@ -80,3 +82,4 @@ Multiple vendors and operators have demonstrated or deployed SRv6 over satellite
 1. [RFC 9252 - BGP Overlay Services Based on SRv6](https://datatracker.ietf.org/doc/rfc9252/) - Defines EVPN and L3VPN signaling over SRv6 transport
 2. [RFC 9800 - Compressed SRv6 Segment List Encoding](https://datatracker.ietf.org/doc/rfc9800/) - SRv6 uSID compression, critical for bandwidth-constrained links
 3. [ETSI ISG IPE: IPv6 Enhanced Innovation](https://www.etsi.org/committee/ipe) - ETSI work on IPv6/SRv6 for diverse transport including non-terrestrial networks
+4. [Rivada & Cisco: Creating a Blueprint for Advanced Data Networking from Space](https://rivadaspace.com/blog/rivada-cisco-whitepaper-advanced-data-networking) - Joint whitepaper on a secure, resilient space-based enterprise network over a LEO constellation
