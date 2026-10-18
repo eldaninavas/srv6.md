@@ -33,6 +33,10 @@
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/implementations/arista-eos/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/implementations/cilium/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
@@ -54,6 +58,10 @@
     </url>
     <url>
          <loc>https://srv6.md/implementations/linux-kernel/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/implementations/nokia-sros/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
@@ -86,6 +94,10 @@
     </url>
     <url>
          <loc>https://srv6.md/rfcs/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/rfcs/rfc10038/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
@@ -137,7 +149,19 @@
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/rfcs/rfc9524/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/rfcs/rfc9602/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/rfcs/rfc9603/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/rfcs/rfc9723/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
@@ -145,7 +169,23 @@
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/rfcs/rfc9819/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/rfcs/rfc9855/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/rfcs/rfc9857/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/rfcs/rfc9860/</loc>
+         <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/rfcs/rfc9960/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
