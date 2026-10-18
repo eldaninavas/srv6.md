@@ -120,6 +120,7 @@ EVPN multihoming was originally designed for Layer 2 (VXLAN/MPLS EVPN). The L3MH
 - :material-arrow-right: [VPN Services](../use-cases/vpn-services.md) — SRv6 VPN use cases
 - :material-arrow-right: [TI-LFA](ti-lfa.md) — Fast reroute for sub-50ms failover in the SRv6 underlay
 - :material-arrow-right: [RFC 9252](../rfcs/rfc9252.md) — BGP Overlay Services Based on SRv6
+- :material-arrow-right: [RFC 9819](../rfcs/rfc9819.md) — End.DT2M ESI-filtering argument signaling (updates RFC 9252)
 
 ## References
 

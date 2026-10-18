@@ -88,42 +88,41 @@ graph LR
 
 ## Approach 2: SRv6 Replication Segments (End.Replicate)
 
-The IETF has defined **replication segments** that enable packet replication at intermediate nodes along the SRv6 path.
+[RFC 9524](../rfcs/rfc9524.md) (February 2024) adds the **Replication segment** to the SR architecture and the SRv6 **End.Replicate** behavior (codepoint 75). It is the building block for both ingress replication and Tree-SID.
 
 ### How it works
 
-1. The ingress PE builds a segment list that includes **replication SIDs** at strategic nodes
-2. When a node processes a replication SID, it:
-   - Forwards a copy to the next segment in the list
-   - Sends a replicated copy to a local egress or another replication branch
-3. This creates an **overlay replication tree** encoded entirely in the SRH
+1. A **replication node** holds local *replication state*: a list of branches, each pointing at a downstream node and that node's Replication-SID
+2. When a packet's IPv6 DA is a local End.Replicate SID, the node makes one copy per branch and **rewrites the DA** to the downstream Replication-SID (optionally adding an `H.Encaps.Red` segment list to steer the copy over a TE path)
+3. Downstream nodes do not need to be adjacent — routers in between just forward on the Replication-SID's locator
+4. **Leaf** (and **bud**) nodes strip the outer header and deliver the payload using a context taken from the Replication-SID or from the next SID in the SRH
 
 ```mermaid
 graph TD
-    PE1[Ingress PE] -->|SRv6 + Replicate SID| R1[Replication Node 1]
-    R1 -->|Copy 1| PE2[Egress PE2]
-    R1 -->|Copy 2 + Next SID| R2[Replication Node 2]
-    R2 -->|Copy 1| PE3[Egress PE3]
-    R2 -->|Copy 2| PE4[Egress PE4]
+    PE1[Root PE] -->|DA = R1 Replication-SID| R1[Replication Node 1]
+    R1 -->|DA = PE2 Replication-SID| PE2[Leaf PE2]
+    R1 -->|DA = R2 Replication-SID| R2[Replication Node 2]
+    R2 -->|DA = PE3 Replication-SID| PE3[Leaf PE3]
+    R2 -->|DA = PE4 Replication-SID| PE4[Leaf PE4]
 ```
 
 | Pros | Cons |
 |------|------|
-| Efficient bandwidth — replication happens in-network | Requires replication-capable nodes |
-| No PIM/mLDP state on transit nodes | Segment list grows with tree complexity |
-| Tree is source-routed (stateless transit) | Still evolving in standardization |
+| Efficient bandwidth — replication happens in-network | Replication state on every replication node (programmed locally or by a controller) |
+| No PIM/mLDP state; non-replicating transit routers forward on the locator | No traceroute to Replication-SIDs (ICMPv6 errors are suppressed, as for IPv6 multicast) |
+| Same construct for SR-MPLS and SRv6 | Stitching segments into a tree needs a control plane ([RFC 9960](../rfcs/rfc9960.md)) |
 
 ### SRv6 SID behaviors
 
 | Behavior | Description |
 |----------|-------------|
-| **End.Replicate** | Replicate packet to a set of next-hops while continuing SID processing |
+| **End.Replicate** | Replicate the packet to each downstream node in the local replication state, and/or decapsulate at a leaf or bud node |
 
 !!! info "Standards reference"
-    Replication segments are defined in [draft-ietf-spring-sr-replication-segment](https://datatracker.ietf.org/doc/draft-ietf-spring-sr-replication-segment/).
+    Replication segments are standardized in [RFC 9524](../rfcs/rfc9524.md), updated by [RFC 9960](../rfcs/rfc9960.md) (April 2026), which defines the structured Replication-ID used by SR P2MP Policies.
 
-!!! warning "Not yet available in production"
-    Replication segments are still in IETF draft status. Configuration examples will be added when vendor implementations become available.
+!!! note "Implementation status"
+    End.Replicate is in the open-source [zebra-rs](../implementations/zebra-rs.md) data plane, and Nokia's SRv6 application note lists P2MP SRv6 policy for multicast on its routing platforms (see [Nokia SR OS](../implementations/nokia-sros.md)). On vendor routers replication segments are normally consumed through Tree-SID (below) or EVPN/MVPN ingress replication rather than configured as standalone SIDs — check your platform's release notes for SRv6 (as opposed to SR-MPLS) support.
 
 ## Approach 3: Tree-SID
 
@@ -131,9 +130,9 @@ Tree-SID pre-computes a multicast distribution tree and assigns a single **Tree-
 
 ### How it works
 
-1. A controller (e.g., PCE) computes the optimal multicast tree
-2. Each node on the tree is programmed with forwarding state for the Tree-SID
-3. The ingress PE encapsulates with just the Tree-SID — transit nodes replicate based on their local state
+1. A controller (e.g., PCE) computes a P2MP tree instance for the SR P2MP Policy's active candidate path
+2. The controller programs an [RFC 9524](../rfcs/rfc9524.md) Replication segment on the root, each branching node, and each leaf (leaves first, root last)
+3. The root encapsulates with its Replication-SID — the **Tree-SID** — and replication nodes rewrite the DA toward each downstream node
 
 ```mermaid
 graph TD
@@ -153,10 +152,10 @@ graph TD
 |------|------|
 | Single SID for entire tree — minimal SRH overhead | Requires centralized controller (PCE) |
 | Optimized replication at each branch point | Per-tree state on transit nodes |
-| Supports P2MP and MP2MP | Less dynamic than ingress replication |
+| Make-before-break tree updates and disjoint backup trees | Less dynamic than ingress replication |
 
 !!! info "Standards reference"
-    Tree-SID is defined in [draft-ietf-pce-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-pce-sr-p2mp-policy/).
+    The Tree-SID architecture — SR P2MP Policy, candidate paths, P2MP tree instances built from Replication segments — is [RFC 9960](../rfcs/rfc9960.md) (April 2026). The controller-to-router signaling is still in progress: PCEP in [draft-ietf-pce-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-pce-sr-p2mp-policy/) and BGP in [draft-ietf-idr-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-idr-sr-p2mp-policy/).
 
 ### Configuration
 
@@ -224,7 +223,7 @@ IPv6 Header → SRH [SRv6 SIDs] → BIER Header [Bitmask] → Payload
 | Scales linearly with egress PEs | Newer technology, less deployed |
 
 !!! info "Standards reference"
-    BIER is defined in [RFC 8279](https://datatracker.ietf.org/doc/rfc8279/). The SRv6 integration is being developed in [draft-ietf-bier-srv6-requirements](https://datatracker.ietf.org/doc/draft-ietf-bier-srv6-requirements/).
+    BIER is defined in [RFC 8279](https://datatracker.ietf.org/doc/rfc8279/). Carrying BIER over IPv6/SRv6 networks is being developed in [draft-ietf-bier-bierin6](https://datatracker.ietf.org/doc/draft-ietf-bier-bierin6/) (BIERin6).
 
 ### Configuration
 
@@ -282,13 +281,17 @@ Broadcast, Unknown unicast, and Multicast (BUM) traffic is handled via:
 
 Broadcast is not applicable in L3VPN — ARP/ND is handled via EVPN proxy (suppressing broadcast) or standard ARP resolution within the VRF.
 
+## Protecting PIM Trees with TI-LFA
+
+Networks that keep PIM during migration can still reuse SR protection. [RFC 9860](../rfcs/rfc9860.md) (October 2025, Informational) builds the MoFRR standby tree along the **TI-LFA repair path**: the P-node's End SID becomes a PIM RPF Vector and the P→Q End.X SID becomes an Explicit RPF Vector, so the secondary join follows the repair path hop by hop. This extends MoFRR to topologies where classic LFA finds no loop-free secondary. See [TI-LFA](ti-lfa.md).
+
 ## Comparison of Approaches
 
 | Approach | Transit State | Bandwidth Efficiency | Scalability | Maturity |
 |----------|--------------|---------------------|-------------|----------|
 | **Ingress Replication** | None | Low (N copies at ingress) | Small scale | Production |
-| **Replication Segments** | None (stateless) | Medium | Medium | Draft |
-| **Tree-SID** | Per-tree | High (optimal tree) | Large scale | Draft |
+| **Replication Segments** | Replication state on replication nodes only | Medium-High | Medium | RFC 9524 |
+| **Tree-SID** | Per-tree (replication nodes) | High (optimal tree) | Large scale | RFC 9960 (PCEP/BGP signaling in draft) |
 | **BIER** | BIER tables (no per-group) | High | Very large | Early deployment |
 
 ## Deployment Considerations
@@ -311,7 +314,7 @@ graph TD
 | Approach | Max Receivers | Controller Required | Hardware Dependency | Production Ready |
 |----------|:------------:|:-------------------:|:-------------------:|:----------------:|
 | **Ingress Replication** | ~20 per group | No | Any SRv6 | Yes |
-| **Replication Segments** | Medium | No | Replication-capable | No (draft) |
+| **Replication Segments** | Medium | No (static) / Yes (trees) | Replication-capable | Standardized; limited implementations |
 | **Tree-SID** | Thousands | Yes (PCE) | Any SRv6 | Early |
 | **BIER** | 256-4096 per set | No | BIER ASIC | Early |
 
@@ -334,15 +337,19 @@ graph TD
 - :material-arrow-right: [VPN Services](../use-cases/vpn-services.md) — L2VPN and BUM handling in EVPN-ELAN
 - :material-arrow-right: [EVPN Multihoming](evpn-multihoming.md) — All-Active multihoming with BUM traffic considerations
 - :material-arrow-right: [Network Programming](network-programming.md) — SRv6 behaviors including replication
+- :material-arrow-right: [RFC 9524](../rfcs/rfc9524.md) and [RFC 9960](../rfcs/rfc9960.md) — Replication segment and SR P2MP Policy (Tree-SID) RFC summaries
+- :material-arrow-right: [RFC 9860](../rfcs/rfc9860.md) — MoFRR based on TI-LFA
 - :material-arrow-right: [5G Transport](../use-cases/5g-transport.md) — Multicast requirements for mobile networks
 - :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) — Validated MVPN ingress replication design with End.DTMC4
 
 ## References
 
-1. [draft-ietf-spring-sr-replication-segment](https://datatracker.ietf.org/doc/draft-ietf-spring-sr-replication-segment/) — Segment Routing Replication Segment
-2. [draft-ietf-pce-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-pce-sr-p2mp-policy/) — SR P2MP Policy via PCE
-3. [RFC 8279](https://datatracker.ietf.org/doc/rfc8279/) — Multicast Using Bit Index Explicit Replication (BIER)
-4. [RFC 9252](https://datatracker.ietf.org/doc/rfc9252/) — BGP Overlay Services Based on SRv6
-5. [draft-ietf-bier-srv6-requirements](https://datatracker.ietf.org/doc/draft-ietf-bier-srv6-requirements/) — BIER in SRv6 Requirements
-6. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) — Validated BGP MVPN ingress replication with End.DTMC4, Anycast RP, and MSDP over SRv6 on IOS-XE
-7. [Goldman Sachs: SRv6 for Low-Latency Multicast — MPLS & SRv6 World Congress Paris 2025](https://www.segment-routing.net/conferences/Paris25-Goldman-Sachs-Michael-Valentine/) — Mike Valentine (Goldman Sachs) on SRv6 for low-latency multicast in financial networks
+1. [RFC 9524](https://www.rfc-editor.org/rfc/rfc9524) — Segment Routing Replication for Multipoint Service Delivery (End.Replicate)
+2. [RFC 9960](https://www.rfc-editor.org/rfc/rfc9960) — Segment Routing Point-to-Multipoint Policy (Tree-SID architecture; updates RFC 9524)
+3. [draft-ietf-pce-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-pce-sr-p2mp-policy/) — PCEP extensions for SR P2MP Policy
+4. [RFC 8279](https://datatracker.ietf.org/doc/rfc8279/) — Multicast Using Bit Index Explicit Replication (BIER)
+5. [RFC 9252](https://datatracker.ietf.org/doc/rfc9252/) — BGP Overlay Services Based on SRv6
+6. [draft-ietf-bier-bierin6](https://datatracker.ietf.org/doc/draft-ietf-bier-bierin6/) — Supporting BIER in IPv6 Networks (BIERin6)
+7. [RFC 9860](https://www.rfc-editor.org/rfc/rfc9860) — Multicast-only Fast Reroute based on TI-LFA
+8. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) — Validated BGP MVPN ingress replication with End.DTMC4, Anycast RP, and MSDP over SRv6 on IOS-XE
+9. [Goldman Sachs: SRv6 for Low-Latency Multicast — MPLS & SRv6 World Congress Paris 2025](https://www.segment-routing.net/conferences/Paris25-Goldman-Sachs-Michael-Valentine/) — Mike Valentine (Goldman Sachs) on SRv6 for low-latency multicast in financial networks

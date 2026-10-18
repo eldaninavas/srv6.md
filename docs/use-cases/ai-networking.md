@@ -100,7 +100,7 @@ graph LR
 | Switch control plane | BGP, large ECMP sets, hard to debug at scale | Static tables, no dynamic routing to interact with transport |
 | Path visibility | Hash-dependent, ambiguous | Every packet and probe path is explicit |
 
-Validated results include ~96% of theoretical peak bandwidth (≈770 Gb/s application-level on 800G NICs), and NCCL collectives sustaining 92 GB/s at 42K-GPU scale. Hardware spans NVIDIA ConnectX-8, AMD Pollara, and Broadcom Thor Ultra NICs, with SRv6 forwarding on NVIDIA Spectrum-4/5 (Cumulus and SONiC), Broadcom Tomahawk 5, and Arista EOS switches.
+Validated results include ~96% of theoretical peak bandwidth (≈770 Gb/s application-level on 800G NICs), and NCCL collectives sustaining 92 GB/s at 42K-GPU scale. Hardware spans NVIDIA ConnectX-8, AMD Pollara, and Broadcom Thor Ultra NICs, with SRv6 forwarding on NVIDIA Spectrum-4/5 (Cumulus and SONiC), Broadcom Tomahawk 5, and [Arista EOS](../implementations/arista-eos.md) switches.
 
 !!! tip "SRv6 as the stability layer"
     MRC inverts the usual assumption that source routing and resilience are at odds: precisely *because* the SRv6 paths are static and explicit, the transport layer can reason about them, spray across them, and bypass failures faster than any routing protocol could converge.

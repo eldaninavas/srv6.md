@@ -25,6 +25,17 @@ The Linux kernel has native SRv6 support since **kernel 4.10** and is one of the
 | `H.Encaps` | 4.10+ | :material-check-circle: |
 | `H.Encaps.Red` | 5.0+ | :material-check-circle: |
 
+### Not Yet Merged: Mobile User Plane (RFC 9433)
+
+The kernel has **no** [RFC 9433](../rfcs/rfc9433.md) MUP behaviors today. Patches are under review on netdev (as of October 2026):
+
+| Series | Status | What it adds |
+|--------|--------|--------------|
+| iproute2-next "seg6: SRv6 Mobile User Plane (RFC 9433)" (May 2026) | Superseded, not applied | `seg6local` support for End.MAP, End.M.GTP4.E, End.M.GTP6.E, End.M.GTP6.D, End.M.GTP6.D.Di and H.M.GTP4.D, paired with a full kernel MUP series |
+| net-next RFC "seg6: add support for the SRv6 End.MAP behavior" (v2 posted 1 Sept 2026; respun through v5 in early October) | **RFC, not merged** | End.MAP only — rewrites the IPv6 DA to a configured mapped SID and forwards via the FIB without consuming the SRH — under a new `seg6mobile` lightweight-tunnel encap (`CONFIG_IPV6_SEG6_MOBILE`), with selftests and a matching iproute2 series |
+
+After review of the original all-in-one MUP submission, the author split it into **per-behavior series**, starting with End.MAP; the GTP-U interworking behaviors (End.M.GTP4.E and friends) would follow separately. Until a series lands in a released kernel and iproute2, use an eBPF-based data plane such as [Vinbero](vinbero.md) for MUP/GTP behaviors.
+
 ## Quick Start
 
 ### Enable SRv6
@@ -88,6 +99,7 @@ cat /proc/net/seg6_local
 
 - :material-arrow-right: [Containerlab](../labs/containerlab.md) - Build a Linux SRv6 lab
 - :material-arrow-right: [FRRouting](frrouting.md) - Add routing protocol support
+- :material-arrow-right: [Security](../topics/security.md#implementation-vulnerabilities) - Kernel SRv6 CVEs such as CVE-2026-23442
 
 ## References
 
@@ -96,3 +108,5 @@ cat /proc/net/seg6_local
 3. [SRv6 - Linux Kernel Implementation](https://segment-routing.org/) - Community resource for SRv6 installation, configuration, and advanced usage on Linux
 4. [IPv6 Segment Routing - LWN.net](https://lwn.net/Articles/722804/) - LWN.net coverage of SRv6 merging into the Linux kernel in version 4.10
 5. [SRv6 Network Programming in Linux Kernel - Netdev 0x16](https://netdevconf.info/0x16/sessions/workshop/srv6-network-programming-in-linux-kernel.html) - Workshop on SRv6 network programming at the Netdev conference
+6. [PATCH RFC net-next v2: seg6: add support for the SRv6 End.MAP behavior](https://ratatoskr.run/netdev/2026/09/17488818/t) - Kernel End.MAP series with the new seg6mobile encap (September 2026, unmerged)
+7. [PATCH iproute2-next: seg6: SRv6 Mobile User Plane (RFC 9433)](https://ratatoskr.run/netdev/2026/05/11354961/t) - iproute2 seg6local support for End.MAP, End.M.GTP4.E and other MUP behaviors (May 2026, not applied)

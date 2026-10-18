@@ -154,6 +154,9 @@ sr steer l3 10.0.0.0/24 via bsid fc00:0:1::999
 | **tcpdump / Wireshark** | Packet capture with SRH decoding | BSD / GPL v2 |
 | **Containerlab** | Lab topology tool for SRv6 testing | BSD 3-Clause |
 
+!!! info "Getting a locator automatically: RFC 10038"
+    Hosts and CPE-class Linux devices usually have their SRv6 locator configured by hand. [RFC 10038](../rfcs/rfc10038.md) (August 2026) lets an endpoint lease its locator from a **DHCPv6 server** instead, with new `IA_SRV6_LOCATOR` / `IA Locator` options that work like Prefix Delegation and carry the locator, its Flex-Algo, and the SID structure lengths. The server or relay (typically the BRAS) installs and advertises the locator route, and withdraws it when the lease ends. Client and server must sit inside one trusted SR domain, so this targets operator-managed devices, not arbitrary customer hosts.
+
 !!! tip "Fully open stack"
     It is possible to build a complete SRv6 network — from host to fabric — using **entirely open-source software**: Linux kernel (data plane) + FRRouting (control plane) + SONiC (switch NOS) + Containerlab (testing).
 
@@ -163,6 +166,7 @@ sr steer l3 10.0.0.0/24 via bsid fc00:0:1::999
 - :material-arrow-right: [FRRouting](../implementations/frrouting.md) - Open-source routing with SRv6
 - :material-arrow-right: [SONiC & SAI](sonic-sai.md) - Open-source switch NOS
 - :material-arrow-right: [Containerlab](../labs/containerlab.md) - Build SRv6 labs with containers
+- :material-file-document: [RFC 10038](../rfcs/rfc10038.md) - Distributing the SRv6 locator using DHCPv6
 
 ## References
 
@@ -170,3 +174,4 @@ sr steer l3 10.0.0.0/24 via bsid fc00:0:1::999
 2. [eBPF and SRv6 - LPC 2018](https://lpc.events/event/2/contributions/36/) - Linux Plumbers Conference talk on eBPF + SRv6 integration
 3. [VPP SRv6 Documentation (fd.io)](https://s3-docs.fd.io/vpp/24.02/developer/plugins/srv6.html) - VPP Segment Routing plugin documentation
 4. [FRRouting SRv6 Documentation](https://docs.frrouting.org/en/latest/zebra.html#segment-routing-ipv6) - FRR Zebra SRv6 configuration reference
+5. [RFC 10038 - Distributing the SRv6 Locator Using DHCPv6](https://www.rfc-editor.org/rfc/rfc10038) - DHCPv6 options for leasing SRv6 locators to endpoints

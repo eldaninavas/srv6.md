@@ -161,6 +161,9 @@ Backup with uSID: DA = fcbb:bbbb:PQ:PE2:0000:: (2 micro-instructions, zero SRH n
     show isis fast-reroute ipv6 summary | include Coverage
     ```
 
+!!! note "TI-LFA for multicast: RFC 9860"
+    TI-LFA repair paths can also protect **PIM** trees. [RFC 9860](../rfcs/rfc9860.md) (October 2025, Informational) uses the repair segment list to build the MoFRR standby tree: the P-node's End SID is translated into a PIM RPF Vector and the P→Q End.X SID into an Explicit RPF Vector, so the secondary join follows the repair path hop by hop. This gives MoFRR the same topology-independent coverage that TI-LFA gives unicast. See [Multicast & Broadcast](multicast.md).
+
 ## TI-LFA vs Other FRR Mechanisms
 
 | Mechanism | Topology Coverage | Segments Needed | Complexity |
@@ -181,9 +184,11 @@ Backup with uSID: DA = fcbb:bbbb:PQ:PE2:0000:: (2 micro-instructions, zero SRH n
 - :material-arrow-right: [Micro-Loop Avoidance](micro-loop-avoidance.md) - Preventing loops during the convergence window after TI-LFA
 - :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) - TI-LFA with node/SRLG/linecard-disjoint tiebreakers in a validated defense design
 - :material-file-document: [RFC 9352](../rfcs/rfc9352.md) - IS-IS Extensions for SRv6
+- :material-file-document: [RFC 9860](../rfcs/rfc9860.md) - MoFRR based on TI-LFA (multicast protection)
 
 ## References
 
 1. [RFC 9855 - Topology Independent Fast Reroute Using Segment Routing](https://datatracker.ietf.org/doc/rfc9855/) - Standards track RFC defining TI-LFA FRR for node and adjacency segment protection within the SR framework
 2. [draft-ietf-rtgwg-segment-routing-ti-lfa](https://datatracker.ietf.org/doc/draft-ietf-rtgwg-segment-routing-ti-lfa/) - IETF draft (now RFC 9855) detailing TI-LFA algorithms and repair segment computation
 3. [Cisco IOS-XR: Configure TI-LFA](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/24xx/configuration/guide/b-segment-routing-cg-cisco8000-24xx/configuring-topology-independent-loop-free-alternate.html) - Cisco IOS-XR configuration guide for TI-LFA link, node, and SRLG protection on Cisco 8000 routers
+4. [RFC 9860 - Multicast-Only Fast Reroute (MoFRR) Based on TI-LFA](https://www.rfc-editor.org/rfc/rfc9860) - Uses TI-LFA repair paths and PIM RPF Vectors to build MoFRR standby trees

@@ -213,6 +213,8 @@ nav:
     - Cisco IOS-XR: implementations/cisco-ios-xr.md
     - Cisco IOS-XE: implementations/cisco-ios-xe.md
     - Juniper: implementations/juniper.md
+    - Arista EOS: implementations/arista-eos.md
+    - Nokia SR OS: implementations/nokia-sros.md
     - FRRouting: implementations/frrouting.md
     - SONIC: implementations/sonic.md
   - Labs:
@@ -234,10 +236,20 @@ nav:
       - RFC 9513 - OSPFv3 Extensions: rfcs/rfc9513.md
       - RFC 9350 - Flex-Algorithm: rfcs/rfc9350.md
       - RFC 9514 - BGP-LS Extensions: rfcs/rfc9514.md
+    - Controllers & Provisioning:
+      - RFC 9603 - PCEP for SRv6: rfcs/rfc9603.md
+      - RFC 9857 - BGP-LS SR Policies: rfcs/rfc9857.md
+      - RFC 10038 - Locator via DHCPv6: rfcs/rfc10038.md
     - Services & Overlay:
       - RFC 9252 - BGP Overlay Services: rfcs/rfc9252.md
       - RFC 9256 - SR Policy: rfcs/rfc9256.md
       - RFC 9433 - Mobile User Plane: rfcs/rfc9433.md
+      - RFC 9723 - Colored Prefix Routing: rfcs/rfc9723.md
+      - RFC 9819 - SRv6 Argument Signaling: rfcs/rfc9819.md
+    - Multicast:
+      - RFC 9524 - Replication Segment: rfcs/rfc9524.md
+      - RFC 9860 - MoFRR with TI-LFA: rfcs/rfc9860.md
+      - RFC 9960 - SR P2MP Policy: rfcs/rfc9960.md
     - Operations & Telemetry:
       - RFC 9259 - OAM: rfcs/rfc9259.md
       - RFC 9487 - IPFIX for SRv6: rfcs/rfc9487.md

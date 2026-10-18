@@ -459,6 +459,17 @@ policy-map COPP-SRV6
 
 ---
 
+## Implementation Vulnerabilities
+
+Protocol-level protections do not help if the SRH-processing code itself crashes. Keep SRv6 data planes patched like any other exposed parser.
+
+| CVE | Component | Issue | Fixed in |
+|-----|-----------|-------|----------|
+| [CVE-2026-23442](https://www.cve.org/CVERecord?id=CVE-2026-23442) | Linux kernel IPv6 / SRv6 (`net/ipv6/exthdrs.c`, `net/ipv6/seg6_hmac.c`) | `ipv6_srh_rcv()` and `seg6_hmac_validate_skb()` used the per-device IPv6 state returned by `__in6_dev_get()` without a NULL check. It is NULL when the interface has no IPv6 configuration (e.g. MTU below the IPv6 minimum, or during unregistration), so processing an SRH on such a device could dereference NULL and crash the kernel. NVD scores it 5.5 (Medium, availability impact). Affected since SRv6 landed in 4.10. | Mainline 7.0; stable 5.10.258, 5.15.209, 6.1.175, 6.6.136, 6.12.83, 6.18.25, 6.19.10 |
+
+!!! tip "Hosts and appliances count too"
+    Linux SRv6 is used on hosts, CPEs, virtual routers and SONiC/whitebox control planes ([Host-Based SRv6](host-based-srv6.md)). Track kernel stable updates for every such node, not just routers. Note that for this CVE the dereference happens while the kernel reads the per-interface SRv6 setting itself, so disabling `seg6_enabled` is not a substitute for patching.
+
 ## Comparison with MPLS Security
 
 SRv6 and MPLS share a common security foundation (the trusted domain model) but differ in important ways. Understanding these differences helps operators transitioning from MPLS to SRv6.
@@ -506,3 +517,5 @@ See [Mission-Critical Networks](../use-cases/mission-critical.md) for the full a
 2. [RFC 8402 - Segment Routing Architecture](https://datatracker.ietf.org/doc/rfc8402/) - Section 8 covers SR security properties and the trusted domain model
 3. [draft-ietf-spring-srv6-security](https://datatracker.ietf.org/doc/draft-ietf-spring-srv6-security/) - IETF draft on security considerations specific to SRv6 deployments
 4. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) - Validated design running SRv6 over post-quantum MACsec and IPsec transport
+5. [CVE-2026-23442 (CVE.org)](https://www.cve.org/CVERecord?id=CVE-2026-23442) - Linux kernel CNA record: NULL idev dereference in SRv6 SRH and HMAC paths, with fixed stable versions
+6. [CVE-2026-23442 (NVD)](https://nvd.nist.gov/vuln/detail/CVE-2026-23442) - NVD entry with CVSS 3.1 score (5.5, CWE-476)
