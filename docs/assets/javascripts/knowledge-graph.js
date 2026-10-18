@@ -9,9 +9,32 @@ const GROUP_NAMES = {core:"Topics",usecase:"Use Cases",rfc:"RFCs",impl:"Implemen
 
 const activeGroups = new Set(["core","usecase","rfc","impl"]);
 
+const CYTOSCAPE_SRC = "https://cdn.jsdelivr.net/npm/cytoscape@3.34.4/dist/cytoscape.min.js";
+
+// Instant navigation re-injects page scripts asynchronously, so this file can
+// run before any separately loaded copy of cytoscape. This file owns loading it.
+function withCytoscape(onReady, onFail) {
+  if (typeof window.cytoscape === "function") { onReady(); return; }
+  let script = document.getElementById("cytoscape-lib");
+  if (!script) {
+    script = document.createElement("script");
+    script.id = "cytoscape-lib";
+    script.src = CYTOSCAPE_SRC;
+    document.head.appendChild(script);
+  }
+  script.addEventListener("load", onReady, { once: true });
+  script.addEventListener("error", onFail, { once: true });
+}
+
 function initKnowledgeGraph() {
   const container = document.getElementById("graph-container");
   if (!container || container.dataset.init) return;
+  if (typeof window.cytoscape !== "function") {
+    withCytoscape(initKnowledgeGraph, function() {
+      container.textContent = "Could not load the graph library. Check your connection or content blocker and reload.";
+    });
+    return;
+  }
   container.dataset.init = "1";
 
   const cy = window._graphCy = cytoscape({

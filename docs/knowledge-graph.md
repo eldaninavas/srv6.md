@@ -81,5 +81,4 @@ tags:
 
 <div id="graph-container"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/cytoscape@3/dist/cytoscape.min.js"></script>
 <script src="../assets/javascripts/knowledge-graph.js"></script>
