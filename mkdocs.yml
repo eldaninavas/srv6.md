@@ -12,6 +12,7 @@ repo_url: https://github.com/eldaninavas/srv6.md
 repo_name: eldaninavas/srv6.md
 
 hooks:
+  - hooks/i18n.py
   - hooks/generate_graph.py
   - hooks/llms_txt.py
   - hooks/git_dates.py
@@ -85,7 +86,7 @@ theme:
     - header.autohide
 
 extra_css:
-  - assets/stylesheets/custom.css?v=20260408
+  - assets/stylesheets/custom.css?v=20261018
 
 extra_javascript:
   - assets/javascripts/custom.js
@@ -93,7 +94,9 @@ extra_javascript:
 plugins:
   - search:
       separator: '[\s\-\.]+'
-      lang: en
+      lang:
+        - en
+        - es
   - tags: {}
   - minify:
       minify_html: true
@@ -152,6 +155,13 @@ nav:
   - Home:
     - index.md
     - Knowledge Graph: knowledge-graph.md
+  - Español:
+    - es/index.md
+    - ¿Qué es SRv6?: es/que-es-srv6.md
+    - Estructura del SID: es/estructura-del-sid.md
+    - Cabecera SRH: es/cabecera-srh.md
+    - uSID: es/usid.md
+    - SRv6 vs SR-MPLS: es/srv6-vs-sr-mpls.md
   - Topics:
     - topics/index.md
     - Foundations:

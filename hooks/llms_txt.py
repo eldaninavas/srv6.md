@@ -16,6 +16,7 @@ SECTIONS = [
     ("implementations", "Implementations"),
     ("labs", "Labs"),
     ("rfcs", "RFCs & Standards"),
+    ("es", "En español (Spanish)"),
 ]
 
 

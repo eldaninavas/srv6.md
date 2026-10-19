@@ -199,11 +199,13 @@ The SRH can carry optional TLV (Type-Length-Value) objects after the segment lis
 
 ## Reduced Encapsulation
 
-**T.Encaps.Red** (Reduced Encapsulation) optimizes the SRH by omitting the last SID from the segment list, since it's already in the IPv6 DA. This saves 16 bytes per packet.
+**H.Encaps.Red** (Reduced Encapsulation, RFC 8986) optimizes the SRH by omitting the **first** SID of the path from the segment list, since the headend already places it in the IPv6 DA. This saves 16 bytes per packet, and with a single-SID path it removes the SRH entirely.
 
 ```
-Normal:     SRH contains [SID-3, SID-2, SID-1], DA = SID-3
-Reduced:    SRH contains [SID-2, SID-1], DA = SID-3  ← SID-3 not in SRH
+Path: SID-1 → SID-2 → SID-3   (segment list is stored in reverse order)
+
+H.Encaps:      SRH [SID-3, SID-2, SID-1], SL=2, DA = SID-1
+H.Encaps.Red:  SRH [SID-3, SID-2],        SL=2, DA = SID-1  ← SID-1 only in the DA
 ```
 
 ## Verification Commands

@@ -1,7 +1,7 @@
 ---
 title: SRv6 vs SR-MPLS
 seo_title: "SRv6 vs SR-MPLS: Differences and When to Use Each"
-description: "SRv6 vs SR-MPLS compared side by side: data plane, overhead, scale, services, hardware support and operations, plus guidance on when to choose each one."
+description: "SRv6 vs SR-MPLS compared side by side: data plane, SID size and space, encapsulation and MTU overhead, network programming and maturity, plus when to choose each."
 tags:
   - topics
   - comparison
@@ -25,6 +25,9 @@ Both SRv6 and SR-MPLS implement Segment Routing, but they use different data pla
 | **Existing Infra** | Requires MPLS forwarding | Uses native IPv6 |
 | **Signaling** | None (same as SRv6) | None |
 | **Maturity** | Widely deployed | Growing rapidly |
+
+!!! info "SRv6 overhead is no longer what it was"
+    The 16 bytes per SID figure applies to classic SRv6. With **uSID** (RFC 9800), up to 6 instructions fit in a single 16-byte container, putting SRv6 on par with or better than an MPLS label stack. See [uSID / SRv6 Compression](usid-compression.md).
 
 ## When to Choose What
 

@@ -87,7 +87,7 @@ In SRv6, the **source node** (ingress) determines the entire path through the ne
     ```
     Original:  [IPv4: 10.0.0.1 -> 10.0.0.2][Payload]
 
-    SRv6:      [IPv6: A::1 -> C::100]             <- Outer IPv6
+    SRv6:      [IPv6: A::1 -> B::100]             <- Outer IPv6 (DA = active SID)
                [SRH: SL=1, [C::100, B::100]]       <- Segment List
                [IPv4: 10.0.0.1 -> 10.0.0.2]        <- Original Packet
                [Payload]

@@ -29,11 +29,11 @@ hide:
 
 <div class="srv6-stats" markdown>
 <div class="srv6-stat">
-  <span class="srv6-stat-number">6+</span>
+  <span class="srv6-stat-number">20+</span>
   <span class="srv6-stat-label">RFCs Covered</span>
 </div>
 <div class="srv6-stat">
-  <span class="srv6-stat-number">5+</span>
+  <span class="srv6-stat-number">10+</span>
   <span class="srv6-stat-label">Implementations</span>
 </div>
 <div class="srv6-stat">
@@ -83,7 +83,7 @@ Discover real-world applications: Traffic Engineering, VPN services, service fun
 
 ### :material-server-network: Implementations
 
-Hands-on guides for Linux Kernel, Cisco IOS-XR, Juniper, FRRouting, and SONiC.
+Hands-on guides for Linux, Cisco IOS-XR and IOS-XE, Juniper, Arista, Nokia, FRRouting, and SONiC.
 
 [:material-arrow-right: View implementations](implementations/index.md){ .md-button }
 
@@ -93,7 +93,7 @@ Hands-on guides for Linux Kernel, Cisco IOS-XR, Juniper, FRRouting, and SONiC.
 
 ### :material-flask: Labs
 
-Build your own SRv6 lab with Containerlab, GNS3, and other tools. Copy-paste configs included.
+Build your own SRv6 lab with netlab, Containerlab, and GNS3. Copy-paste configs included.
 
 [:material-arrow-right: Start a lab](labs/index.md){ .md-button }
 

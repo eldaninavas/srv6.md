@@ -1026,3 +1026,9 @@
     margin: 0 0 2rem 0;
   }
 }
+
+/* --- Language switch link (EN <-> ES) --- */
+.md-typeset .srv6-lang-switch {
+  margin: -0.4rem 0 1.2rem;
+  font-size: 0.8rem;
+}
