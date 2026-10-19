@@ -1,6 +1,7 @@
 ---
 title: SRv6 vs SR-MPLS
-description: Comparing Segment Routing over IPv6 with SR-MPLS
+seo_title: "SRv6 vs SR-MPLS: Differences and When to Use Each"
+description: "SRv6 vs SR-MPLS compared side by side: data plane, overhead, scale, services, hardware support and operations, plus guidance on when to choose each one."
 tags:
   - topics
   - comparison

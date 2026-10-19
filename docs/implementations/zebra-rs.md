@@ -1,5 +1,6 @@
 ---
 title: zebra-rs (eBPF)
+seo_title: "zebra-rs: Rust Routing Stack with an eBPF SRv6 Data Plane"
 description: SRv6 with zebra-rs and its cradle-rs eBPF data plane — a Rust routing stack (IS-IS, OSPFv3, BGP) whose learned routes program an XDP/TC data plane implementing the full RFC 8986 behavior set plus RFC 9800 uSID and REPLACE-C-SID compression.
 tags:
   - implementations

@@ -1,6 +1,7 @@
 ---
 title: Interworking & Migration
-description: Strategies for migrating from MPLS to SRv6 and coexistence between SR-MPLS and SRv6
+seo_title: "MPLS to SRv6 Migration: Strategies and Interworking"
+description: "Plan an MPLS or SR-MPLS to SRv6 migration: strategies, interworking gateways, Binding SID stitching, MTU, control-plane coexistence and a phased rollout."
 tags:
   - topics
   - migration

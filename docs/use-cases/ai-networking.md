@@ -1,6 +1,7 @@
 ---
 title: AI/ML Training Networks
-description: SRv6 for deterministic path placement in AI backend GPU cluster fabrics
+seo_title: "SRv6 for AI Networks: GPU Fabrics, MRC and uSID"
+description: "SRv6 in AI training networks: fixing ECMP hash collisions with deterministic path placement, OpenAI MRC packet spraying, and hyperscaler deployments."
 tags:
   - use-cases
   - ai

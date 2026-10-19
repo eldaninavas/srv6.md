@@ -1,5 +1,6 @@
 ---
 title: SID Structure
+seo_title: "SRv6 SID Structure: Locator, Function and Arguments"
 description: Understand the SRv6 SID structure. Learn how the 128-bit Segment Identifier encodes locator, function, and arguments, and how the IANA-allocated 5f00::/16 block from RFC 9602 fits in.
 tags:
   - topics

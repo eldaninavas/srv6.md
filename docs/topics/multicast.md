@@ -1,5 +1,6 @@
 ---
 title: Multicast & Broadcast
+seo_title: "SRv6 Multicast: Replication Segments, Tree-SID, BIER"
 description: Multicast and broadcast delivery over SRv6 — replication segments, tree-SID, and BIER integration
 tags:
   - topics

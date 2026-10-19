@@ -1,6 +1,7 @@
 ---
 title: Telemetry & Monitoring
-description: SRv6 telemetry with IPFIX, YANG models, streaming telemetry, and network monitoring
+seo_title: "SRv6 Telemetry and Monitoring: IPFIX, YANG, gNMI"
+description: "Monitor SRv6 networks: what to measure, streaming telemetry, SRv6 YANG models, IPFIX export (RFC 9487), an open-source monitoring stack and what to alert on."
 tags:
   - topics
   - telemetry

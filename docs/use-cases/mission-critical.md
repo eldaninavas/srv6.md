@@ -1,6 +1,7 @@
 ---
 title: Mission-Critical Networks
-description: Quantum-safe SRv6 fabrics for defense, tactical, and mission-critical WANs
+seo_title: "Quantum-Safe SRv6 for Mission-Critical Networks"
+description: "Quantum-safe SRv6 fabrics for defense and mission-critical WANs: DDIL survivability, post-quantum MACsec and IPsec, Flex-Algo slicing and TI-LFA design rules."
 tags:
   - use-cases
   - mission-critical

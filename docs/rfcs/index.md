@@ -1,6 +1,7 @@
 ---
 title: RFCs & Standards
-description: Comprehensive reference for all SRv6-related IETF RFCs
+seo_title: "SRv6 RFCs and IETF Standards: Complete Reference"
+description: "Every SRv6 RFC explained: SRH, network programming, uSID compression, BGP services, IGP extensions, SR Policy, OAM and multicast, with plain-language summaries."
 tags:
   - rfcs
   - standards

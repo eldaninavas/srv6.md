@@ -1,6 +1,7 @@
 ---
 title: Cisco IOS-XE
-description: SRv6 uSID on Cisco IOS-XE — 8000 Series Secure Routers and Catalyst edge platforms
+seo_title: "SRv6 on Cisco IOS-XE: uSID Configuration Guide"
+description: "Configure SRv6 uSID on Cisco IOS-XE 8000 Series Secure Routers: F3216 locators, IS-IS, per-VRF L3VPN SIDs, Flex-Algo, TI-LFA and verification commands."
 tags:
   - implementations
   - cisco

@@ -1,5 +1,6 @@
 ---
 title: Topics
+seo_title: "SRv6 Topics: Learn Segment Routing over IPv6"
 description: Learn SRv6 from the ground up. Explore Segment Routing over IPv6 topics covering SID structure, network programming, and packet processing.
 tags:
   - topics

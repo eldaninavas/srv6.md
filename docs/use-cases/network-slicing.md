@@ -1,5 +1,6 @@
 ---
 title: Network Slicing
+seo_title: "SRv6 Network Slicing with Flex-Algo and SR Policy"
 description: End-to-end network slicing with SRv6 using Flex-Algorithm, QoS, and SR Policy color steering for 5G, enterprise, and data center
 tags:
   - use-cases

@@ -1,14 +1,25 @@
 {% extends "base.html" %}
 
+{#- seo_title is the search-result title; the short `title` stays as the
+    nav label and knowledge-graph node label. -#}
+{% block htmltitle %}
+  {% if page.meta and page.meta.seo_title %}
+    <title>{{ page.meta.seo_title | striptags }}</title>
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+
 {% block extrahead %}
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="{{ page.title }} | SRv6.md">
+  {% set seo_title = page.meta.seo_title if page.meta and page.meta.seo_title else page.title ~ " | SRv6.md" %}
+  <meta property="og:type" content="{{ 'website' if page.url in ['', '.', './'] else 'article' }}">
+  <meta property="og:title" content="{{ seo_title }}">
   <meta property="og:description" content="{{ page.meta.get('description', config.site_description) if page.meta else config.site_description }}">
   <meta property="og:image" content="https://srv6.md/assets/images/og-image.png">
   <meta property="og:url" content="{{ page.canonical_url }}">
   <meta property="og:site_name" content="SRv6.md">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ page.title }} | SRv6.md">
+  <meta name="twitter:title" content="{{ seo_title }}">
   <meta name="twitter:description" content="{{ page.meta.get('description', config.site_description) if page.meta else config.site_description }}">
   <meta name="twitter:image" content="https://srv6.md/assets/images/og-image.png">
   <meta name="keywords" content="SRv6, Segment Routing, IPv6, network programming, SID, SRH, {{ page.meta.get('tags', []) | join(', ') if page.meta else 'networking' }}">
@@ -30,7 +41,7 @@
   {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    "headline": "{{ page.title }}",
+    "headline": {{ (page.meta.seo_title if page.meta and page.meta.seo_title else page.title) | default(config.site_name, true) | tojson }},
     "url": "{{ page.canonical_url }}",
     "description": "{{ page.meta.get('description', config.site_description) if page.meta else config.site_description }}",
     "image": "https://srv6.md/assets/images/og-image.png",

@@ -1,5 +1,6 @@
 ---
 title: Micro-Loop Avoidance
+seo_title: "SRv6 Micro-Loop Avoidance During IGP Convergence"
 description: Preventing transient forwarding loops during IGP convergence using SRv6 local delay and explicit post-convergence paths
 tags:
   - topics

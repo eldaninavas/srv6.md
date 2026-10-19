@@ -1,5 +1,6 @@
 ---
 title: VPN Services
+seo_title: "SRv6 VPN Services: L3VPN, EVPN-VPWS and EVPN-ELAN"
 description: L3VPN and L2VPN services with SRv6 — End.DT4/DT6 for L3, EVPN-VPWS (E-Line), EVPN-ELAN, and E-Tree for L2
 tags:
   - use-cases

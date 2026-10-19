@@ -1,6 +1,7 @@
 ---
 title: Knowledge Graph
-description: Interactive visual map of all SRv6 concepts and their relationships
+seo_title: "SRv6 Knowledge Graph: Interactive Map of Every Concept"
+description: "Explore SRv6 visually: an interactive graph linking every topic, use case, RFC and implementation on SRv6.md. Click any node to open its page."
 hide:
   - toc
   - navigation

@@ -1,6 +1,7 @@
 ---
 title: FRRouting
-description: SRv6 support in FRRouting (FRR)
+seo_title: "SRv6 on FRRouting (FRR): uSID, L3VPN and Config"
+description: "Run SRv6 on FRRouting (FRR): current support status, uSID locators and L3VPN over SRv6, a configuration example, and the feature history from FRR 10.3 to 10.7."
 tags:
   - implementations
   - frr

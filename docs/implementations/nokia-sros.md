@@ -1,5 +1,6 @@
 ---
 title: Nokia SR OS
+seo_title: "SRv6 on Nokia SR OS: Classic SIDs and uSID"
 description: SRv6 on Nokia SR OS — classic SIDs and micro-segment (uSID) SRv6 side by side, services, protection and platforms
 tags:
   - implementations

@@ -1,5 +1,6 @@
 ---
 title: Implementations
+seo_title: "SRv6 Implementations: Cisco, Juniper, Arista, Nokia, FRR"
 description: SRv6 implementations on Linux, Cisco IOS-XR, Juniper, Arista EOS, Nokia SR OS, FRRouting, and SONiC. Practical deployment guides for Segment Routing over IPv6.
 tags:
   - implementations

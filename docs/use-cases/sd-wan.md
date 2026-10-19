@@ -1,5 +1,6 @@
 ---
 title: SD-WAN & SRv6
+seo_title: "SD-WAN and SRv6: Native Underlay Path Control"
 description: How SRv6 enhances SD-WAN with native underlay path control, simplified overlays, and end-to-end policy enforcement
 tags:
   - use-cases

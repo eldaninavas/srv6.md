@@ -1,6 +1,7 @@
 ---
 title: 5G Transport
-description: SRv6 as the converged transport for 5G backhaul, midhaul, and fronthaul
+seo_title: "SRv6 for 5G Transport: Backhaul, Slicing and MUP"
+description: "SRv6 as the converged 5G transport: backhaul, midhaul and fronthaul architecture, network slicing, the SRv6 Mobile User Plane (MUP) and operator deployments."
 tags:
   - use-cases
   - 5g

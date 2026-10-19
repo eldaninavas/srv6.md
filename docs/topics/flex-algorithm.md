@@ -1,6 +1,7 @@
 ---
 title: Flex-Algorithm
-description: IGP Flexible Algorithm for constraint-based SRv6 path computation
+seo_title: "Flex-Algo with SRv6: IGP Flexible Algorithm Guide"
+description: "IGP Flexible Algorithm (Flex-Algo, RFC 9350) with SRv6: per-algorithm locators, latency and TE metrics, network slicing, configuration and verification."
 tags:
   - topics
   - flex-algo

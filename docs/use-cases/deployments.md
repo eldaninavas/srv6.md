@@ -1,6 +1,7 @@
 ---
 title: Real-World Deployments
-description: Directory of public SRv6 production deployment announcements
+seo_title: "SRv6 Deployments: Who Runs SRv6 in Production"
+description: "Directory of public SRv6 production deployments: telecom operators, hyperscalers, AI clusters and public sector, each linked to the original announcement."
 tags:
   - use-cases
   - deployments

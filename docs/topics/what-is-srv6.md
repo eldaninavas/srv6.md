@@ -1,5 +1,6 @@
 ---
 title: What is SRv6? - Segment Routing over IPv6 Explained
+seo_title: "What is SRv6? Segment Routing over IPv6 Explained"
 description: Learn what SRv6 is, how Segment Routing over IPv6 works, its key concepts (SID, SRH, network programming), benefits over MPLS, and real-world use cases.
 tags:
   - topics

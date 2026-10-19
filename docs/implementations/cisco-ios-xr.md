@@ -1,6 +1,7 @@
 ---
 title: Cisco IOS-XR
-description: SRv6 on Cisco IOS-XR routers
+seo_title: "SRv6 on Cisco IOS-XR: uSID and L3VPN Configuration"
+description: "Configure SRv6 on Cisco IOS-XR: supported NCS, ASR 9000 and Cisco 8000 platforms, uSID locator and IS-IS setup, L3VPN over SRv6, and verification commands."
 tags:
   - implementations
   - cisco

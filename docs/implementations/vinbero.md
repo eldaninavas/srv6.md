@@ -1,5 +1,6 @@
 ---
 title: Vinbero (eBPF/Go)
+seo_title: "Vinbero: Go and eBPF SRv6 Data Plane"
 description: SRv6 with Vinbero — a Go daemon whose eBPF data plane implements the RFC 8986 behaviors, EVPN L2VPN with multi-homing, the RFC 9433 mobile user plane, and service programming proxies, driven by an in-process GoBGP speaker.
 tags:
   - implementations

@@ -1,5 +1,6 @@
 ---
 title: Traffic Engineering
+seo_title: "SRv6 Traffic Engineering with SR Policies"
 description: Learn SRv6 traffic engineering with SR Policies. Steer traffic along explicit paths using Segment Routing over IPv6 for latency and bandwidth optimization.
 tags:
   - use-cases

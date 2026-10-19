@@ -1,6 +1,7 @@
 ---
 title: uSID / SRv6 Compression
-description: Micro-SID (uSID) and SRv6 header compression for efficient forwarding
+seo_title: "SRv6 uSID (Micro-SID) Compression Explained"
+description: "How SRv6 micro-SIDs (uSID, RFC 9800) shrink header overhead: packing, overhead comparison with classic SRv6, uSID vs G-SRv6, configuration and adoption."
 tags:
   - topics
   - usid

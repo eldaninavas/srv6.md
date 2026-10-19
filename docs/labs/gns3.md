@@ -1,6 +1,7 @@
 ---
 title: GNS3
-description: SRv6 labs with GNS3
+seo_title: "SRv6 Lab with GNS3: Emulating Vendor Routers"
+description: "Emulate an SRv6 network in GNS3 with vendor router images such as Cisco IOS-XR and Juniper Junos: prerequisites, topology design and practical lab tips."
 tags:
   - labs
   - gns3

@@ -1,5 +1,6 @@
 ---
 title: Performance Measurement (SRPM)
+seo_title: "SRv6 Performance Measurement (SRPM): Delay and Loss"
 description: SRv6 performance measurement with STAMP, alternate-marking, and color-aware PM for delay, loss, and jitter monitoring across SRv6 networks.
 tags:
   - topics

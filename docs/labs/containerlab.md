@@ -1,6 +1,7 @@
 ---
 title: Containerlab
-description: Build SRv6 labs with Containerlab
+seo_title: "SRv6 Lab with Containerlab: Step-by-Step Topology"
+description: "Build a free SRv6 lab with Containerlab: prerequisites, a sample topology file, deployment steps and commands to verify Segment Routing over IPv6 forwarding."
 tags:
   - labs
   - containerlab

@@ -1,6 +1,7 @@
 ---
 title: SRH Mechanics & Packet Walk
-description: Deep dive into the Segment Routing Header and step-by-step packet processing
+seo_title: "SRv6 Segment Routing Header (SRH): Packet Walk"
+description: "Step-by-step SRv6 packet walk through the Segment Routing Header (RFC 8754): SRH format, PSP/USP/USD flavors, TLVs, reduced encapsulation and verification."
 tags:
   - topics
   - srh

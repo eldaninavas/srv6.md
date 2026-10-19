@@ -1,5 +1,6 @@
 ---
 title: Inter-Domain SRv6
+seo_title: "Inter-Domain SRv6: Binding SID and Multi-Domain Design"
 description: Multi-domain SRv6 design patterns — Binding SID stitching, BGP-LS controllers, SID allocation, and domain boundary options
 tags:
   - topics

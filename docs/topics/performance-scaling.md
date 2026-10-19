@@ -1,6 +1,7 @@
 ---
 title: Performance & Scaling
-description: MTU impact, hardware support, overhead analysis, and scaling considerations for SRv6
+seo_title: "SRv6 Performance and Scaling: Overhead and MTU"
+description: "SRv6 performance and scale: encapsulation overhead, MTU impact and sizing, hardware forwarding limits, and the scaling considerations that matter in production."
 tags:
   - topics
   - performance

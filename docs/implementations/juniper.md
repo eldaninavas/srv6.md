@@ -1,6 +1,7 @@
 ---
 title: Juniper
-description: SRv6 on Juniper Networks routers
+seo_title: "SRv6 on Juniper Junos: Configuration Guide"
+description: "Configure SRv6 on Juniper Junos: locators, IS-IS and L3VPN services, verification commands, plus Juniper's validated design and hands-on Junos walkthroughs."
 tags:
   - implementations
   - juniper

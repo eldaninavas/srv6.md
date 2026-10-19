@@ -1,6 +1,7 @@
 ---
 title: Cloud-Native SRv6 Backbone
-description: Migrating from SR-MPLS/GRE to a unified SRv6 domain in public cloud environments
+seo_title: "Cloud-Native SRv6 Backbone: From SR-MPLS/GRE to SRv6"
+description: "Migrating a cloud backbone from SR-MPLS over GRE to one native SRv6 domain: the problem, ECMP entropy in the cloud, stack simplification and outcomes."
 tags:
   - use-cases
   - cloud

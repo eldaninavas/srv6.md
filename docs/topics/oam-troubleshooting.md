@@ -1,6 +1,7 @@
 ---
 title: OAM & Troubleshooting
-description: SRv6 Operations, Administration, Maintenance, and debugging techniques
+seo_title: "SRv6 OAM and Troubleshooting: Ping, Traceroute, IOAM"
+description: "Troubleshoot SRv6 networks: SRv6 ping and traceroute, IOAM, path tracing, in-situ performance measurement, common failure scenarios and a step-by-step playbook."
 tags:
   - topics
   - oam

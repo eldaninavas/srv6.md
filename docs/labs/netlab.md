@@ -1,6 +1,7 @@
 ---
 title: netlab
-description: Build SRv6 labs with netlab
+seo_title: "SRv6 Lab with netlab: Ready-Made Multi-Vendor Topologies"
+description: "Spin up preconfigured SRv6 labs with netlab: IS-IS, unnumbered core, multivendor, IPv4 islands, BGP-free core and L3VPN topologies on FRR, IOS XE/XR and Junos."
 tags:
   - labs
   - netlab

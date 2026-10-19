@@ -1,5 +1,6 @@
 ---
 title: SRv6 - Segment Routing over IPv6 Knowledge Base
+seo_title: "SRv6 (Segment Routing over IPv6): The Open Knowledge Base"
 description: The definitive open-source guide to SRv6 (Segment Routing over IPv6). Learn what SRv6 is, how it works, use cases, implementations, labs, and RFCs.
 tags:
   - home

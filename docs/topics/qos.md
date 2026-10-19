@@ -1,5 +1,6 @@
 ---
 title: QoS & Traffic Classification
+seo_title: "SRv6 QoS: Traffic Class, DSCP and Per-Policy QoS"
 description: Quality of Service mechanisms in SRv6 — traffic class, DSCP, Flex-Algo constraints, and per-policy QoS
 tags:
   - topics

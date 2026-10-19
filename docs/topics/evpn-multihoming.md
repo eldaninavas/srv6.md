@@ -1,6 +1,7 @@
 ---
 title: EVPN Multihoming
-description: All-Active multihoming for L3VPN services using EVPN signaling over SRv6
+seo_title: "EVPN Multihoming over SRv6: All-Active L3VPN"
+description: "EVPN all-active multihoming for L3VPN services over SRv6: why it matters, key concepts like ESI and aliasing, capabilities, and comparison with L2 multihoming."
 tags:
   - topics
   - evpn

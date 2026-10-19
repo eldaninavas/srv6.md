@@ -1,6 +1,7 @@
 ---
 title: BGP Overlay Services
-description: EVPN and L3VPN overlay services over SRv6 transport
+seo_title: "SRv6 L3VPN and EVPN: BGP Overlay Services (RFC 9252)"
+description: "How BGP delivers L3VPN and EVPN services over SRv6: overlay architecture, service SIDs, the BGP SRv6 Service TLV from RFC 9252, and verification commands."
 tags:
   - topics
   - bgp

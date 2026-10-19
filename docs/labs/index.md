@@ -1,6 +1,7 @@
 ---
 title: Labs
-description: Hands-on SRv6 lab environments using Containerlab and GNS3. Practice Segment Routing over IPv6 with no hardware required.
+seo_title: "SRv6 Labs: Free Hands-On Labs with netlab, Containerlab, GNS3"
+description: "Practice SRv6 hands-on with free virtual labs: netlab, Containerlab and GNS3 environments using FRR, Linux and vendor router images. No hardware required."
 tags:
   - labs
   - hands-on

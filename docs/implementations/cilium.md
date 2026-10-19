@@ -1,5 +1,6 @@
 ---
 title: Cilium (eBPF)
+seo_title: "SRv6 with Cilium: eBPF L3VPN for Kubernetes"
 description: SRv6 L3VPN and cloud-native networking with Cilium eBPF — connecting Kubernetes clusters to an SRv6 fabric using BGP and eBPF-accelerated data plane.
 tags:
   - implementations

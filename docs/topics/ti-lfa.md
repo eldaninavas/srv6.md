@@ -1,6 +1,7 @@
 ---
 title: TI-LFA
-description: Topology Independent Loop-Free Alternate for sub-50ms SRv6 fast reroute
+seo_title: "TI-LFA with SRv6: Sub-50ms Fast Reroute Explained"
+description: "How TI-LFA delivers sub-50ms fast reroute in SRv6 networks: post-convergence repair paths, link/node/SRLG protection, configuration, and comparison with LFA."
 tags:
   - topics
   - ti-lfa

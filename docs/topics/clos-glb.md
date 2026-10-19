@@ -1,6 +1,7 @@
 ---
 title: CLOS Fabrics & Load Balancing
-description: SRv6 in CLOS data center topologies with Global Load Balancing and flowlets
+seo_title: "SRv6 in CLOS Data Centers: Deterministic Load Balancing"
+description: "SRv6 in CLOS data center fabrics: the ECMP hash-collision problem, deterministic path placement, global load balancing with flowlets, and SRv6 vs VXLAN."
 tags:
   - topics
   - clos

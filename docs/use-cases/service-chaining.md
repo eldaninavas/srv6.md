@@ -1,6 +1,7 @@
 ---
 title: Service Chaining
-description: Network Service Function Chaining with SRv6
+seo_title: "SRv6 Service Function Chaining (SFC) Explained"
+description: "Service function chaining with SRv6: why traditional SFC falls short, packet walk through a service chain, SRv6 proxy behaviors and dynamic chain changes."
 tags:
   - use-cases
   - service-chaining

@@ -1,6 +1,7 @@
 ---
 title: SONiC & SAI
-description: SRv6 on SONiC OS with the Switch Abstraction Interface
+seo_title: "SRv6 on SONiC and SAI: Open Networking Stack"
+description: "How SRv6 runs on SONiC: the Switch Abstraction Interface (SAI), SRv6 features in SONiC, the FRRouting control plane, and whitebox hardware support."
 tags:
   - topics
   - sonic

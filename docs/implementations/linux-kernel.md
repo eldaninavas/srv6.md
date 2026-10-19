@@ -1,6 +1,7 @@
 ---
 title: Linux Kernel
-description: SRv6 implementation in the Linux kernel
+seo_title: "SRv6 in the Linux Kernel: Behaviors and Quick Start"
+description: "SRv6 in the Linux kernel: supported seg6 behaviors, a quick start with iproute2 commands, the surrounding tooling, and the latest kernel development work."
 tags:
   - implementations
   - linux

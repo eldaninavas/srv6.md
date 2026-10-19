@@ -1,5 +1,6 @@
 ---
 title: SR Policy
+seo_title: "SRv6 SR Policy: ODN, Color Steering and Binding SID"
 description: SRv6 traffic engineering with SR Policies — ODN, PCE, Binding SID, color steering, and dynamic path computation
 tags:
   - topics

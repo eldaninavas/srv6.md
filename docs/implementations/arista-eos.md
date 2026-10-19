@@ -1,5 +1,6 @@
 ---
 title: Arista EOS
+seo_title: "SRv6 on Arista EOS: uSID Configuration and Platforms"
 description: SRv6 uSID support on Arista EOS — uN, static uA, IS-IS, counters, SSU, and supported platforms
 tags:
   - implementations

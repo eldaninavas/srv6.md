@@ -1,6 +1,7 @@
 ---
 title: Security
-description: SRv6 security considerations, HMAC, filtering, and attack mitigation
+seo_title: "SRv6 Security: HMAC, Filtering and Attack Mitigation"
+description: "SRv6 security in depth: threat model, SRH HMAC, infrastructure ACL filtering, SRv6-specific attack vectors, implementation CVEs and comparison with MPLS."
 tags:
   - topics
   - security

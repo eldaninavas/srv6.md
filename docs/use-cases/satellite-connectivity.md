@@ -1,6 +1,7 @@
 ---
 title: Satellite Connectivity
-description: SRv6 overlay services over LEO satellite transport
+seo_title: "SRv6 over Satellite: LEO Connectivity Use Case"
+description: "SRv6 overlay services over LEO satellite transport: why SRv6 fits satellite links, architecture concepts, applicable SRv6 behaviors and industry validation."
 tags:
   - use-cases
   - satellite

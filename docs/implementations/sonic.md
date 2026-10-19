@@ -1,6 +1,7 @@
 ---
 title: SONiC
-description: SRv6 support in SONiC network operating system
+seo_title: "SRv6 on SONiC: Status and Architecture"
+description: "SRv6 in the SONiC open-source network OS: current feature status, uSID support for AI and data center fabrics, and the SONiC SRv6 architecture with FRR."
 tags:
   - implementations
   - sonic
