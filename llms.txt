@@ -2,26 +2,96 @@
 
 > The open-source knowledge base for Segment Routing over IPv6 (SRv6).
 
-SRv6.md is a community-driven wiki covering SRv6 fundamentals, use cases, vendor implementations, hands-on labs, and RFC references.
+SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundamentals, use cases, vendor implementations, hands-on labs, and RFC references. The full content is available at https://srv6.md/llms-full.txt.
 
-## Docs
+## Topics
 
-- [What is SRv6?](https://srv6.md/topics/what-is-srv6/)
-- [SID Structure](https://srv6.md/topics/sid-structure/)
-- [Network Programming](https://srv6.md/topics/network-programming/)
-- [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/)
-- [Traffic Engineering](https://srv6.md/use-cases/traffic-engineering/)
-- [VPN Services](https://srv6.md/use-cases/vpn-services/)
-- [Service Chaining](https://srv6.md/use-cases/service-chaining/)
-- [Linux Kernel](https://srv6.md/implementations/linux-kernel/)
-- [Cisco IOS-XR](https://srv6.md/implementations/cisco-ios-xr/)
-- [Juniper](https://srv6.md/implementations/juniper/)
-- [Arista EOS](https://srv6.md/implementations/arista-eos/)
-- [Nokia SR OS](https://srv6.md/implementations/nokia-sros/)
-- [FRRouting](https://srv6.md/implementations/frrouting/)
-- [SONiC](https://srv6.md/implementations/sonic/)
-- [Containerlab Labs](https://srv6.md/labs/containerlab/)
-- [GNS3 Labs](https://srv6.md/labs/gns3/)
-- [RFC 8986 - SRv6 Network Programming](https://srv6.md/rfcs/rfc8986/)
-- [RFC 9252 - BGP Overlay Services](https://srv6.md/rfcs/rfc9252/)
-- [RFC 9256 - SR Policy Architecture](https://srv6.md/rfcs/rfc9256/)
+- [SRv6 L3VPN and EVPN: BGP Overlay Services (RFC 9252)](https://srv6.md/topics/bgp-overlay-services/): How BGP delivers L3VPN and EVPN services over SRv6: overlay architecture, service SIDs, the BGP SRv6 Service TLV from RFC 9252, and verification commands.
+- [SRv6 in CLOS Data Centers: Deterministic Load Balancing](https://srv6.md/topics/clos-glb/): SRv6 in CLOS data center fabrics: the ECMP hash-collision problem, deterministic path placement, global load balancing with flowlets, and SRv6 vs VXLAN.
+- [EVPN Multihoming over SRv6: All-Active L3VPN](https://srv6.md/topics/evpn-multihoming/): EVPN all-active multihoming for L3VPN services over SRv6: why it matters, key concepts like ESI and aliasing, capabilities, and comparison with L2 multihoming.
+- [Flex-Algo with SRv6: IGP Flexible Algorithm Guide](https://srv6.md/topics/flex-algorithm/): IGP Flexible Algorithm (Flex-Algo, RFC 9350) with SRv6: per-algorithm locators, latency and TE metrics, network slicing, configuration and verification.
+- [Host-Based SRv6: Linux, eBPF and VPP at the Edge](https://srv6.md/topics/host-based-srv6/): SRv6 at the host level with Linux kernel, eBPF, VPP, and the open-source ecosystem
+- [SRv6 Topics: Learn Segment Routing over IPv6](https://srv6.md/topics/): Learn SRv6 from the ground up. Explore Segment Routing over IPv6 topics covering SID structure, network programming, and packet processing.
+- [Inter-Domain SRv6: Binding SID and Multi-Domain Design](https://srv6.md/topics/inter-domain/): Multi-domain SRv6 design patterns — Binding SID stitching, BGP-LS controllers, SID allocation, and domain boundary options
+- [MPLS to SRv6 Migration: Strategies and Interworking](https://srv6.md/topics/interworking-migration/): Plan an MPLS or SR-MPLS to SRv6 migration: strategies, interworking gateways, Binding SID stitching, MTU, control-plane coexistence and a phased rollout.
+- [SRv6 Micro-Loop Avoidance During IGP Convergence](https://srv6.md/topics/micro-loop-avoidance/): Preventing transient forwarding loops during IGP convergence using SRv6 local delay and explicit post-convergence paths
+- [SRv6 Multicast: Replication Segments, Tree-SID, BIER](https://srv6.md/topics/multicast/): Multicast and broadcast delivery over SRv6 — replication segments, tree-SID, and BIER integration
+- [SRv6 Network Programming: Behaviors from RFC 8986](https://srv6.md/topics/network-programming/): Explore SRv6 network programming and SRv6 behaviors defined in RFC 8986. Learn how Segment Routing over IPv6 functions process packets.
+- [SRv6 OAM and Troubleshooting: Ping, Traceroute, IOAM](https://srv6.md/topics/oam-troubleshooting/): Troubleshoot SRv6 networks: SRv6 ping and traceroute, IOAM, path tracing, in-situ performance measurement, common failure scenarios and a step-by-step playbook.
+- [SRv6 Performance and Scaling: Overhead and MTU](https://srv6.md/topics/performance-scaling/): SRv6 performance and scale: encapsulation overhead, MTU impact and sizing, hardware forwarding limits, and the scaling considerations that matter in production.
+- [SRv6 QoS: Traffic Class, DSCP and Per-Policy QoS](https://srv6.md/topics/qos/): Quality of Service mechanisms in SRv6 — traffic class, DSCP, Flex-Algo constraints, and per-policy QoS
+- [SRv6 Security: HMAC, Filtering and Attack Mitigation](https://srv6.md/topics/security/): SRv6 security in depth: threat model, SRH HMAC, infrastructure ACL filtering, SRv6-specific attack vectors, implementation CVEs and comparison with MPLS.
+- [SRv6 SID Structure: Locator, Function and Arguments](https://srv6.md/topics/sid-structure/): Understand the SRv6 SID structure. Learn how the 128-bit Segment Identifier encodes locator, function, and arguments, and how the IANA-allocated 5f00::/16 block from RFC 9602 fits in.
+- [SRv6 on SONiC and SAI: Open Networking Stack](https://srv6.md/topics/sonic-sai/): How SRv6 runs on SONiC: the Switch Abstraction Interface (SAI), SRv6 features in SONiC, the FRRouting control plane, and whitebox hardware support.
+- [SRv6 SR Policy: ODN, Color Steering and Binding SID](https://srv6.md/topics/sr-policy/): SRv6 traffic engineering with SR Policies — ODN, PCE, Binding SID, color steering, and dynamic path computation
+- [SRv6 Segment Routing Header (SRH): Packet Walk](https://srv6.md/topics/srh-packet-walk/): Step-by-step SRv6 packet walk through the Segment Routing Header (RFC 8754): SRH format, PSP/USP/USD flavors, TLVs, reduced encapsulation and verification.
+- [SRv6 Performance Measurement (SRPM): Delay and Loss](https://srv6.md/topics/srpm/): SRv6 performance measurement with STAMP, alternate-marking, and color-aware PM for delay, loss, and jitter monitoring across SRv6 networks.
+- [SRv6 vs SR-MPLS: Differences and When to Use Each](https://srv6.md/topics/srv6-vs-sr-mpls/): SRv6 vs SR-MPLS compared side by side: data plane, overhead, scale, services, hardware support and operations, plus guidance on when to choose each one.
+- [SRv6 Telemetry and Monitoring: IPFIX, YANG, gNMI](https://srv6.md/topics/telemetry/): Monitor SRv6 networks: what to measure, streaming telemetry, SRv6 YANG models, IPFIX export (RFC 9487), an open-source monitoring stack and what to alert on.
+- [TI-LFA with SRv6: Sub-50ms Fast Reroute Explained](https://srv6.md/topics/ti-lfa/): How TI-LFA delivers sub-50ms fast reroute in SRv6 networks: post-convergence repair paths, link/node/SRLG protection, configuration, and comparison with LFA.
+- [SRv6 uSID (Micro-SID) Compression Explained](https://srv6.md/topics/usid-compression/): How SRv6 micro-SIDs (uSID, RFC 9800) shrink header overhead: packing, overhead comparison with classic SRv6, uSID vs G-SRv6, configuration and adoption.
+- [What is SRv6? Segment Routing over IPv6 Explained](https://srv6.md/topics/what-is-srv6/): Learn what SRv6 is, how Segment Routing over IPv6 works, its key concepts (SID, SRH, network programming), benefits over MPLS, and real-world use cases.
+
+## Use Cases
+
+- [SRv6 for 5G Transport: Backhaul, Slicing and MUP](https://srv6.md/use-cases/5g-transport/): SRv6 as the converged 5G transport: backhaul, midhaul and fronthaul architecture, network slicing, the SRv6 Mobile User Plane (MUP) and operator deployments.
+- [SRv6 for AI Networks: GPU Fabrics, MRC and uSID](https://srv6.md/use-cases/ai-networking/): SRv6 in AI training networks: fixing ECMP hash collisions with deterministic path placement, OpenAI MRC packet spraying, and hyperscaler deployments.
+- [Cloud-Native SRv6 Backbone: From SR-MPLS/GRE to SRv6](https://srv6.md/use-cases/cloud-native-backbone/): Migrating a cloud backbone from SR-MPLS over GRE to one native SRv6 domain: the problem, ECMP entropy in the cloud, stack simplification and outcomes.
+- [SRv6 Deployments: Who Runs SRv6 in Production](https://srv6.md/use-cases/deployments/): Directory of public SRv6 production deployments: telecom operators, hyperscalers, AI clusters and public sector, each linked to the original announcement.
+- [SRv6 Use Cases: Real-World Applications](https://srv6.md/use-cases/): Discover SRv6 use cases and real-world applications. See how Segment Routing over IPv6 powers traffic engineering, VPNs, and service chaining.
+- [Quantum-Safe SRv6 for Mission-Critical Networks](https://srv6.md/use-cases/mission-critical/): Quantum-safe SRv6 fabrics for defense and mission-critical WANs: DDIL survivability, post-quantum MACsec and IPsec, Flex-Algo slicing and TI-LFA design rules.
+- [SRv6 Network Slicing with Flex-Algo and SR Policy](https://srv6.md/use-cases/network-slicing/): End-to-end network slicing with SRv6 using Flex-Algorithm, QoS, and SR Policy color steering for 5G, enterprise, and data center
+- [SRv6 over Satellite: LEO Connectivity Use Case](https://srv6.md/use-cases/satellite-connectivity/): SRv6 overlay services over LEO satellite transport: why SRv6 fits satellite links, architecture concepts, applicable SRv6 behaviors and industry validation.
+- [SD-WAN and SRv6: Native Underlay Path Control](https://srv6.md/use-cases/sd-wan/): How SRv6 enhances SD-WAN with native underlay path control, simplified overlays, and end-to-end policy enforcement
+- [SRv6 Service Function Chaining (SFC) Explained](https://srv6.md/use-cases/service-chaining/): Service function chaining with SRv6: why traditional SFC falls short, packet walk through a service chain, SRv6 proxy behaviors and dynamic chain changes.
+- [SRv6 Traffic Engineering with SR Policies](https://srv6.md/use-cases/traffic-engineering/): Learn SRv6 traffic engineering with SR Policies. Steer traffic along explicit paths using Segment Routing over IPv6 for latency and bandwidth optimization.
+- [SRv6 VPN Services: L3VPN, EVPN-VPWS and EVPN-ELAN](https://srv6.md/use-cases/vpn-services/): L3VPN and L2VPN services with SRv6 — End.DT4/DT6 for L3, EVPN-VPWS (E-Line), EVPN-ELAN, and E-Tree for L2
+
+## Implementations
+
+- [SRv6 on Arista EOS: uSID Configuration and Platforms](https://srv6.md/implementations/arista-eos/): SRv6 uSID support on Arista EOS — uN, static uA, IS-IS, counters, SSU, and supported platforms
+- [SRv6 with Cilium: eBPF L3VPN for Kubernetes](https://srv6.md/implementations/cilium/): SRv6 L3VPN and cloud-native networking with Cilium eBPF — connecting Kubernetes clusters to an SRv6 fabric using BGP and eBPF-accelerated data plane.
+- [SRv6 on Cisco IOS-XE: uSID Configuration Guide](https://srv6.md/implementations/cisco-ios-xe/): Configure SRv6 uSID on Cisco IOS-XE 8000 Series Secure Routers: F3216 locators, IS-IS, per-VRF L3VPN SIDs, Flex-Algo, TI-LFA and verification commands.
+- [SRv6 on Cisco IOS-XR: uSID and L3VPN Configuration](https://srv6.md/implementations/cisco-ios-xr/): Configure SRv6 on Cisco IOS-XR: supported NCS, ASR 9000 and Cisco 8000 platforms, uSID locator and IS-IS setup, L3VPN over SRv6, and verification commands.
+- [SRv6 on FRRouting (FRR): uSID, L3VPN and Config](https://srv6.md/implementations/frrouting/): Run SRv6 on FRRouting (FRR): current support status, uSID locators and L3VPN over SRv6, a configuration example, and the feature history from FRR 10.3 to 10.7.
+- [SRv6 Implementations: Cisco, Juniper, Arista, Nokia, FRR](https://srv6.md/implementations/): SRv6 implementations on Linux, Cisco IOS-XR, Juniper, Arista EOS, Nokia SR OS, FRRouting, and SONiC. Practical deployment guides for Segment Routing over IPv6.
+- [SRv6 on Juniper Junos: Configuration Guide](https://srv6.md/implementations/juniper/): Configure SRv6 on Juniper Junos: locators, IS-IS and L3VPN services, verification commands, plus Juniper's validated design and hands-on Junos walkthroughs.
+- [SRv6 in the Linux Kernel: Behaviors and Quick Start](https://srv6.md/implementations/linux-kernel/): SRv6 in the Linux kernel: supported seg6 behaviors, a quick start with iproute2 commands, the surrounding tooling, and the latest kernel development work.
+- [SRv6 on Nokia SR OS: Classic SIDs and uSID](https://srv6.md/implementations/nokia-sros/): SRv6 on Nokia SR OS — classic SIDs and micro-segment (uSID) SRv6 side by side, services, protection and platforms
+- [SRv6 on SONiC: Status and Architecture](https://srv6.md/implementations/sonic/): SRv6 in the SONiC open-source network OS: current feature status, uSID support for AI and data center fabrics, and the SONiC SRv6 architecture with FRR.
+- [Vinbero: Go and eBPF SRv6 Data Plane](https://srv6.md/implementations/vinbero/): SRv6 with Vinbero — a Go daemon whose eBPF data plane implements the RFC 8986 behaviors, EVPN L2VPN with multi-homing, the RFC 9433 mobile user plane, and service programming proxies, driven by an in-process GoBGP speaker.
+- [zebra-rs: Rust Routing Stack with an eBPF SRv6 Data Plane](https://srv6.md/implementations/zebra-rs/): SRv6 with zebra-rs and its cradle-rs eBPF data plane — a Rust routing stack (IS-IS, OSPFv3, BGP) whose learned routes program an XDP/TC data plane implementing the full RFC 8986 behavior set plus RFC 9800 uSID and REPLACE-C-SID compression.
+
+## Labs
+
+- [SRv6 Lab with Containerlab: Step-by-Step Topology](https://srv6.md/labs/containerlab/): Build a free SRv6 lab with Containerlab: prerequisites, a sample topology file, deployment steps and commands to verify Segment Routing over IPv6 forwarding.
+- [SRv6 Lab with GNS3: Emulating Vendor Routers](https://srv6.md/labs/gns3/): Emulate an SRv6 network in GNS3 with vendor router images such as Cisco IOS-XR and Juniper Junos: prerequisites, topology design and practical lab tips.
+- [SRv6 Labs: Free Hands-On Labs with netlab, Containerlab, GNS3](https://srv6.md/labs/): Practice SRv6 hands-on with free virtual labs: netlab, Containerlab and GNS3 environments using FRR, Linux and vendor router images. No hardware required.
+- [SRv6 Lab with netlab: Ready-Made Multi-Vendor Topologies](https://srv6.md/labs/netlab/): Spin up preconfigured SRv6 labs with netlab: IS-IS, unnumbered core, multivendor, IPv4 islands, BGP-free core and L3VPN topologies on FRR, IOS XE/XR and Junos.
+
+## RFCs & Standards
+
+- [SRv6 RFCs and IETF Standards: Complete Reference](https://srv6.md/rfcs/): Every SRv6 RFC explained: SRH, network programming, uSID compression, BGP services, IGP extensions, SR Policy, OAM and multicast, with plain-language summaries.
+- [RFC 10038 Explained: Distributing SRv6 Locators via DHCPv6](https://srv6.md/rfcs/rfc10038/): RFC 10038 explained in plain language: Distributing the SRv6 Locator Using DHCPv6 — IA_SRV6_LOCATOR and IA Locator options. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 8402 Explained: Segment Routing Architecture](https://srv6.md/rfcs/rfc8402/): RFC 8402 explained in plain language: Segment Routing Architecture. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 8754 Explained: IPv6 Segment Routing Header (SRH)](https://srv6.md/rfcs/rfc8754/): RFC 8754 explained in plain language: IPv6 Segment Routing Header (SRH). What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 8986 Explained: SRv6 Network Programming](https://srv6.md/rfcs/rfc8986/): RFC 8986 explained in plain language: SRv6 Network Programming. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9252 Explained: BGP Overlay Services over SRv6](https://srv6.md/rfcs/rfc9252/): RFC 9252 explained in plain language: BGP Overlay Services Based on SRv6. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9256 Explained: Segment Routing Policy Architecture](https://srv6.md/rfcs/rfc9256/): RFC 9256 explained in plain language: Segment Routing Policy Architecture. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9259 Explained: SRv6 OAM, Ping and Traceroute](https://srv6.md/rfcs/rfc9259/): RFC 9259 explained in plain language: Operations, Administration, and Maintenance (OAM) in SRv6. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9350 Explained: IGP Flexible Algorithm (Flex-Algo)](https://srv6.md/rfcs/rfc9350/): RFC 9350 explained in plain language: IGP Flexible Algorithm. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9352 Explained: IS-IS Extensions for SRv6](https://srv6.md/rfcs/rfc9352/): RFC 9352 explained in plain language: IS-IS Extensions for Segment Routing over IPv6. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9433 Explained: SRv6 Mobile User Plane (MUP)](https://srv6.md/rfcs/rfc9433/): RFC 9433 explained in plain language: SRv6 SID for Mobile User Plane (MUP). What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9487 Explained: Exporting SRv6 Information in IPFIX](https://srv6.md/rfcs/rfc9487/): RFC 9487 explained in plain language: Export of SRv6 Information in IPFIX. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9513 Explained: OSPFv3 Extensions for SRv6](https://srv6.md/rfcs/rfc9513/): RFC 9513 explained in plain language: OSPFv3 Extensions for SRv6. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9514 Explained: BGP-LS Extensions for SRv6](https://srv6.md/rfcs/rfc9514/): RFC 9514 explained in plain language: BGP-LS Extensions for SRv6. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9524 Explained: SR Replication Segment for Multicast](https://srv6.md/rfcs/rfc9524/): RFC 9524 explained in plain language: Segment Routing Replication for Multipoint Service Delivery (Replication segment and End.Replicate). What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9602 Explained: SRv6 SIDs and the 5f00::/16 Block](https://srv6.md/rfcs/rfc9602/): RFC 9602 explained in plain language: SRv6 Segment Identifiers in the IPv6 Addressing Architecture. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9603 Explained: PCEP Extensions for SRv6](https://srv6.md/rfcs/rfc9603/): RFC 9603 explained in plain language: PCEP Extensions for IPv6 Segment Routing — SRv6 path setup type, SRv6-ERO and SRv6-RRO. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9723 Explained: BGP Colored Prefix Routing for SRv6](https://srv6.md/rfcs/rfc9723/): RFC 9723 explained in plain language: BGP Colored Prefix Routing (CPR) for SRv6 services — intent-aware inter-domain paths via colored locators. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9800 Explained: SRv6 uSID Compression (C-SID)](https://srv6.md/rfcs/rfc9800/): RFC 9800 explained in plain language: Compressed SRv6 Segment List Encoding (uSID). What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9819 Explained: Argument Signaling for SRv6 BGP Services](https://srv6.md/rfcs/rfc9819/): RFC 9819 explained in plain language: Argument Signaling for BGP Services in SRv6 — End.DT2M ESI filtering argument (updates RFC 9252). What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9855 Explained: TI-LFA Fast Reroute](https://srv6.md/rfcs/rfc9855/): RFC 9855 explained in plain language: Topology-Independent Loop-Free Alternate Fast Reroute (TI-LFA). What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9857 Explained: SR Policies in BGP-LS](https://srv6.md/rfcs/rfc9857/): Advertisement of Segment Routing Policies Using BGP-LS — reporting SR Policy candidate path state to controllers
+- [RFC 9860 Explained: MoFRR Based on TI-LFA](https://srv6.md/rfcs/rfc9860/): RFC 9860 explained in plain language: Multicast-only Fast Reroute (MoFRR) based on TI-LFA — PIM secondary joins along TI-LFA repair paths. What it defines, how it works and how it fits into SRv6 networks.
+- [RFC 9960 Explained: Segment Routing P2MP Policy (Tree-SID)](https://srv6.md/rfcs/rfc9960/): RFC 9960 explained in plain language: Segment Routing Point-to-Multipoint (P2MP) Policy — Tree-SID architecture built from Replication segments. What it defines, how it works and how it fits into SRv6 networks.
