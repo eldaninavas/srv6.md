@@ -7,9 +7,14 @@ generates Cytoscape.js node/edge data automatically.
 import os
 import re
 import json
+import hashlib
 import logging
 
 log = logging.getLogger("mkdocs.hooks.generate_graph")
+
+# Cloudflare tells browsers to cache assets for hours, so the page must request
+# the script under a content-hashed URL or visitors keep running a stale copy.
+_js_version = ""
 
 DIR_TO_GROUP = {
     "topics": "core",
@@ -326,3 +331,15 @@ document.addEventListener("fullscreenchange", () => {{
         log.info(f"Knowledge graph updated: {node_count} nodes, {edge_count} edges")
     else:
         log.info(f"Knowledge graph unchanged: {node_count} nodes, {edge_count} edges")
+
+    global _js_version
+    _js_version = hashlib.sha256(js_content.encode("utf-8")).hexdigest()[:12]
+
+
+def on_page_markdown(markdown, page, **kwargs):
+    if page.file.src_uri != "knowledge-graph.md" or not _js_version:
+        return markdown
+    return markdown.replace(
+        "javascripts/knowledge-graph.js\"",
+        f"javascripts/knowledge-graph.js?v={_js_version}\"",
+    )
