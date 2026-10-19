@@ -129,6 +129,7 @@ For deployments using operator GUA prefixes, apply the same principle with your 
 - :material-arrow-right: [What is SRv6?](what-is-srv6.md) - Back to overview
 - :material-arrow-right: [uSID Compression](usid-compression.md) - Compressed SID encoding (RFC 9800)
 - :material-arrow-right: [Security](security.md) - SRv6 security considerations
+- :material-arrow-right: [RFC 9602](../rfcs/rfc9602.md) - The IANA 5f00::/16 SRv6 SID block
 
 ## References
 

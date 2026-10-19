@@ -300,6 +300,9 @@ E-Tree is implemented using EVPN with **leaf indication** in the EVPN routes. PE
 - :material-arrow-right: [Service Chaining](service-chaining.md) — Steering VPN traffic through network functions
 - :material-arrow-right: [SR Policy](../topics/sr-policy.md) — Traffic engineering for VPN overlays
 - :material-file-document: [RFC 9252](../rfcs/rfc9252.md) — BGP Overlay Services Based on SRv6
+- :material-arrow-right: [Cisco IOS-XR](../implementations/cisco-ios-xr.md) - L3VPN over SRv6 configuration on IOS-XR
+- :material-arrow-right: [Juniper](../implementations/juniper.md) - L3VPN over SRv6 configuration on Junos
+- :material-arrow-right: [netlab Labs](../labs/netlab.md) - Ready-made L3VPN over SRv6 lab topology
 
 ## References
 

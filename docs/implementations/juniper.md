@@ -37,6 +37,8 @@ show isis database extensive | match srv6
 
 - :material-arrow-right: [Implementations Overview](index.md)
 - :material-web: [Juniper SRv6 Validated Design](https://www.juniper.net/documentation/us/en/software/jvd/jvd-sp-core-edge-srv6-01-01/service_provider_srv6_core_and_edge_-_phase_1_juniper_validated_design_jvd.html)
+- :material-arrow-right: [netlab Labs](../labs/netlab.md) - Junos SRv6 lab topologies
+- :material-arrow-right: [GNS3 Labs](../labs/gns3.md) - Emulate Junos routers for SRv6 testing
 
 ## References
 

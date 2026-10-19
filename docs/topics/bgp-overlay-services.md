@@ -186,6 +186,10 @@ To save space in BGP updates, the **function** part of the SID can be transposed
 - :material-arrow-right: [SRH Mechanics](srh-packet-walk.md) - Packet-level details
 - :material-file-document: [RFC 9252](../rfcs/rfc9252.md) - BGP Overlay Services Based on SRv6
 - :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming
+- :material-arrow-right: [Cisco IOS-XR](../implementations/cisco-ios-xr.md) - L3VPN over SRv6 on IOS-XR
+- :material-arrow-right: [Juniper](../implementations/juniper.md) - L3VPN over SRv6 on Junos
+- :material-arrow-right: [FRRouting](../implementations/frrouting.md) - L3VPN over SRv6 with open-source FRR
+- :material-arrow-right: [netlab Labs](../labs/netlab.md) - Ready-made L3VPN over SRv6 lab topology
 
 ## References
 

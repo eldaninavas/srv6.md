@@ -186,6 +186,8 @@ Backup with uSID: DA = fcbb:bbbb:PQ:PE2:0000:: (2 micro-instructions, zero SRH n
 - :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) - TI-LFA with node/SRLG/linecard-disjoint tiebreakers in a validated defense design
 - :material-file-document: [RFC 9352](../rfcs/rfc9352.md) - IS-IS Extensions for SRv6
 - :material-file-document: [RFC 9860](../rfcs/rfc9860.md) - MoFRR based on TI-LFA (multicast protection)
+- :material-arrow-right: [Cisco IOS-XR](../implementations/cisco-ios-xr.md) - SRv6 configuration on IOS-XR
+- :material-arrow-right: [Juniper](../implementations/juniper.md) - SRv6 configuration on Junos
 
 ## References
 

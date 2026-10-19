@@ -14,6 +14,7 @@ repo_name: eldaninavas/srv6.md
 hooks:
   - hooks/generate_graph.py
   - hooks/llms_txt.py
+  - hooks/git_dates.py
 edit_uri: edit/main/docs/
 
 theme:

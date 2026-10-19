@@ -12,6 +12,10 @@
 
 {% block extrahead %}
   {% set seo_title = page.meta.seo_title if page.meta and page.meta.seo_title else page.title ~ " | SRv6.md" %}
+  {% set page_url = page.url if page else "404.html" %}
+  {% if page_url == "404.html" or page_url.startswith("tags/") %}
+    <meta name="robots" content="noindex, follow">
+  {% endif %}
   <meta property="og:type" content="{{ 'website' if page.url in ['', '.', './'] else 'article' }}">
   <meta property="og:title" content="{{ seo_title }}">
   <meta property="og:description" content="{{ page.meta.get('description', config.site_description) if page.meta else config.site_description }}">
@@ -46,6 +50,7 @@
     "description": "{{ page.meta.get('description', config.site_description) if page.meta else config.site_description }}",
     "image": "https://srv6.md/assets/images/og-image.png",
     "dateModified": "{{ page.update_date if page.update_date else '2026-04-07' }}",
+    {% if page.meta and page.meta.date_published %}"datePublished": "{{ page.meta.date_published }}",{% endif %}
     "author": {
       "@type": "Organization",
       "name": "SRv6.md Community",

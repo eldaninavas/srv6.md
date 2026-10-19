@@ -171,6 +171,8 @@ graph TB
 - :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) - Validated secure/low-latency dual-slice design with per-algorithm locators
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - Efficient SID encoding
 - :material-file-document: [RFC 9352](../rfcs/rfc9352.md) - IS-IS Extensions for SRv6
+- :material-arrow-right: [Cisco IOS-XR](../implementations/cisco-ios-xr.md) - SRv6 configuration on IOS-XR
+- :material-arrow-right: [Juniper](../implementations/juniper.md) - SRv6 configuration on Junos
 
 ## References
 

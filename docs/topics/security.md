@@ -511,6 +511,7 @@ See [Mission-Critical Networks](../use-cases/mission-critical.md) for the full a
 - :material-arrow-right: [OAM & Troubleshooting](oam-troubleshooting.md) - Detecting SRv6 issues
 - :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) - Quantum-safe SRv6 fabric design (PQC MACsec/IPsec)
 - :material-file-document: [RFC 8754](../rfcs/rfc8754.md) - SRH specification including HMAC
+- :material-arrow-right: [RFC 9602](../rfcs/rfc9602.md) - The 5f00::/16 SID block, useful for boundary filtering
 
 ## References
 

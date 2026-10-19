@@ -77,6 +77,8 @@ show bgp vpnv4 unicast vrf CUSTOMER-A
 
 - :material-arrow-right: [GNS3 Labs](../labs/gns3.md) - Test with IOS-XR images
 - :material-web: [Cisco SRv6 Documentation](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/asr9k-r7-8/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-78x.html)
+- :material-arrow-right: [Cisco IOS-XE](cisco-ios-xe.md) - SRv6 uSID on Cisco's enterprise and edge OS
+- :material-arrow-right: [netlab Labs](../labs/netlab.md) - IOS-XR SRv6 lab topologies
 
 ## References
 

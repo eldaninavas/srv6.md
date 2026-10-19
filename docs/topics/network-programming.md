@@ -65,6 +65,8 @@ sequenceDiagram
 
 - :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming
 - :material-arrow-right: [SID Structure](sid-structure.md) - How SIDs encode behaviors
+- :material-arrow-right: [Linux Kernel](../implementations/linux-kernel.md) - SRv6 behaviors you can run on any Linux host
+- :material-arrow-right: [Containerlab Labs](../labs/containerlab.md) - Try SRv6 behaviors hands-on
 
 ## References
 

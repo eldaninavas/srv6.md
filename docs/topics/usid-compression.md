@@ -144,6 +144,10 @@ Multiple operators have publicly announced SRv6 uSID deployments. See [Real-Worl
 - :material-arrow-right: [SID Structure](sid-structure.md) - Classic SID format
 - :material-arrow-right: [Real-World Deployments](../use-cases/deployments.md) - Who's running uSID
 - :material-file-document: [RFC 8754](../rfcs/rfc8754.md) - SRH specification
+- :material-arrow-right: [Cisco IOS-XR](../implementations/cisco-ios-xr.md) - uSID locator configuration on IOS-XR
+- :material-arrow-right: [Cisco IOS-XE](../implementations/cisco-ios-xe.md) - F3216 uSID configuration on IOS-XE
+- :material-arrow-right: [Arista EOS](../implementations/arista-eos.md) - uN and uA support on Arista EOS
+- :material-arrow-right: [netlab Labs](../labs/netlab.md) - Practice uSID in a ready-made lab
 
 ## References
 

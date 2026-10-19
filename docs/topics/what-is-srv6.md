@@ -105,6 +105,9 @@ SRv6 fundamentally changes how networks are programmed compared to traditional M
 - :material-arrow-right: [SRv6 on Linux](../implementations/linux-kernel.md) — Get hands-on with SRv6 on the Linux kernel
 - :material-arrow-right: [Build an SRv6 Lab](../labs/index.md) — Hands-on SRv6 labs with Containerlab and GNS3
 - :material-file-document: [RFC 8986](../rfcs/rfc8986.md) — SRv6 Network Programming specification
+- :material-arrow-right: [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md) — How SRv6 compares with SR-MPLS and when to choose each
+- :material-arrow-right: [Implementations](../implementations/index.md) — Configuration guides for Cisco, Juniper, Arista, Nokia, FRR and Linux
+- :material-arrow-right: [netlab Labs](../labs/netlab.md) — Spin up a ready-made SRv6 lab in minutes
 
 ## References
 
