@@ -123,11 +123,11 @@ Join the community! Learn how to contribute, report issues, or suggest new conte
 
 ---
 
-## :material-head-question: What is SRv6 and How Does It Work?
+## :material-head-question: What is SRv6 (IPv6 Segment Routing) and How Does It Work?
 
-**SRv6 (Segment Routing over IPv6)** is a next-generation network architecture that encodes forwarding instructions directly in IPv6 packet headers. Instead of relying on MPLS labels and complex signaling protocols like LDP or RSVP, SRv6 uses native 128-bit IPv6 addresses as **Segment Identifiers (SIDs)** to program network paths and behaviors.
+**SRv6 (Segment Routing over IPv6)** — also written **Segment Routing v6**, SR v6 or **IPv6 Segment Routing** — is the IPv6 data plane of the Segment Routing architecture ([RFC 8402](rfcs/rfc8402.md)). It encodes forwarding instructions directly in IPv6 packet headers. Instead of relying on MPLS labels and signaling protocols like LDP or RSVP-TE, SRv6 uses native 128-bit IPv6 addresses as **Segment Identifiers (SIDs)** to program network paths and behaviors.
 
-SRv6 works by inserting a **Segment Routing Header (SRH)** into IPv6 packets. The source node populates a segment list that defines the packet's path and processing at each hop. This enables powerful capabilities like traffic engineering, VPN services, and service function chaining — all without overlay protocols.
+The source node builds an ordered list of segments that defines the packet's path and the processing at each hop. The active segment sits in the IPv6 destination address; when there is more than one, the rest travel in a **Segment Routing Header (SRH)** — and with [uSID compression](topics/usid-compression.md) a whole path often fits in the destination address with no SRH at all. Transit routers simply forward on the destination address. This enables traffic engineering, VPN services, fast reroute and service function chaining on a plain IPv6 network.
 
 **Why choose SRv6 over traditional MPLS?**
 
