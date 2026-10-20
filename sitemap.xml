@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://srv6.md/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/knowledge-graph/</loc>
@@ -99,6 +99,30 @@
     <url>
          <loc>https://srv6.md/implementations/zebra-rs/</loc>
          <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ja/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ja/sid-structure/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ja/srh-packet-walk/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ja/srv6-vs-sr-mpls/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ja/usid/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ja/what-is-srv6/</loc>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/labs/</loc>
@@ -310,7 +334,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/what-is-srv6/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/use-cases/</loc>

@@ -50,3 +50,12 @@ document.addEventListener("DOMContentLoaded", loadContributors);
 if (typeof document$ !== "undefined") {
   document$.subscribe(function () { loadContributors(); });
 }
+
+// Instant navigation swaps the page body but keeps <html>, so keep its lang
+// in step with the translated sections (hooks/i18n.py sets it on full loads)
+if (typeof document$ !== "undefined") {
+  document$.subscribe(function () {
+    var m = location.pathname.match(/^\/(es|ja)\//);
+    document.documentElement.lang = m ? m[1] : "en";
+  });
+}

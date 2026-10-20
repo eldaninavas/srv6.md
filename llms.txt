@@ -104,3 +104,12 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 - [¿Qué es SRv6? Segment Routing sobre IPv6 explicado](https://srv6.md/es/que-es-srv6/): Qué es SRv6 y cómo funciona Segment Routing sobre IPv6: SID, cabecera SRH, enrutamiento de origen, programación de red y ventajas frente a MPLS, explicado paso a paso.
 - [SRv6 vs SR-MPLS: diferencias y cuándo usar cada uno](https://srv6.md/es/srv6-vs-sr-mpls/): SRv6 vs SR-MPLS comparados lado a lado: plano de datos, tamaño y espacio de SID, sobrecarga y MTU, programación de red y madurez, y cuándo conviene elegir cada uno.
 - [uSID en SRv6: compresión de micro-SID explicada](https://srv6.md/es/usid/): Qué es uSID (micro-SID) en SRv6 y cómo reduce la sobrecarga del encabezado: estructura, operación shift-and-lookup, comparación con SRv6 clásico, uSID vs G-SRv6 y RFC 9800.
+
+## 日本語 (Japanese)
+
+- [SRv6 日本語ガイド｜Segment Routing over IPv6 入門](https://srv6.md/ja/): SRv6の日本語ガイド。Segment Routing over IPv6とは何か、SIDの構造、SRH、uSIDの仕組み、MPLSとの違いをネットワークエンジニア向けに解説する、無料のオープンソース知識ベースです。
+- [SRv6 SIDの構造：Locator・Function・Argumentsとは](https://srv6.md/ja/sid-structure/): SRv6 SIDの構造を解説。128ビットのSegment IdentifierがLocator、Function、Argumentsをどうエンコードするか、IANAが割り当てた5f00::/16（RFC 9602）とドメイン境界でのフィルタリングまで。
+- [SRv6のSRH（Segment Routing Header）とパケット処理](https://srv6.md/ja/srh-packet-walk/): SRv6のSegment Routing Header（SRH、RFC 8754）を図解。フォーマット、Segments Left、ノードごとのパケットウォーク、PSP/USP/USDフレーバー、TLV、H.Encaps.Red、確認コマンドまで。
+- [SRv6とSR-MPLSの違い：比較と使い分け](https://srv6.md/ja/srv6-vs-sr-mpls/): SRv6とSR-MPLSの違いを比較。データプレーン、SIDのサイズと空間、カプセル化とMTUのオーバーヘッド、ネットワークプログラミング、成熟度、そしてどちらを選ぶべきかを解説します。
+- [SRv6 uSID（マイクロSID）とは：SID圧縮の仕組み](https://srv6.md/ja/usid/): SRv6のuSID（マイクロSID、RFC 9800）がヘッダーのオーバーヘッドをどう削減するかを解説。コンテナの構造、シフト＆ルックアップ動作、従来のSRv6との比較、uSIDとG-SRv6の違い、設定例まで。
+- [SRv6とは？仕組みとメリットをわかりやすく解説](https://srv6.md/ja/what-is-srv6/): SRv6（Segment Routing over IPv6）とは何か、その仕組みとメリットを解説。SID、SRH、ソースルーティング、ネットワークプログラミング、MPLSとの違いまで順を追って説明します。

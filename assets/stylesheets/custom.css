@@ -1027,8 +1027,18 @@
   }
 }
 
-/* --- Language switch link (EN <-> ES) --- */
+/* --- Language switch links (EN / ES / JA) --- */
 .md-typeset .srv6-lang-switch {
   margin: -0.4rem 0 1.2rem;
   font-size: 0.8rem;
+}
+
+/* --- Japanese pages: Inter has no CJK glyphs, so name Japanese fallbacks
+   explicitly (otherwise Windows may fall back to MS Gothic) --- */
+html:lang(ja) body,
+html:lang(ja) input {
+  font-family: "Inter", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+html:lang(ja) .md-typeset {
+  line-break: strict;
 }
