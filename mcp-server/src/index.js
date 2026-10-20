@@ -41,11 +41,15 @@ function parseLlmsFullTxt(text) {
     if (!trimmed || trimmed.startsWith("# SRv6.md")) continue;
 
     const titleMatch = trimmed.match(/^#\s+(.+)$/m);
+    // Current format: "Path: topics/what-is-srv6.md"; older files had front matter
+    const srcMatch = trimmed.match(/^Path:\s*(\S+\.md)\s*$/m);
     const pathMatch = trimmed.match(/^title:\s*(.+)$/m);
     const title = titleMatch ? titleMatch[1] : "Untitled";
 
     docs.push({
-      path: pathMatch ? pathMatch[1].toLowerCase().replace(/\s+/g, "-") + ".md" : "unknown.md",
+      path: srcMatch
+        ? srcMatch[1]
+        : pathMatch ? pathMatch[1].toLowerCase().replace(/\s+/g, "-") + ".md" : "unknown.md",
       title,
       content: trimmed,
     });
