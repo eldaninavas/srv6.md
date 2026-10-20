@@ -49,6 +49,10 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/community/about/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/community/contributing/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
@@ -71,6 +75,10 @@
     <url>
          <loc>https://srv6.md/es/estructura-del-sid/</loc>
          <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/es/ia/</loc>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/es/que-es-srv6/</loc>
@@ -137,6 +145,10 @@
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/ja/ai/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/ja/sid-structure/</loc>
          <lastmod>2026-10-20</lastmod>
     </url>
@@ -174,7 +186,7 @@
     </url>
     <url>
          <loc>https://srv6.md/rfcs/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/rfcs/rfc10038/</loc>
@@ -198,7 +210,7 @@
     </url>
     <url>
          <loc>https://srv6.md/rfcs/rfc9256/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/rfcs/rfc9259/</loc>
@@ -253,12 +265,16 @@
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/rfcs/rfc9830/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/rfcs/rfc9855/</loc>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/rfcs/rfc9857/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/rfcs/rfc9860/</loc>
@@ -294,7 +310,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/inter-domain/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/interworking-migration/</loc>
@@ -338,7 +354,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/sr-policy/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/srh-packet-walk/</loc>

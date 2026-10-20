@@ -82,7 +82,7 @@ Join the community! Learn how to contribute, report issues, or suggest new conte
 
 ***
 
-## What is SRv6 (IPv6 Segment Routing) and How Does It Work?
+## SRv6 (IPv6 Segment Routing) in a Nutshell
 
 **SRv6 (Segment Routing over IPv6)** — also written **Segment Routing v6**, SR v6 or **IPv6 Segment Routing** — is the IPv6 data plane of the Segment Routing architecture ([RFC 8402](https://srv6.md/rfcs/rfc8402/)). It encodes forwarding instructions directly in IPv6 packet headers. Instead of relying on MPLS labels and signaling protocols like LDP or RSVP-TE, SRv6 uses native 128-bit IPv6 addresses as **Segment Identifiers (SIDs)** to program network paths and behaviors.
 
@@ -96,14 +96,14 @@ The source node builds an ordered list of segments that defines the packet's pat
 - **Scalability** — 128-bit SID space supports massive networks and micro-segmentation
 - **Unified data plane** — Single protocol stack for transport, VPN, and TE services
 
-[Learn what SRv6 is in detail](https://srv6.md/topics/what-is-srv6/)    [See how SRv6 works](https://srv6.md/topics/network-programming/)
+[What is SRv6? The full explanation](https://srv6.md/topics/what-is-srv6/)    [See how SRv6 works](https://srv6.md/topics/network-programming/)
 
 !!! tip "This is a community project"
     SRv6.md is built and maintained by the networking community. Every page has an **edit button** () — if you spot an error or want to add content, we welcome your contributions!
 
 ***
 
-  SRv6.md is not affiliated with any vendor. Content is provided under the MIT License.
+  SRv6.md is not affiliated with any vendor. Content is provided under the MIT License. About SRv6.md and how content is verified.
 
 
 ---
@@ -3364,7 +3364,7 @@ Dynamic policies can be reoptimized when:
 
 1. [RFC 9256 - Segment Routing Policy Architecture](https://datatracker.ietf.org/doc/rfc9256/) - Defines the SR Policy framework including candidate paths, segment lists, BSID, and color steering
 2. [RFC 9514 - BGP-LS Extensions for SRv6](https://datatracker.ietf.org/doc/rfc9514/) - BGP-LS for exporting SRv6 topology to controllers and PCE
-3. [RFC 9830 - Advertising Segment Routing Policies in BGP](https://datatracker.ietf.org/doc/rfc9830/) - BGP SR Policy SAFI for distributing SR Policies via BGP (formerly draft-ietf-idr-sr-policy-safi)
+3. [RFC 9830 - Advertising Segment Routing Policies in BGP](https://srv6.md/rfcs/rfc9830/) - BGP SR Policy SAFI for distributing SR Policies via BGP (formerly draft-ietf-idr-sr-policy-safi)
 4. [draft-ietf-pce-segment-routing-policy-cp](https://datatracker.ietf.org/doc/draft-ietf-pce-segment-routing-policy-cp/) - PCEP extensions for SR Policy candidate paths
 5. [Cisco IOS-XR: Configure SR-TE Policies](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/24xx/configuration/guide/b-segment-routing-cg-cisco8000-24xx/configuring-sr-te-policies.html) - Configuration guide for SR Policies including ODN, PCE, and BSID
 6. [RFC 9603 - PCEP Extensions for IPv6 Segment Routing](https://www.rfc-editor.org/rfc/rfc9603) - SRv6 path setup type and SRv6-ERO/RRO for PCE-computed SRv6 paths
@@ -6607,7 +6607,7 @@ For the full SRv6 security framework, see [Security](https://srv6.md/topics/secu
 1. [RFC 9256 - SR Policy Architecture](https://datatracker.ietf.org/doc/rfc9256/) - Defines Binding SID, candidate paths, and color steering used for inter-domain TE
 2. [RFC 9514 - BGP-LS Extensions for SRv6](https://datatracker.ietf.org/doc/rfc9514/) - BGP-LS for exporting SRv6 topology to multi-domain controllers
 3. [RFC 8402 - Segment Routing Architecture](https://datatracker.ietf.org/doc/rfc8402/) - Foundational SR architecture including inter-domain considerations
-4. [RFC 9830 - Advertising Segment Routing Policies in BGP](https://datatracker.ietf.org/doc/rfc9830/) - BGP SR Policy SAFI for distributing policies across domains (formerly draft-ietf-idr-sr-policy-safi)
+4. [RFC 9830 - Advertising Segment Routing Policies in BGP](https://srv6.md/rfcs/rfc9830/) - BGP SR Policy SAFI for distributing policies across domains (formerly draft-ietf-idr-sr-policy-safi)
 5. [Cisco IOS-XR: Configure Inter-AS SR-TE](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/24xx/configuration/guide/b-segment-routing-cg-cisco8000-24xx/configuring-sr-te-policies.html) - Configuration guide for inter-domain SR-TE with BSID and PCE
 6. [RFC 9723 - BGP Colored Prefix Routing (CPR) for SRv6 Services](https://www.rfc-editor.org/rfc/rfc9723) - Colored sub-locators in IPv6 unicast with Color Extended Community for inter-AS intent
 
@@ -11503,6 +11503,7 @@ Comprehensive reference for all SRv6-related IETF RFCs, with summaries, behavior
 | RFC | Title | Date | Summary |
 |-----|-------|:----:|---------|
 | [RFC 9603](https://srv6.md/rfcs/rfc9603/) | PCEP Extensions for IPv6 Segment Routing | Jul 2024 | SRv6 path setup type, SRv6-ERO/RRO for PCE-computed SRv6 paths |
+| [RFC 9830](https://srv6.md/rfcs/rfc9830/) | Advertising Segment Routing Policies in BGP | Sep 2025 | BGP SR Policy SAFI: controllers push SR Policy candidate paths (incl. SRv6 BSIDs) to headends |
 | [RFC 9857](https://srv6.md/rfcs/rfc9857/) | Advertisement of SR Policies Using BGP-LS | Oct 2025 | Reports SR Policy candidate-path state (incl. SRv6 BSIDs) to controllers |
 | [RFC 10038](https://srv6.md/rfcs/rfc10038/) | Distributing the SRv6 Locator Using DHCPv6 | Aug 2026 | DHCPv6 options to lease SRv6 locators to CPEs and other endpoints |
 
@@ -11545,7 +11546,7 @@ Comprehensive reference for all SRv6-related IETF RFCs, with summaries, behavior
 | `draft-ietf-spring-srv6-yang` | YANG data model for SRv6 |
 
 !!! note "Recently published"
-    The BGP SR Policy SAFI drafts are now [RFC 9830](https://datatracker.ietf.org/doc/rfc9830/) (Advertising SR Policies in BGP) and [RFC 9831](https://datatracker.ietf.org/doc/rfc9831/) (Segment Type Extensions for BGP SR Policy).
+    The BGP SR Policy SAFI drafts are now [RFC 9830](https://srv6.md/rfcs/rfc9830/) (Advertising SR Policies in BGP) and [RFC 9831](https://datatracker.ietf.org/doc/rfc9831/) (Segment Type Extensions for BGP SR Policy).
 
 !!! info "Stay Updated"
     IETF drafts change frequently. Check [datatracker.ietf.org](https://datatracker.ietf.org) for the latest versions.
@@ -12542,6 +12543,119 @@ A PCC may advertise its SRv6 Maximum SID Depths in the capability sub-TLV, but t
 
 ---
 
+# RFC 9830 Explained: Advertising SR Policies in BGP
+
+URL: https://srv6.md/rfcs/rfc9830/
+Path: rfcs/rfc9830.md
+Summary: RFC 9830 explained: the BGP SR Policy SAFI (73) that lets controllers push SR Policy candidate paths to headends, with SRv6 Binding SIDs and SRv6 segment encoding.
+
+# RFC 9830 - Advertising Segment Routing Policies in BGP
+
+| Field | Value |
+|-------|-------|
+| **Title** | Advertising Segment Routing Policies in BGP |
+| **Authors** | S. Previdi, C. Filsfils, K. Talaulikar (Ed.), P. Mattes, D. Jain |
+| **Date** | September 2025 |
+| **Status** | Proposed Standard |
+| **Updates** | RFC 9012 (Color Extended Community) |
+| **Link** | [rfc-editor.org/info/rfc9830](https://www.rfc-editor.org/info/rfc9830/) |
+
+## Summary
+
+RFC 9830 defines the **BGP SR Policy SAFI** (SAFI 73), the standard way for a controller, or an egress router, to push the candidate paths of an [SR Policy](https://srv6.md/topics/sr-policy/) to the headends that should instantiate them. It is the BGP counterpart of PCEP ([RFC 9603](https://srv6.md/rfcs/rfc9603/)) for SR Policy provisioning, and it works for both SR-MPLS and SRv6.
+
+BGP is only the transport. A headend runs normal BGP best-path selection, then hands the received candidate path to its **SR Policy Module (SRPM)**, which validates it, selects the active candidate path per the [SR Policy Architecture (RFC 9256)](https://srv6.md/rfcs/rfc9256/), binds the Binding SID and programs forwarding. BGP itself never installs the policy and does not validate the meaning of the segment lists.
+
+Its companion [RFC 9857](https://srv6.md/rfcs/rfc9857/) closes the loop in the other direction: controllers push policies with this SAFI and read their operational state back through BGP-LS.
+
+## Key Sections
+
+| Section | Topic | Description |
+|---------|-------|-------------|
+| 2.1 | SR Policy SAFI NLRI | SAFI 73 with AFI 1 or 2; NLRI = Distinguisher + Color + Endpoint |
+| 2.2 | Tunnel Encapsulation Attribute | The policy rides in Tunnel Type 15, "SR Policy" |
+| 2.4 | SR Policy sub-TLVs | Preference, Binding SIDs, segment lists, ENLP, priority, names |
+| 2.4.3 | SRv6 Binding SID | 16-octet SRv6 BSID with optional endpoint behavior and SID structure |
+| 2.4.4 | Segment List and segments | Explicit paths, weights, segment types A (SR-MPLS) and B (SRv6) |
+| 3 | Color Extended Community | Color-Only bits that control endpoint matching for steering |
+| 4 | Advertisement and validation | Route Targets vs NO_ADVERTISE, usability, propagation rules |
+| 5 | Error handling | Treat-as-withdraw for invalid NLRI, TLVs and sub-TLVs |
+
+## The NLRI
+
+| Field | Size | Meaning |
+|-------|------|---------|
+| **Distinguisher** | 4 octets | No semantic value; separates several candidate paths of one policy, or policies for different headends with the same Color and Endpoint |
+| **Color** | 4 octets | Non-zero value that matches destination prefixes (via their Color Extended Community) to the policy |
+| **Endpoint** | 4 or 16 octets | IPv4 or IPv6 endpoint; can be the null endpoint (0.0.0.0 or ::) |
+
+The policy content travels in the Tunnel Encapsulation Attribute (type 23) with **Tunnel Type 15**. Only one SR Policy TLV is allowed per attribute.
+
+## SR Policy Sub-TLVs
+
+| Sub-TLV | Type | Notes |
+|---------|:----:|-------|
+| Preference | 12 | Candidate path preference used by the SRPM |
+| Binding SID | 13 | Generic BSID (SR-MPLS label or SRv6 SID) |
+| **SRv6 Binding SID** | **20** | 16-octet SID, flags S/I/B, optional endpoint behavior and SID structure; recommended over type 13 for SRv6 |
+| Segment List | 128 | One explicit path; may repeat for multiple weighted paths |
+| Weight | 9 | Inside a Segment List; zero is invalid |
+| ENLP | 14 | Explicit NULL Label Policy (values 1–4) |
+| Priority | 15 | Order in which policies are recomputed after a topology change |
+| Candidate Path Name | 129 | Symbolic name of the candidate path |
+| SR Policy Name | 130 | Symbolic name of the policy |
+
+None of these sub-TLVs affect BGP best-path selection or how the route propagates.
+
+## SRv6-Specific Pieces
+
+| Element | Detail |
+|---------|--------|
+| **Segment Type B (type 13)** | One 16-octet SRv6 SID per segment |
+| **Endpoint behavior and SID structure** | Optional on Type B segments and the SRv6 BSID: a 2-octet [RFC 8986](https://srv6.md/rfcs/rfc8986/) behavior codepoint (0xFFFF = opaque, headend decides) plus Locator Block / Locator Node / Function / Argument lengths, which must total 128 bits or less |
+| **No mixing** | A segment list must not mix SR-MPLS and SRv6 segments |
+| **More segment types** | Types C–K (including SRv6 SIDs expressed as node or adjacency addresses) are defined in the companion [RFC 9831](https://www.rfc-editor.org/info/rfc9831/) |
+
+## Who Gets the Policy: Route Targets vs NO_ADVERTISE
+
+- An advertisement **SHOULD** carry Route Targets in IPv4-address format that identify the intended headends; a headend treats the update as usable only if one Route Target matches its BGP Identifier.
+- Without a Route Target, the update **MUST** carry the NO_ADVERTISE community, which makes it usable by the receiving neighbor and never propagated further.
+- SR Policy routes are not sent to EBGP neighbors by default, but they follow normal IBGP rules, so route reflectors can carry them.
+- An update with unrecognized sub-TLVs should be treated as not usable; if an update becomes unusable, BGP removes the candidate path from the SRPM.
+
+!!! warning "Common Pitfalls"
+    - The Distinguisher is not a policy identifier. Two candidate paths of the **same** policy differ only by Distinguisher; the policy is Color + Endpoint (+ headend).
+    - Forgetting both a matching Route Target and NO_ADVERTISE makes the update **invalid**, not just unusable, so it never reaches the SRPM.
+    - Dynamic and composite candidate paths from RFC 9256 are out of scope; this SAFI carries **explicit** candidate paths.
+    - SR Policies can expose sensitive topology. Keep SAFI 73 on dedicated sessions inside the trusted SR domain.
+
+## Related Drafts & Updates
+
+| Document | Relationship | Description |
+|----------|-------------|-------------|
+| [draft-ietf-idr-sr-policy-safi](https://datatracker.ietf.org/doc/draft-ietf-idr-sr-policy-safi/) | Draft lineage | Draft that became RFC 9830 |
+| [RFC 9831](https://www.rfc-editor.org/info/rfc9831/) | Companion | Segment Type Extensions for BGP SR Policy (types C–K) |
+| [RFC 9857](https://srv6.md/rfcs/rfc9857/) | Complement | Reports SR Policy state back to controllers through BGP-LS |
+| [RFC 9012](https://www.rfc-editor.org/info/rfc9012/) | Updated | BGP Tunnel Encapsulation Attribute (Color Extended Community) |
+
+## Related
+
+- [SR Policy](https://srv6.md/topics/sr-policy/) - Candidate paths, Binding SIDs, color steering and ODN
+- [Traffic Engineering](https://srv6.md/use-cases/traffic-engineering/) - SRv6 traffic engineering with SR Policies
+- [RFC 9256](https://srv6.md/rfcs/rfc9256/) - SR Policy Architecture
+- [RFC 9603](https://srv6.md/rfcs/rfc9603/) - PCEP Extensions for SRv6
+- [RFC 9857](https://srv6.md/rfcs/rfc9857/) - SR Policies in BGP-LS
+
+## References
+
+1. [RFC 9830](https://www.rfc-editor.org/rfc/rfc9830) - Advertising Segment Routing Policies in BGP
+2. [RFC 9831](https://www.rfc-editor.org/rfc/rfc9831) - Segment Type Extensions for BGP Segment Routing (SR) Policy
+3. [RFC 9256](https://www.rfc-editor.org/rfc/rfc9256) - Segment Routing Policy Architecture
+4. [RFC 9012](https://www.rfc-editor.org/rfc/rfc9012) - The BGP Tunnel Encapsulation Attribute
+
+
+---
+
 # RFC 9857 Explained: SR Policies in BGP-LS
 
 URL: https://srv6.md/rfcs/rfc9857/
@@ -12562,7 +12676,7 @@ Summary: Advertisement of Segment Routing Policies Using BGP-LS — reporting SR
 
 [RFC 9514](https://srv6.md/rfcs/rfc9514/) lets a controller learn SRv6 **topology** (locators, SIDs) through BGP-LS. RFC 9857 adds the other half: the **state of SR Policies** instantiated on headends. Each SR Policy candidate path — whether configured locally, pushed via PCEP, or pushed via the BGP SR Policy SAFI — can be reported with its Binding SID, state, constraints, and segment lists, for both SR-MPLS and SRv6.
 
-This matters when the headend does not speak PCEP (management-based PCE), when a parent PCE needs a global view from child PCEs, or when a service-placement system or NMS needs to see which policies exist and whether they are up. It closes the loop for the BGP SR Policy SAFI ([RFC 9830](https://datatracker.ietf.org/doc/rfc9830/)): controllers push policies with BGP and read their operational state back with BGP-LS.
+This matters when the headend does not speak PCEP (management-based PCE), when a parent PCE needs a global view from child PCEs, or when a service-placement system or NMS needs to see which policies exist and whether they are up. It closes the loop for the BGP SR Policy SAFI ([RFC 9830](https://srv6.md/rfcs/rfc9830/)): controllers push policies with BGP and read their operational state back with BGP-LS.
 
 The BGP-LS producer can be the headend itself or a PCE relaying what its PCCs report.
 
@@ -12618,7 +12732,7 @@ The BGP-LS producer can be the headend itself or a PCE relaying what its PCCs re
 | Document | Relationship | Description |
 |----------|-------------|-------------|
 | [draft-ietf-idr-bgp-ls-sr-policy](https://datatracker.ietf.org/doc/draft-ietf-idr-bgp-ls-sr-policy/) | Draft lineage | Draft that became RFC 9857 |
-| [RFC 9830](https://datatracker.ietf.org/doc/rfc9830/) | Complement | Advertising Segment Routing Policies in BGP (SR Policy SAFI) |
+| [RFC 9830](https://srv6.md/rfcs/rfc9830/) | Complement | Advertising Segment Routing Policies in BGP (SR Policy SAFI) |
 | [RFC 9831](https://datatracker.ietf.org/doc/rfc9831/) | Complement | Segment Type Extensions for BGP SR Policy (incl. SRv6 segment types) |
 | [RFC 9552](https://datatracker.ietf.org/doc/rfc9552/) | Base protocol | BGP-LS |
 
@@ -12635,7 +12749,7 @@ The BGP-LS producer can be the headend itself or a PCE relaying what its PCCs re
 1. [RFC 9857](https://www.rfc-editor.org/rfc/rfc9857) - Advertisement of Segment Routing Policies Using BGP - Link State
 2. [RFC 9552](https://datatracker.ietf.org/doc/rfc9552/) - Distribution of Link-State and TE Information Using BGP
 3. [RFC 9256](https://datatracker.ietf.org/doc/rfc9256/) - Segment Routing Policy Architecture
-4. [RFC 9830](https://datatracker.ietf.org/doc/rfc9830/) - Advertising Segment Routing Policies in BGP
+4. [RFC 9830](https://srv6.md/rfcs/rfc9830/) - Advertising Segment Routing Policies in BGP
 
 
 ---
@@ -12925,7 +13039,7 @@ When multiple candidate paths exist for a policy, the selection follows this ord
 
 | Document | Relationship | Description |
 |----------|-------------|-------------|
-| [RFC 9830](https://datatracker.ietf.org/doc/rfc9830/) | Protocol | BGP SR Policy SAFI for distributing SR Policies via BGP (formerly draft-ietf-idr-sr-policy-safi) |
+| [RFC 9830](https://srv6.md/rfcs/rfc9830/) | Protocol | BGP SR Policy SAFI for distributing SR Policies via BGP (formerly draft-ietf-idr-sr-policy-safi) |
 | [RFC 9603](https://srv6.md/rfcs/rfc9603/) | Protocol | PCEP extensions for SRv6 candidate paths |
 | [RFC 9857](https://srv6.md/rfcs/rfc9857/) | Protocol | BGP-LS reporting of SR Policy candidate-path state |
 | [RFC 9960](https://srv6.md/rfcs/rfc9960/) | Extension | SR P2MP Policy reuses the candidate-path model for multicast trees |
@@ -13854,6 +13968,47 @@ SRv6.md is a community-driven project. Everyone is welcome to contribute, whethe
 ## Code of Conduct
 
 We follow a simple rule: **be kind and constructive**. This project welcomes contributions from everyone regardless of experience level.
+
+
+---
+
+# About SRv6.md: Who Maintains It and How Content Is Verified
+
+URL: https://srv6.md/community/about/
+Path: community/about.md
+Summary: Who maintains SRv6.md, the open SRv6 knowledge base, how pages are sourced and fact-checked against RFCs and vendor documentation, and how to report corrections.
+
+# About SRv6.md
+
+SRv6.md is an open-source, vendor-neutral knowledge base for **Segment Routing over IPv6 (SRv6)**. It brings together what is otherwise scattered across RFCs, vendor configuration guides, conference talks and mailing lists: how SRv6 works, how to configure it on each platform, how to build labs, and what every SRv6 RFC actually says.
+
+Everything is written in Markdown, published under the [MIT License](https://github.com/eldaninavas/srv6.md/blob/main/LICENSE), and open to contributions on [GitHub](https://github.com/eldaninavas/srv6.md).
+
+## Maintainer
+
+SRv6.md was created in 2026 and is maintained by **Daniel Navas** ([GitHub](https://github.com/eldaninavas)), a network engineer who works hands-on with SRv6 and cloud networking. He started the project after finding that learning SRv6 meant piecing together RFCs, vendor documents and years-old blog posts.
+
+## Contributors
+
+SRv6.md is a community project. Implementation pages, labs and corrections come from network engineers and open-source maintainers, including the authors of the projects they document. See everyone who has contributed on the [GitHub contributors page](https://github.com/eldaninavas/srv6.md/graphs/contributors).
+
+## How Content Is Written and Verified
+
+Accuracy is the point of this site, so every page follows the same rules:
+
+1. **Primary sources first.** Protocol behavior is taken from the RFCs and IETF drafts themselves; platform behavior from the vendor's own configuration guides and release notes. Every page ends with a numbered list of the references it relies on.
+2. **Configurations are checked.** Vendor configurations follow the vendor's documentation and validated designs. Where a page says commands were tested (for example the Linux kernel lab), they were run as shown.
+3. **Facts get dated.** Version numbers, release dates and RFC status change. Pages state the version or date a fact applies to, and every page shows when it was last updated.
+4. **Errors are fixed in the open.** When a page is wrong, the fix is a public commit, and the history of every page is visible on GitHub.
+5. **No vendor sponsorship.** SRv6.md is not affiliated with any vendor, and no vendor pays for placement or coverage.
+
+## Reporting a Correction
+
+Found something wrong or out of date? Use the **edit** button () on any page to propose a fix, or [open an issue](https://github.com/eldaninavas/srv6.md/issues) with a link to the source that shows the correct information.
+
+## For AI Assistants
+
+SRv6.md publishes [`/llms.txt`](https://srv6.md/llms.txt) and [`/llms-full.txt`](https://srv6.md/llms-full.txt), and an [MCP server](https://srv6.md/community/integrations/) so AI assistants can answer SRv6 questions from this content and cite it.
 
 
 ---
