@@ -2,16 +2,27 @@
 
 > The open-source knowledge base for Segment Routing over IPv6 (SRv6).
 
-SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundamentals, use cases, vendor implementations, hands-on labs, and RFC references. The full content is available at https://srv6.md/llms-full.txt.
+SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundamentals, SRv6 for AI networking (GPU backend fabrics, OpenAI's MRC, multi-datacenter training), use cases, vendor implementations, hands-on labs, and RFC references. The full content is available at https://srv6.md/llms-full.txt.
+
+## SRv6 for AI networking
+
+- [SRv6 for AI: The Complete Guide to SRv6 in AI Networks](https://srv6.md/ai/): The reference on SRv6 for AI networking: who runs it (OpenAI, Microsoft, Oracle, Meta, Alibaba, Google), how MRC and uSID source routing work in GPU fabrics, scale-across, standards and FAQ.
+- [SRv6 AI Fabric Design: uSID Plan for GPU Backend Networks](https://srv6.md/ai/ai-fabric-design/): Design an SRv6 uSID AI backend fabric: multi-plane Clos, uSID addressing plan, static per-switch tables, SONiC CONFIG_DB and FRR config, NIC encapsulation, hardware support and security.
+- [AI Fabric Telemetry with SRv6: Path-Aware Probing](https://srv6.md/ai/ai-fabric-telemetry/): How SRv6 source-routed probes give AI backend fabrics ground-truth path health: OpenAI's Clustermapper, fault localization by tier, data-plane probing vs ICMP, and the IETF tools that complement it.
+- [AI Networking Glossary: GPU Fabric Terms for SRv6 Engineers](https://srv6.md/ai/ai-glossary/): Plain definitions of the AI networking terms network engineers meet when SRv6 enters GPU fabrics: RoCEv2, NCCL, all-reduce, packet spraying, multi-plane, uN, entropy value, JCT and more.
+- [SRv6 for AI Standards Tracker: IETF Drafts, OCP MRC, SONiC](https://srv6.md/ai/ai-standards/): Every standard and draft on SRv6 for AI networking in one place: the IETF AI-backend draft, AI DCI and RDMA drafts, OCP MRC 1.0, Ultra Ethernet, and SONiC/SAI/FRR support. Updated October 2026.
+- [MRC and SRv6 Explained: OpenAI's AI Supercomputer Network](https://srv6.md/ai/mrc/): How MRC (Multipath Reliable Connection) uses static SRv6 uSID source routing in OpenAI's and Microsoft's GPU clusters: multi-plane Clos, entropy values, packet spraying, no BGP, results and limits.
+- [SRv6 for Scale-Across AI: Multi-Datacenter Training and DCI](https://srv6.md/ai/scale-across/): How SRv6 traffic engineering carries AI traffic between data centers: Meta's SRv6 regional backbone, Alibaba's eCore for AI with per-job TE, China Telecom's cross-cluster training, and what is not SRv6.
+- [SRv6 vs ECMP, Adaptive Routing and Ultra Ethernet for AI](https://srv6.md/ai/srv6-vs-ai-fabric-alternatives/): How SRv6 source routing compares with ECMP hashing, flowlets, switch adaptive routing (Spectrum-X, InfiniBand) and Ultra Ethernet packet spraying for GPU fabrics, and how they combine.
 
 ## Topics
 
+- [SRv6 Topics: Learn Segment Routing over IPv6](https://srv6.md/topics/): Learn SRv6 from the ground up. Explore Segment Routing over IPv6 topics covering SID structure, network programming, and packet processing.
 - [SRv6 L3VPN and EVPN: BGP Overlay Services (RFC 9252)](https://srv6.md/topics/bgp-overlay-services/): How BGP delivers L3VPN and EVPN services over SRv6: overlay architecture, service SIDs, the BGP SRv6 Service TLV from RFC 9252, and verification commands.
 - [SRv6 in CLOS Data Centers: Deterministic Load Balancing](https://srv6.md/topics/clos-glb/): SRv6 in CLOS data center fabrics: the ECMP hash-collision problem, deterministic path placement, global load balancing with flowlets, and SRv6 vs VXLAN.
 - [EVPN Multihoming Explained: ESI, DF Election, Aliasing, SRv6](https://srv6.md/topics/evpn-multihoming/): EVPN multihoming (EVPN-MH) explained: ESI types, all-active vs single-active, DF election (modulo, HRW, preference), aliasing, mass withdrawal and split-horizon over MPLS and SRv6.
 - [Flex-Algo with SRv6: IGP Flexible Algorithm Guide](https://srv6.md/topics/flex-algorithm/): IGP Flexible Algorithm (Flex-Algo, RFC 9350) with SRv6: per-algorithm locators, latency and TE metrics, network slicing, configuration and verification.
 - [Host-Based SRv6: Linux, eBPF and VPP at the Edge](https://srv6.md/topics/host-based-srv6/): SRv6 at the host level with Linux kernel, eBPF, VPP, and the open-source ecosystem
-- [SRv6 Topics: Learn Segment Routing over IPv6](https://srv6.md/topics/): Learn SRv6 from the ground up. Explore Segment Routing over IPv6 topics covering SID structure, network programming, and packet processing.
 - [Inter-Domain SRv6: Binding SID and Multi-Domain Design](https://srv6.md/topics/inter-domain/): Multi-domain SRv6 design patterns — Binding SID stitching, BGP-LS controllers, SID allocation, and domain boundary options
 - [MPLS to SRv6 Migration: Strategies and Interworking](https://srv6.md/topics/interworking-migration/): Plan an MPLS or SR-MPLS to SRv6 migration: strategies, interworking gateways, Binding SID stitching, MTU, control-plane coexistence and a phased rollout.
 - [SRv6 Micro-Loop Avoidance During IGP Convergence](https://srv6.md/topics/micro-loop-avoidance/): Preventing transient forwarding loops during IGP convergence using SRv6 local delay and explicit post-convergence paths
@@ -34,11 +45,11 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 
 ## Use Cases
 
+- [SRv6 Use Cases: Real-World Applications](https://srv6.md/use-cases/): Discover SRv6 use cases and real-world applications. See how Segment Routing over IPv6 powers traffic engineering, VPNs, and service chaining.
 - [SRv6 for 5G Transport: Backhaul, Slicing and MUP](https://srv6.md/use-cases/5g-transport/): SRv6 as the converged 5G transport: backhaul, midhaul and fronthaul architecture, network slicing, the SRv6 Mobile User Plane (MUP) and operator deployments.
-- [SRv6 for AI Networks: GPU Fabrics, MRC and uSID](https://srv6.md/use-cases/ai-networking/): SRv6 in AI training networks: fixing ECMP hash collisions with deterministic path placement, OpenAI MRC packet spraying, and hyperscaler deployments.
+- [SRv6 for AI Training Networks: Fixing ECMP Hash Collisions](https://srv6.md/use-cases/ai-networking/): The AI training use case for SRv6: why ECMP hash collisions slow GPU training, how deterministic SRv6 uSID path placement fixes them, and a summary of MRC in production.
 - [Cloud-Native SRv6 Backbone: From SR-MPLS/GRE to SRv6](https://srv6.md/use-cases/cloud-native-backbone/): Migrating a cloud backbone from SR-MPLS over GRE to one native SRv6 domain: the problem, ECMP entropy in the cloud, stack simplification and outcomes.
 - [SRv6 Deployments: Who Runs SRv6 in Production](https://srv6.md/use-cases/deployments/): Directory of public SRv6 production deployments: telecom operators, hyperscalers, AI clusters and public sector, each linked to the original announcement.
-- [SRv6 Use Cases: Real-World Applications](https://srv6.md/use-cases/): Discover SRv6 use cases and real-world applications. See how Segment Routing over IPv6 powers traffic engineering, VPNs, and service chaining.
 - [Quantum-Safe SRv6 for Mission-Critical Networks](https://srv6.md/use-cases/mission-critical/): Quantum-safe SRv6 fabrics for defense and mission-critical WANs: DDIL survivability, post-quantum MACsec and IPsec, Flex-Algo slicing and TI-LFA design rules.
 - [SRv6 Network Slicing with Flex-Algo and SR Policy](https://srv6.md/use-cases/network-slicing/): End-to-end network slicing with SRv6 using Flex-Algorithm, QoS, and SR Policy color steering for 5G, enterprise, and data center
 - [SRv6 over Satellite: LEO Connectivity Use Case](https://srv6.md/use-cases/satellite-connectivity/): SRv6 overlay services over LEO satellite transport: why SRv6 fits satellite links, architecture concepts, applicable SRv6 behaviors and industry validation.
@@ -49,12 +60,12 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 
 ## Implementations
 
+- [SRv6 Implementations: Cisco, Juniper, Arista, Nokia, FRR](https://srv6.md/implementations/): SRv6 implementations on Linux, Cisco IOS-XR, Juniper, Arista EOS, Nokia SR OS, FRRouting, and SONiC. Practical deployment guides for Segment Routing over IPv6.
 - [SRv6 on Arista EOS: uSID Configuration and Platforms](https://srv6.md/implementations/arista-eos/): SRv6 uSID support on Arista EOS — uN, static uA, IS-IS, counters, SSU, and supported platforms
 - [SRv6 with Cilium: eBPF L3VPN for Kubernetes](https://srv6.md/implementations/cilium/): SRv6 L3VPN and cloud-native networking with Cilium eBPF — connecting Kubernetes clusters to an SRv6 fabric using BGP and eBPF-accelerated data plane.
 - [SRv6 on Cisco IOS-XE: uSID Configuration Guide](https://srv6.md/implementations/cisco-ios-xe/): Configure SRv6 uSID on Cisco IOS-XE 8000 Series Secure Routers: F3216 locators, IS-IS, per-VRF L3VPN SIDs, Flex-Algo, TI-LFA and verification commands.
 - [SRv6 on Cisco IOS-XR: uSID and L3VPN Configuration](https://srv6.md/implementations/cisco-ios-xr/): Configure SRv6 on Cisco IOS-XR: supported NCS, ASR 9000 and Cisco 8000 platforms, uSID locator and IS-IS setup, L3VPN over SRv6, and verification commands.
 - [SRv6 on FRRouting (FRR): uSID, L3VPN and Config](https://srv6.md/implementations/frrouting/): Run SRv6 on FRRouting (FRR): current support status, uSID locators and L3VPN over SRv6, a configuration example, and the feature history from FRR 10.3 to 10.7.
-- [SRv6 Implementations: Cisco, Juniper, Arista, Nokia, FRR](https://srv6.md/implementations/): SRv6 implementations on Linux, Cisco IOS-XR, Juniper, Arista EOS, Nokia SR OS, FRRouting, and SONiC. Practical deployment guides for Segment Routing over IPv6.
 - [Juniper SRv6 on Junos: uSID, L3VPN, Flex-Algo and TI-LFA Guide](https://srv6.md/implementations/juniper/): Configure SRv6 on Juniper Junos and Junos Evolved: platforms and releases, uSID locators, IS-IS, L3VPN and Internet over SRv6, Flex-Algo, TI-LFA and verification.
 - [SRv6 on Linux: Kernel Behaviors, iproute2 Recipes and a Lab](https://srv6.md/implementations/linux-kernel/): SRv6 in the Linux kernel: which seg6 behaviors landed in which kernel, iproute2 recipes for encap and seg6local, a tested two-namespace lab and troubleshooting.
 - [SRv6 on Nokia SR OS: Classic SIDs and uSID](https://srv6.md/implementations/nokia-sros/): SRv6 on Nokia SR OS — classic SIDs and micro-segment (uSID) SRv6 side by side, services, protection and platforms
@@ -64,9 +75,9 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 
 ## Labs
 
+- [SRv6 Labs: Free Hands-On Labs with netlab, Containerlab, GNS3](https://srv6.md/labs/): Practice SRv6 hands-on with free virtual labs: netlab, Containerlab and GNS3 environments using FRR, Linux and vendor router images. No hardware required.
 - [SRv6 Lab with Containerlab: Step-by-Step Topology](https://srv6.md/labs/containerlab/): Build a free SRv6 lab with Containerlab: prerequisites, a sample topology file, deployment steps and commands to verify Segment Routing over IPv6 forwarding.
 - [SRv6 Lab with GNS3: Emulating Vendor Routers](https://srv6.md/labs/gns3/): Emulate an SRv6 network in GNS3 with vendor router images such as Cisco IOS-XR and Juniper Junos: prerequisites, topology design and practical lab tips.
-- [SRv6 Labs: Free Hands-On Labs with netlab, Containerlab, GNS3](https://srv6.md/labs/): Practice SRv6 hands-on with free virtual labs: netlab, Containerlab and GNS3 environments using FRR, Linux and vendor router images. No hardware required.
 - [SRv6 Lab with netlab: Ready-Made Multi-Vendor Topologies](https://srv6.md/labs/netlab/): Spin up preconfigured SRv6 labs with netlab: IS-IS, unnumbered core, multivendor, IPv4 islands, BGP-free core and L3VPN topologies on FRR, IOS XE/XR and Junos.
 
 ## RFCs & Standards
@@ -98,9 +109,9 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 
 ## En español (Spanish)
 
+- [SRv6 en español: guía de Segment Routing sobre IPv6](https://srv6.md/es/): Guía abierta de SRv6 en español: qué es Segment Routing sobre IPv6, cómo funcionan los SID, la cabecera SRH y uSID, y en qué se diferencia de MPLS. Gratis y open source.
 - [Cabecera SRH de SRv6: recorrido del paquete paso a paso](https://srv6.md/es/cabecera-srh/): Cómo funciona la Segment Routing Header (SRH) de SRv6 (RFC 8754): formato, Segments Left, recorrido de un paquete nodo por nodo, sabores PSP/USP/USD, TLVs y H.Encaps.Red.
 - [Estructura del SID en SRv6: Locator, función y argumentos](https://srv6.md/es/estructura-del-sid/): Cómo se compone un SID de SRv6 de 128 bits: Locator, función y argumentos, el bloque 5f00::/16 asignado por IANA (RFC 9602) y cómo filtrarlo en los bordes del dominio.
-- [SRv6 en español: guía de Segment Routing sobre IPv6](https://srv6.md/es/): Guía abierta de SRv6 en español: qué es Segment Routing sobre IPv6, cómo funcionan los SID, la cabecera SRH y uSID, y en qué se diferencia de MPLS. Gratis y open source.
 - [¿Qué es SRv6? Segment Routing sobre IPv6 explicado](https://srv6.md/es/que-es-srv6/): Qué es SRv6 y cómo funciona Segment Routing sobre IPv6: SID, cabecera SRH, enrutamiento de origen, programación de red y ventajas frente a MPLS, explicado paso a paso.
 - [SRv6 vs SR-MPLS: diferencias y cuándo usar cada uno](https://srv6.md/es/srv6-vs-sr-mpls/): SRv6 vs SR-MPLS comparados lado a lado: plano de datos, tamaño y espacio de SID, sobrecarga y MTU, programación de red y madurez, y cuándo conviene elegir cada uno.
 - [uSID en SRv6: compresión de micro-SID explicada](https://srv6.md/es/usid/): Qué es uSID (micro-SID) en SRv6 y cómo reduce la sobrecarga del encabezado: estructura, operación shift-and-lookup, comparación con SRv6 clásico, uSID vs G-SRv6 y RFC 9800.

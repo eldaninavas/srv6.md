@@ -13,6 +13,38 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/ai/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ai/ai-fabric-design/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ai/ai-fabric-telemetry/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ai/ai-glossary/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ai/ai-standards/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ai/mrc/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ai/scale-across/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ai/srv6-vs-ai-fabric-alternatives/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/community/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
@@ -58,7 +90,7 @@
     </url>
     <url>
          <loc>https://srv6.md/implementations/arista-eos/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/cilium/</loc>
@@ -90,7 +122,7 @@
     </url>
     <url>
          <loc>https://srv6.md/implementations/sonic/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/vinbero/</loc>
@@ -246,7 +278,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/clos-glb/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/evpn-multihoming/</loc>
@@ -302,7 +334,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/sonic-sai/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/sr-policy/</loc>
@@ -338,7 +370,7 @@
     </url>
     <url>
          <loc>https://srv6.md/use-cases/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/use-cases/5g-transport/</loc>
@@ -346,7 +378,7 @@
     </url>
     <url>
          <loc>https://srv6.md/use-cases/ai-networking/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/use-cases/cloud-native-backbone/</loc>
@@ -354,7 +386,7 @@
     </url>
     <url>
          <loc>https://srv6.md/use-cases/deployments/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/use-cases/mission-critical/</loc>
