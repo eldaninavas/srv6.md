@@ -26,11 +26,11 @@ hide:
 
 </div>
 
-## :material-head-question: ¿Qué es SRv6 y cómo funciona?
+## :material-head-question: ¿Qué es SRv6 (IPv6 Segment Routing) y cómo funciona?
 
-**SRv6 (Segment Routing over IPv6)** es una arquitectura de red de nueva generación que codifica las instrucciones de reenvío directamente en la cabecera de los paquetes IPv6. En lugar de depender de etiquetas MPLS y de protocolos de señalización como LDP o RSVP-TE, SRv6 usa direcciones IPv6 nativas de 128 bits como **identificadores de segmento (SID)** para programar las rutas y los comportamientos de la red.
+**SRv6 (Segment Routing over IPv6, o Segment Routing sobre IPv6)**, también escrito **Segment Routing v6**, SR v6 o **IPv6 Segment Routing**, es el plano de datos IPv6 de la arquitectura Segment Routing ([RFC 8402](../rfcs/rfc8402.md)). Codifica las instrucciones de reenvío directamente en la cabecera de los paquetes IPv6. En lugar de depender de etiquetas MPLS y de protocolos de señalización como LDP o RSVP-TE, SRv6 usa direcciones IPv6 nativas de 128 bits como **identificadores de segmento (SID)** para programar las rutas y los comportamientos de la red.
 
-SRv6 funciona insertando una **Segment Routing Header (SRH)** en los paquetes IPv6. El nodo de origen llena una lista de segmentos que define la ruta del paquete y lo que debe hacer cada nodo. Esto habilita ingeniería de tráfico, servicios VPN y encadenamiento de funciones de servicio, todo sin protocolos de overlay.
+El nodo de origen arma una lista ordenada de segmentos que define la ruta del paquete y lo que debe hacer cada nodo. El segmento activo va en la dirección IPv6 de destino; cuando hay más de uno, el resto viaja en una **Segment Routing Header (SRH)**, y con [uSID](usid.md) muchas veces la ruta completa cabe en la dirección de destino sin necesidad de SRH. Los routers de tránsito simplemente reenvían según la dirección de destino. Esto habilita ingeniería de tráfico, servicios VPN, fast reroute y encadenamiento de funciones de servicio sobre una red IPv6 normal.
 
 **¿Por qué SRv6 en lugar de MPLS tradicional?**
 

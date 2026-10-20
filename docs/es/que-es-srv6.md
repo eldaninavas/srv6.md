@@ -11,7 +11,18 @@ tags:
 
 # ¿Qué es SRv6?
 
-**SRv6 (Segment Routing over IPv6, o Segment Routing sobre IPv6)** es una arquitectura de red que usa el plano de datos de IPv6 para implementar enrutamiento de origen (*source routing*) y programación de red.
+**SRv6 (Segment Routing over IPv6, o Segment Routing sobre IPv6)** es una arquitectura de red que usa el plano de datos de IPv6 para implementar enrutamiento de origen (*source routing*) y programación de red. También lo verás como **IPv6 Segment Routing** o **Segment Routing v6**: los tres nombres se refieren a la misma tecnología del IETF.
+
+## IPv6 Segment Routing, Segment Routing v6, SRv6: una sola tecnología
+
+Segment Routing ([RFC 8402](../rfcs/rfc8402.md)) es una arquitectura de enrutamiento de origen con dos planos de datos:
+
+| Nombre que verás | Qué significa |
+|------------------|---------------|
+| **SRv6**, Segment Routing over IPv6, IPv6 Segment Routing, Segment Routing v6, SR v6 | Los segmentos son direcciones IPv6; la lista viaja en la dirección de destino y, cuando hace falta, en la Segment Routing Header ([RFC 8754](../rfcs/rfc8754.md)) |
+| **SR-MPLS**, Segment Routing MPLS | Los segmentos son etiquetas MPLS en una pila de etiquetas ([RFC 8660](https://www.rfc-editor.org/rfc/rfc8660)) |
+
+El "v6" de "Segment Routing v6" indica la versión de IP del plano de datos, no una sexta versión de Segment Routing. Las funciones del plano de control (extensiones de IS-IS/OSPFv3, [Flex-Algo](../topics/flex-algorithm.md), [TI-LFA](../topics/ti-lfa.md), [SR Policy](../topics/sr-policy.md)) se comparten entre ambos, por eso la documentación de los fabricantes suele cubrirlos en una sola guía de "Segment Routing". La comparación lado a lado está en [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md).
 
 ## Visión general
 
