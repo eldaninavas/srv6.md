@@ -106,7 +106,7 @@ Flavors change what End, End.X and End.T do at the end of the segment list. They
 | **USP** | Ultimate Segment Pop | The packet arrives with SL = 0 | Removes the SRH, then processes the next header | Delivering to an application that should not see the SRH |
 | **USD** | Ultimate Segment Decapsulation | The packet arrives with SL = 0 and carries an inner packet | Removes the outer header and processes the inner packet | Lets a plain End/End.X SID terminate an encapsulation — e.g. the last SID of a [TI-LFA](ti-lfa.md) repair list removes the repair header and forwards the original packet |
 
-Flavors apply only to End, End.X and End.T. PSP and USD are the common pair — Cisco IOS-XR's `psp-usd` keyword selects it, and Linux exposes `flavors psp` on `seg6local` End/End.X.
+Flavors apply only to End, End.X and End.T. PSP and USD are the common pair — Cisco IOS-XR's `psp-usd` keyword selects it. Linux implements only PSP, and only on End (`flavors psp`).
 
 ## Compressed SID Flavors (RFC 9800)
 

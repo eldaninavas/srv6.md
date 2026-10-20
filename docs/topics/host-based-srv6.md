@@ -27,7 +27,7 @@ When SRv6 runs on the host:
 
 ## Linux Kernel SRv6
 
-The Linux kernel has native SRv6 support since kernel 4.10 through two subsystems:
+The Linux kernel has native SRv6 support through two subsystems: `seg6` (since kernel 4.10) and `seg6local` (since 4.14). See [Linux Kernel](../implementations/linux-kernel.md#behavior-support-by-kernel-version) for when each behavior landed.
 
 ### seg6 (Encapsulation)
 
