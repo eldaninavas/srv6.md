@@ -16,15 +16,15 @@
   {% if page_url == "404.html" or page_url.startswith("tags/") %}
     <meta name="robots" content="noindex, follow">
   {% endif %}
-  {% set page_lang = "es" if page_url.startswith("es/") else "en" %}
+  {% set page_lang = page_url.split("/")[0] if page_url.split("/")[0] in ["es", "ja"] else "en" %}
   {% if page and page.meta and page.meta.alternates %}
     {% for lang, alt_url in page.meta.alternates.items() %}
     <link rel="alternate" hreflang="{{ lang }}" href="{{ config.site_url }}{{ alt_url }}">
     {% endfor %}
     <link rel="alternate" hreflang="x-default" href="{{ config.site_url }}{{ page.meta.alternates.en }}">
   {% endif %}
-  {% if page_lang == "es" %}
-    <meta property="og:locale" content="es_ES">
+  {% if page_lang in ["es", "ja"] %}
+    <meta property="og:locale" content="{{ {'es': 'es_ES', 'ja': 'ja_JP'}[page_lang] }}">
   {% endif %}
   <meta property="og:type" content="{{ 'website' if page.url in ['', '.', './'] else 'article' }}">
   <meta property="og:title" content="{{ seo_title }}">

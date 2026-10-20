@@ -17,6 +17,7 @@ SECTIONS = [
     ("labs", "Labs"),
     ("rfcs", "RFCs & Standards"),
     ("es", "En español (Spanish)"),
+    ("ja", "日本語 (Japanese)"),
 ]
 
 

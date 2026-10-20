@@ -87,7 +87,7 @@ theme:
     - header.autohide
 
 extra_css:
-  - assets/stylesheets/custom.css?v=20261018
+  - assets/stylesheets/custom.css?v=20261020
 
 extra_javascript:
   - assets/javascripts/custom.js
@@ -98,6 +98,7 @@ plugins:
       lang:
         - en
         - es
+        - ja
   - tags: {}
   - minify:
       minify_html: true
@@ -163,6 +164,13 @@ nav:
     - Cabecera SRH: es/cabecera-srh.md
     - uSID: es/usid.md
     - SRv6 vs SR-MPLS: es/srv6-vs-sr-mpls.md
+  - 日本語:
+    - ja/index.md
+    - SRv6とは: ja/what-is-srv6.md
+    - SIDの構造: ja/sid-structure.md
+    - SRHとパケットウォーク: ja/srh-packet-walk.md
+    - uSID: ja/usid.md
+    - SRv6 vs SR-MPLS: ja/srv6-vs-sr-mpls.md
   - Topics:
     - topics/index.md
     - Foundations:

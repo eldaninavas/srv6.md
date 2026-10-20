@@ -1,25 +1,40 @@
 """
-MkDocs hook: pair Spanish pages (docs/es/) with their English originals.
-A Spanish page declares `translation_of: <english src path>` in its front
-matter. Both pages then get hreflang alternates (page.meta["alternates"])
-and a visible link to the other language.
+MkDocs hook: pair translated pages (docs/<lang>/) with their English originals.
+A translated page declares `translation_of: <english src path>` in its front
+matter. Every page of a translation group (the English original plus all its
+translations) gets hreflang alternates for every language in the group
+(page.meta["alternates"]) and a visible link to each of the other languages.
 """
 
 import os
 import re
 import logging
 
+from mkdocs.plugins import event_priority
+
 log = logging.getLogger("mkdocs.hooks.i18n")
 
-_es_to_en = {}
-_en_to_es = {}
+# Language code -> label of the link pointing TO that language. English is the
+# source language; the others are subdirectories of docs/. Order is the order
+# of the hreflang tags and of the links in the switch.
+LANGUAGES = {
+    "en": "Read in English",
+    "es": "Leer en español",
+    "ja": "日本語で読む",
+}
+
+# English src path -> {lang: src path}, and member src path -> English src path
+_groups = {}
+_member_of = {}
 
 
 def on_files(files, config, **kwargs):
-    _es_to_en.clear()
-    _en_to_es.clear()
+    _groups.clear()
+    _member_of.clear()
+    counts = {}
     for f in files.documentation_pages():
-        if not f.src_uri.startswith("es/"):
+        lang = f.src_uri.split("/", 1)[0]
+        if lang == "en" or lang not in LANGUAGES or "/" not in f.src_uri:
             continue
         with open(f.abs_src_path, "r", encoding="utf-8") as fh:
             m = re.search(r"^translation_of:\s*(\S+)\s*$", fh.read(4000), re.M)
@@ -29,9 +44,15 @@ def on_files(files, config, **kwargs):
         if files.get_file_from_path(en_src) is None:
             log.warning(f"{f.src_uri}: translation_of target not found: {en_src}")
             continue
-        _es_to_en[f.src_uri] = en_src
-        _en_to_es[en_src] = f.src_uri
-    log.info(f"i18n: {len(_es_to_en)} Spanish translations paired")
+        group = _groups.setdefault(en_src, {"en": en_src})
+        if lang in group:
+            log.warning(f"{f.src_uri}: {en_src} already has a {lang} translation: {group[lang]}")
+            continue
+        group[lang] = f.src_uri
+        _member_of[en_src] = en_src
+        _member_of[f.src_uri] = en_src
+        counts[lang] = counts.get(lang, 0) + 1
+    log.info("i18n: translations paired: " + (", ".join(f"{k}={v}" for k, v in sorted(counts.items())) or "none"))
     return files
 
 
@@ -53,16 +74,26 @@ def _after_h1(markdown, line):
 
 def on_page_markdown(markdown, page, files, **kwargs):
     src = page.file.src_uri
-    if src in _en_to_es:
-        es_src = _en_to_es[src]
-        en_url, es_url = _url(page.file), _url(files.get_file_from_path(es_src))
-        page.meta["alternates"] = {"en": en_url, "es": es_url}
-        link = f'<p class="srv6-lang-switch" lang="es" markdown>:material-translate: [Leer en español]({_rel(src, es_src)})</p>'
-        return _after_h1(markdown, link)
-    if src in _es_to_en:
-        en_src = _es_to_en[src]
-        en_url, es_url = _url(files.get_file_from_path(en_src)), _url(page.file)
-        page.meta["alternates"] = {"en": en_url, "es": es_url}
-        link = f'<p class="srv6-lang-switch" lang="en" markdown>:material-translate: [Read in English]({_rel(src, en_src)})</p>'
-        return _after_h1(markdown, link)
-    return markdown
+    if src not in _member_of:
+        return markdown
+    group = _groups[_member_of[src]]
+    members = [(lang, group[lang]) for lang in LANGUAGES if lang in group]
+    page.meta["alternates"] = {
+        lang: _url(files.get_file_from_path(member)) for lang, member in members
+    }
+    links = " · ".join(
+        f'[{LANGUAGES[lang]}]({_rel(src, member)}){{ lang="{lang}" hreflang="{lang}" }}'
+        for lang, member in members if member != src
+    )
+    return _after_h1(markdown, f'<p class="srv6-lang-switch" markdown>:material-translate: {links}</p>')
+
+
+# Run before the minify plugin: htmlmin drops a lang attribute equal to the
+# document's, which would strip lang="en" from "Read in English".
+@event_priority(50)
+def on_post_page(output, page, config, **kwargs):
+    # theme.language is site-wide; give translated pages their own <html lang>.
+    lang = page.file.src_uri.split("/", 1)[0]
+    if lang != "en" and lang in LANGUAGES and "/" in page.file.src_uri:
+        output = output.replace('<html lang="en"', f'<html lang="{lang}"', 1)
+    return output
