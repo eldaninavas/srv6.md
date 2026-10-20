@@ -68,7 +68,7 @@ End-to-end slicing with Flex-Algorithm, QoS, and color steering for 5G, enterpri
 ### :material-chip: AI/ML Training Networks
 Deterministic path placement for GPU cluster fabrics. Solving ECMP hash collisions in AI backends.
 
-[:material-arrow-right: Learn more](ai-networking.md)
+[:material-arrow-right: Learn more](ai-networking.md) &nbsp; [:material-arrow-right: SRv6 for AI hub](../ai/index.md)
 </div>
 
 <div class="srv6-card" markdown>

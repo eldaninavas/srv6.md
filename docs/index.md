@@ -55,6 +55,12 @@ hide:
   <a href="https://github.com/eldaninavas/srv6.md" target="_blank" rel="noopener" class="srv6-contributors-join">+ Become a contributor</a>
 </div>
 
+## :material-robot-outline: SRv6 for AI
+
+SRv6 now runs inside some of the largest AI training networks in the world. OpenAI, Microsoft and Oracle use static SRv6 uSID source routing in their GPU fabrics through [MRC](ai/mrc.md), with no BGP in the backend. Meta and Alibaba use SRv6 traffic engineering to connect AI clusters across sites. The [SRv6 for AI](ai/index.md) section covers who runs it, how it works, how to design a fabric, and the standards behind it.
+
+[:material-arrow-right: SRv6 for AI: the complete guide](ai/index.md){ .md-button .md-button--primary }  &nbsp; [:material-arrow-right: How MRC uses SRv6](ai/mrc.md){ .md-button }
+
 ## :material-compass: Explore
 
 <div class="srv6-grid" markdown>

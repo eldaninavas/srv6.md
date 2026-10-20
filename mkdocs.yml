@@ -15,6 +15,7 @@ hooks:
   - hooks/i18n.py
   - hooks/generate_graph.py
   - hooks/llms_txt.py
+  - hooks/faq_schema.py
   - hooks/git_dates.py
   - hooks/redirects.py
 edit_uri: edit/main/docs/
@@ -157,6 +158,15 @@ nav:
   - Home:
     - index.md
     - Knowledge Graph: knowledge-graph.md
+  - SRv6 for AI:
+    - ai/index.md
+    - MRC and SRv6: ai/mrc.md
+    - AI Fabric Design: ai/ai-fabric-design.md
+    - SRv6 vs ECMP, AR and UEC: ai/srv6-vs-ai-fabric-alternatives.md
+    - Scale-Across: ai/scale-across.md
+    - AI Fabric Telemetry: ai/ai-fabric-telemetry.md
+    - Standards Tracker: ai/ai-standards.md
+    - AI Networking Glossary: ai/ai-glossary.md
   - Español:
     - es/index.md
     - ¿Qué es SRv6?: es/que-es-srv6.md

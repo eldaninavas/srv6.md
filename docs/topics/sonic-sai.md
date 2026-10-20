@@ -108,6 +108,7 @@ SONiC runs on whitebox switches from multiple vendors, all using SAI for SRv6:
 ## Further Reading
 
 - :material-arrow-right: [SONiC Implementation](../implementations/sonic.md) - Getting started with SRv6 on SONiC
+- :material-arrow-right: [SRv6 AI Fabric Design](../ai/ai-fabric-design.md) - SAI uSID behaviors in AI backend fabrics
 - :material-arrow-right: [FRRouting](../implementations/frrouting.md) - FRR SRv6 configuration
 - :material-arrow-right: [CLOS Fabrics & Load Balancing](clos-glb.md) - Data center topology and path placement
 - :material-arrow-right: [AI/ML Training Networks](../use-cases/ai-networking.md) - SRv6 + SONiC for GPU fabrics

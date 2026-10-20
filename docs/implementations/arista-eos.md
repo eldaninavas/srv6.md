@@ -77,6 +77,7 @@ See the user manual for complete configuration examples; exact syntax varies bet
 ## Further Reading
 
 - :material-arrow-right: [Implementations Overview](index.md)
+- :material-arrow-right: [MRC and SRv6](../ai/mrc.md) - EOS on Tomahawk 5 in OpenAI's and Microsoft's SRv6 AI fabrics
 - :material-arrow-right: [uSID Compression](../topics/usid-compression.md) - F3216 format and shift-and-forward
 - :material-arrow-right: [AI/ML Networks](../use-cases/ai-networking.md) - MRC: OpenAI's SRv6 static source routing in production
 - :material-arrow-right: [TI-LFA](../topics/ti-lfa.md) - Fast reroute with SRv6 repair segments

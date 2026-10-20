@@ -22,6 +22,7 @@ DIR_TO_GROUP = {
     "rfcs": "rfc",
     "implementations": "impl",
     "labs": "impl",
+    "ai": "ai",
 }
 
 SKIP_FILES = {"index.md", "tags.md", "knowledge-graph.md", "CNAME"}
@@ -113,10 +114,10 @@ def on_pre_build(config, **kwargs):
 ;(function() {{
 const GRAPH_ELEMENTS = {json.dumps(elements)};
 
-const GROUP_COLORS = {{core:"#ab47bc",usecase:"#5c6bc0",rfc:"#66bb6a",impl:"#ff9800"}};
-const GROUP_NAMES = {{core:"Topics",usecase:"Use Cases",rfc:"RFCs",impl:"Implementations"}};
+const GROUP_COLORS = {{core:"#ab47bc",usecase:"#5c6bc0",rfc:"#66bb6a",impl:"#ff9800",ai:"#26c6da"}};
+const GROUP_NAMES = {{core:"Topics",usecase:"Use Cases",rfc:"RFCs",impl:"Implementations",ai:"SRv6 for AI"}};
 
-const activeGroups = new Set(["core","usecase","rfc","impl"]);
+const activeGroups = new Set(["core","usecase","rfc","impl","ai"]);
 
 const CYTOSCAPE_SRC = "https://cdn.jsdelivr.net/npm/cytoscape@3.34.4/dist/cytoscape.min.js";
 
@@ -185,6 +186,10 @@ function initKnowledgeGraph() {{
       {{
         selector: "node[group='impl']",
         style: {{ "background-color": "#ff9800", "border-color": "#ff9800" }}
+      }},
+      {{
+        selector: "node[group='ai']",
+        style: {{ "background-color": "#26c6da", "border-color": "#26c6da" }}
       }},
       {{
         selector: "edge",

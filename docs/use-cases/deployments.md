@@ -80,4 +80,5 @@ For a broader view of SRv6 deployment status across the industry:
 
 - :material-arrow-right: [5G Transport](5g-transport.md) - SRv6 for mobile networks
 - :material-arrow-right: [AI/ML Training](ai-networking.md) - SRv6 for GPU fabrics
+- :material-arrow-right: [SRv6 for AI](../ai/index.md) - Who runs SRv6 for AI: OpenAI, Microsoft, Oracle, Meta, Alibaba, Google
 - :material-arrow-right: [Satellite Connectivity](satellite-connectivity.md) - SRv6 over LEO satellite

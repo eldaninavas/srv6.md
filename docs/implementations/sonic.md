@@ -28,6 +28,7 @@ SONiC's SRv6 implementation leverages:
 ## Further Reading
 
 - :material-arrow-right: [Linux Kernel](linux-kernel.md) - Underlying SRv6 data plane
+- :material-arrow-right: [SRv6 AI Fabric Design](../ai/ai-fabric-design.md) - SONiC static SRv6 (CONFIG_DB) for AI backends, release by release
 - :fontawesome-brands-github: [SONiC SRv6 HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/)
 
 ## References

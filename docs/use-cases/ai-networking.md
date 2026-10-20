@@ -1,7 +1,7 @@
 ---
 title: AI/ML Training Networks
-seo_title: "SRv6 for AI Networks: GPU Fabrics, MRC and uSID"
-description: "SRv6 in AI training networks: fixing ECMP hash collisions with deterministic path placement, OpenAI MRC packet spraying, and hyperscaler deployments."
+seo_title: "SRv6 for AI Training Networks: Fixing ECMP Hash Collisions"
+description: "The AI training use case for SRv6: why ECMP hash collisions slow GPU training, how deterministic SRv6 uSID path placement fixes them, and a summary of MRC in production."
 tags:
   - use-cases
   - ai
@@ -15,6 +15,9 @@ tags:
 # AI/ML Training Networks with SRv6
 
 SRv6 is emerging as a critical technology for **AI backend fabrics** — the networks connecting thousands of GPUs in training clusters. Traditional ECMP routing fails catastrophically for AI workloads, and SRv6 provides the solution.
+
+!!! tip "Part of the SRv6 for AI section"
+    This page is the use case in brief. For the complete picture (who runs SRv6 for AI, the MRC deep dive, fabric design, scale-across, telemetry and standards), start at **[SRv6 for AI: The Complete Guide](../ai/index.md)**.
 
 ## The Problem: ECMP Hash Collisions
 
@@ -70,15 +73,15 @@ graph TB
 
 ## MRC: SRv6 Replaces Dynamic Routing at OpenAI
 
-The strongest production validation of SRv6 for AI networking to date is **MRC (Multipath Reliable Connection)** — a multipath RDMA transport co-developed by OpenAI, Microsoft, AMD, Broadcom, and NVIDIA, published in May 2026 and released as an open [OCP specification](https://www.opencompute.org/documents/ocp-mrc-1-0-pdf). MRC runs in production on OpenAI's and Microsoft's largest training clusters — including 100K+ GPU NVIDIA GB200 supercomputers used to train frontier models.
+The strongest production validation of SRv6 for AI networking to date is **MRC (Multipath Reliable Connection)** — a multipath RDMA transport specified by AMD, Broadcom, Intel, Microsoft, NVIDIA and OpenAI and released on 5 May 2026 as an open [OCP specification](https://www.opencompute.org/documents/ocp-mrc-1-0-pdf). MRC runs in production on OpenAI's largest NVIDIA GB200 training clusters and Microsoft's Fairwater supercomputers, with production jobs of 50K–75K GPUs on a design that scales to 131K GPUs in two switch tiers. For the full technical walkthrough, see **[MRC and SRv6 explained](../ai/mrc.md)**.
 
 MRC's design goes further than deterministic path placement: it **disables dynamic routing entirely**. Switches run no BGP; data packets are source-routed along static paths using SRv6, and all failure handling moves to the transport layer at the edge.
 
 ### How MRC uses SRv6
 
-- **Static uSID forwarding**: The fabric uses the uSID format with `uN` behavior — a 32-bit locator prefix followed by 16-bit uSIDs, one per switch on the path. Switch forwarding tables are configured at install time and essentially never change; the shift-and-forward operation runs at line rate on standard ASICs.
+- **Static uSID forwarding**: The fabric uses the uSID format with `uN` behavior — a 32-bit locator block followed by 16-bit uSIDs, one per switch on the path plus a final uSID naming the last-hop port, all in the outer IPv6 destination address (no SRH needed). Switch forwarding tables are configured at install time and essentially never change; the shift-and-forward operation runs at line rate on standard ASICs.
 - **Entropy Values map to explicit paths**: At queue-pair startup the NIC generates a set of 32-bit Entropy Values (EVs, typically 128-256), each algorithmically mapped to a unique SRv6 address — i.e., a specific physical path through a specific network plane. The sender rotates through its EV set, **spraying every packet of a transfer across hundreds of SRv6-encoded paths**, which load-balances the fabric without hash collisions or application involvement.
-- **Multi-plane two-tier Clos**: Instead of a three-tier 800G fabric, the 800G NIC is broken out by lane into 8 parallel 100G planes (or 4×200G), so ~131K NICs fit in just two switch tiers. Losing a single link costs ~0.4% of a node's capacity instead of 3%.
+- **Multi-plane two-tier Clos**: Instead of a three-tier 800G fabric, the 800G NIC is broken out by lane into 8 parallel 100G planes (or 4×200G), so ~131K NICs fit in just two switch tiers. Losing a T0–T1 link costs ~0.4% of a node's capacity instead of ~3%.
 - **Microsecond-scale failure bypass**: When a path loses a packet, MRC retires that EV and retransmits on another path — detecting and bypassing failures in **tens of microseconds**, versus seconds for routing-protocol convergence. Background probes resurrect paths once they recover. Link flaps between switch tiers become operationally ignorable.
 - **Ground-truth telemetry**: Because SRv6 makes probe paths explicit (no ECMP hash ambiguity, no dynamic routing underneath), the "Clustermapper" agents probe every link in the network every millisecond and know exactly which physical path each probe took — something switch-based telemetry cannot guarantee.
 
@@ -101,7 +104,7 @@ graph LR
 | Switch control plane | BGP, large ECMP sets, hard to debug at scale | Static tables, no dynamic routing to interact with transport |
 | Path visibility | Hash-dependent, ambiguous | Every packet and probe path is explicit |
 
-Validated results include ~96% of theoretical peak bandwidth (≈770 Gb/s application-level on 800G NICs), and NCCL collectives sustaining 92 GB/s at 42K-GPU scale. Hardware spans NVIDIA ConnectX-8, AMD Pollara, and Broadcom Thor Ultra NICs, with SRv6 forwarding on NVIDIA Spectrum-4/5 (Cumulus and SONiC), Broadcom Tomahawk 5, and [Arista EOS](../implementations/arista-eos.md) switches.
+Validated results include ~96% of theoretical peak bandwidth (≈770 Gb/s point-to-point on 800G NICs) and, in a separate test, NCCL sendrecv sustaining up to 92 GB/s per NIC at 42,020 GPUs. Hardware spans NVIDIA ConnectX-8, AMD Pollara and Vulcano, and Broadcom Thor Ultra NICs, with SRv6 forwarding on NVIDIA Spectrum-4/5 (Cumulus and SONiC), Broadcom Tomahawk 5, and [Arista EOS](../implementations/arista-eos.md) switches.
 
 !!! tip "SRv6 as the stability layer"
     MRC inverts the usual assumption that source routing and resilience are at odds: precisely *because* the SRv6 paths are static and explicit, the transport layer can reason about them, spray across them, and bypass failures faster than any routing protocol could converge.
@@ -111,7 +114,7 @@ Validated results include ~96% of theoretical peak bandwidth (≈770 Gb/s applic
 - **OpenAI** — announced MRC and its SRv6-based static source routing, in production on its largest GB200 supercomputers including Stargate/OCI Abilene ([blog](https://openai.com/index/mrc-supercomputer-networking/), [paper](https://cdn.openai.com/pdf/resilient-ai-supercomputer-networking-using-mrc-and-srv6.pdf)); at OCP Global Summit 2026 presented **Clustermapper**, deterministic path diagnosis for AI backend networks using SRv6 ([source](https://www.segment-routing.net/conferences/2026-10-15-ocp-summit26-openai-clustermapper/))
 - **Meta and Google** — both publicly confirmed SRv6 at OCP Global Summit 2026: Meta runs SRv6 TE in production on its regional backbone rings ([source](https://www.segment-routing.net/conferences/2026-10-15-ocp-summit26-meta-srv6-backbone/)), and Google's Virgo AI fabric uses SRv6 source routing for bare-metal customers running their own host stack ([source](https://www.segment-routing.net/conferences/2026-10-15-ocp-summit26-google-virgo/))
 - **Microsoft** — published research on SRv6 for AI backend packet steering ([source](https://www.microsoft.com/en-us/research/publication/towards-fully-controllable-packet-steering-for-ai-backend-networks-with-srv6/)); co-presented SRv6 uSID + SONiC deployment at NANOG 96 ([source](https://storage.googleapis.com/site-media-prod/meetings/NANOG96/5611/20260202_Camarillo_Ai_Backend_Deploying_v1.pdf))
-- **Alibaba** — co-developed SRv6 support in SONiC with Cisco, announced by SONiC Foundation ([source](https://sonicfoundation.dev/driving-innovation-alibaba-and-cisco-co-dev-srv6-sonic-router/)); at OCP Global Summit 2026 presented "Beyond Traditional BGP" — decoupling route distribution from BGP for large-scale AI clusters with its HPN Pivot design ([source](https://www.segment-routing.net/conferences/2026-10-15-ocp-summit26-alibaba-beyond-bgp/))
+- **Alibaba** — co-developed SRv6 support in SONiC with Cisco, announced by SONiC Foundation ([source](https://sonicfoundation.dev/driving-innovation-alibaba-and-cisco-co-dev-srv6-sonic-router/)); at OCP Global Summit 2026 presented per-job SRv6 traffic engineering on its "eCore for AI" scale-across network ([source](https://www.segment-routing.net/conferences/2026-10-15-ocp-summit26-alibaba-cisco-te/)), and separately "Beyond Traditional BGP" — its HPN Pivot route-reflector design for large AI clusters, which is not SRv6-based ([source](https://www.segment-routing.net/conferences/2026-10-15-ocp-summit26-alibaba-beyond-bgp/))
 - **SONiC 202505 release** — includes official SRv6 uSID support for AI backend fabrics ([source](https://sonicfoundation.dev/sonic-202505-powering-ai-fabrics-and-enterprise-networks-with-precision-and-insight/))
 
 ## Technology Stack
@@ -136,12 +139,18 @@ Validated results include ~96% of theoretical peak bandwidth (≈770 Gb/s applic
 
 - **draft-filsfils-srv6ops-srv6-ai-backend** — SRv6 for Deterministic Path Placement in AI Backends
 - **RFC 9800** — SRv6 SID Compression (uSID), enabling efficient encapsulation
+- **OCP MRC 1.0** — Multipath Reliable Connection, with SRv6 as a forwarding mode
+
+The full list of drafts, specifications and SONiC/SAI/FRR status is in the [SRv6 for AI Standards Tracker](../ai/ai-standards.md).
 
 !!! tip "The fastest-growing SRv6 use case"
     As of 2025-2026, AI networking is one of the fastest-growing areas of SRv6 adoption. The combination of SONiC (open-source NOS) + SRv6 uSID is emerging as a leading approach for AI backend fabrics.
 
 ## Further Reading
 
+- :material-arrow-right: [SRv6 for AI: The Complete Guide](../ai/index.md) - Hub for every AI topic
+- :material-arrow-right: [MRC and SRv6](../ai/mrc.md) - The production deep dive
+- :material-arrow-right: [SRv6 AI Fabric Design](../ai/ai-fabric-design.md) - uSID plan, SONiC config, hardware
 - :material-arrow-right: [Real-World Deployments](deployments.md) - Alibaba, Microsoft, Nebius details
 - :material-arrow-right: [SONiC Implementation](../implementations/sonic.md) - SRv6 on SONiC
 - :material-arrow-right: [Traffic Engineering](traffic-engineering.md) - SR Policies for path control

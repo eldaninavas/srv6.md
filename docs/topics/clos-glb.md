@@ -129,6 +129,7 @@ BGP EVPN over SRv6 provides:
 ## Further Reading
 
 - :material-arrow-right: [AI/ML Training Networks](../use-cases/ai-networking.md) - SRv6 for GPU cluster fabrics
+- :material-arrow-right: [SRv6 AI Fabric Design](../ai/ai-fabric-design.md) - uSID addressing and static tables for multi-plane GPU fabrics
 - :material-arrow-right: [BGP Overlay Services](bgp-overlay-services.md) - EVPN and L3VPN over SRv6
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - Efficient path encoding
 - :material-arrow-right: [Traffic Engineering](../use-cases/traffic-engineering.md) - SR Policies
