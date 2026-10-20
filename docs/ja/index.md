@@ -94,6 +94,16 @@ hide:
 
 </div>
 
+<div class="srv6-card" markdown>
+
+### :material-chip: AIのためのSRv6
+
+OpenAI、Microsoft、OracleがMRCとスタティックSRv6 uSIDでGPUファブリックを動かす仕組みと、Meta・AlibabaのScale-Across。
+
+[:material-arrow-right: AIネットワークを知る](ai.md){ .md-button }
+
+</div>
+
 </div>
 
 ## :material-compass: その他のコンテンツ（英語）

@@ -94,6 +94,16 @@ Diferencias en plano de datos, sobrecarga y programabilidad, y cuándo conviene 
 
 </div>
 
+<div class="srv6-card" markdown>
+
+### :material-chip: SRv6 para IA
+
+Cómo OpenAI, Microsoft y Oracle usan MRC sobre SRv6 uSID estático en sus fabrics de GPU, y el scale-across de Meta y Alibaba.
+
+[:material-arrow-right: SRv6 en redes de IA](ia.md){ .md-button }
+
+</div>
+
 </div>
 
 ## :material-compass: El resto del sitio (en inglés)
