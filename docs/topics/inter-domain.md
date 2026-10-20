@@ -271,6 +271,6 @@ For the full SRv6 security framework, see [Security](security.md).
 1. [RFC 9256 - SR Policy Architecture](https://datatracker.ietf.org/doc/rfc9256/) - Defines Binding SID, candidate paths, and color steering used for inter-domain TE
 2. [RFC 9514 - BGP-LS Extensions for SRv6](https://datatracker.ietf.org/doc/rfc9514/) - BGP-LS for exporting SRv6 topology to multi-domain controllers
 3. [RFC 8402 - Segment Routing Architecture](https://datatracker.ietf.org/doc/rfc8402/) - Foundational SR architecture including inter-domain considerations
-4. [RFC 9830 - Advertising Segment Routing Policies in BGP](https://datatracker.ietf.org/doc/rfc9830/) - BGP SR Policy SAFI for distributing policies across domains (formerly draft-ietf-idr-sr-policy-safi)
+4. [RFC 9830 - Advertising Segment Routing Policies in BGP](../rfcs/rfc9830.md) - BGP SR Policy SAFI for distributing policies across domains (formerly draft-ietf-idr-sr-policy-safi)
 5. [Cisco IOS-XR: Configure Inter-AS SR-TE](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/24xx/configuration/guide/b-segment-routing-cg-cisco8000-24xx/configuring-sr-te-policies.html) - Configuration guide for inter-domain SR-TE with BSID and PCE
 6. [RFC 9723 - BGP Colored Prefix Routing (CPR) for SRv6 Services](https://www.rfc-editor.org/rfc/rfc9723) - Colored sub-locators in IPv6 unicast with Color Extended Community for inter-AS intent

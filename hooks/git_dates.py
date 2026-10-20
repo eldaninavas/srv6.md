@@ -45,8 +45,31 @@ def _repo_root(path):
     ).stdout.strip()
 
 
+_MONTHS = {
+    "en": ["January", "February", "March", "April", "May", "June", "July",
+           "August", "September", "October", "November", "December"],
+    "es": ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+           "agosto", "septiembre", "octubre", "noviembre", "diciembre"],
+}
+
+
+def _human(iso, lang):
+    y, m, d = (int(x) for x in iso.split("-"))
+    if lang == "ja":
+        return f"{y}年{m}月{d}日"
+    if lang == "es":
+        return f"{d} de {_MONTHS['es'][m - 1]} de {y}"
+    return f"{_MONTHS['en'][m - 1]} {d}, {y}"
+
+
 def on_page_markdown(markdown, page, **kwargs):
     dates = _dates.get(page.file.src_uri)
     if dates:
         page.update_date, page.meta["date_published"] = dates
+        # Material's source-file partial renders these as the visible
+        # "last updated" / "created" facts at the bottom of the page.
+        lang = page.file.src_uri.split("/", 1)[0]
+        lang = lang if lang in ("es", "ja") and "/" in page.file.src_uri else "en"
+        page.meta["revision_date"] = _human(dates[0], lang)
+        page.meta["git_creation_date_localized"] = _human(dates[1], lang)
     return markdown

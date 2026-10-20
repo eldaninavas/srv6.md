@@ -40,6 +40,7 @@ Comprehensive reference for all SRv6-related IETF RFCs, with summaries, behavior
 | RFC | Title | Date | Summary |
 |-----|-------|:----:|---------|
 | [RFC 9603](rfc9603.md) | PCEP Extensions for IPv6 Segment Routing | Jul 2024 | SRv6 path setup type, SRv6-ERO/RRO for PCE-computed SRv6 paths |
+| [RFC 9830](rfc9830.md) | Advertising Segment Routing Policies in BGP | Sep 2025 | BGP SR Policy SAFI: controllers push SR Policy candidate paths (incl. SRv6 BSIDs) to headends |
 | [RFC 9857](rfc9857.md) | Advertisement of SR Policies Using BGP-LS | Oct 2025 | Reports SR Policy candidate-path state (incl. SRv6 BSIDs) to controllers |
 | [RFC 10038](rfc10038.md) | Distributing the SRv6 Locator Using DHCPv6 | Aug 2026 | DHCPv6 options to lease SRv6 locators to CPEs and other endpoints |
 
@@ -82,7 +83,7 @@ Comprehensive reference for all SRv6-related IETF RFCs, with summaries, behavior
 | `draft-ietf-spring-srv6-yang` | YANG data model for SRv6 |
 
 !!! note "Recently published"
-    The BGP SR Policy SAFI drafts are now [RFC 9830](https://datatracker.ietf.org/doc/rfc9830/) (Advertising SR Policies in BGP) and [RFC 9831](https://datatracker.ietf.org/doc/rfc9831/) (Segment Type Extensions for BGP SR Policy).
+    The BGP SR Policy SAFI drafts are now [RFC 9830](rfc9830.md) (Advertising SR Policies in BGP) and [RFC 9831](https://datatracker.ietf.org/doc/rfc9831/) (Segment Type Extensions for BGP SR Policy).
 
 !!! info "Stay Updated"
     IETF drafts change frequently. Check [datatracker.ietf.org](https://datatracker.ietf.org) for the latest versions.

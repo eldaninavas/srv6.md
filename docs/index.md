@@ -129,7 +129,7 @@ Join the community! Learn how to contribute, report issues, or suggest new conte
 
 ---
 
-## :material-head-question: What is SRv6 (IPv6 Segment Routing) and How Does It Work?
+## :material-head-question: SRv6 (IPv6 Segment Routing) in a Nutshell
 
 **SRv6 (Segment Routing over IPv6)** — also written **Segment Routing v6**, SR v6 or **IPv6 Segment Routing** — is the IPv6 data plane of the Segment Routing architecture ([RFC 8402](rfcs/rfc8402.md)). It encodes forwarding instructions directly in IPv6 packet headers. Instead of relying on MPLS labels and signaling protocols like LDP or RSVP-TE, SRv6 uses native 128-bit IPv6 addresses as **Segment Identifiers (SIDs)** to program network paths and behaviors.
 
@@ -143,7 +143,7 @@ The source node builds an ordered list of segments that defines the packet's pat
 - **Scalability** — 128-bit SID space supports massive networks and micro-segmentation
 - **Unified data plane** — Single protocol stack for transport, VPN, and TE services
 
-[:material-arrow-right: Learn what SRv6 is in detail](topics/what-is-srv6.md){ .md-button }  &nbsp; [:material-arrow-right: See how SRv6 works](topics/network-programming.md){ .md-button }
+[:material-arrow-right: What is SRv6? The full explanation](topics/what-is-srv6.md){ .md-button }  &nbsp; [:material-arrow-right: See how SRv6 works](topics/network-programming.md){ .md-button }
 
 !!! tip "This is a community project"
     SRv6.md is built and maintained by the networking community. Every page has an **edit button** (:material-pencil:) — if you spot an error or want to add content, we welcome your contributions!
@@ -151,5 +151,5 @@ The source node builds an ordered list of segments that defines the packet's pat
 ---
 
 <p style="text-align: center; color: var(--md-default-fg-color--lighter); font-size: 0.85rem;">
-  SRv6.md is not affiliated with any vendor. Content is provided under the MIT License.
+  SRv6.md is not affiliated with any vendor. Content is provided under the MIT License. <a href="community/about/">About SRv6.md and how content is verified</a>.
 </p>

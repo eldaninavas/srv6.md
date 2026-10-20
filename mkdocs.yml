@@ -153,6 +153,13 @@ extra:
       link: https://github.com/eldaninavas/srv6.md
       name: GitHub
   generator: false
+  # Shown as the author in every page's JSON-LD (E-E-A-T). Add more profile
+  # URLs (e.g. LinkedIn) to `same_as` to strengthen the author entity.
+  maintainer:
+    name: Daniel Navas
+    url: https://srv6.md/community/about/
+    same_as:
+      - https://github.com/eldaninavas
 
 nav:
   - Home:
@@ -261,6 +268,7 @@ nav:
       - RFC 9514 - BGP-LS Extensions: rfcs/rfc9514.md
     - Controllers & Provisioning:
       - RFC 9603 - PCEP for SRv6: rfcs/rfc9603.md
+      - RFC 9830 - SR Policies in BGP: rfcs/rfc9830.md
       - RFC 9857 - BGP-LS SR Policies: rfcs/rfc9857.md
       - RFC 10038 - Locator via DHCPv6: rfcs/rfc10038.md
     - Services & Overlay:
@@ -279,6 +287,7 @@ nav:
       - RFC 9855 - TI-LFA: rfcs/rfc9855.md
   - Community:
     - community/index.md
+    - About SRv6.md: community/about.md
     - Contributing: community/contributing.md
     - AI Integrations: community/integrations.md
     - Legal & Disclaimer: community/legal.md

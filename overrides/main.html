@@ -62,9 +62,15 @@
     "dateModified": "{{ page.update_date if page.update_date else '2026-04-07' }}",
     {% if page.meta and page.meta.date_published %}"datePublished": "{{ page.meta.date_published }}",{% endif %}
     "author": {
+      "@type": "Person",
+      "name": {{ config.extra.maintainer.name | tojson }},
+      "url": {{ config.extra.maintainer.url | tojson }},
+      "sameAs": {{ config.extra.maintainer.same_as | tojson }}
+    },
+    "contributor": {
       "@type": "Organization",
       "name": "SRv6.md Community",
-      "url": "https://srv6.md"
+      "url": "https://github.com/eldaninavas/srv6.md/graphs/contributors"
     },
     "publisher": {
       "@type": "Organization",

@@ -362,7 +362,7 @@ Dynamic policies can be reoptimized when:
 
 1. [RFC 9256 - Segment Routing Policy Architecture](https://datatracker.ietf.org/doc/rfc9256/) - Defines the SR Policy framework including candidate paths, segment lists, BSID, and color steering
 2. [RFC 9514 - BGP-LS Extensions for SRv6](https://datatracker.ietf.org/doc/rfc9514/) - BGP-LS for exporting SRv6 topology to controllers and PCE
-3. [RFC 9830 - Advertising Segment Routing Policies in BGP](https://datatracker.ietf.org/doc/rfc9830/) - BGP SR Policy SAFI for distributing SR Policies via BGP (formerly draft-ietf-idr-sr-policy-safi)
+3. [RFC 9830 - Advertising Segment Routing Policies in BGP](../rfcs/rfc9830.md) - BGP SR Policy SAFI for distributing SR Policies via BGP (formerly draft-ietf-idr-sr-policy-safi)
 4. [draft-ietf-pce-segment-routing-policy-cp](https://datatracker.ietf.org/doc/draft-ietf-pce-segment-routing-policy-cp/) - PCEP extensions for SR Policy candidate paths
 5. [Cisco IOS-XR: Configure SR-TE Policies](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/24xx/configuration/guide/b-segment-routing-cg-cisco8000-24xx/configuring-sr-te-policies.html) - Configuration guide for SR Policies including ODN, PCE, and BSID
 6. [RFC 9603 - PCEP Extensions for IPv6 Segment Routing](https://www.rfc-editor.org/rfc/rfc9603) - SRv6 path setup type and SRv6-ERO/RRO for PCE-computed SRv6 paths

@@ -26,7 +26,7 @@ hide:
 
 </div>
 
-## :material-head-question: ¿Qué es SRv6 (IPv6 Segment Routing) y cómo funciona?
+## :material-head-question: SRv6 (IPv6 Segment Routing) en pocas palabras
 
 **SRv6 (Segment Routing over IPv6, o Segment Routing sobre IPv6)**, también escrito **Segment Routing v6**, SR v6 o **IPv6 Segment Routing**, es el plano de datos IPv6 de la arquitectura Segment Routing ([RFC 8402](../rfcs/rfc8402.md)). Codifica las instrucciones de reenvío directamente en la cabecera de los paquetes IPv6. En lugar de depender de etiquetas MPLS y de protocolos de señalización como LDP o RSVP-TE, SRv6 usa direcciones IPv6 nativas de 128 bits como **identificadores de segmento (SID)** para programar las rutas y los comportamientos de la red.
 

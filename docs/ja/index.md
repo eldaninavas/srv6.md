@@ -26,7 +26,7 @@ hide:
 
 </div>
 
-## :material-head-question: SRv6（IPv6 Segment Routing）とは？どのように動作するのか
+## :material-head-question: SRv6（IPv6 Segment Routing）の概要
 
 **SRv6（Segment Routing over IPv6）**は、**Segment Routing v6**や**IPv6 Segment Routing**とも呼ばれ、Segment Routingアーキテクチャ（[RFC 8402](../rfcs/rfc8402.md)）のIPv6データプレーンです。転送の命令をIPv6パケットのヘッダーに直接エンコードします。MPLSラベルや、LDP・RSVP-TEのようなシグナリングプロトコルに頼る代わりに、128ビットのネイティブなIPv6アドレスを**セグメント識別子（SID）**として使い、ネットワークの経路と振る舞いをプログラムします。
 
