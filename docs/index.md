@@ -61,6 +61,12 @@ SRv6 now runs inside some of the largest AI training networks in the world. Open
 
 [:material-arrow-right: SRv6 for AI: the complete guide](ai/index.md){ .md-button .md-button--primary }  &nbsp; [:material-arrow-right: How MRC uses SRv6](ai/mrc.md){ .md-button }
 
+## :material-tools: SRv6 SID Decoder
+
+Paste any SRv6 SID or uSID container and see what every bit means: Locator-Block, node, function and argument, F3216 uSIDs, the end-of-container, and a hop-by-hop walk of the RFC 9800 shift-and-forward. It also looks up any IANA behavior codepoint, and every decode has a link you can share.
+
+[:material-arrow-right: Open the SID decoder](tools/sid-decoder.md){ .md-button .md-button--primary }
+
 ## :material-compass: Explore
 
 <div class="srv6-grid" markdown>

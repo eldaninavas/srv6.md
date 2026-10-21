@@ -90,6 +90,24 @@
     }
   }
   </script>
+  {% if page.meta and page.meta.web_application %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": {{ page.meta.seo_title | default(page.title, true) | tojson }},
+    "url": "{{ page.canonical_url }}",
+    "description": {{ page.meta.get('description', config.site_description) | tojson }},
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any (runs in the browser)",
+    "browserRequirements": "Requires JavaScript",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": {{ config.extra.maintainer.name | tojson }}, "url": {{ config.extra.maintainer.url | tojson }} }
+  }
+  </script>
+  {% endif %}
   {% if page.meta and page.meta.faq_schema %}
   <script type="application/ld+json">
   {

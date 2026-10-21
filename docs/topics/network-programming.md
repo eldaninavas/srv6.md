@@ -56,7 +56,7 @@ Only the owner of the locator interprets the function bits. Every other router j
 | **End.BM** | 15 | Bind to an SR-MPLS policy: push an MPLS label stack | SRv6 → SR-MPLS interworking |
 
 !!! note "Codepoints"
-    The IANA column is the base behavior without flavors. Each flavor combination has its own codepoint (End with PSP is 2, End with USP is 3, and so on) in the IANA "SRv6 Endpoint Behaviors" registry. Routers advertise these codepoints in IS-IS, OSPFv3 and BGP so controllers and peers know what each SID does.
+    The IANA column is the base behavior without flavors. Each flavor combination has its own codepoint (End with PSP is 2, End with USP is 3, and so on) in the IANA "SRv6 Endpoint Behaviors" registry. Routers advertise these codepoints in IS-IS, OSPFv3 and BGP so controllers and peers know what each SID does. The [SID Decoder](../tools/sid-decoder.md#function-bits-vs-behavior-codepoints) has a searchable copy of the full registry.
 
 ### Decapsulation behaviors at a glance
 
@@ -172,6 +172,7 @@ The "program" here is a single instruction: PE2's End.DT4 SID. Add a TE waypoint
 - :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming
 - :material-file-document: [RFC 9800](../rfcs/rfc9800.md) - Compressed SRv6 SID lists (NEXT-CSID, REPLACE-CSID)
 - :material-arrow-right: [SID Structure](sid-structure.md) - How SIDs encode locator, function and argument
+- :material-tools: [SRv6 SID Decoder](../tools/sid-decoder.md) - Decode a SID and look up any behavior codepoint
 - :material-arrow-right: [SRH & Packet Walk](srh-packet-walk.md) - End, PSP and the SRH hop by hop
 - :material-arrow-right: [uSID Compression](usid-compression.md) - NEXT-C-SID in practice
 - :material-arrow-right: [EVPN Multihoming](evpn-multihoming.md) - End.DT2M and the ESI-filtering argument

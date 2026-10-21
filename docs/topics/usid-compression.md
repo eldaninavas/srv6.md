@@ -83,6 +83,9 @@ Step 4 - Node 3 processes uSID 0003, shifts left:
                   End-of-Container (0000) → Move to next SRH entry
 ```
 
+!!! tip "Try it with your own container"
+    The [uSID calculator](../tools/sid-decoder.md) decodes any F3216 (or custom-length) container and steps through the shift at each node, flagging the end-of-container and how many uSIDs remain.
+
 ## Overhead Comparison
 
 | Scenario | Classic SRv6 | uSID | Savings |
@@ -140,6 +143,7 @@ Multiple operators have publicly announced SRv6 uSID deployments. See [Real-Worl
 
 ## Further Reading
 
+- :material-tools: [SRv6 SID Decoder](../tools/sid-decoder.md) - uSID calculator with a shift-and-forward walk
 - :material-arrow-right: [SRH Mechanics & Packet Walk](srh-packet-walk.md) - How the SRH is processed
 - :material-arrow-right: [SID Structure](sid-structure.md) - Classic SID format
 - :material-arrow-right: [Real-World Deployments](../use-cases/deployments.md) - Who's running uSID

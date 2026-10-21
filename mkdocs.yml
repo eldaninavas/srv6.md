@@ -14,6 +14,7 @@ repo_name: eldaninavas/srv6.md
 hooks:
   - hooks/i18n.py
   - hooks/generate_graph.py
+  - hooks/script_version.py
   - hooks/llms_txt.py
   - hooks/faq_schema.py
   - hooks/git_dates.py
@@ -252,6 +253,8 @@ nav:
     - Containerlab: labs/containerlab.md
     - netlab: labs/netlab.md
     - GNS3: labs/gns3.md
+  - Tools:
+    - SRv6 SID Decoder: tools/sid-decoder.md
   - RFCs & Standards:
     - rfcs/index.md
     - Architecture & Foundation:

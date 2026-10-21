@@ -29,6 +29,9 @@ An SRv6 **Segment Identifier (SID)** is a 128-bit value, formatted as a standard
 | **Function** | Identifies the local behavior (End, End.DT4, etc.) | 16-24 bits |
 | **Arguments** | Optional parameters for the function | 0-48 bits |
 
+!!! tip "Decode a SID"
+    Paste any SID into the [SRv6 SID Decoder](../tools/sid-decoder.md) to see its block, node, function and argument bits for the lengths you choose, and whether it sits in `5f00::/16`.
+
 ## Example
 
 ```
@@ -125,6 +128,7 @@ For deployments using operator GUA prefixes, apply the same principle with your 
 
 ## Further Reading
 
+- :material-tools: [SRv6 SID Decoder](../tools/sid-decoder.md) - Decode a SID or uSID container bit by bit
 - :material-arrow-right: [Network Programming](network-programming.md) - How SIDs map to behaviors
 - :material-arrow-right: [What is SRv6?](what-is-srv6.md) - Back to overview
 - :material-arrow-right: [uSID Compression](usid-compression.md) - Compressed SID encoding (RFC 9800)

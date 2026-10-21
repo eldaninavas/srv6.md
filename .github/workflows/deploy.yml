@@ -34,6 +34,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Test SID decoder
+        run: node --test tests/sid-decoder.test.js
+
       - name: Build site
         run: mkdocs build --strict
 
