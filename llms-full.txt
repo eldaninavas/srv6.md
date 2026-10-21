@@ -596,7 +596,7 @@ The table size grows with the switch radix, not with the number of paths, flows 
 
 ### SONiC
 
-Since SONiC **202505**, static SRv6 is configured in CONFIG_DB with two tables, which bgpcfgd compiles into FRR. This is the format from the SONiC static SRv6 design document:
+Since SONiC **202505**, static SRv6 is configured in CONFIG_DB with two tables, which bgpcfgd compiles into FRR (the 202505 release notes rate the feature Alpha). This is the format from the SONiC static SRv6 design document:
 
 ```json
 {
@@ -666,7 +666,7 @@ Give every host the ability to probe paths that loop back to itself through a T0
 | NVIDIA | Spectrum-4/5 with Cumulus or SONiC forward SRv6 for MRC (MRC paper). Cumulus Linux 5.18 documents static uN and uA on Spectrum-4. |
 | Arista | EOS on Broadcom Tomahawk 5 forwards SRv6 for MRC. EOS 4.36.2F documents uN (NEXT-CSID) in F3216 format. |
 | Broadcom | Tomahawk 5 switches and Thor Ultra NICs in the MRC clusters. |
-| Cisco | Silicon One G200 is marketed with native SRv6 uSID for GPU-to-GPU path steering. Any Silicon One system running SONiC supports SRv6 uSID. |
+| Cisco | Silicon One G200 is marketed with native SRv6 uSID for GPU-to-GPU path steering. SRv6 on a SONiC system depends on the vendor's SAI implementation, so confirm uSID support for the specific Silicon One platform and SONiC image. |
 | AMD | Vulcano NIC: NIC-based SR/SRv6 source routing; Pollara and Vulcano run MRC. |
 
 Check each vendor's current documentation for the exact behaviors and formats, because support differs. Arista's documentation lists F3216 only and H.Encaps.Red as unsupported on the switch, which matters if the switch rather than the NIC is the head-end.
@@ -4571,7 +4571,7 @@ graph TD
     Replication segments are standardized in [RFC 9524](https://srv6.md/rfcs/rfc9524/), updated by [RFC 9960](https://srv6.md/rfcs/rfc9960/) (April 2026), which defines the structured Replication-ID used by SR P2MP Policies.
 
 !!! note "Implementation status"
-    End.Replicate is in the open-source [zebra-rs](https://srv6.md/implementations/zebra-rs/) data plane, and Nokia's SRv6 application note lists P2MP SRv6 policy for multicast on its routing platforms (see [Nokia SR OS](https://srv6.md/implementations/nokia-sros/)). On vendor routers replication segments are normally consumed through Tree-SID (below) or EVPN/MVPN ingress replication rather than configured as standalone SIDs — check your platform's release notes for SRv6 (as opposed to SR-MPLS) support.
+    End.Replicate is in the open-source [zebra-rs](https://srv6.md/implementations/zebra-rs/) data plane, and Nokia SR OS documents Tree-SID SRv6 built from replication segments for NG-MVPN from release 25.3 (see [Nokia SR OS](https://srv6.md/implementations/nokia-sros/)). On vendor routers replication segments are normally consumed through Tree-SID (below) or EVPN/MVPN ingress replication rather than configured as standalone SIDs — check your platform's release notes for SRv6 (as opposed to SR-MPLS) support.
 
 ## Approach 3: Tree-SID
 
@@ -4606,51 +4606,14 @@ graph TD
 !!! info "Standards reference"
     The Tree-SID architecture — SR P2MP Policy, candidate paths, P2MP tree instances built from Replication segments — is [RFC 9960](https://srv6.md/rfcs/rfc9960/) (April 2026). The controller-to-router signaling is still in progress: PCEP in [draft-ietf-pce-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-pce-sr-p2mp-policy/) and BGP in [draft-ietf-idr-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-idr-sr-p2mp-policy/).
 
-### Configuration
+### Platform Support
 
-=== "Cisco IOS-XR"
+Tree-SID with an **SRv6** data plane is rare in shipping code, so check before you design around it:
 
-    ```cisco
-    !! SR-PCE Tree-SID configuration (on PCE)
-    pce
-     address ipv6 2001:db8:ffff::1
-     segment-routing
-      traffic-eng
-       p2mp
-        policy MCAST-TREE-1
-         source ipv6 2001:db8::1
-         color 1000
-         treesid srv6
-         candidate-paths
-          preference 100
-           dynamic
-           !
-          !
-         endpoint-set RECEIVERS
-          ipv6 2001:db8::2
-          ipv6 2001:db8::3
-          ipv6 2001:db8::4
-         !
-        !
-       !
-      !
-     !
-    !
-    ```
+- **Nokia SR OS** documents Tree-SID SRv6 (replication segments) for NG-MVPN I-PMSI/S-PMSI from release 25.3, configured statically by CLI, with classic SIDs only and no LFA or BFD protection ([SR OS 26.7 Multicast Guide](https://documentation.nokia.com/sr/26-7/7x50-shared/multicast/sr-p2mp-policy.html)).
+- **Cisco IOS-XR** implements Tree-SID with SR-PCE for **SR-MPLS only**: the 26.x Cisco 8000 guide states "IPv6 Tree-SID or SRv6 is not supported", and the NCS 5500 guide lists SRv6 SR P2MP policies as not supported ([Cisco 8000 Tree-SID guide](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/26xx/configuration/guide/b-segment-routing-cg-cisco8000-26xx/segment-routing-tree-segment-identifier.html)).
 
-### Verification
-
-=== "Cisco IOS-XR"
-
-    ```cisco
-    !! On PCE
-    show pce lsp p2mp
-    show pce lsp p2mp detail
-
-    !! On head-end
-    show segment-routing traffic-eng tree-sid all
-    show segment-routing traffic-eng tree-sid color 1000
-    ```
+See the multicast row of the [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/#multicast) for other platforms.
 
 ## Approach 4: BIER with SRv6
 
@@ -6309,14 +6272,16 @@ Key YANG paths for PM data:
 
 ## Vendor Support
 
-| Capability | Cisco IOS-XR | Juniper | Huawei |
-|-----------|:------------:|:-------:|:------:|
-| STAMP (RFC 8762) | 7.5.1+ | 22.2+ | V800R021+ |
-| Alternate-Marking | 7.7.1+ | -- | V800R022+ |
-| Per-SR Policy PM | 7.3.1+ | 22.4+ | V800R021+ |
-| Color-Aware PM | 7.5.1+ | 23.1+ | V800R022+ |
-| Liveness Detection | 7.0.1+ | 21.4+ | V800R019+ |
-| gRPC Telemetry Export | 7.0.1+ | 21.1+ | V800R019+ |
+| Capability | Cisco IOS-XR | Juniper |
+|-----------|:------------:|:-------:|
+| STAMP (RFC 8762) | 7.5.1+ | 22.2+ |
+| Alternate-Marking | 7.7.1+ | -- |
+| Per-SR Policy PM | 7.3.1+ | 22.4+ |
+| Color-Aware PM | 7.5.1+ | 23.1+ |
+| Liveness Detection | 7.0.1+ | 21.4+ |
+| gRPC Telemetry Export | 7.0.1+ | 21.1+ |
+
+Huawei is not in this table because we could not verify release numbers for it: the NetEngine 8000 V800R025 STAMP and TWAMP Light chapters do not cover SRv6, and Huawei documents SRv6 path measurement as IFIT (alternate marking). For SRv6-specific performance measurement on each platform, see the [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/#pm).
 
 ## Benefits
 
@@ -7632,7 +7597,7 @@ Summary: How SRv6 runs on SONiC: the Switch Abstraction Interface (SAI), SRv6 fe
 ┌─────────────────────────────────────────────┐
 │                 SONiC NOS                    │
 ├─────────────────────────────────────────────┤
-│  FRRouting (BGP, IS-IS)  │  SRv6 Manager    │
+│  FRRouting (BGP, static) │  SRv6 Manager    │
 ├──────────────────────────┤                   │
 │  SWSS (Switch State Service)                │
 ├─────────────────────────────────────────────┤
@@ -7640,7 +7605,7 @@ Summary: How SRv6 runs on SONiC: the Switch Abstraction Interface (SAI), SRv6 fe
 ├─────────────────────────────────────────────┤
 │  ASIC SDK (vendor-specific driver)           │
 ├─────────────────────────────────────────────┤
-│  Switching ASIC (Memory, Memory 2, etc.)     │
+│  Switching ASIC                              │
 └─────────────────────────────────────────────┘
 ```
 
@@ -7650,7 +7615,7 @@ Summary: How SRv6 runs on SONiC: the Switch Abstraction Interface (SAI), SRv6 fe
 |-----------|------|
 | **SONiC** | Linux-based NOS with containerized services (BGP, LLDP, SNMP, etc.) |
 | **SAI** | Hardware abstraction API — same software runs on any compliant ASIC |
-| **FRRouting** | Routing suite providing BGP and IS-IS with SRv6 support |
+| **FRRouting** | Routing suite; in SONiC it signals SRv6 through BGP and static SIDs (the FRR container does not run isisd) |
 | **SWSS** | Translates high-level intent into SAI API calls |
 | **ASIC SDK** | Vendor-specific driver implementing SAI for a given chip |
 
@@ -7694,9 +7659,9 @@ SAI defines specific objects for SRv6 programming:
 
 SONiC uses **FRRouting (FRR)** as its routing engine. FRR provides:
 
-- **IS-IS** with SRv6 locator advertisement
+- **staticd** for static SRv6 SIDs, generated from CONFIG_DB since 202505 (SONiC's FRR container does not run isisd, so there is no IGP-signaled SRv6)
 - **BGP** with SRv6 VPN signaling (RFC 9252)
-- **Zebra** for programming SRv6 routes into the kernel and SAI
+- **Zebra** for programming SRv6 routes; on a switch they reach the ASIC through fpmsyncd, SWSS and SAI
 
 ```mermaid
 graph LR
@@ -7708,14 +7673,7 @@ graph LR
 
 ## Whitebox Hardware
 
-SONiC runs on whitebox switches from multiple vendors, all using SAI for SRv6:
-
-| ASIC Vendor | Example Platforms |
-|-------------|-------------------|
-| Broadcom | Memory 3 / Memory 4-based switches |
-| Intel (formerly Barefoot) | Memory-based programmable switches |
-| Cisco | Silicon One Q100/Q200-based platforms |
-| NVIDIA (Mellanox) | Spectrum-based switches |
+SONiC runs on switches built on ASICs from several vendors — Broadcom, Cisco Silicon One, NVIDIA Spectrum and others. Whether a given SRv6 behavior forwards in hardware depends on that vendor's SAI implementation; the SONiC community does not publish a per-ASIC SRv6 behavior matrix, so check with the switch vendor. The [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) lists what SAI and orchagent can express.
 
 ## Further Reading
 
@@ -8621,7 +8579,7 @@ Summary: Quantum-safe SRv6 fabrics for defense and mission-critical WANs: DDIL s
 Mission-critical WANs — defense, public safety, critical infrastructure — have historically run on layered patchworks of MPLS/RSVP-TE overlays and controller-driven SD-WAN. In 2026 Cisco published a Validated Design (CVD) that replaces this stack with a **quantum-safe SRv6 uSID fabric**, targeting exactly these environments. This page summarizes the architecture and its design rules.
 
 !!! info "Primary source"
-    This page is based on the Cisco CVD [*Quantum-Safe SRv6 Fabric for Mission-Critical Networks*](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) (August 2026), validated on Cisco 8000 Series Secure Routers running **IOS-XE 26.1** — notable in itself, since Cisco SRv6 support had previously been an [IOS-XR](https://srv6.md/implementations/cisco-ios-xr/) story. See [Cisco IOS-XE](https://srv6.md/implementations/cisco-ios-xe/) for the platform details.
+    This page is based on the Cisco CVD [*Quantum-Safe SRv6 Fabric for Mission-Critical Networks*](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) (August 2026), validated on Cisco 8000 Series Secure Routers running **IOS-XE 26.1** — a reminder that Cisco SRv6 is not only an [IOS-XR](https://srv6.md/implementations/cisco-ios-xr/) story: IOS-XE has supported SRv6 uSID since 17.12.1a on the ASR 1000 and Catalyst 8000 edge routers. See [Cisco IOS-XE](https://srv6.md/implementations/cisco-ios-xe/) for the platform details.
 
 ## Why SRv6 for Mission-Critical?
 
@@ -8636,7 +8594,7 @@ Tactical edges operate under **DDIL** conditions — *Disconnected, Disrupted, I
 | **No controller dependency** | Path computation (CSPF) runs locally on the ingress head-end against the IGP link-state database — a cut-off site keeps steering traffic autonomously |
 | **Narrow links can't afford signaling** | Source routing eliminates RSVP-TE refresh storms; the path travels in the packet header, so low-bandwidth SATCOM links carry payload, not protocol chatter |
 | **Any available transport** | SRv6 runs over MACsec-secured private lines, GRE/IPsec over commercial internet, LTE/5G, or LEO satellite — the fabric is transport-agnostic |
-| **Sub-50 ms failover without convergence** | [TI-LFA](https://srv6.md/topics/ti-lfa/) pre-computes repair paths at each Point of Local Repair; failover happens locally, in hardware |
+| **Sub-50 ms failover without convergence** | [TI-LFA](https://srv6.md/topics/ti-lfa/) pre-computes repair paths at each Point of Local Repair; failover happens locally, in hardware. The CVD reports sub-50 ms, but the IOS-XE configuration guide notes that IGP TI-LFA "cannot guarantee 50ms FRR failover" on these platforms, so measure it in your own design |
 | **Detect degraded (not just dead) links** | Active performance measurement probes track per-link delay and steer around congestion or satellite fade before sessions drop |
 
 ### 2. The quantum threat: Harvest Now, Decrypt Later
@@ -9659,7 +9617,7 @@ Summary: SRv6 implementations on Linux, Cisco IOS-XR, Juniper, Arista EOS, Nokia
 
 # Implementations
 
-Practical guides for deploying SRv6 on different platforms.
+Practical guides for deploying SRv6 on different platforms. For a feature-by-feature comparison with minimum releases and a source for every cell, see the **[SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/)**.
 
 | Platform | Type | Key Behaviors | SID | uSID |
 |----------|------|---------------|:---:|:----:|
@@ -9667,12 +9625,12 @@ Practical guides for deploying SRv6 on different platforms.
 | [Cisco IOS-XR](https://srv6.md/implementations/cisco-ios-xr/) | Commercial | End, End.X, End.DT4/6/46, End.DX2/4/6, End.DT2U/M | | |
 | [Cisco IOS-XE](https://srv6.md/implementations/cisco-ios-xe/) | Commercial | uN, uA, uDT4/6/46, End.DTMC4, H.Encaps.Red | | |
 | [Arista EOS](https://srv6.md/implementations/arista-eos/) | Commercial | uN, uA (static), End.DT4/6, H.Encaps (F3216 uSID) | | |
-| [Juniper](https://srv6.md/implementations/juniper/) | Commercial | End, End.X, End.DT4/6, End.DX2/4/6 | | |
+| [Juniper](https://srv6.md/implementations/juniper/) | Commercial | End, End.X, End.DT4/6/46, End.DX2, End.DT2 | | |
 | [Nokia SR OS](https://srv6.md/implementations/nokia-sros/) | Commercial | End, End.X, End.DT4/6/46, End.DX2; uN, uA, uDT4/6/46, uDX2, uDT2U/M | | |
-| [FRRouting](https://srv6.md/implementations/frrouting/) | Open Source | End, End.DT4/6, uA (10.4+), uDT46 (10.7+) | | |
+| [FRRouting](https://srv6.md/implementations/frrouting/) | Open Source | End/uN, End.X/uA (IS-IS, 9.1+), End.DT4/6/46 (BGP; uSID 8.5+) | | |
 | [zebra-rs (eBPF)](https://srv6.md/implementations/zebra-rs/) | Open Source | End, End.X, End.T, End.DT4/6/46, End.DX2/4/6, End.DT2U/M, End.B6, End.M | | |
 | [Vinbero (eBPF/Go)](https://srv6.md/implementations/vinbero/) | Open Source | End, End.X, End.T, End.DT4/6/46, End.DX2/4/6, End.DT2U/M, End.B6, GTP4/6, End.AS/AD/AM/AN | | |
-| [SONiC](https://srv6.md/implementations/sonic/) | Open Source | End, End.DT4/6, End.DX4/6 | | Partial |
+| [SONiC](https://srv6.md/implementations/sonic/) | Open Source | End, End.X, End.DT4/6/46, End.DX4/6 (ASIC-dependent) | | Partial |
 
 ## Conformance Testing: IPv6 Ready SRv6 Logo
 
@@ -9687,6 +9645,590 @@ The test specifications (developed by UNH-IOL, CNLabs and BII) are public on the
 
 !!! tip "Contribute your experience"
     Running SRv6 on a platform not listed here? We'd love your contribution!
+
+
+---
+
+# SRv6 Support Matrix: Vendor and Open-Source Support
+
+URL: https://srv6.md/implementations/support-matrix/
+Path: implementations/support-matrix.md
+Summary: Which SRv6 behaviors, uSID, IS-IS, BGP services, TI-LFA, Flex-Algo and OAM features each platform supports, with minimum releases and a source for every cell.
+
+# SRv6 Support Matrix
+
+Which SRv6 features does each router OS and open-source data plane actually implement, and since which release? This page answers that for 11 platforms and 36 capabilities, from RFC 8986 endpoint behaviors to uSID, control-plane extensions, protection, multicast, OAM and mobile user plane. **Every cell links to the vendor document, release note or source code that states it.** When we could not find a source, the cell says *unknown* rather than guessing.
+
+✓ Supported
+◐ Partial or restricted
+✗ Not supported (a source says so)
+? Unknown (no source found)
+
+Last verified: **2026-10-20**. The data behind this table is also available as [YAML](support-matrix.yml).
+
+| Capability | [IOS-XR](https://srv6.md/implementations/cisco-ios-xr/) | [IOS-XE](https://srv6.md/implementations/cisco-ios-xe/) | [Junos](https://srv6.md/implementations/juniper/) | [EOS](https://srv6.md/implementations/arista-eos/) | [SR OS](https://srv6.md/implementations/nokia-sros/) | VRP | [FRR](https://srv6.md/implementations/frrouting/) | [Linux](https://srv6.md/implementations/linux-kernel/) | [SONiC](https://srv6.md/implementations/sonic/) | VPP | [Cilium](https://srv6.md/implementations/cilium/) |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| **Endpoint behaviors** | | | | | | | | | | | |
+| [End / uN](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 6.6.1[^smx-iosxr-end] | Supported 17.12.1a[^smx-iosxe-end] | Supported 20.3R1[^smx-junos-end] | Supported 4.34.2F[^smx-eos-end] | Supported 21.5.R2[^smx-sros-end] | Supported[^smx-vrp-seg] | Supported 9.1[^smx-frr-end] | Supported 4.14[^smx-linux-c140] | Partial 202111[^smx-sonic-rn2111-orch] | Supported 17.04[^smx-vpp-end] | Not supported[^smx-cilium-srch] |
+| [End.X / uA](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 6.6.1[^smx-iosxr-end_x] | Supported 17.12.1a[^smx-iosxe-end_x] | Supported 20.3R1[^smx-junos-end_x] | Partial 4.35.2F[^smx-eos-end_x] | Supported 21.5.R2[^smx-sros-end_x] | Supported[^smx-vrp-cfg] | Supported 9.1[^smx-frr-end_x] | Supported 4.14[^smx-linux-c140] | Partial 202405[^smx-sonic-end_x] | Supported 17.04[^smx-vpp-end_x] | Not supported[^smx-cilium-srch] |
+| [End.T](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Unknown | Unknown | Unknown | Unknown | Not supported[^smx-sros-ug267] | Unknown | Not supported[^smx-frr-end_t] | Supported 4.14[^smx-linux-c891] | Partial 202111[^smx-sonic-sai-orch] | Supported 17.07[^smx-vpp-lsc-fl] | Not supported[^smx-cilium-srch] |
+| [End.DX2 / uDX2](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 7.3.2[^smx-iosxr-end_dx2] | Unknown | Supported 22.3R1[^smx-junos-end_dx2] | Unknown | Supported 22.7.R1[^smx-sros-end_dx2] | Supported[^smx-vrp-end_dx2] | Not supported[^smx-frr-staticsid] | Supported 4.14[^smx-linux-c891] | Not supported[^smx-sonic-sai] | Supported 17.04[^smx-vpp-ls] | Not supported[^smx-cilium-srch] |
+| [End.DX4](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Partial[^smx-iosxr-end_dx4] | Unknown | Unknown[^smx-junos-end_dx4] | Not supported[^smx-eos-um] | Not supported[^smx-sros-ug267] | Supported[^smx-vrp-end_dx4] | Not supported[^smx-frr-end_dx4] | Supported 4.14[^smx-linux-c891] | Partial 202405[^smx-sonic-l3adj-orch] | Supported 17.04[^smx-vpp-ls] | Not supported[^smx-cilium-srch] |
+| [End.DX6](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Partial[^smx-iosxr-end_dx6] | Unknown | Unknown[^smx-junos-end_dx6] | Not supported[^smx-eos-um] | Not supported[^smx-sros-ug267] | Supported[^smx-vrp-end_dx6] | Not supported[^smx-frr-end_dx6] | Supported 4.14[^smx-linux-c140] | Partial 202405[^smx-sonic-l3adj-orch] | Supported 17.04[^smx-vpp-ls] | Not supported[^smx-cilium-srch] |
+| [End.DT4 / uDT4](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 6.6.1[^smx-iosxr-end_dt4] | Supported 17.12.1a[^smx-iosxe-end_dt4] | Supported 20.4R1[^smx-junos-end_dt4] | Supported[^smx-eos-end_dt4] | Supported 21.5.R2[^smx-sros-ug267-acgfa] | Supported[^smx-vrp-cfg] | Supported 8.3[^smx-frr-end_dt4] | Supported 5.11[^smx-linux-end_dt4] | Partial 202111[^smx-sonic-orch] | Supported 17.04[^smx-vpp-ls] | Partial 1.13[^smx-cilium-end_dt4] |
+| [End.DT6 / uDT6](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 7.2.2[^smx-iosxr-end_dt6] | Supported 17.12.1a[^smx-iosxe-end_dt6] | Supported 20.4R1[^smx-junos-end_dt6] | Supported[^smx-eos-end_dt6] | Supported 21.5.R2[^smx-sros-ug267-acgfa] | Supported[^smx-vrp-cfg] | Supported 8.1[^smx-frr-end_dt6] | Supported 4.14[^smx-linux-end_dt6] | Partial 202111[^smx-sonic-orch] | Supported 17.04[^smx-vpp-ls] | Partial 1.13[^smx-cilium-end_dt6] |
+| [End.DT46 / uDT46](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 7.8.1[^smx-iosxr-end_dt46] | Partial[^smx-iosxe-end_dt46] | Supported 22.1R1[^smx-junos-end_dt46] | Partial[^smx-eos-end_dt46] | Supported[^smx-sros-ug267] | Supported[^smx-vrp-cfg] | Supported 8.5[^smx-frr-end_dt46] | Supported 5.14[^smx-linux-c8b5] | Partial 202111[^smx-sonic-end_dt46] | Not supported[^smx-vpp-types] | Unknown |
+| [End.DT2U](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 7.5.2[^smx-iosxr-end_dt2u] | Unknown | Supported 23.4R1[^smx-junos-end_dt2u] | Unknown | Supported 22.7.R1[^smx-sros-ug267-acgvpls] | Supported[^smx-vrp-end_dt2u] | Not supported[^smx-frr-srv6h] | Not supported[^smx-linux-actions] | Not supported[^smx-sonic-sai] | Not supported[^smx-vpp-types] | Not supported[^smx-cilium-srch] |
+| [End.DT2M](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 7.5.2[^smx-iosxr-end_dt2m] | Unknown | Partial 23.4R1[^smx-junos-end_dt2m] | Unknown | Supported 22.7.R1[^smx-sros-ug267-acgvpls] | Supported[^smx-vrp-end_dt2m] | Not supported[^smx-frr-srv6h] | Not supported[^smx-linux-actions] | Not supported[^smx-sonic-sai] | Not supported[^smx-vpp-types] | Not supported[^smx-cilium-srch] |
+| [End.B6.Encaps (.Red)](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Partial 7.10.1[^smx-iosxr-end_b6_encaps] | Not supported[^smx-iosxe-end_b6_encaps] | Supported 25.2R1[^smx-junos-end_b6_encaps] | Unknown | Supported 22.7.R1[^smx-sros-end_b6_encaps] | Supported[^smx-vrp-end_b6_encaps] | Not supported[^smx-frr-end_b6_encaps] | Supported 4.14[^smx-linux-end_b6_encaps] | Partial 202111[^smx-sonic-sai-orch] | Supported 17.04[^smx-vpp-end_b6_encaps] | Not supported[^smx-cilium-srch] |
+| [End.BM](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Not supported[^smx-frr-srv6h] | Not supported[^smx-linux-end_bm] | Not supported[^smx-sonic-sai] | Not supported[^smx-vpp-fl] | Not supported[^smx-cilium-srch] |
+| **Headend behaviors** | | | | | | | | | | | |
+| [H.Encaps](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Unknown[^smx-iosxr-h_encaps] | Unknown | Supported 20.3R1[^smx-junos-h_encaps] | Supported[^smx-eos-um] | Not supported[^smx-sros-h_encaps] | Supported[^smx-vrp-srcnode] | Supported 8.1[^smx-frr-h_encaps] | Supported 4.10[^smx-linux-c6c8] | Partial 202305[^smx-sonic-pr2406] | Supported 17.04[^smx-vpp-pol] | Partial 1.13[^smx-cilium-h_encaps] |
+| [H.Encaps.Red](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported[^smx-iosxr-n55usid] | Supported 17.12.1a[^smx-iosxe-srv6] | Supported 20.3R1[^smx-junos-h_encaps_red] | Not supported[^smx-eos-um] | Supported[^smx-sros-ug267] | Supported[^smx-vrp-cfg] | Supported 10.4[^smx-frr-h_encaps_red] | Supported 6.0[^smx-linux-cb07] | Partial 202111[^smx-sonic-h_encaps_red] | Partial 17.04[^smx-vpp-h_encaps_red] | Partial 1.13[^smx-cilium-h_encaps_red] |
+| [H.Encaps.L2 (.Red)](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 7.3.2[^smx-iosxr-h_encaps_l2] | Unknown | Supported 22.3R1[^smx-junos-h_encaps_l2] | Unknown | Supported 22.7.R1[^smx-sros-h_encaps_l2] | Supported[^smx-vrp-srcnode] | Not supported[^smx-frr-h_encaps_l2] | Supported 4.14[^smx-linux-h_encaps_l2] | Not supported[^smx-sonic-sai] | Supported 17.04[^smx-vpp-steer-fl] | Not supported[^smx-cilium-srch] |
+| **Flavors** | | | | | | | | | | | |
+| [PSP](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 7.3.1[^smx-iosxr-n55usid] | Supported 17.12.1a[^smx-iosxe-srv6] | Supported 20.3R1[^smx-junos-isisnp-microsid] | Supported[^smx-eos-um] | Supported[^smx-sros-ug267] | Supported[^smx-vrp-cfg] | Partial 10.4[^smx-frr-psp] | Partial 6.3[^smx-linux-psp] | Partial 202111[^smx-sonic-psp] | Supported 17.04[^smx-vpp-ls] | Not supported[^smx-cilium-srch] |
+| [USP](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Unknown | Unknown | Supported 20.3R1[^smx-junos-isisnp] | Not supported[^smx-eos-um] | Supported[^smx-sros-ug267] | Supported[^smx-vrp-usp] | Not supported[^smx-frr-usp] | Not supported[^smx-linux-flv] | Not supported[^smx-sonic-usp] | Not supported[^smx-vpp-lsc] | Not supported[^smx-cilium-srch] |
+| [USD](https://srv6.md/rfcs/rfc8986/) RFC 8986 | Supported 7.3.1[^smx-iosxr-usd] | Supported 17.12.1a[^smx-iosxe-srv6] | Supported 20.3R1[^smx-junos-isisnp] | Supported[^smx-eos-um] | Supported[^smx-sros-ug267] | Supported[^smx-vrp-srcnode] | Not supported[^smx-frr-usd] | Not supported[^smx-linux-flv] | Partial 202111[^smx-sonic-usd] | Not supported[^smx-vpp-lsc] | Not supported[^smx-cilium-srch] |
+| **SID compression** | | | | | | | | | | | |
+| [NEXT-C-SID (uSID)](https://srv6.md/rfcs/rfc9800/) RFC 9800 | Supported 7.3.1[^smx-iosxr-next_csid] | Supported 17.12.1a[^smx-iosxe-next_csid] | Supported 23.2R1[^smx-junos-next_csid] | Supported 4.34.2F[^smx-eos-next_csid] | Supported ≤ 22.10[^smx-sros-next_csid] | Partial[^smx-vrp-next_csid] | Supported 8.5[^smx-frr-next_csid] | Supported 6.1[^smx-linux-next_csid] | Partial 202211[^smx-sonic-next_csid] | Supported 20.05[^smx-vpp-next_csid] | Not supported[^smx-cilium-next_csid] |
+| [REPLACE-C-SID (G-SID)](https://srv6.md/rfcs/rfc9800/) RFC 9800 | Unknown | Unknown | Not supported[^smx-junos-replace_csid] | Unknown | Unknown | Supported V800R021C00[^smx-vrp-replace_csid] | Not supported[^smx-frr-replace_csid] | Not supported[^smx-linux-flv] | Not supported[^smx-sonic-hld-sai] | Not supported[^smx-vpp-types] | Not supported[^smx-cilium-srch] |
+| **Control plane** | | | | | | | | | | | |
+| [IS-IS SRv6](https://srv6.md/rfcs/rfc9352/) RFC 9352 | Supported 6.6.1[^smx-iosxr-rn661] | Supported 17.12.1a[^smx-iosxe-srv6] | Supported 20.3R1[^smx-junos-isis] | Supported 4.36.1F[^smx-eos-isis] | Supported 21.5.R2[^smx-sros-ug267-acgsrv6] | Supported[^smx-vrp-cfg] | Supported 9.1[^smx-frr-rn91] | Not supported[^smx-linux-dp] | Not supported[^smx-sonic-isis] | Not supported[^smx-vpp-dp] | Not supported[^smx-cilium-bgpcp] |
+| [OSPFv3 SRv6](https://srv6.md/rfcs/rfc9513/) RFC 9513 | Unknown | Unknown | Unknown | Unknown | Not supported[^smx-sros-ospfv3] | Supported[^smx-vrp-cfg] | Not supported[^smx-frr-ospfv3] | Not supported[^smx-linux-dp] | Not supported[^smx-sonic-ospfv3] | Not supported[^smx-vpp-dp] | Not supported[^smx-cilium-bgpcp] |
+| [BGP L3VPN over SRv6](https://srv6.md/rfcs/rfc9252/) RFC 9252 | Supported 6.6.1[^smx-iosxr-bgp_l3vpn] | Supported 17.12.1a[^smx-iosxe-bgp_l3vpn] | Supported 20.4R1[^smx-junos-bgp_l3vpn] | Partial[^smx-eos-bgp_l3vpn] | Supported 21.5.R2[^smx-sros-ug267-acgfa] | Supported[^smx-vrp-cfg] | Supported 8.1[^smx-frr-bgp_l3vpn] | Not supported[^smx-linux-dp] | Partial 202505[^smx-sonic-bgp_l3vpn] | Not supported[^smx-vpp-dp] | Not supported[^smx-cilium-bgp_l3vpn] |
+| [BGP EVPN over SRv6](https://srv6.md/rfcs/rfc9252/) RFC 9252 | Supported 7.3.2[^smx-iosxr-bgp_evpn] | Unknown | Supported 22.3R1[^smx-junos-bgp_evpn] | Partial[^smx-eos-bgp_evpn] | Supported 22.5.R1[^smx-sros-bgp_evpn] | Supported[^smx-vrp-bgp_evpn] | Not supported[^smx-frr-bgp_evpn] | Not supported[^smx-linux-dp] | Not supported[^smx-sonic-bgp_evpn] | Not supported[^smx-vpp-dp] | Not supported[^smx-cilium-advtypes] |
+| [Global IPv4/IPv6 over SRv6](https://srv6.md/rfcs/rfc9252/) RFC 9252 | Supported 7.2.2[^smx-iosxr-bgp_global] | Unknown | Supported 20.4R1[^smx-junos-advsrv6] | Unknown | Supported[^smx-sros-acgbase] | Supported[^smx-vrp-cfg] | Supported 10.6[^smx-frr-rn106] | Not supported[^smx-linux-dp] | Unknown | Not supported[^smx-vpp-dp] | Unknown |
+| [BGP-LS SRv6](https://srv6.md/rfcs/rfc9514/) RFC 9514 | Supported 24.4.1[^smx-iosxr-bgp_ls] | Unknown | Supported 21.3R1[^smx-junos-bgp_ls] | Unknown | Supported[^smx-sros-bgp_ls] | Supported[^smx-vrp-cfg] | Supported 10.7[^smx-frr-rn107] | Not supported[^smx-linux-dp] | Unknown | Not supported[^smx-vpp-dp] | Not supported[^smx-cilium-advtypes] |
+| [PCEP SRv6](https://srv6.md/rfcs/rfc9603/) RFC 9603 | Partial[^smx-iosxr-pcep] | Partial 17.16.1a[^smx-iosxe-pcep] | Supported 22.3R1[^smx-junos-pcep] | Unknown | Supported 26.7[^smx-sros-pcep] | Supported[^smx-vrp-cfg] | Not supported[^smx-frr-pcep] | Not supported[^smx-linux-dp] | Unknown | Not supported[^smx-vpp-dp] | Not supported[^smx-cilium-bgpcp] |
+| [SRv6 SR Policy](https://srv6.md/topics/sr-policy/) RFC 9256 / RFC 9830 | Partial 7.3.2[^smx-iosxr-sr_policy] | Partial 17.12.1a[^smx-iosxe-sr_policy] | Supported 21.3R1[^smx-junos-sr_policy] | Unknown[^smx-eos-sr_policy] | Supported 22.7.R1[^smx-sros-sr_policy] | Supported[^smx-vrp-sr_policy] | Partial 9.1[^smx-frr-sr_policy] | Partial 4.10[^smx-linux-sr_policy] | Partial 202111[^smx-sonic-sr_policy] | Supported 17.04[^smx-vpp-sr_policy] | Not supported[^smx-cilium-sr_policy] |
+| **Protection and traffic engineering** | | | | | | | | | | | |
+| [TI-LFA](https://srv6.md/topics/ti-lfa/) RFC 9855 | Supported 6.6.1[^smx-iosxr-rn661] | Supported 17.15.1a[^smx-iosxe-tilfa] | Supported 20.3R1[^smx-junos-ti_lfa] | Unknown[^smx-eos-ti_lfa] | Supported 21.5.R2[^smx-sros-ti_lfa] | Supported[^smx-vrp-ti_lfa] | Not supported[^smx-frr-ti_lfa] | Not supported[^smx-linux-dp] | Unknown | Not supported[^smx-vpp-dp] | Not supported[^smx-cilium-bgpcp] |
+| [Microloop avoidance](https://srv6.md/topics/micro-loop-avoidance/) | Supported 7.3.1[^smx-iosxr-microloop] | Supported 17.15.1a[^smx-iosxe-uloop] | Supported 21.1R1[^smx-junos-fe5681] | Unknown | Supported 26.3[^smx-sros-microloop] | Supported[^smx-vrp-cfg] | Not supported[^smx-frr-frr] | Not supported[^smx-linux-dp] | Unknown | Not supported[^smx-vpp-dp] | Not supported[^smx-cilium-bgpcp] |
+| [Flex-Algo](https://srv6.md/topics/flex-algorithm/) RFC 9350 | Supported[^smx-iosxr-flex_algo] | Supported 17.18.1a[^smx-iosxe-flex_algo] | Supported 20.3R1[^smx-junos-flex_algo] | Supported 4.36.1F[^smx-eos-flex_algo] | Supported 21.5.R2[^smx-sros-acgfa] | Supported[^smx-vrp-cfg] | Not supported[^smx-frr-flex_algo] | Not supported[^smx-linux-dp] | Unknown | Not supported[^smx-vpp-dp] | Not supported[^smx-cilium-bgpcp] |
+| **Multicast** | | | | | | | | | | | |
+| [SRv6 multicast](https://srv6.md/topics/multicast/) RFC 9524 / MVPN | Not supported[^smx-iosxr-multicast] | Partial 17.18.1a[^smx-iosxe-multicast] | Unknown | Unknown | Partial 25.3[^smx-sros-multicast] | Unknown[^smx-vrp-multicast] | Unknown | Not supported[^smx-linux-actions] | Not supported[^smx-sonic-sai] | Partial 17.04[^smx-vpp-multicast] | Not supported[^smx-cilium-srch] |
+| **OAM** | | | | | | | | | | | |
+| [Ping / traceroute to SIDs](https://srv6.md/rfcs/rfc9259/) RFC 9259 | Supported 6.6.1[^smx-iosxr-rn661-c8koam] | Supported 17.12.1a[^smx-iosxe-ping_trace] | Supported 21.3R1[^smx-junos-ping_trace] | Supported[^smx-eos-ping_trace] | Supported[^smx-sros-oam267] | Supported[^smx-vrp-cfg] | Unknown | Unknown | Unknown | Unknown | Unknown |
+| [Performance measurement](https://srv6.md/topics/srpm/) RFC 9503 | Supported 7.4.1[^smx-iosxr-pm] | Supported 17.12.1a[^smx-iosxe-srv6] | Supported 24.4R1[^smx-junos-pm] | Unknown | Unknown | Partial[^smx-vrp-pm] | Unknown | Unknown | Unknown | Partial 22.10[^smx-vpp-pm] | Unknown |
+| **Mobile user plane** | | | | | | | | | | | |
+| [Mobile user plane](https://srv6.md/rfcs/rfc9433/) RFC 9433 | Unknown | Unknown | Unknown | Unknown | Not supported[^smx-sros-mup] | Unknown | Not supported[^smx-frr-srv6h] | Not supported[^smx-linux-mup] | Not supported[^smx-sonic-sai] | Partial 20.01[^smx-vpp-mup] | Not supported[^smx-cilium-srch] |
+
+## How to Read This Matrix
+
+- **Version numbers** are the first release that a source documents for the feature (Cisco "Release x.y.z introduced", Juniper Feature Explorer "introduced in", kernel merge release, project release notes). A blank version on a ✓ means the feature is documented, but we found no first-release statement. Hardware matters: a feature introduced in a release is often limited to some platforms or line cards — the footnote says which.
+- **Classic and uSID.** A ✓ on an endpoint behavior means the platform implements it in at least one form: full-length SIDs (RFC 8986) or its NEXT-C-SID / uSID flavor (uN, uA, uDT46…). The footnote notes when only one form exists. See [uSID Compression](https://srv6.md/topics/usid-compression/).
+- **◐ Partial** means the feature exists with a significant restriction that is stated in the footnote (one form only, static configuration only, ASIC-dependent, preview).
+- **Control-plane rows** need the protocol to carry SRv6 information, not just to run over IPv6. A data-plane-only component (the Linux kernel, VPP) is ✗ there by design: pair it with a routing suite such as [FRRouting](https://srv6.md/implementations/frrouting/).
+- **Not listed ≠ not supported.** Vendors ship features faster than documentation catches up. If you know better, tell us — see below.
+
+## Per-Platform Summary
+
+### Cisco IOS-XR SRv6 support
+
+IOS-XR has had SRv6 since **6.6.1** (full-length SIDs, IS-IS, TI-LFA, L3VPN, OAM) and uSID (F3216) since **7.3.1**; most later features are built on uSID: EVPN-VPWS 7.3.2, EVPN E-LAN 7.5.2, End.DT46 7.8.1. Cisco 8000 needs Q200-based hardware and ASR 9000 third-generation line cards or later. Gaps: no SRv6 Tree-SID (Tree-SID is SR-MPLS only), no per-CE uDX4/uDX6 with uSID, no PCE-initiated SRv6 policies. [Configuration guide →](https://srv6.md/implementations/cisco-ios-xr/)
+
+### Cisco IOS-XE SRv6 support
+
+IOS-XE supports SRv6 uSID since **17.12.1a** on the ASR 1000 and Catalyst 8000 edge routers: IS-IS, BGP L3VPN with per-VRF uDT4/uDT6, local SRv6-TE with dynamic paths, PM and OAM. TI-LFA and microloop avoidance came in 17.15.1a, Flex-Algo and IPv4 MVPN ingress replication in 17.18.1a. No EVPN over SRv6 and no binding SIDs are documented. [Configuration guide →](https://srv6.md/implementations/cisco-ios-xe/)
+
+### Juniper SRv6 support (Junos and Junos Evolved)
+
+Junos OS supports SRv6 on MX since **20.3R1** (classic SIDs, IS-IS, Flex-Algo, TI-LFA), with BGP services from 20.4R1. uSID (NEXT-C-SID only; REPLACE-C-SID is not supported) arrived in 23.2R1 on ACX7000 and 23.4R1 on MX; PTX10002-36QDD and PTX10008 follow in 24.x. Junos has the broadest documented service set among the vendors here, including EVPN-VPWS and E-LAN, PCEP and BGP-LS. [Configuration guide →](https://srv6.md/implementations/juniper/)
+
+### Arista EOS SRv6 support
+
+EOS is uSID-only: uN since **4.34.2F**, static uA 4.35.2F, IS-IS SRv6 and Flex-Algo on 7280R4/7800R4 since 4.36.1F. Arista's public documentation covers transport behaviors; BGP L3VPN and EVPN RT5 over SRv6 have only been shown in EANTC interoperability tests, so those cells are ◐. H.Encaps.Red, USP and End.DX4/DX6 are listed as unsupported. [Platform page →](https://srv6.md/implementations/arista-eos/)
+
+### Nokia SR OS SRv6 support
+
+SR OS supports SRv6 since **21.5.R2 on FP4-based hardware**, with classic and micro-segment (uSID) SIDs side by side. It covers L3VPN, EVPN-VPLS/VPWS/IFL, BGP SR Policy, TI-LFA and Tree-SID SRv6 multicast (25.3, with restrictions). It uses only the reduced headend behaviors and does not implement End.T, End.DX4/DX6, OSPFv3 SRv6 or RFC 9433. [Platform page →](https://srv6.md/implementations/nokia-sros/)
+
+### Huawei VRP SRv6 support
+
+Huawei's NetEngine 8000 V800R025 configuration guide documents nearly every row: all main endpoint and headend behaviors, IS-IS and **OSPFv3** SRv6, L3VPN/EVPN/global services, SRv6 TE Policy with PCEP and BGP, TI-LFA, microloop avoidance and Flex-Algo. Its compression is **G-SRv6 (REPLACE-C-SID)**, with NEXT-C-SID available only as a 16-bit interop mode. Huawei's portal no longer publishes guides older than V800R023, so most cells have no first-release number.
+
+### FRRouting SRv6 support
+
+FRR has signaled SRv6 L3VPN in BGP since **8.1**, uSID since 8.5 and IS-IS SRv6 since 9.1; 10.6 added global-table services and 10.7 BGP-LS. Because it programs the Linux kernel, it inherits the kernel's gaps (no USP/USD, no End.DT2U/DT2M). SRv6 TI-LFA, Flex-Algo, OSPFv3, PCEP and EVPN over SRv6 are not in any release yet. [Configuration guide →](https://srv6.md/implementations/frrouting/)
+
+### Linux kernel SRv6 support
+
+The kernel has had SRv6 encapsulation since **4.10** and endpoint behaviors since 4.14; End.DT4 (5.11), End.DT46 (5.14), H.Encaps.Red (6.0), NEXT-C-SID (6.1) and PSP (6.3) came later. It is a data plane only: control-plane rows are ✗ by design. [Behavior-by-kernel table →](https://srv6.md/implementations/linux-kernel/)
+
+### SONiC SRv6 support
+
+SONiC programs SRv6 into the switch ASIC through SAI. It has carried SRv6 code since **202111**, uSID since 202211 and static CONFIG_DB SIDs (rated Alpha) since 202505. Every data-plane cell is ◐ because forwarding depends on each vendor's SAI implementation. SAI has no L2 behaviors, and SONiC's FRR container does not run an IGP for SRv6. [Platform page →](https://srv6.md/implementations/sonic/)
+
+### FD.io VPP SRv6 support
+
+VPP has been an SRv6 software data plane since **17.04**, with uN in 20.05, uA in 25.02 and the srv6-mobile plugin (GTP-U interworking) in 20.01. It has no routing protocols, no End.DT46 and only the PSP flavor.
+
+### Cilium SRv6 support
+
+Open-source Cilium contains a hidden, beta SRv6 datapath since **1.13** (single-SID encapsulation and decapsulation to IPv4/IPv6) but no control plane to drive it. SRv6 L3VPN and uSID are features of **Isovalent Enterprise for Cilium**, which this column does not cover. [Platform page →](https://srv6.md/implementations/cilium/)
+
+### Other implementations
+
+[zebra-rs](https://srv6.md/implementations/zebra-rs/) and [Vinbero](https://srv6.md/implementations/vinbero/) are eBPF-based open-source SRv6 stacks with their own behavior tables; they are not yet columns here. Nokia SR Linux added SRv6 in 26.3 (see the [Nokia page](https://srv6.md/implementations/nokia-sros/#platforms)).
+
+## Corrections and Additions
+
+This matrix is maintained in the open. If you are a vendor, an operator or a contributor and a cell is wrong, outdated or *unknown* while you can point to a public source:
+
+- **Open an issue:** [Report a support-matrix correction](https://github.com/eldaninavas/srv6.md/issues/new?title=Support%20matrix%3A%20&labels=support-matrix) with the platform, capability, release and a link to the document that states it.
+- **Or send a pull request:** edit [`docs/implementations/support-matrix.yml`](https://github.com/eldaninavas/srv6.md/blob/main/docs/implementations/support-matrix.yml) — one line per cell, with a source. The table, footnotes and tooltips are generated from that file.
+
+We accept public vendor documentation, release notes, feature explorers, source code and RFC implementation reports. We do not accept marketing claims without a document behind them, and we will not mark a feature supported because a roadmap says it is coming.
+
+## Related
+
+- [Implementations Overview](https://srv6.md/implementations/) — configuration guides per platform
+- [SRv6 Network Programming](https://srv6.md/topics/network-programming/) — what each behavior does
+- [IPv6 Ready SRv6 Logo](https://srv6.md/implementations/#conformance-testing-ipv6-ready-srv6-logo) — independent conformance testing
+- [RFCs & Standards](https://srv6.md/rfcs/) — the specifications behind each row
+
+[^smx-iosxr-end]: **Cisco IOS-XR:** Full-length End in 6.6.1; uN (uSID) from 7.3.1. Source: [Cisco NCS 5500 Release Notes, IOS XR 6.6.1](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/general/66x/release/notes/b-release-notes-ncs5500-r661.html); [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-end]: **Cisco IOS-XE:** uN only (uSID), with PSP/USD. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-end]: **Juniper Junos / Junos Evolved:** MX 20.3R1; uN MX 23.4R1, ACX7000 23.2R1. Source: [Junos OS 20.3 In Focus Guide](https://www.juniper.net/documentation/en_US/junos/information-products/pathway-pages/infocus/20.3/infocus-junos-20.3.pdf); [Juniper CLI reference: locator micro-sid](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/routing-options-source-packet-routing-srv6-locator-micro-sid.html)
+
+[^smx-eos-end]: **Arista EOS:** uN only (uSID F3216). Source: [Arista TOI: SRv6 uN support (EOS 4.34.2F)](https://www.arista.com/en/support/toi/eos-4-34-2f/22062-srv6-un-support); [Arista EOS 4.36.2F User Manual: Segment Routing over IPv6](https://www.arista.com/en/um-eos/eos-segment-routing-over-ipv6-srv6)
+
+[^smx-sros-end]: **Nokia SR OS:** FP4-based hardware; uN in micro-segment mode. Source: [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: Segment Routing with IPv6 data plane (21.5.R2 on FP4)](https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c233-seg-rout-ipv6.html)
+
+[^smx-vrp-seg]: **Huawei VRP:** [Huawei NetEngine 8000 V800R025C00 Configuration Guide: SRv6 description, SRv6 segments](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0197730816)
+
+[^smx-frr-end]: **FRRouting:** IS-IS allocates End/uN SIDs from 9.1; static uN from 10.3. Source: [FRR 9.1 isisd documentation: SRv6](https://github.com/FRRouting/frr/blob/frr-9.1/doc/user/isisd.rst?plain=1#L599-L615)
+
+[^smx-linux-c140]: **Linux kernel:** [Linux commit 140f04c33bbc: seg6local (4.14)](https://github.com/torvalds/linux/commit/140f04c33bbc)
+
+[^smx-sonic-rn2111-orch]: **SONiC:** [SONiC 202111 release notes](https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202111_Release_Notes.md); [sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)](https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp)
+
+[^smx-vpp-end]: **FD.io VPP:** uN from 20.05. Source: [FD.io VPP 26.06 docs: SR local SIDs](https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_localsid.html); [VPP 20.05 release notes](https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v20.05.html)
+
+[^smx-cilium-srch]: **Cilium (open source):** [Cilium v1.20 source: bpf/lib/srv6.h (the whole open-source SRv6 datapath)](https://github.com/cilium/cilium/blob/v1.20.0/bpf/lib/srv6.h)
+
+[^smx-iosxr-end_x]: **Cisco IOS-XR:** uA (uSID) from 7.3.1. Source: [Cisco NCS 5500 Release Notes, IOS XR 6.6.1](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/general/66x/release/notes/b-release-notes-ncs5500-r661.html); [Cisco ASR 9000 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/24xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-end_x]: **Cisco IOS-XE:** uA; static End.X from 17.15.1a. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-end_x]: **Juniper Junos / Junos Evolved:** uA from MX 23.4R1. Source: [Juniper: Understanding SRv6 Network Programming in IS-IS Networks](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/isis-srv6-network-programming.html)
+
+[^smx-eos-end_x]: **Arista EOS:** Static uA only. Source: [Arista TOI: SRv6 static adjacency segments (uA), EOS 4.35.2F](https://www.arista.com/en/support/toi/eos-4-35-2f/23704-support-for-srv6-static-adjacency-segments-ua); [Arista EOS 4.36.2F User Manual: IS-IS (Configuring SRv6 for IS-IS)](https://www.arista.com/en/um-eos/eos-is-is)
+
+[^smx-sros-end_x]: **Nokia SR OS:** End.X and LAN End.X; uA in micro-segment mode. Source: [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: Segment Routing with IPv6 data plane (21.5.R2 on FP4)](https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c233-seg-rout-ipv6.html)
+
+[^smx-vrp-cfg]: **Huawei VRP:** [Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration)
+
+[^smx-frr-end_x]: **FRRouting:** IS-IS End.X/uA adjacency SIDs; static uA from 10.4. Source: [FRR 9.1 isisd documentation: SRv6](https://github.com/FRRouting/frr/blob/frr-9.1/doc/user/isisd.rst?plain=1#L599-L615)
+
+[^smx-sonic-end_x]: **SONiC:** Adjacency programming (L3Adj) from 202405. Source: [SONiC 202405 release notes](https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202405_Release_Notes.md); [SONiC SRv6 SID L3Adj HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_sid_l3adj.md)
+
+[^smx-vpp-end_x]: **FD.io VPP:** uA from 25.02. Source: [FD.io VPP 26.06 docs: SR local SIDs](https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_localsid.html); [VPP 25.02 release notes](https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v25.02.html)
+
+[^smx-sros-ug267]: **Nokia SR OS:** [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html)
+
+[^smx-frr-end_t]: **FRRouting:** The kernel has it, but only FRR's sharpd test daemon installs it. Source: [FRR 10.7.1 staticd documentation: static SRv6 SID behaviors](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L512-L523)
+
+[^smx-linux-c891]: **Linux kernel:** [Linux commit 891ef8dd2a8d: End.T, End.DX2, End.DX4, End.DT6 (4.14)](https://github.com/torvalds/linux/commit/891ef8dd2a8d)
+
+[^smx-sonic-sai-orch]: **SONiC:** [SAI saisrv6.h (SRv6 behaviors SAI can express)](https://github.com/opencomputeproject/SAI/blob/master/inc/saisrv6.h); [sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)](https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp)
+
+[^smx-vpp-lsc-fl]: **FD.io VPP:** [VPP source: sr_localsid.c (CLI behaviors and flavors)](https://github.com/FDio/vpp/blob/master/src/vnet/srv6/sr_localsid.c); [FD.io VPP 26.06 feature list (SRv6)](https://s3-docs.fd.io/vpp/26.06/aboutvpp/featurelist.html)
+
+[^smx-iosxr-end_dx2]: **Cisco IOS-XR:** uDX2 for EVPN-VPWS in 7.3.2; full-length End.DX2 from 7.5.1 on NCS 5500. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-junos-end_dx2]: **Juniper Junos / Junos Evolved:** EVPN-VPWS on MX; uDX2 24.2R1; End.DX2V also available. Source: [Juniper CLI reference: vpws-service-id](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/vpws-service-id.html)
+
+[^smx-sros-end_dx2]: **Nokia SR OS:** End.DX2 and uDX2 for EVPN-VPWS. Source: [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: EVPN-VPWS with SRv6 transport](https://documentation.nokia.com/acg/25-3-2/books/layer-2-services-evpn-classic/c244-evpn-vpws-services-with-srv6-transport.html)
+
+[^smx-vrp-end_dx2]: **Huawei VRP:** EVPN-VPWS. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration)
+
+[^smx-frr-staticsid]: **FRRouting:** [FRR 10.7.1 staticd documentation: static SRv6 SID behaviors](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L512-L523)
+
+[^smx-sonic-sai]: **SONiC:** [SAI saisrv6.h (SRv6 behaviors SAI can express)](https://github.com/opencomputeproject/SAI/blob/master/inc/saisrv6.h)
+
+[^smx-vpp-ls]: **FD.io VPP:** [FD.io VPP 26.06 docs: SR local SIDs](https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_localsid.html)
+
+[^smx-iosxr-end_dx4]: **Cisco IOS-XR:** Full-length SIDs only; per-CE uDX4 is not supported with uSID. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html); [Cisco NCS 5500 Segment Routing Configuration Guide 26.x: Configure SRv6 with Full-Length SIDs](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx/configure-srv6-full-length-sid.html)
+
+[^smx-junos-end_dx4]: **Juniper Junos / Junos Evolved:** Not among the BGP SRv6 service SID options (DT4/DT6/DT46 only). Source: [Juniper CLI reference: srv6 (protocols bgp source-packet-routing)](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/srv6-edit-protocols-bgp-source-packet-routing.html)
+
+[^smx-eos-um]: **Arista EOS:** [Arista EOS 4.36.2F User Manual: Segment Routing over IPv6](https://www.arista.com/en/um-eos/eos-segment-routing-over-ipv6-srv6)
+
+[^smx-vrp-end_dx4]: **Huawei VRP:** Per-interface SID for EVPN L3VPN. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: SRv6 description, SRv6 segments](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0197730816)
+
+[^smx-frr-end_dx4]: **FRRouting:** The kernel has it, but only FRR's sharpd test daemon installs it. Source: [FRR 10.7.1 staticd documentation: static SRv6 SID behaviors](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L512-L523)
+
+[^smx-sonic-l3adj-orch]: **SONiC:** [SONiC SRv6 SID L3Adj HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_sid_l3adj.md); [sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)](https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp)
+
+[^smx-iosxr-end_dx6]: **Cisco IOS-XR:** Full-length SIDs only; per-CE uDX6 is not supported with uSID. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html); [Cisco NCS 5500 Segment Routing Configuration Guide 26.x: Configure SRv6 with Full-Length SIDs](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx/configure-srv6-full-length-sid.html)
+
+[^smx-junos-end_dx6]: **Juniper Junos / Junos Evolved:** Not among the BGP SRv6 service SID options (DT4/DT6/DT46 only). Source: [Juniper CLI reference: srv6 (protocols bgp source-packet-routing)](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/srv6-edit-protocols-bgp-source-packet-routing.html)
+
+[^smx-vrp-end_dx6]: **Huawei VRP:** Per-interface SID for EVPN L3VPN. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: SRv6 description, SRv6 segments](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0197730816)
+
+[^smx-frr-end_dx6]: **FRRouting:** The kernel has it, but only FRR's sharpd test daemon installs it. Source: [FRR 10.7.1 staticd documentation: static SRv6 SID behaviors](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L512-L523)
+
+[^smx-iosxr-end_dt4]: **Cisco IOS-XR:** Per-VRF uDT4 with uSID from 7.3.1. Source: [Cisco NCS 5500 Release Notes, IOS XR 6.6.1](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/general/66x/release/notes/b-release-notes-ncs5500-r661.html); [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-end_dt4]: **Cisco IOS-XE:** Per-VRF allocation only. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-end_dt4]: **Juniper Junos / Junos Evolved:** uDT4 MX 23.4R1, ACX7000 23.2R1. Source: [Juniper CLI reference: srv6 (protocols bgp source-packet-routing)](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/srv6-edit-protocols-bgp-source-packet-routing.html)
+
+[^smx-eos-end_dt4]: **Arista EOS:** Listed as supported in show srv6 capabilities; no configuration documented. Source: [Arista EOS 4.36.2F User Manual: Segment Routing over IPv6](https://www.arista.com/en/um-eos/eos-segment-routing-over-ipv6-srv6)
+
+[^smx-sros-ug267-acgfa]: **Nokia SR OS:** [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: SRv6 Flex-Algo for VPRN](https://documentation.nokia.com/acg/25-3-2/books/layer-3-services-classic/c242-srv6-flex-algo-for-vprn.html)
+
+[^smx-frr-end_dt4]: **FRRouting:** BGP SRv6 VPNv4. Source: [FRR PR #9649: SRv6 IPv4 L3VPN](https://github.com/FRRouting/frr/pull/9649)
+
+[^smx-linux-end_dt4]: **Linux kernel:** vrftable only; needs net.vrf.strict_mode=1. Source: [Linux commit 664d6f86868b: End.DT4 (5.11)](https://github.com/torvalds/linux/commit/664d6f86868b)
+
+[^smx-sonic-orch]: **SONiC:** [sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)](https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp)
+
+[^smx-cilium-end_dt4]: **Cilium (open source):** Hidden beta datapath; nothing in open-source Cilium programs the SIDs (Isovalent Enterprise does). Source: [Cilium v1.20 source: bpf_host.c SRv6 decapsulation](https://github.com/cilium/cilium/blob/v1.20.0/bpf/bpf_host.c#L324-L337); [Cilium v1.20 source: hidden --enable-srv6 (beta) and --srv6-encap-mode flags](https://github.com/cilium/cilium/blob/v1.20.0/daemon/cmd/daemon_main.go#L223-L234)
+
+[^smx-iosxr-end_dt6]: **Cisco IOS-XR:** Full-length 7.2.2 (NCS 5500); uDT6 from 7.3.1. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 26.x: Configure SRv6 with Full-Length SIDs](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx/configure-srv6-full-length-sid.html); [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-end_dt6]: **Cisco IOS-XE:** Per-VRF allocation only. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-end_dt6]: **Juniper Junos / Junos Evolved:** uDT6 MX 23.4R1, ACX7000 23.2R1. Source: [Juniper CLI reference: srv6 (protocols bgp source-packet-routing)](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/srv6-edit-protocols-bgp-source-packet-routing.html)
+
+[^smx-eos-end_dt6]: **Arista EOS:** Listed as supported in show srv6 capabilities; no configuration documented. Source: [Arista EOS 4.36.2F User Manual: Segment Routing over IPv6](https://www.arista.com/en/um-eos/eos-segment-routing-over-ipv6-srv6)
+
+[^smx-frr-end_dt6]: **FRRouting:** BGP SRv6 VPNv6. Source: [FRR 8.1 bgpd documentation: L3VPN SRv6](https://github.com/FRRouting/frr/blob/frr-8.1/doc/user/bgp.rst?plain=1#L2689-L2701)
+
+[^smx-linux-end_dt6]: **Linux kernel:** VRF (vrftable) mode from 5.11. Source: [Linux commit 891ef8dd2a8d: End.T, End.DX2, End.DX4, End.DT6 (4.14)](https://github.com/torvalds/linux/commit/891ef8dd2a8d)
+
+[^smx-cilium-end_dt6]: **Cilium (open source):** Hidden beta datapath; nothing in open-source Cilium programs the SIDs (Isovalent Enterprise does). Source: [Cilium v1.20 source: bpf/lib/srv6.h (the whole open-source SRv6 datapath)](https://github.com/cilium/cilium/blob/v1.20.0/bpf/lib/srv6.h); [Cilium v1.20 source: hidden --enable-srv6 (beta) and --srv6-encap-mode flags](https://github.com/cilium/cilium/blob/v1.20.0/daemon/cmd/daemon_main.go#L223-L234)
+
+[^smx-iosxr-end_dt46]: **Cisco IOS-XR:** First on ASR 9000. Source: [Cisco ASR 9000 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/24xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-end_dt46]: **Cisco IOS-XE:** uDT46 is listed, but BGP does not allocate or advertise it. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-end_dt46]: **Juniper Junos / Junos Evolved:** uDT46 MX 23.4R1, ACX7000 23.2R1. Source: [Juniper CLI reference: srv6 (protocols bgp source-packet-routing)](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/srv6-edit-protocols-bgp-source-packet-routing.html)
+
+[^smx-eos-end_dt46]: **Arista EOS:** Interop-tested at EANTC 2026 (7280R4); not in Arista's public docs. Source: [EANTC 2026 interop report: L3VPN over SRv6](https://wiki.eantc.de/wiki/publicreports/view/Main/EANTC%20Transport%20%26%20Cloud%20Networks%20Interop%20Test%20Report%202026/SRv6/L3VPN%20%20over%20SRv6)
+
+[^smx-frr-end_dt46]: **FRRouting:** Per-VRF SID; global-table uDT46 from 10.7. Source: [FRR 8.5 release notes](https://frrouting.org/release/8.5/)
+
+[^smx-linux-c8b5]: **Linux kernel:** [Linux commit 8b532109bf88: End.DT46 (5.14)](https://github.com/torvalds/linux/commit/8b532109bf88)
+
+[^smx-sonic-end_dt46]: **SONiC:** Static CONFIG_DB uDT46 from 202505 (rated Alpha). Source: [SONiC SRv6 HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_hld.md); [SONiC 202505 release notes](https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202505_Release_Notes.md)
+
+[^smx-vpp-types]: **FD.io VPP:** [VPP source: sr_types.api (behavior enum)](https://github.com/FDio/vpp/blob/master/src/vnet/srv6/sr_types.api)
+
+[^smx-iosxr-end_dt2u]: **Cisco IOS-XR:** uDT2U for EVPN E-LAN. Source: [Cisco ASR 9000 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/24xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-24xx/configure-srv6-micro-sid.html)
+
+[^smx-junos-end_dt2u]: **Juniper Junos / Junos Evolved:** EVPN E-LAN end-dt2-sid / micro-dt2-sid on some MX models; more MX and ACX in 24.x. Source: [Juniper CLI reference: source-packet-routing (routing-instances protocols evpn)](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/routing-instances-protocols-evpn-source-packet-routing.html)
+
+[^smx-sros-ug267-acgvpls]: **Nokia SR OS:** [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: EVPN-VPLS over SRv6](https://documentation.nokia.com/acg/25-3-2/books/layer-2-services-evpn-classic/c254-evpn-vpls-srv6.html)
+
+[^smx-vrp-end_dt2u]: **Huawei VRP:** EVPN VPLS. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration)
+
+[^smx-frr-srv6h]: **FRRouting:** [FRR 10.7.1 source: lib/srv6.h seg6local actions](https://github.com/FRRouting/frr/blob/frr-10.7.1/lib/srv6.h#L59-L77)
+
+[^smx-linux-actions]: **Linux kernel:** [Linux v7.3 seg6_local.c: action table](https://github.com/torvalds/linux/blob/v7.3/net/ipv6/seg6_local.c#L1584-L1680)
+
+[^smx-iosxr-end_dt2m]: **Cisco IOS-XR:** uDT2M for EVPN E-LAN BUM with ESI filtering. Source: [Cisco ASR 9000 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/24xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-24xx/configure-srv6-micro-sid.html)
+
+[^smx-junos-end_dt2m]: **Juniper Junos / Junos Evolved:** E-LAN BUM traffic is handled, but the docs only name a generic End.DT2 SID. Source: [Juniper: Configuring EVPN-ELAN over SRv6](https://www.juniper.net/documentation/us/en/software/junos/evpn/topics/topic-map/configuring-evpn-elan-over-srv6.html)
+
+[^smx-vrp-end_dt2m]: **Huawei VRP:** EVPN VPLS BUM; arguments carry the ESI for split horizon. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration)
+
+[^smx-iosxr-end_b6_encaps]: **Cisco IOS-XR:** Cisco 8000 binds SRv6-TE policies with uB6.Encaps.Red; NCS 5500 and ASR 9000 document uB6.Insert.Red. Source: [Cisco 8000 Segment Routing Configuration Guide 7.10.x: SRv6 Traffic Engineering](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/710x/configuration/guide/b-segment-routing-cg-cisco8000-710x/m-configuring-srv6-traffic-engineering-8000.html); [Cisco NCS 5500 Segment Routing Configuration Guide 7.10.x: SRv6 Traffic Engineering](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/710x/configuration/guide/b-segment-routing-cg-ncs5500-710x/configure-srv6-traffic-engineering.html)
+
+[^smx-iosxe-end_b6_encaps]: **Cisco IOS-XE:** SRv6 Binding SIDs are not supported. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-end_b6_encaps]: **Juniper Junos / Junos Evolved:** ACX7000 25.2R1, MX 26.2R1; classic and NEXT-C-SID, encaps and .Red. Source: [Juniper: End.B6 SID for SRv6](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/endb6-sid-srv6.html)
+
+[^smx-sros-end_b6_encaps]: **Nokia SR OS:** End.B6.Encaps.Red only, one Binding SID per policy. Source: [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: SRv6 policies for Layer 2 and Layer 3 services](https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c255-srv6-policy-layer2-layer3-services.html)
+
+[^smx-vrp-end_b6_encaps]: **Huawei VRP:** Encaps and reduced variants, plus End.B6.Insert. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration)
+
+[^smx-frr-end_b6_encaps]: **FRRouting:** Codepoints are parsed, but no daemon configures a binding SID. Source: [FRR 10.7.1 staticd documentation: static SRv6 SID behaviors](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L512-L523)
+
+[^smx-linux-end_b6_encaps]: **Linux kernel:** End.B6.Encaps only; End.B6.Encaps.Red is not implemented. Source: [Linux commit 140f04c33bbc: seg6local (4.14)](https://github.com/torvalds/linux/commit/140f04c33bbc)
+
+[^smx-vpp-end_b6_encaps]: **FD.io VPP:** Binding SID of an SR policy. Source: [FD.io VPP 26.06 docs: SR policies](https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_policy.html); [FD.io VPP 26.06 feature list (SRv6)](https://s3-docs.fd.io/vpp/26.06/aboutvpp/featurelist.html)
+
+[^smx-linux-end_bm]: **Linux kernel:** The name exists in the UAPI and iproute2, but the kernel has no implementation. Source: [Linux v7.3 seg6_local.c: action table](https://github.com/torvalds/linux/blob/v7.3/net/ipv6/seg6_local.c#L1584-L1680)
+
+[^smx-vpp-fl]: **FD.io VPP:** [FD.io VPP 26.06 feature list (SRv6)](https://s3-docs.fd.io/vpp/26.06/aboutvpp/featurelist.html)
+
+[^smx-iosxr-h_encaps]: **Cisco IOS-XR:** Cisco guides document H.Encaps.Red (and H.Insert.Red), not plain H.Encaps. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-junos-h_encaps]: **Juniper Junos / Junos Evolved:** Full SRH with no-reduced-srh. Source: [Juniper: Understanding SRv6 Network Programming in IS-IS Networks](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/isis-srv6-network-programming.html)
+
+[^smx-sros-h_encaps]: **Nokia SR OS:** Only the reduced variants (H.Encaps.Red, H.Encaps.L2.Red) are supported. Source: [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html)
+
+[^smx-vrp-srcnode]: **Huawei VRP:** [Huawei NetEngine 8000 V800R025C00 Configuration Guide: SRv6 description, source node behaviors](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0222318700)
+
+[^smx-frr-h_encaps]: **FRRouting:** BGP L3VPN; static SRv6 segment routes from 9.1. Source: [FRR 8.1 bgpd documentation: L3VPN SRv6](https://github.com/FRRouting/frr/blob/frr-8.1/doc/user/bgp.rst?plain=1#L2689-L2701); [FRR 10.7.1 staticd documentation: SRv6 SIDs and segment routes](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L319-L362)
+
+[^smx-linux-c6c8]: **Linux kernel:** [Linux commit 6c8702c60b88: seg6 encapsulation (4.10)](https://github.com/torvalds/linux/commit/6c8702c60b88)
+
+[^smx-sonic-pr2406]: **SONiC:** [sonic-swss PR #2406: SID list type selection](https://github.com/sonic-net/sonic-swss/pull/2406)
+
+[^smx-vpp-pol]: **FD.io VPP:** [FD.io VPP 26.06 docs: SR policies](https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_policy.html)
+
+[^smx-cilium-h_encaps]: **Cilium (open source):** Single SID, --srv6-encap-mode=srh; hidden beta flag. Source: [Cilium v1.20 source: bpf/lib/srv6.h (the whole open-source SRv6 datapath)](https://github.com/cilium/cilium/blob/v1.20.0/bpf/lib/srv6.h); [Cilium v1.20 source: hidden --enable-srv6 (beta) and --srv6-encap-mode flags](https://github.com/cilium/cilium/blob/v1.20.0/daemon/cmd/daemon_main.go#L223-L234)
+
+[^smx-iosxr-n55usid]: **Cisco IOS-XR:** [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-srv6]: **Cisco IOS-XE:** [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-h_encaps_red]: **Juniper Junos / Junos Evolved:** Default encapsulation mode. Source: [Juniper: Understanding SRv6 Network Programming in IS-IS Networks](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/isis-srv6-network-programming.html)
+
+[^smx-frr-h_encaps_red]: **FRRouting:** staticd and BGP encap-behavior H_Encaps_Red. Source: [FRR 10.7.1 staticd documentation: SRv6 SIDs and segment routes](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L319-L362)
+
+[^smx-linux-cb07]: **Linux kernel:** [Linux commit b07c8cdbe918: H.Encaps.Red (6.0)](https://github.com/torvalds/linux/commit/b07c8cdbe918)
+
+[^smx-sonic-h_encaps_red]: **SONiC:** Default SID list type. Source: [SONiC SRv6 HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_hld.md); [sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)](https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp)
+
+[^smx-vpp-h_encaps_red]: **FD.io VPP:** The SRH is dropped only for single-SID lists. Source: [FD.io VPP 26.06 feature list (SRv6)](https://s3-docs.fd.io/vpp/26.06/aboutvpp/featurelist.html); [VPP source: sr_policy_rewrite.c](https://github.com/FDio/vpp/blob/master/src/vnet/srv6/sr_policy_rewrite.c)
+
+[^smx-cilium-h_encaps_red]: **Cilium (open source):** Single SID; the default encap mode; hidden beta flag. Source: [Cilium v1.13 source: default SRv6 encap mode is reduced](https://github.com/cilium/cilium/blob/v1.13.0/pkg/defaults/defaults.go#L202-L203); [Cilium v1.20 source: hidden --enable-srv6 (beta) and --srv6-encap-mode flags](https://github.com/cilium/cilium/blob/v1.20.0/daemon/cmd/daemon_main.go#L223-L234)
+
+[^smx-iosxr-h_encaps_l2]: **Cisco IOS-XR:** H.Encaps.L2.Red for EVPN VPWS and E-LAN. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-junos-h_encaps_l2]: **Juniper Junos / Junos Evolved:** Used by EVPN over SRv6; not named as such in the docs. Source: [Juniper: EVPN-VPWS over SRv6](https://www.juniper.net/documentation/us/en/software/junos/evpn/topics/concept/configuring-vpws-srv6.html)
+
+[^smx-sros-h_encaps_l2]: **Nokia SR OS:** H.Encaps.L2.Red only. Source: [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: EVPN-VPLS over SRv6](https://documentation.nokia.com/acg/25-3-2/books/layer-2-services-evpn-classic/c254-evpn-vpls-srv6.html)
+
+[^smx-frr-h_encaps_l2]: **FRRouting:** staticd and bgpd offer only H.Encaps and H.Encaps.Red. Source: [FRR 10.7.1 staticd documentation: SRv6 SIDs and segment routes](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L319-L362)
+
+[^smx-linux-h_encaps_l2]: **Linux kernel:** l2encap 4.14; l2encap.red 6.0. Source: [Linux commit 38ee7f2d4756: L2 encapsulation (4.14)](https://github.com/torvalds/linux/commit/38ee7f2d4756)
+
+[^smx-vpp-steer-fl]: **FD.io VPP:** [FD.io VPP 26.06 docs: SR steering](https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_steering.html); [FD.io VPP 26.06 feature list (SRv6)](https://s3-docs.fd.io/vpp/26.06/aboutvpp/featurelist.html)
+
+[^smx-junos-isisnp-microsid]: **Juniper Junos / Junos Evolved:** [Juniper: Understanding SRv6 Network Programming in IS-IS Networks](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/isis-srv6-network-programming.html); [Juniper CLI reference: locator micro-sid](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/routing-options-source-packet-routing-srv6-locator-micro-sid.html)
+
+[^smx-frr-psp]: **FRRouting:** Locator flavor psp; applied to End only, the kernel's limit. Source: [FRR PR #18647: SRv6 PSP flavor](https://github.com/FRRouting/frr/pull/18647)
+
+[^smx-linux-psp]: **Linux kernel:** End only. Source: [Linux commit bdf3c0b9c10b: PSP flavor (6.3)](https://github.com/torvalds/linux/commit/bdf3c0b9c10b)
+
+[^smx-sonic-psp]: **SONiC:** Programmed as PSP and USD together. Source: [sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)](https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp)
+
+[^smx-junos-isisnp]: **Juniper Junos / Junos Evolved:** [Juniper: Understanding SRv6 Network Programming in IS-IS Networks](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/isis-srv6-network-programming.html)
+
+[^smx-vrp-usp]: **Huawei VRP:** Only combined with USD. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration)
+
+[^smx-frr-usp]: **FRRouting:** The Linux kernel implements only PSP among RFC 8986 flavors. Source: [Linux v7.3 seg6_local.c: supported RFC 8986 flavors (PSP only)](https://github.com/torvalds/linux/blob/v7.3/net/ipv6/seg6_local.c#L119-L124)
+
+[^smx-linux-flv]: **Linux kernel:** [Linux v7.3 seg6_local.c: supported flavors (PSP and NEXT-C-SID)](https://github.com/torvalds/linux/blob/v7.3/net/ipv6/seg6_local.c#L115-L124)
+
+[^smx-sonic-usp]: **SONiC:** Defined in SAI, never programmed by orchagent. Source: [sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)](https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp)
+
+[^smx-vpp-lsc]: **FD.io VPP:** [VPP source: sr_localsid.c (CLI behaviors and flavors)](https://github.com/FDio/vpp/blob/master/src/vnet/srv6/sr_localsid.c)
+
+[^smx-iosxr-usd]: **Cisco IOS-XR:** uSID 7.3.1; USD on full-length SIDs from 7.5.2. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html); [Cisco NCS 5500 Segment Routing Configuration Guide 26.x: Configure SRv6 with Full-Length SIDs](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx/configure-srv6-full-length-sid.html)
+
+[^smx-frr-usd]: **FRRouting:** The Linux kernel implements only PSP among RFC 8986 flavors. Source: [Linux v7.3 seg6_local.c: supported RFC 8986 flavors (PSP only)](https://github.com/torvalds/linux/blob/v7.3/net/ipv6/seg6_local.c#L119-L124)
+
+[^smx-sonic-usd]: **SONiC:** Programmed as PSP and USD together. Source: [sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)](https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp)
+
+[^smx-iosxr-next_csid]: **Cisco IOS-XR:** F3216. First-generation NCS 5500 needs an hw-module profile and a reload. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-next_csid]: **Cisco IOS-XE:** F3216 only; up to 10 uSID locators. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-next_csid]: **Juniper Junos / Junos Evolved:** ACX7000 23.2R1, MX 23.4R1, PTX10008 24.4R1-S2; default F3216. Source: [Juniper CLI reference: srv6 block](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/routing-options-source-packet-routing-srv6-block.html); [Juniper CLI reference: locator micro-sid](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/routing-options-source-packet-routing-srv6-locator-micro-sid.html)
+
+[^smx-eos-next_csid]: **Arista EOS:** F3216. Source: [Arista TOI: SRv6 uN support (EOS 4.34.2F)](https://www.arista.com/en/support/toi/eos-4-34-2f/22062-srv6-un-support); [Arista EOS 4.36.2F User Manual: Segment Routing over IPv6](https://www.arista.com/en/um-eos/eos-segment-routing-over-ipv6-srv6)
+
+[^smx-sros-next_csid]: **Nokia SR OS:** 16-bit uSIDs; already documented in the oldest online guide (22.10). Classic and micro SIDs can run together. Source: [Nokia SR OS 22.10 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/22-10-7/books/Segment%20Routing%20and%20PCE%20User%20Guide/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html)
+
+[^smx-vrp-next_csid]: **Huawei VRP:** 16-bit C-SIDs only, as an interop mode; the default 16-bit mode is NEXT&REPLACE, which is not in RFC 9800. Source: [Huawei NetEngine 8000 V800R025C00: SRH 16-bit compression](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0000001456450793)
+
+[^smx-frr-next_csid]: **FRRouting:** BGP uDT SIDs 8.5; IS-IS uN/uA 9.1; usid-f3216 format. Source: [FRR PR #12219: SRv6 uSID](https://github.com/FRRouting/frr/pull/12219); [FRR 8.5 release notes](https://frrouting.org/release/8.5/)
+
+[^smx-linux-next_csid]: **Linux kernel:** End 6.1, End.X 6.6; default 32/16 (F3216). Source: [Linux commit 848f3c0d4769: NEXT-C-SID flavor (6.1)](https://github.com/torvalds/linux/commit/848f3c0d4769)
+
+[^smx-sonic-next_csid]: **SONiC:** uN, uA, uDT, uDX; static config defaults to F3216. Source: [SONiC 202211 release notes](https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202211_Release_Notes.md); [SONiC SRv6 static configuration HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_static_config_hld.md)
+
+[^smx-vpp-next_csid]: **FD.io VPP:** uN 20.05, uA 25.02; 16- or 32-bit uSIDs. Source: [VPP 20.05 release notes](https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v20.05.html); [VPP 25.02 release notes](https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v25.02.html)
+
+[^smx-cilium-next_csid]: **Cilium (open source):** Not in open-source Cilium; Isovalent Enterprise supports uSID. Source: [Cilium v1.20 source: bpf/lib/srv6.h (the whole open-source SRv6 datapath)](https://github.com/cilium/cilium/blob/v1.20.0/bpf/lib/srv6.h); [Cilium 1.13 release blog: SRv6 is an Isovalent Enterprise feature](https://isovalent.com/blog/post/cilium-release-113/)
+
+[^smx-junos-replace_csid]: **Juniper Junos / Junos Evolved:** Standards page for RFC 9800: only SRv6 micro-SIDs are supported. Source: [Juniper: Supported segment routing standards](https://www.juniper.net/documentation/us/en/software/junos/standards/topics/concept/segment-routing.html)
+
+[^smx-vrp-replace_csid]: **Huawei VRP:** G-SRv6 with 32-bit (and 16-bit) G-SIDs. Release from Huawei's IETF implementation report. Source: [Huawei NetEngine 8000 V800R025C00: G-SRv6 compression](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0000001456130469); [draft-ietf-spring-srv6-srh-compression-23, implementation status (Huawei)](https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression-23)
+
+[^smx-frr-replace_csid]: **FRRouting:** SID formats: usid-f3216 and uncompressed only. Source: [FRR 10.7.1 zebra documentation: SRv6 SID formats](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/zebra.rst?plain=1#L1132-L1139)
+
+[^smx-sonic-hld-sai]: **SONiC:** [SONiC SRv6 HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_hld.md); [SAI saisrv6.h (SRv6 behaviors SAI can express)](https://github.com/opencomputeproject/SAI/blob/master/inc/saisrv6.h)
+
+[^smx-iosxr-rn661]: **Cisco IOS-XR:** [Cisco NCS 5500 Release Notes, IOS XR 6.6.1](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/general/66x/release/notes/b-release-notes-ncs5500-r661.html)
+
+[^smx-junos-isis]: **Juniper Junos / Junos Evolved:** MX (MPC7E or newer); ACX7000 23.1R1; PTX10002-36QDD 24.2R2; PTX10008 24.4R1-S2. Source: [Junos OS 20.3 In Focus Guide](https://www.juniper.net/documentation/en_US/junos/information-products/pathway-pages/infocus/20.3/infocus-junos-20.3.pdf)
+
+[^smx-eos-isis]: **Arista EOS:** 7280R4 and 7800R4 series only. Source: [Arista EOS 4.36.2F User Manual: IS-IS (Configuring SRv6 for IS-IS)](https://www.arista.com/en/um-eos/eos-is-is)
+
+[^smx-sros-ug267-acgsrv6]: **Nokia SR OS:** [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: Segment Routing with IPv6 data plane (21.5.R2 on FP4)](https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c233-seg-rout-ipv6.html)
+
+[^smx-frr-rn91]: **FRRouting:** [FRR 9.1 release notes](https://frrouting.org/release/9.1/)
+
+[^smx-linux-dp]: **Linux kernel:** [srv6.md: SRv6 on Linux — the kernel is a data plane; control planes such as FRRouting program it](https://srv6.md/implementations/linux-kernel/)
+
+[^smx-sonic-isis]: **SONiC:** The SONiC FRR container does not run isisd; SIDs come from BGP or static config. Source: [sonic-buildimage FRR container supervisord config (daemons launched)](https://github.com/sonic-net/sonic-buildimage/blob/master/dockers/docker-fpm-frr/frr/supervisord/supervisord.conf.common.j2)
+
+[^smx-vpp-dp]: **FD.io VPP:** [FD.io VPP 26.06 feature list: VPP is a data plane with no routing protocols](https://s3-docs.fd.io/vpp/26.06/aboutvpp/featurelist.html)
+
+[^smx-cilium-bgpcp]: **Cilium (open source):** [Cilium docs: BGP Control Plane (BGP only, no IGP or PCEP)](https://docs.cilium.io/en/stable/network/bgp-control-plane/bgp-control-plane/)
+
+[^smx-sros-ospfv3]: **Nokia SR OS:** IS-IS is the only SRv6 IGP; RFC 9513 is not in the standards list. Source: [Nokia SR OS 26.7 Standards and protocol support](https://documentation.nokia.com/sr/26-7/7750-sr/books/common/dita_standards-10.html); [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html)
+
+[^smx-frr-ospfv3]: **FRRouting:** ospf6d has no SRv6; FRR OSPF segment routing is OSPFv2 SR-MPLS. Source: [FRR 10.7.1 ospfd documentation: segment routing is OSPFv2 SR-MPLS only](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/ospfd.rst?plain=1#L1238-L1242)
+
+[^smx-sonic-ospfv3]: **SONiC:** The SONiC FRR container does not run ospf6d. Source: [sonic-buildimage FRR container supervisord config (daemons launched)](https://github.com/sonic-net/sonic-buildimage/blob/master/dockers/docker-fpm-frr/frr/supervisord/supervisord.conf.common.j2)
+
+[^smx-iosxr-bgp_l3vpn]: **Cisco IOS-XR:** uSID L3VPN from 7.3.1. Source: [Cisco NCS 5500 Release Notes, IOS XR 6.6.1](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/general/66x/release/notes/b-release-notes-ncs5500-r661.html); [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-bgp_l3vpn]: **Cisco IOS-XE:** VPNv4/VPNv6 with per-VRF SIDs; ODN from 17.13.1a. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-bgp_l3vpn]: **Juniper Junos / Junos Evolved:** Inter-AS Option C supported, Option B not. Source: [Juniper: SRv6 Network Programming and Layer 3 Services in BGP Networks](https://www.juniper.net/documentation/us/en/software/junos/segment-routing/topics/topic-map/bgp-srv6-network-programming.html)
+
+[^smx-eos-bgp_l3vpn]: **Arista EOS:** Interop-tested as PE at EANTC (7280R3 2025, 7280R4 2026); not in Arista's public docs. Source: [EANTC 2025 interop report: L3VPN over SRv6](https://wiki.eantc.de/wiki/publicreports/view/Main/Multi-Vendor%20MPLS%20%26%20SDN%20Interoperability%20Test%20Report%202025/SRv6/L3VPN%20over%20SRv6); [EANTC 2026 interop report: L3VPN over SRv6](https://wiki.eantc.de/wiki/publicreports/view/Main/EANTC%20Transport%20%26%20Cloud%20Networks%20Interop%20Test%20Report%202026/SRv6/L3VPN%20%20over%20SRv6)
+
+[^smx-frr-bgp_l3vpn]: **FRRouting:** VPNv6 8.1, VPNv4 8.3; multiple locators and per-VRF locator 10.5. Source: [FRR 8.1 bgpd documentation: L3VPN SRv6](https://github.com/FRRouting/frr/blob/frr-8.1/doc/user/bgp.rst?plain=1#L2689-L2701); [FRR PR #9649: SRv6 IPv4 L3VPN](https://github.com/FRRouting/frr/pull/9649)
+
+[^smx-sonic-bgp_l3vpn]: **SONiC:** SRv6 VPN code in srv6orch; not in the release notes. Source: [SONiC SRv6 VPN HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_vpn.md); [sonic-swss PR #3293: SRv6 VPN in srv6orch](https://github.com/sonic-net/sonic-swss/pull/3293)
+
+[^smx-cilium-bgp_l3vpn]: **Cilium (open source):** Not in open-source Cilium; SRv6 L3VPN is an Isovalent Enterprise feature (Beta since 1.13). Source: [Cilium v1.20 source: BGP advertisement types](https://github.com/cilium/cilium/blob/v1.20.0/pkg/k8s/apis/cilium.io/v2/bgp_advert_types.go); [Isovalent Enterprise for Cilium 1.13: SRv6 L3VPN (Beta)](https://isovalent.com/blog/post/isovalent-enterprise-1-13/)
+
+[^smx-iosxr-bgp_evpn]: **Cisco IOS-XR:** EVPN-VPWS 7.3.2, E-LAN 7.5.2, RT5 7.9.1 (ASR 9000). Source: [Cisco ASR 9000 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/24xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-24xx/configure-srv6-micro-sid.html); [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-junos-bgp_evpn]: **Juniper Junos / Junos Evolved:** EVPN-VPWS MX 22.3R1; E-LAN MX 23.4R1. Source: [Juniper Feature Explorer: EVPN over SRv6](https://apps.juniper.net/feature-explorer/feature/7314); [Juniper CLI reference: vpws-service-id](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/vpws-service-id.html)
+
+[^smx-eos-bgp_evpn]: **Arista EOS:** EVPN RT5 interop-tested as PE at EANTC 2025 and 2026; not in Arista's public docs. Source: [EANTC 2025 interop report: EVPN RT5 over SRv6](https://wiki.eantc.de/wiki/publicreports/view/Main/Multi-Vendor%20MPLS%20%26%20SDN%20Interoperability%20Test%20Report%202025/SRv6/EVPN%20RT5%20over%20SRv6); [EANTC 2026 interop report: EVPN RT5 over SRv6](https://wiki.eantc.de/wiki/publicreports/view/Main/EANTC%20Transport%20%26%20Cloud%20Networks%20Interop%20Test%20Report%202026/SRv6/EVPN%20RT5%20over%20SRv6)
+
+[^smx-sros-bgp_evpn]: **Nokia SR OS:** EVPN-IFL 22.5.R1; EVPN-VPLS and VPWS 22.7.R1. Source: [Nokia Advanced Configuration Guide: VPRN EVPN-IFL over SRv6](https://documentation.nokia.com/acg/25-3-2/books/layer-2-services-evpn-classic/c252-vprn-evpn-ifl-srv6.html); [Nokia Advanced Configuration Guide: EVPN-VPLS over SRv6](https://documentation.nokia.com/acg/25-3-2/books/layer-2-services-evpn-classic/c254-evpn-vpls-srv6.html); [Nokia Advanced Configuration Guide: EVPN-VPWS with SRv6 transport](https://documentation.nokia.com/acg/25-3-2/books/layer-2-services-evpn-classic/c244-evpn-vpws-services-with-srv6-transport.html)
+
+[^smx-vrp-bgp_evpn]: **Huawei VRP:** EVPN L3VPN, VPWS and VPLS. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration)
+
+[^smx-frr-bgp_evpn]: **FRRouting:** Not in any release up to 10.7.1; L3 EVPN (RT5) over SRv6 is merged for 10.8. Source: [FRR PR #21927: SRv6 L3 EVPN (merged for 10.8)](https://github.com/FRRouting/frr/pull/21927)
+
+[^smx-sonic-bgp_evpn]: **SONiC:** SAI has no L2 SRv6 behaviors. Source: [SAI saisrv6.h (SRv6 behaviors SAI can express)](https://github.com/opencomputeproject/SAI/blob/master/inc/saisrv6.h)
+
+[^smx-cilium-advtypes]: **Cilium (open source):** [Cilium v1.20 source: BGP advertisement types](https://github.com/cilium/cilium/blob/v1.20.0/pkg/k8s/apis/cilium.io/v2/bgp_advert_types.go)
+
+[^smx-iosxr-bgp_global]: **Cisco IOS-XR:** IPv6 7.2.2, IPv4 7.5.1 (NCS 5500). Source: [Cisco NCS 5500 Segment Routing Configuration Guide 26.x: Configure SRv6 with Full-Length SIDs](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx/configure-srv6-full-length-sid.html); [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-junos-advsrv6]: **Juniper Junos / Junos Evolved:** [Juniper CLI reference: advertise-srv6-service (family inet unicast)](https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/advertise-srv6-service-edit-protocols-bgp-family-inet-unicast.html)
+
+[^smx-sros-acgbase]: **Nokia SR OS:** [Nokia Advanced Configuration Guide: SRv6 encapsulation in the base routing instance](https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c234-srv6-enc-baseroutinginst.html)
+
+[^smx-frr-rn106]: **FRRouting:** [FRR 10.6.0 release notes](https://frrouting.org/release/10.6.0/)
+
+[^smx-iosxr-bgp_ls]: **Cisco IOS-XR:** Release stated for Cisco 8000. Source: [Cisco 8000 SRv6 Configuration Guide: SRv6 SID information in BGP-LS reporting](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/SRv6/srv6-config-guide-cisco8000/advanced-srv6-layer-3-features/srv6-sid-information-in-bgp-ls-reporting.html)
+
+[^smx-junos-bgp_ls]: **Juniper Junos / Junos Evolved:** MX960 21.3R1; MX10004 22.3R1. Source: [Juniper Feature Explorer: BGP-LS SRv6](https://apps.juniper.net/feature-explorer/feature/5654)
+
+[^smx-sros-bgp_ls]: **Nokia SR OS:** IS-IS topologies only. Source: [Nokia SR OS 26.7 Unicast Routing Protocols Guide: BGP (BGP-LS)](https://documentation.nokia.com/sr/26-7/7x50-shared/unicast-routing-protocols/bgp.html)
+
+[^smx-frr-rn107]: **FRRouting:** [FRR 10.7.0 release notes](https://frrouting.org/release/10.7.0/)
+
+[^smx-iosxr-pcep]: **Cisco IOS-XR:** PCE-delegated SRv6 policies; PCE-initiated SRv6 policies listed as not supported. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 7.10.x: SRv6 Traffic Engineering](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/710x/configuration/guide/b-segment-routing-cg-ncs5500-710x/configure-srv6-traffic-engineering.html); [Cisco 8000 Segment Routing Configuration Guide 7.10.x: SRv6 Traffic Engineering](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/710x/configuration/guide/b-segment-routing-cg-cisco8000-710x/m-configuring-srv6-traffic-engineering-8000.html)
+
+[^smx-iosxe-pcep]: **Cisco IOS-XE:** PCE-delegated computation only; PCE-initiated policies are not supported. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-pcep]: **Juniper Junos / Junos Evolved:** MX10004 22.3R1; RFC 9603 partial (no NAI-to-SID resolution). Source: [Juniper: Supported segment routing standards](https://www.juniper.net/documentation/us/en/software/junos/standards/topics/concept/segment-routing.html)
+
+[^smx-sros-pcep]: **Nokia SR OS:** First documented in 26.7. Source: [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html)
+
+[^smx-frr-pcep]: **FRRouting:** pathd and PCEP are SR-MPLS only. Source: [FRR 10.7.1 pathd documentation (MPLS-based)](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/pathd.rst?plain=1#L7-L17)
+
+[^smx-iosxr-sr_policy]: **Cisco IOS-XR:** Local and PCE-delegated SRv6-TE with uSID segments; the BGP SR Policy SAFI does not carry SRv6 segments. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 7.10.x: SRv6 Traffic Engineering](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/710x/configuration/guide/b-segment-routing-cg-ncs5500-710x/configure-srv6-traffic-engineering.html); [IETF IDR implementation report: BGP SR Policy SAFI](https://wiki.ietf.org/group/idr/implementations/draft-ietf-idr-sr-policy-safi)
+
+[^smx-iosxe-sr_policy]: **Cisco IOS-XE:** Local SRv6-TE with dynamic segment lists only; no explicit lists, no Binding SID, no BGP SR Policy. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-sr_policy]: **Juniper Junos / Junos Evolved:** Static and PCEP SRv6-TE policies; BGP SR Policy SAFI with SRv6 is not documented. Source: [Juniper BGP User Guide (PDF): SR-TE policy for SRv6 tunnels](https://www.juniper.net/documentation/us/en/software/junos/bgp/bgp.pdf)
+
+[^smx-eos-sr_policy]: **Arista EOS:** EOS SR-TE policy is documented for SR-MPLS only. Source: [Arista TOI: SR-TE policy (EOS 4.21.0F)](https://www.arista.com/en/support/toi/eos-4-21-0f/14071-segment-routing-traffic-engineering-policy-sr-te)
+
+[^smx-sros-sr_policy]: **Nokia SR OS:** Static and BGP SR Policy (SAFI 73); uSID in policies documented from 23.10. Source: [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: SRv6 policies for Layer 2 and Layer 3 services](https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c255-srv6-policy-layer2-layer3-services.html)
+
+[^smx-vrp-sr_policy]: **Huawei VRP:** SRv6 TE Policy, from local configuration, PCEP or the BGP SR Policy address family. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration)
+
+[^smx-frr-sr_policy]: **FRRouting:** Static routes into SRv6 SID lists (IPv6 9.1, IPv4 10.4); no SR Policy construct. Source: [FRR 10.7.1 staticd documentation: SRv6 SIDs and segment routes](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L319-L362)
+
+[^smx-linux-sr_policy]: **Linux kernel:** seg6 routes steer into explicit SID lists; no SR Policy construct. Source: [ip-route(8): seg6 encapsulation with explicit segment lists](https://man7.org/linux/man-pages/man8/ip-route.8.html)
+
+[^smx-sonic-sr_policy]: **SONiC:** Static steering into SID lists; no BGP SR Policy. Source: [SONiC SRv6 HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_hld.md); [sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)](https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp)
+
+[^smx-vpp-sr_policy]: **FD.io VPP:** Local SR policies with steering; no BGP SR Policy. Source: [FD.io VPP 26.06 docs: SR policies](https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_policy.html); [FD.io VPP 26.06 docs: SR steering](https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_steering.html)
+
+[^smx-cilium-sr_policy]: **Cilium (open source):** Single-SID encapsulation only. Source: [Cilium 1.13 release blog: SRv6 is an Isovalent Enterprise feature](https://isovalent.com/blog/post/cilium-release-113/)
+
+[^smx-iosxe-tilfa]: **Cisco IOS-XE:** [Cisco IOS XE 17: IS-IS SRv6 TI-LFA](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_isis-srv6-tilfa-frr.html)
+
+[^smx-junos-ti_lfa]: **Juniper Junos / Junos Evolved:** uSID 23.4R1; SRLG-aware from 26.2R1. Source: [Junos OS 20.3 In Focus Guide](https://www.juniper.net/documentation/en_US/junos/information-products/pathway-pages/infocus/20.3/infocus-junos-20.3.pdf); [Juniper Feature Explorer: SRLG-aware TI-LFA (IS-IS IPv6 SRLG)](https://apps.juniper.net/feature-explorer/feature/9377)
+
+[^smx-eos-ti_lfa]: **Arista EOS:** The IS-IS SRv6 TOI is tagged TI-LFA, but its body needs a login and the manual does not document it. Source: [Arista TOI listing: SRv6](https://www.arista.com/en/support/toi/tag/srv6)
+
+[^smx-sros-ti_lfa]: **Nokia SR OS:** Repair tunnels use H.Insert.Red; H.Encaps.Red repair tunnels from other vendors are terminated. Source: [Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html); [Nokia Advanced Configuration Guide: SRv6 loop-free alternate](https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c239-srv6-loop-free-alternate.html)
+
+[^smx-vrp-ti_lfa]: **Huawei VRP:** IS-IS and OSPFv3; with compression, only 32-bit C-SIDs. Source: [Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration)
+
+[^smx-frr-ti_lfa]: **FRRouting:** isisd TI-LFA computes SR-MPLS repair paths only. Source: [FRR 10.7.1 source: isisd/isis_lfa.c (TI-LFA builds MPLS label stacks)](https://github.com/FRRouting/frr/blob/frr-10.7.1/isisd/isis_lfa.c#L428-L436)
+
+[^smx-iosxr-microloop]: **Cisco IOS-XR:** Earliest entry found: microloop avoidance with Flex-Algo on ASR 9000. Source: [Cisco ASR 9000 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/24xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-uloop]: **Cisco IOS-XE:** [Cisco IOS XE 17: SRv6 microloop avoidance](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6-uloop-avoid.html)
+
+[^smx-junos-fe5681]: **Juniper Junos / Junos Evolved:** [Juniper Feature Explorer: IS-IS microloop avoidance for SRv6](https://apps.juniper.net/feature-explorer/feature/5681)
+
+[^smx-sros-microloop]: **Nokia SR OS:** First documented in 26.3. Source: [Nokia SR OS 26.3 Segment Routing and PCE User Guide: SRv6](https://documentation.nokia.com/sr/26-3/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html)
+
+[^smx-frr-frr]: **FRRouting:** [FRR 10.7.1 isisd documentation: fast reroute (LFA, Remote LFA, TI-LFA)](https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/isisd.rst?plain=1#L141-L147)
+
+[^smx-iosxr-flex_algo]: **Cisco IOS-XR:** Up to 8 locators, algorithms 128-255. Source: [Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html)
+
+[^smx-iosxe-flex_algo]: **Cisco IOS-XE:** Up to 8 algorithms, single IS-IS level. Source: [Cisco IOS XE 17: SRv6 Flex-Algo with TI-LFA and microloop avoidance](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m-srv6-flex-algo-with-ti-lfa-and-uloop-avoidance.html)
+
+[^smx-junos-flex_algo]: **Juniper Junos / Junos Evolved:** uSID 23.4R1. One Flex-Algo definition covers SR-MPLS and SRv6. Source: [Junos OS 20.3 In Focus Guide](https://www.juniper.net/documentation/en_US/junos/information-products/pathway-pages/infocus/20.3/infocus-junos-20.3.pdf)
+
+[^smx-eos-flex_algo]: **Arista EOS:** 7280R4 and 7800R4 series only. Source: [Arista EOS 4.36.2F User Manual: IS-IS (Configuring SRv6 for IS-IS)](https://www.arista.com/en/um-eos/eos-is-is)
+
+[^smx-sros-acgfa]: **Nokia SR OS:** [Nokia Advanced Configuration Guide: SRv6 Flex-Algo for VPRN](https://documentation.nokia.com/acg/25-3-2/books/layer-3-services-classic/c242-srv6-flex-algo-for-vprn.html)
+
+[^smx-frr-flex_algo]: **FRRouting:** isisd rejects SRv6 Flex-Algo as not yet supported. Source: [FRR 10.7.1 source: isis_nb_config.c (SRv6 Flex-Algo not yet supported)](https://github.com/FRRouting/frr/blob/frr-10.7.1/isisd/isis_nb_config.c#L3040-L3045)
+
+[^smx-iosxr-multicast]: **Cisco IOS-XR:** Tree-SID is SR-MPLS only: SRv6 Tree-SID and SRv6 P2MP policies are listed as not supported. Source: [Cisco 8000 Segment Routing Configuration Guide 26.x: Tree-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/26xx/configuration/guide/b-segment-routing-cg-cisco8000-26xx/segment-routing-tree-segment-identifier.html); [Cisco NCS 5500 Segment Routing Configuration Guide 26.x: Tree-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx/segment-routing-tree-segment-identifier.html)
+
+[^smx-iosxe-multicast]: **Cisco IOS-XE:** IPv4 MVPN ingress replication (End.DTMC4); no Tree-SID. Source: [Cisco IOS XE 17: MVPN ingress replication over SRv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/mvpn-ingress-replication-over-srv6.html)
+
+[^smx-sros-multicast]: **Nokia SR OS:** Tree-SID SRv6 for NG-MVPN: static configuration, classic SIDs only, no protection. Source: [Nokia SR OS 26.7 Multicast Guide: SR P2MP policy (Tree-SID SRv6)](https://documentation.nokia.com/sr/26-7/7x50-shared/multicast/sr-p2mp-policy.html)
+
+[^smx-vrp-multicast]: **Huawei VRP:** Huawei documents BIERv6 for IPv6 multicast transport, not SRv6 replication segments. Source: [Huawei NetEngine 8000 V800R025C00: BIERv6 configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/b93747e7/bierv6-configuration)
+
+[^smx-vpp-multicast]: **FD.io VPP:** Spray policies replicate at the headend; not RFC 9524. Source: [FD.io VPP 26.06 docs: SR policies](https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_policy.html)
+
+[^smx-iosxr-rn661-c8koam]: **Cisco IOS-XR:** [Cisco NCS 5500 Release Notes, IOS XR 6.6.1](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/general/66x/release/notes/b-release-notes-ncs5500-r661.html); [Cisco 8000 SRv6 Configuration Guide: SRv6 OAM SID verification](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/SRv6/srv6-config-guide-cisco8000/srv6-with-full-length-sids/srv6-oam-sid-verification.html)
+
+[^smx-iosxe-ping_trace]: **Cisco IOS-XE:** SRv6 OAM in 17.12.1a; ping srv6 / traceroute srv6 commands from 17.16.1a. Source: [Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html)
+
+[^smx-junos-ping_trace]: **Juniper Junos / Junos Evolved:** ping srv6 21.3R1; traceroute srv6 22.3R1. Source: [Juniper: ping srv6](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/ref/command/ping-srv6.html)
+
+[^smx-eos-ping_trace]: **Arista EOS:** The target uN prefix must be configured on a loopback. Source: [Arista EOS 4.36.2F User Manual: Segment Routing over IPv6](https://www.arista.com/en/um-eos/eos-segment-routing-over-ipv6-srv6)
+
+[^smx-sros-oam267]: **Nokia SR OS:** [Nokia SR OS 26.7 OAM and Diagnostics Guide](https://documentation.nokia.com/sr/26-7/7x50-shared/oam-diagnostics/oam-fault-performance-tools-protocols.html)
+
+[^smx-iosxr-pm]: **Cisco IOS-XR:** Delay over SRv6 on Cisco 8000 in 7.4.1; SR policy liveness over SRv6 from 7.11.1. Source: [Cisco 8000 Segment Routing Configuration Guide 24.x: Performance Measurement](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/24xx/configuration/guide/b-segment-routing-cg-cisco8000-24xx/configuring-performance-measurement.html)
+
+[^smx-junos-pm]: **Juniper Junos / Junos Evolved:** TWAMP probes over SRv6 segment lists on PTX 24.4R1; MX 25.4R1. Source: [Junos 25.4R1 release notes: segment routing features](https://www.juniper.net/documentation/us/en/software/junos/release-notes/25.4/junos-release-notes-25.4r1/topics/new-features/feature-descriptions/segment-routing-3.html)
+
+[^smx-vrp-pm]: **Huawei VRP:** IFIT (alternate marking) on SRv6 paths; the STAMP and TWAMP Light chapters do not cover SRv6. Source: [Huawei NetEngine 8000 V800R025C00: IFIT configuration](https://support.huawei.com/enterprise/en/doc/EDOC1100519743/6331f549/ifit-configuration#EN-US_TASK_0000001277193221)
+
+[^smx-vpp-pm]: **FD.io VPP:** SRv6 Path Tracing, not STAMP or TWAMP. Source: [VPP 22.10 release notes](https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v22.10.html)
+
+[^smx-sros-mup]: **Nokia SR OS:** No RFC 9433 behaviors in the SRv6 chapter or the standards list. Source: [Nokia SR OS 26.7 Standards and protocol support](https://documentation.nokia.com/sr/26-7/7750-sr/books/common/dita_standards-10.html)
+
+[^smx-linux-mup]: **Linux kernel:** No RFC 9433 behaviors as of 7.3. Source: [Linux v7.3 seg6_local.c: action table](https://github.com/torvalds/linux/blob/v7.3/net/ipv6/seg6_local.c#L1584-L1680)
+
+[^smx-vpp-mup]: **FD.io VPP:** srv6-mobile plugin: GTP-U behaviors, no End.MAP. Source: [FD.io VPP 26.06 docs: SRv6 mobile plugin](https://s3-docs.fd.io/vpp/26.06/developer/plugins/srv6/mobile_plugin_doc.html); [VPP 20.01 release notes](https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v20.01.html)
 
 
 ---
@@ -9959,6 +10501,7 @@ After review of the all-in-one submission, the author split the work into **per-
 
 ## Further Reading
 
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - The kernel next to FRR, VPP and vendor routers, behavior by behavior
 - [Network Programming](https://srv6.md/topics/network-programming/) - What each behavior does, per RFC 8986
 - [Containerlab](https://srv6.md/labs/containerlab/) - Build a multi-node Linux SRv6 lab
 - [FRRouting](https://srv6.md/implementations/frrouting/) - Add routing protocol support
@@ -9985,22 +10528,29 @@ After review of the all-in-one submission, the author split the work into **per-
 
 ---
 
-# SRv6 with Cilium: eBPF L3VPN for Kubernetes
+# SRv6 with Cilium: eBPF Datapath and L3VPN for Kubernetes
 
 URL: https://srv6.md/implementations/cilium/
 Path: implementations/cilium.md
-Summary: SRv6 L3VPN and cloud-native networking with Cilium eBPF — connecting Kubernetes clusters to an SRv6 fabric using BGP and eBPF-accelerated data plane.
+Summary: What SRv6 in Cilium really is: a hidden beta eBPF datapath in open-source Cilium since 1.13, and SRv6 L3VPN with uSID in Isovalent Enterprise for Cilium.
 
 # SRv6 with Cilium (eBPF)
 
-**Cilium** is an open-source, eBPF-based networking solution for Kubernetes that brings SRv6 into the cloud-native world. Instead of relying on the kernel's routing stack, Cilium programs eBPF maps in the kernel data path — enabling SRv6 encapsulation and decapsulation at line rate without context switching.
+**Cilium** is the eBPF-based networking layer (CNI) for Kubernetes. It can make each Kubernetes node an SRv6 endpoint: pod traffic is encapsulated into SRv6 by eBPF programs on the node, and SRv6 packets addressed to the node's SIDs are decapsulated into the right tenant. What you get depends on which Cilium you run:
 
-!!! info "Minimum version"
-    SRv6 L3VPN support requires **Cilium 1.13+** (alpha). Production-ready use is recommended on **Cilium 1.15+**.
+| | Open-source Cilium | Isovalent Enterprise for Cilium |
+|---|---|---|
+| SRv6 datapath (eBPF encap/decap) | Since **1.13**, behind the hidden agent flag `--enable-srv6`, labelled **beta**; still hidden in 1.20 | Yes |
+| Control plane (locators, SID allocation, VRFs, BGP VPN routes) | **None** — nothing in open source programs the SRv6 maps | Yes: SRv6 L3VPN, **Beta** since Enterprise 1.13 |
+| uSID (F3216) | No | Yes (locator pools with `behaviorType: uSID`) |
+| Helm values | None for SRv6 | `enterprise.srv6.*` |
+
+!!! warning "SRv6 L3VPN is not an open-source Cilium feature"
+    The [Cilium 1.13 release blog](https://isovalent.com/blog/post/cilium-release-113/) lists SRv6 under "Isovalent Cilium Enterprise", and open-source Cilium has no SRv6 documentation page, CRD or Helm value. If you need SRv6 L3VPN to Kubernetes pods today, you need the Enterprise product, or you build your own control plane that programs the eBPF maps.
 
 ## Why Cilium + SRv6?
 
-Traditional SRv6 implementations (Cisco, Juniper, FRRouting) live on routers. Cilium extends the SRv6 fabric **into the Kubernetes node** — each worker node becomes an SRv6 endpoint with its own locator, SIDs, and BGP session.
+Router-based SRv6 implementations (IOS-XR, Junos, SR OS, FRRouting) stop at the PE. With SRv6 in the CNI, the fabric extends **into the Kubernetes node**: each worker node gets its own locator and SIDs and exchanges VPN routes with the PE routers over BGP, so tenant traffic leaves the node already encapsulated.
 
 ```mermaid
 graph TB
@@ -10008,300 +10558,103 @@ graph TB
         P1[Pod] --> N1["K8s Node\n(Cilium agent\n+ eBPF SRv6)"]
     end
     subgraph SRv6 Fabric
-        R1[PE Router] <-->|"BGP VPNv4/v6\nSRv6 SIDs"| N1
-        R1 <-->|"IS-IS/OSPFv3"| R2[P Router]
-        R2 <-->|"BGP VPNv4/v6\nSRv6 SIDs"| N2
+        R1[PE / Route Reflector] <-->|"BGP VPNv4/v6\nSRv6 Prefix-SID"| N1
+        R1 <-->|"IS-IS"| R2[P Router]
+        R2 <-->|"BGP VPNv4/v6\nSRv6 Prefix-SID"| N2
     end
     subgraph K8s Cluster B
         N2["K8s Node\n(Cilium agent\n+ eBPF SRv6)"] --> P2[Pod]
     end
-    style P1 fill:#1b5e2026,stroke:#1b5e20
-    style P2 fill:#1b5e2026,stroke:#1b5e20
 ```
 
-This makes each K8s node a first-class SRv6 PE — pod traffic is natively encapsulated into SRv6 by eBPF before it leaves the NIC, integrating seamlessly with a carrier-grade SRv6 underlay.
+## The Open-Source Datapath
 
-## Supported SRv6 Behaviors
+All of open-source Cilium's SRv6 code is in [`bpf/lib/srv6.h`](https://github.com/cilium/cilium/blob/v1.20.0/bpf/lib/srv6.h) and the maps it reads. It implements:
 
-| Behavior | Role in Cilium | Status |
-|----------|---------------|:------:|
-| `H.Encaps` | Egress: encapsulate pod traffic into SRv6 | 1.13+ |
-| `End.DT4` | Ingress: decapsulate SRv6 → IPv4 VRF lookup | 1.13+ |
-| `End.DT6` | Ingress: decapsulate SRv6 → IPv6 VRF lookup | 1.13+ |
-| `H.Encaps.Red` | Reduced encapsulation (no SRH when single SID) | 1.15+ |
+| Function | RFC 8986 equivalent | Notes |
+|----------|--------------------|-------|
+| Encapsulation, `--srv6-encap-mode=reduced` (default) | H.Encaps.Red | Single SID in the outer destination address, no SRH |
+| Encapsulation, `--srv6-encap-mode=srh` | H.Encaps | Outer IPv6 header plus an SRH with exactly one SID |
+| Decapsulation to IPv4 or IPv6 when the destination matches a local SID | End.DT4 / End.DT6 | The SID maps to a VRF ID; the inner packet is re-run through the normal host ingress path |
 
-## Architecture
+There is no transit SRv6 processing (End, End.X), no multi-SID segment lists, no flavors, no L2 behaviors and no uSID in the open-source datapath. Both flags (`--enable-srv6`, `--srv6-encap-mode`) are hidden and marked beta in the agent ([source](https://github.com/cilium/cilium/blob/v1.20.0/daemon/cmd/daemon_main.go#L223-L234)). Reduced encapsulation has been the default since 1.13 ([source](https://github.com/cilium/cilium/blob/v1.13.0/pkg/defaults/defaults.go#L202-L203)).
 
-### How Cilium Implements SRv6 with eBPF
+### eBPF maps
 
-Cilium programs four eBPF maps per node that together implement the SRv6 data plane:
+| Map | Key → value | Purpose |
+|-----|-------------|---------|
+| `cilium_srv6_vrf_v4` / `cilium_srv6_vrf_v6` | source IP + destination CIDR → VRF ID | Classifies pod egress traffic into a VRF |
+| `cilium_srv6_policy_v4` / `cilium_srv6_policy_v6` | VRF ID + destination CIDR → SID | Picks the remote SID to encapsulate toward |
+| `cilium_srv6_sid` | local SID → VRF ID | Matches incoming SRv6 packets for decapsulation |
 
-| eBPF Map | Key | Value | Purpose |
-|----------|-----|-------|---------|
-| `cilium_srv6_vrf` | Source IP + VRF ID | SRv6 locator | Maps pod traffic to a VRF |
-| `cilium_srv6_policy` | Destination CIDR + VRF | Egress SID | Selects the SRv6 SID for encapsulation |
-| `cilium_srv6_sid` | SRv6 SID | VRF table ID | Maps incoming SIDs to a local VRF for decapsulation |
-| `cilium_srv6_state` | Flow state | — | Tracks active SRv6 flows for telemetry |
+Older releases (up to 1.15) also had `cilium_srv6_state_v4/_v6` maps; they were later removed.
 
-At **egress**, the eBPF TC program looks up the destination in `cilium_srv6_policy`, prepends the SRv6 outer header (`H.Encaps`), and sends the packet into the underlay.
+### Where it runs
 
-At **ingress**, the eBPF XDP program matches the destination SID against `cilium_srv6_sid`, strips the SRv6 header, and injects the inner packet into the correct VRF (`End.DT4` / `End.DT6`).
+Both directions are **TC** programs, not XDP: encapsulation runs on pod egress (`bpf_lxc.c`, tail call `CILIUM_CALL_SRV6_ENCAP`) and decapsulation in `cil_from_netdev` in [`bpf_host.c`](https://github.com/cilium/cilium/blob/v1.20.0/bpf/bpf_host.c#L324-L337). The XDP program explicitly skips SRv6 handling. eBPF programs run inside the kernel; this is not kernel bypass.
 
-### BGP Control Plane
-
-Cilium uses an integrated BGP control plane (backed by **GoBGP** or **FRRouting**) to:
-
-- Advertise the node's SRv6 **locator prefix** to PE routers
-- Exchange **VPNv4/VPNv6** routes with route targets for L3VPN
-- Receive remote SIDs and program them into `cilium_srv6_policy`
-
-No external router daemon required — Cilium manages BGP sessions directly via `CiliumBGPPeeringPolicy` CRDs.
-
-### One BGP Session — All VRFs
-
-!!! warning "Common misconception"
-    Cilium does **not** open one BGP session per VRF, nor does it use BGP EVPN (L2VPN AFI 25). It behaves exactly like a traditional PE router: **one BGP session per peer**, carrying routes for all VRFs simultaneously over the **VPNv6 address family** (AFI 2 / SAFI 128).
-
-A single `CiliumBGPPeeringPolicy` neighbor entry covers every tenant/VRF on that node:
-
-```
-Cilium Node (worker-1)  ←──── 1 TCP session (port 179) ────→  PE Router
-                                         │
-                         BGP UPDATE messages contain:
-                         ┌─────────────────────────────────────────┐
-                         │ AFI 2 / SAFI 128 (VPNv6)               │
-                         │                                         │
-                         │  RD 65100:100 | RT 65000:100           │
-                         │    prefix: 10.0.1.0/24                  │
-                         │    next-hop SRv6 SID: fc00:0:10::dt6:100│ ← VRF Tenant-A
-                         │                                         │
-                         │  RD 65100:200 | RT 65000:200           │
-                         │    prefix: 10.0.2.0/24                  │
-                         │    next-hop SRv6 SID: fc00:0:10::dt6:200│ ← VRF Tenant-B
-                         │                                         │
-                         │  RD 65100:300 | RT 65000:300           │
-                         │    prefix: 10.0.3.0/24                  │
-                         │    next-hop SRv6 SID: fc00:0:10::dt6:300│ ← VRF Tenant-C
-                         └─────────────────────────────────────────┘
-```
-
-The PE router uses the **Route Target (RT)** to import each prefix into the correct VRF — no separate BGP session needed.
-
-### VPNv6 vs BGP EVPN — Key Differences
-
-Both can carry L3 reachability for SRv6 tenants, but they are completely different address families:
-
-| | **BGP VPNv6** (Cilium) | **BGP EVPN Type 5** |
-|---|---|---|
-| AFI / SAFI | 2 / 128 | 25 / 70 |
-| NLRI type | VPNv6 prefix + RD | EVPN Route Type 5 (IP Prefix) |
-| Original purpose | MPLS L3VPN (adapted for SRv6) | L2VPN, extended to L3 via Type 5 |
-| Next-hop encoding | SRv6 SID as BGP next-hop | SRv6 SID in Tunnel Encap attribute |
-| VRF signaling | Route Target extended community | Route Target extended community |
-| MAC/L2 info | None — L3 only | Carries MAC+IP (Type 2) |
-| Valid for SRv6 L3VPN? | Yes | Yes (RFC 9252 §5) |
-| Cilium uses it? | Yes | No (implementation choice) |
-
-!!! info "Both are valid for SRv6 L3VPN — but Cilium only speaks VPNv6"
-    EVPN Type 5 (IP Prefix routes) over SRv6 is fully valid per RFC 9252 and widely deployed in carrier and DC fabrics. However, **Cilium's BGP control plane does not implement AFI 25 / SAFI 70 (L2VPN EVPN)**. It only negotiates VPNv6 (AFI 2 / SAFI 128). If your SRv6 fabric uses EVPN Type 5 for L3VPN, Cilium cannot peer directly with those PE routers.
-
-### Interoperability Gap: Cilium ↔ EVPN Fabrics
-
-This is a real-world limitation. If your network already runs EVPN Type 5 over SRv6 (common in DC fabrics using SONiC, Juniper, or Cisco NCS), you have three options:
-
-| Option | How | Trade-off |
-|--------|-----|-----------|
-| **Route Reflector translation** | Deploy an RR (e.g. FRRouting) between Cilium and the PE. The RR peers with Cilium via VPNv6 and re-advertises towards the fabric via EVPN Type 5 | Extra hop in control plane; RR becomes a dependency |
-| **Dual address-family on the PE** | Configure the PE to peer with Cilium using VPNv6 *and* continue using EVPN with the rest of the fabric | Requires PE support; routes must be redistributed between AFIs on the PE |
-| **Wait for Cilium EVPN support** | EVPN is on the Cilium roadmap but not yet implemented for SRv6 | No ETA as of Cilium 1.15 |
-
-```mermaid
-graph LR
-    C["Cilium Node\nVPNv6 only\nAFI 2/128"] -->|"VPNv6"| RR["Route Reflector\nFRRouting\n(bridge)"]
-    RR -->|"EVPN Type 5\nAFI 25/70"| PE["PE Router\nEVPN fabric"]
-    style RR fill:#1b5e2026,stroke:#1b5e20
-```
-
-## Installation
-
-### Enable SRv6 via Helm
+### Inspecting the datapath
 
 ```bash
-helm install cilium cilium/cilium \
-  --namespace kube-system \
-  --set bgpControlPlane.enabled=true \
-  --set srv6.enabled=true \
-  --set srv6.encapMode=srh        # or "reduced" for H.Encaps.Red
+# List the SRv6 maps (the agent CLI was renamed cilium-dbg in 1.15)
+cilium-dbg bpf srv6 vrf
+cilium-dbg bpf srv6 policy
+cilium-dbg bpf srv6 sid
 ```
 
-For Cilium 1.15+ with reduced encapsulation (recommended for production):
+Hubble flows carry the trace reasons `SRV6_ENCAP` and `SRV6_DECAP` (from 1.15). There are no SRv6-specific Prometheus metrics; SRv6 drops are counted by the generic drop metrics.
 
-```yaml
-# values.yaml
-bgpControlPlane:
-  enabled: true
+## Isovalent Enterprise: SRv6 L3VPN
 
-srv6:
-  enabled: true
-  encapMode: reduced    # uses H.Encaps.Red — no SRH when single SID
-```
+Isovalent Enterprise for Cilium adds the control plane. Its documentation requires a login, so the details below come from Isovalent's [Enterprise 1.13 announcement](https://isovalent.com/blog/post/isovalent-enterprise-1-13/) and from public Cisco lab material that runs the Enterprise product ([Cisco Live LTRSPG-2212 lab](https://github.com/cisco-asp-web/LTRSPG-2212/blob/main/lab_3/lab_3-guide.md)); check them against your release.
 
-```bash
-helm upgrade cilium cilium/cilium -f values.yaml -n kube-system
-```
+- **Locators and SIDs** — `IsovalentSRv6LocatorPool` (with `behaviorType: uSID` or `SRH`, e.g. a 32/16/16 F3216 structure) and `IsovalentSRv6SIDManager` allocate a per-node locator and per-VRF SIDs such as uDT4.
+- **VRFs** — `IsovalentVRF` classifies pods into tenants; route distinguishers and import/export route targets are set per VRF in `IsovalentBGPClusterConfig`.
+- **BGP** — the BGP control plane is GoBGP (open source and Enterprise alike; FRR is not used). The lab peers over **VPNv4** (`afi: ipv4, safi: mpls_vpn`) and advertises the locator itself as plain IPv6 unicast via `IsovalentBGPAdvertisement` (`advertisementType: SRv6LocatorPool`).
 
-## Configuration
+### How the routes are signaled
 
-### Step 1 — Assign a Locator to Each Node
+The signaling follows [RFC 9252](https://srv6.md/rfcs/rfc9252/), as on any SRv6 PE:
 
-Label each K8s node with its SRv6 locator prefix. Cilium allocates individual SIDs from this block for `End.DT4` / `End.DT6` behaviors.
+- **One BGP session per peer** carries the routes of every VRF; the route target extended communities place each prefix in the right VRF on the PE.
+- The **BGP next hop is the node's IPv6 address**. The Service SID travels in the **BGP Prefix-SID attribute** (SRv6 L3 Service TLV), with the function bits transposed into the label field. In the Cisco lab, the IOS-XR route reflector shows a uDT4 SID (behavior 63) learned from the Cilium node this way.
+- IPv4 tenant prefixes use **VPNv4** (AFI 1 / SAFI 128) and IPv6 prefixes VPNv6 (AFI 2 / SAFI 128).
 
-```bash
-kubectl label node worker-1 cilium.io/srv6-locator=fc00:0:10::/48
-kubectl label node worker-2 cilium.io/srv6-locator=fc00:0:11::/48
-```
+### EVPN fabrics
 
-### Step 2 — BGP Peering Policy
-
-```yaml
-apiVersion: cilium.io/v2alpha1
-kind: CiliumBGPPeeringPolicy
-metadata:
-  name: srv6-peering
-spec:
-  nodeSelector:
-    matchLabels:
-      kubernetes.io/os: linux
-  virtualRouters:
-    - localASN: 65100
-      exportPodCIDR: false          # pod CIDRs go via SRv6 L3VPN, not plain BGP
-      neighbors:
-        - peerAddress: "fc00:0:1::1/128"   # PE router SID/loopback
-          peerASN: 65000
-          families:
-            - afi: ipv6
-              safi: unicast
-            - afi: ipv6
-              safi: vpn-unicast     # VPNv6 for SRv6 L3VPN
-      srv6:
-        locatorPrefix: "fc00:0:10::/48"    # this node's SRv6 locator
-```
-
-### Step 3 — L3VPN (VRF) Mapping
-
-```yaml
-apiVersion: cilium.io/v2alpha1
-kind: CiliumBGPAdvertisement
-metadata:
-  name: tenant-a-vpn
-spec:
-  advertisements:
-    - advertisementType: "PodCIDR"
-      service:
-        addresses:
-          - ClusterIP
-      attributes:
-        community:
-          standard:
-            - "65000:100"            # route target for Tenant A VRF
-```
-
-### Step 4 — Verify SRv6 State
-
-```bash
-# Check Cilium SRv6 is active
-cilium status | grep -i srv6
-
-# Inspect eBPF SRv6 maps
-cilium bpf srv6 list
-
-# Check BGP session state
-cilium bgp peers
-
-# Verify advertised/received SRv6 SIDs
-cilium bgp routes advertised ipv6 vpn-unicast
-cilium bgp routes received  ipv6 vpn-unicast
-```
-
-## Full Traffic Walk
-
-```mermaid
-sequenceDiagram
-    participant Pod as Pod A (10.0.1.5)
-    participant eBPF as eBPF TC (egress)
-    participant Fab as SRv6 Fabric
-    participant eBPFr as eBPF XDP (ingress)
-    participant PodB as Pod B (10.0.2.7)
-
-    Pod->>eBPF: IPv4 packet → 10.0.2.7
-    eBPF->>eBPF: lookup cilium_srv6_policy<br/>→ SID fc00:0:11::dt4
-    eBPF->>Fab: SRv6 packet<br/>[fc00:0:11::dt4][IPv4: 10.0.2.7]
-    Fab->>eBPFr: Deliver to worker-2<br/>DST = fc00:0:11::dt4
-    eBPFr->>eBPFr: lookup cilium_srv6_sid<br/>→ VRF table 100
-    eBPFr->>eBPFr: End.DT4: strip SRv6 header<br/>inject inner IPv4 into VRF 100
-    eBPFr->>PodB: IPv4 packet → 10.0.2.7
-```
+Cilium does not speak BGP EVPN for SRv6; the open-source advertisement types are PodCIDR, CiliumPodIPPool, Service and Interface only ([source](https://github.com/cilium/cilium/blob/v1.20.0/pkg/k8s/apis/cilium.io/v2/bgp_advert_types.go)). If the rest of your fabric carries tenant routes as EVPN Route Type 5 over SRv6, the PE that peers with the Kubernetes nodes must run VPNv4/VPNv6 toward them and re-originate the routes into EVPN (a gateway function). A plain route reflector cannot do this: it reflects routes within the same address family.
 
 ## Comparison with Router-Based SRv6
 
-| Aspect | Cilium (eBPF) | FRRouting | Cisco IOS-XR |
-|--------|:-------------:|:---------:|:------------:|
-| Data plane | eBPF (kernel bypass) | Linux kernel routing | ASIC / NPU |
-| Control plane | GoBGP / FRR | FRR | IOS-XR BGP/IS-IS |
-| L3VPN support | | | |
-| Kubernetes-native | | | |
-| CRD-driven config | | | |
-| uSID support | Roadmap | | |
-| Hardware offload | Roadmap | | |
+| Aspect | Cilium (open source) | Isovalent Enterprise | FRRouting | Cisco IOS-XR |
+|--------|:--------------------:|:--------------------:|:---------:|:------------:|
+| Data plane | eBPF (TC) in the kernel | eBPF (TC) in the kernel | Linux kernel seg6 | ASIC / NPU |
+| Control plane | None for SRv6 | GoBGP + Kubernetes CRDs | FRR (IS-IS, BGP) | IOS-XR (IS-IS, BGP) |
+| L3VPN | | (Beta) | | |
+| uSID | | | | |
+| Kubernetes-native | | | | |
 
-## Observability
-
-Cilium exports SRv6 telemetry via **Hubble** (Cilium's observability layer):
-
-```bash
-# Install Hubble CLI
-hubble observe --type l3 --protocol SRv6
-
-# Flow-level SRv6 visibility
-hubble observe --namespace default \
-  --output json | jq 'select(.destination.srv6_sid != null)'
-```
-
-Key Prometheus metrics exported:
-
-| Metric | Description |
-|--------|-------------|
-| `cilium_srv6_encap_total` | Total SRv6 encapsulations by VRF |
-| `cilium_srv6_decap_total` | Total SRv6 decapsulations by behavior |
-| `cilium_srv6_drop_total` | SRv6 drops (no policy match, invalid SID) |
-| `cilium_bgp_session_state` | BGP session state per peer |
-
-## Vendor Support Matrix
-
-| Feature | Cilium 1.13 | Cilium 1.14 | Cilium 1.15+ |
-|---------|:-----------:|:-----------:|:------------:|
-| SRv6 L3VPN (alpha) | | | |
-| H.Encaps / End.DT4/DT6 | | | |
-| H.Encaps.Red | | | |
-| Hubble SRv6 visibility | | | |
-| Multi-cluster SRv6 | | | |
-| uSID | | | |
+See the [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) for open-source Cilium next to every other platform, behavior by behavior.
 
 ## Further Reading
 
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) -- Cilium, Linux, FRR, VPP and vendor routers side by side
 - [Host-Based SRv6](https://srv6.md/topics/host-based-srv6/) -- How end-hosts participate in SRv6 without router involvement
 - [BGP Overlay Services](https://srv6.md/topics/bgp-overlay-services/) -- VPNv4/VPNv6 signaling for SRv6 L3VPN
-- [Linux Kernel](https://srv6.md/implementations/linux-kernel/) -- SRv6 in the kernel that Cilium builds on
-- [FRRouting](https://srv6.md/implementations/frrouting/) -- Open-source BGP/IS-IS that can peer with Cilium
+- [Linux Kernel](https://srv6.md/implementations/linux-kernel/) -- The kernel's own seg6 data plane, which Cilium does not use for SRv6
+- [FRRouting](https://srv6.md/implementations/frrouting/) -- Open-source BGP/IS-IS for SRv6 on Linux hosts
 - [Cloud-Native Backbone](https://srv6.md/use-cases/cloud-native-backbone/) -- SRv6 in cloud and container environments
 
 ## References
 
-1. [Cilium SRv6 L3VPN Documentation](https://docs.cilium.io/en/stable/network/srv6l3vpn/) -- Official Cilium SRv6 configuration guide
-2. [RFC 8986 - SRv6 Network Programming](https://www.rfc-editor.org/rfc/rfc8986) -- Defines H.Encaps, End.DT4, End.DT6 behaviors used by Cilium
-3. [RFC 9252 - BGP Overlay Services Based on SRv6](https://www.rfc-editor.org/rfc/rfc9252) -- VPNv4/VPNv6 signaling with SRv6 Next Hop
-4. [Cilium GitHub — SRv6 eBPF maps](https://github.com/cilium/cilium/tree/main/pkg/maps/srv6map) -- Source code for the eBPF data structures
-5. [KubeCon 2023: Cilium SRv6 L3VPN](https://www.youtube.com/watch?v=R3WnCSOHK3E) -- Talk covering the Cilium SRv6 architecture and use cases
+1. [Cilium source: bpf/lib/srv6.h (v1.20.0)](https://github.com/cilium/cilium/blob/v1.20.0/bpf/lib/srv6.h) -- The complete open-source SRv6 datapath and map definitions
+2. [Cilium source: hidden SRv6 agent flags (v1.20.0)](https://github.com/cilium/cilium/blob/v1.20.0/daemon/cmd/daemon_main.go#L223-L234) -- `--enable-srv6` (beta) and `--srv6-encap-mode`
+3. [Cilium 1.13 release blog](https://isovalent.com/blog/post/cilium-release-113/) -- SRv6 listed under Isovalent Cilium Enterprise; single SID only at the time
+4. [Isovalent Enterprise for Cilium 1.13](https://isovalent.com/blog/post/isovalent-enterprise-1-13/) -- SRv6 L3VPN support, feature status Beta
+5. [cilium-dbg bpf srv6 command reference](https://docs.cilium.io/en/stable/cmdref/cilium-dbg_bpf_srv6/) -- Listing the SRv6 eBPF maps
+6. [Cisco Live LTRSPG-2212 lab guide](https://github.com/cisco-asp-web/LTRSPG-2212/blob/main/lab_3/lab_3-guide.md) -- Public lab running Isovalent Enterprise SRv6 L3VPN with uSID against IOS-XR (secondary source)
+7. [RFC 9252 - BGP Overlay Services Based on SRv6](https://www.rfc-editor.org/rfc/rfc9252) -- Service SIDs in the BGP Prefix-SID attribute
+8. [SRv6 on Cilium: an introductory demo (Isovalent)](https://youtu.be/k_2nMzxi1Hk) -- Video walkthrough of SRv6 L3VPN with Cilium
 
 
 ---
@@ -10609,6 +10962,7 @@ Performance context: cradle-rs's DIR-24-8 FIB engine sustains **~51 ns lookups a
 
 ## Further Reading
 
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) -- How router OSes and other open-source data planes compare
 - [uSID Compression](https://srv6.md/topics/usid-compression/) -- NEXT-C-SID and REPLACE-C-SID, both of which this stack implements
 - [Network Programming](https://srv6.md/topics/network-programming/) -- The RFC 8986 behavior catalog
 - [TI-LFA](https://srv6.md/topics/ti-lfa/) -- Fast reroute, implemented here over SRv6 with PSP repair
@@ -10725,6 +11079,7 @@ A VRF cannot be deleted while a SID, an ingress access circuit, or a BGP binding
 
 ## Further Reading
 
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) -- How router OSes and other open-source data planes compare
 - [Network Programming](https://srv6.md/topics/network-programming/) -- The RFC 8986 behavior catalog this implements
 - [5G Transport](https://srv6.md/use-cases/5g-transport/) -- Where the RFC 9433 mobile user plane behaviors belong
 - [zebra-rs (eBPF)](https://srv6.md/implementations/zebra-rs/) -- The other eBPF stack, approached from the routing side
@@ -10747,18 +11102,22 @@ A VRF cannot be deleted while a SID, an ingress access circuit, or a BGP binding
 
 URL: https://srv6.md/implementations/cisco-ios-xr/
 Path: implementations/cisco-ios-xr.md
-Summary: Configure SRv6 on Cisco IOS-XR: supported NCS, ASR 9000 and Cisco 8000 platforms, uSID locator and IS-IS setup, L3VPN over SRv6, and verification commands.
+Summary: Configure SRv6 on Cisco IOS-XR: supported NCS, ASR 9000 and Cisco 8000 platforms and releases, uSID locator and IS-IS setup, L3VPN over SRv6, and verification.
 
 # SRv6 on Cisco IOS-XR
 
-Cisco IOS-XR provides comprehensive SRv6 support across NCS and ASR platforms.
+Cisco IOS-XR has supported SRv6 since **Release 6.6.1** (full-length SIDs, IS-IS, TI-LFA, L3VPN and OAM on NCS 5500 and ASR 9000). SRv6 uSID (F3216, the NEXT-C-SID flavor of [RFC 9800](https://srv6.md/rfcs/rfc9800/)) arrived in **7.3.1** and is what Cisco has built most later features on: EVPN-VPWS (7.3.2), EVPN E-LAN (7.5.2), End.DT46 (7.8.1), path MTU discovery and traffic accounting. Full-length SIDs are still documented in the 26.x guides, but only one SID format can be used per network. Per-platform release numbers for every feature are in the [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/).
 
 ## Supported Platforms
 
-- NCS 5500 / 5700 Series
-- NCS 540 Series
-- ASR 9000 Series
-- Cisco 8000 Series (Silicon One)
+| Platform | SRv6 notes |
+|----------|-----------|
+| NCS 5500 / 5700 | First-generation NCS 5500 (Jericho) needs `hw-module profile segment-routing srv6 mode micro-segment format f3216` and a reload before uSID works; NCS 5700 sets the format under `segment-routing srv6` |
+| NCS 540 | uSID L3VPN and transport, as in the XRdocs tutorial series |
+| ASR 9000 | 3rd-, 4th- and 5th-generation line cards and IOS XRv 9000 |
+| Cisco 8000 (Silicon One) | Q200-based systems and later only; "SRv6 is not supported on Q100-based line cards and fixed-port routers" |
+
+Documented gaps worth knowing before a design review: SRv6 Tree-SID / P2MP multicast is not supported (Tree-SID is SR-MPLS only), per-CE uDX4/uDX6 allocation is not supported with uSID, PCE-initiated SRv6 policies are listed as unsupported, and the BGP SR Policy SAFI does not carry SRv6 segments.
 
 ## Basic Configuration
 
@@ -10794,6 +11153,7 @@ vrf CUSTOMER-A
 
 router bgp 65000
  vrf CUSTOMER-A
+  rd auto
   address-family ipv4 unicast
    segment-routing srv6
     locator MAIN
@@ -10817,7 +11177,8 @@ show bgp vpnv4 unicast vrf CUSTOMER-A
 ## Further Reading
 
 - [GNS3 Labs](https://srv6.md/labs/gns3/) - Test with IOS-XR images
-- [Cisco SRv6 Documentation](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/asr9k-r7-8/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-78x.html)
+- [Cisco ASR 9000 SRv6 Micro-SID Configuration Guide (24.x)](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/24xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-24xx/configure-srv6-micro-sid.html)
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - IOS-XR next to IOS-XE, Junos, EOS, SR OS and open-source platforms
 - [Cisco IOS-XE](https://srv6.md/implementations/cisco-ios-xe/) - SRv6 uSID on Cisco's enterprise and edge OS
 - [netlab Labs](https://srv6.md/labs/netlab/) - IOS-XR SRv6 lab topologies
 
@@ -10828,6 +11189,9 @@ show bgp vpnv4 unicast vrf CUSTOMER-A
 3. [Implementing Layer 3 VPN over SRv6 Transport on NCS 5500/500 (XRdocs)](https://xrdocs.io/ncs5500/tutorials/srv6-transport-on-ncs-part-2) - XRdocs tutorial on L3VPN services over SRv6
 4. [Cisco Converged SDN Transport SRv6 High Level Design (XRdocs)](https://xrdocs.io/design/blogs/latest-converged-sdn-transport-srv6) - SRv6 transport design guide for converged SDN networks
 5. [Cisco NCS 5500 Series Product Page](https://www.cisco.com/c/en/us/support/routers/network-convergence-system-5500-series/series.html) - NCS 5500 platform support portal with SRv6-capable hardware information
+6. [Cisco NCS 5500 Release Notes for IOS XR 6.6.1](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/general/66x/release/notes/b-release-notes-ncs5500-r661.html) - First SRv6 release: SRv6 base, IS-IS, TI-LFA, L3VPN and OAM
+7. [Cisco 8000 SRv6 Configuration Guide: Limitations of SRv6](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/SRv6/srv6-config-guide-cisco8000/srv6-fundamentals-and-key-concepts/limitations-of-srv6.html) - Q200-only support on Cisco 8000 and other restrictions
+8. [Cisco 8000 Segment Routing Configuration Guide 26.x: Tree-SID](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/26xx/configuration/guide/b-segment-routing-cg-cisco8000-26xx/segment-routing-tree-segment-identifier.html) - Tree-SID is SR-MPLS only; SRv6 Tree-SID is not supported
 
 
 ---
@@ -10836,31 +11200,39 @@ show bgp vpnv4 unicast vrf CUSTOMER-A
 
 URL: https://srv6.md/implementations/cisco-ios-xe/
 Path: implementations/cisco-ios-xe.md
-Summary: Configure SRv6 uSID on Cisco IOS-XE 8000 Series Secure Routers: F3216 locators, IS-IS, per-VRF L3VPN SIDs, Flex-Algo, TI-LFA and verification commands.
+Summary: Configure SRv6 uSID on Cisco IOS-XE (ASR 1000, Catalyst 8000, 8000 Secure Routers) since 17.12.1a: F3216 locators, IS-IS, per-VRF L3VPN, Flex-Algo and TI-LFA.
 
 # SRv6 on Cisco IOS-XE
 
-SRv6 on Cisco has long been an [IOS-XR](https://srv6.md/implementations/cisco-ios-xr/) story (NCS, ASR 9000, Cisco 8000). That changed with **IOS-XE 26.1**: Cisco's enterprise/edge operating system now ships validated SRv6 uSID support, documented in the 2026 CVD [*Quantum-Safe SRv6 Fabric for Mission-Critical Networks*](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html). This brings SRv6 to the WAN-edge and branch platforms that historically terminated SD-WAN or DMVPN.
+Cisco's SRv6 story is usually told on [IOS-XR](https://srv6.md/implementations/cisco-ios-xr/) (NCS, ASR 9000, Cisco 8000), but **IOS-XE has shipped SRv6 since 17.12.1a** (Dublin), as the "Segment Routing over IPv6 Dataplane" feature on the ASR 1000 and Catalyst 8000 edge routers. It is uSID-only (F3216) and covers IS-IS, BGP L3VPN with per-VRF SIDs, local SRv6-TE policies, static routes, performance measurement and OAM. Later 17.x releases added TI-LFA, microloop avoidance, Flex-Algo and multicast VPN. The 2026 CVD [*Quantum-Safe SRv6 Fabric for Mission-Critical Networks*](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) validated the design on IOS-XE 26.1.1 with the Cisco 8000 Series Secure Routers, which brings SRv6 to the WAN-edge and branch platforms that historically terminated SD-WAN or DMVPN.
 
-## Supported Platforms (validated in the CVD)
+## Supported Platforms
 
-- Cisco 8000 Series Secure Routers (G2): 8161-G2 (compact edge), 8375-E-G2 / 8475-G2 (branch/campus edge), 8550-G2 / 8570-G2 (aggregation hubs)
-- Catalyst 8000 edge family (SR-TE/ePBR feature lineage)
+| Release | Platforms | Source |
+|---------|-----------|--------|
+| 17.12.1a | ASR 1000 with RP3 and ESP100-X/ESP200-X, ASR 1001-HX, ASR 1002-HX, Catalyst 8000V, C8200, C8300, C8500/8500L | [IOS XE 17 SR configuration guide](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html) |
+| 26.1.1 | IR1101 industrial router | [IR 26.1.x release notes](https://www.cisco.com/c/en/us/td/docs/routers/IIoT/release-notes/26-1-x/IOT-IR-26-1-x-RN.html) |
+| 26.1.1 (CVD) | Cisco 8000 Series Secure Routers (G2) as validated in the CVD, with an ASR 1001-HX route reflector | [CVD](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) |
 
 ## Feature Highlights
 
-| Feature | IOS-XE support |
-|---------|----------------|
-| uSID format | **F3216 only** (`format usid-f3216`) — 32-bit block, 16-bit node, 16-bit function |
-| Headend encapsulation | `H.Encaps.Red` (reduced) |
-| End behaviors | `uN`, `uA`, `uDT4`, `uDT6`, `uDT46`, `End.DTMC4` (multicast VRF decap) |
-| L3VPN SID allocation | **`alloc-mode per-vrf` only** — per-prefix allocation is not supported |
-| IGP | IS-IS with multi-topology IPv6, wide metrics |
-| SR-TE | Per-Destination and Per-Flow policies, ODN/Automated Steering, ePBR + NBAR classification |
-| Flex-Algo | Yes, with per-algorithm locators |
-| TI-LFA | Yes, with node-protecting / SRLG-disjoint / linecard-disjoint tiebreakers |
-| Performance measurement | Two-way active probes, delay advertisement into IS-IS, liveness detection |
-| Multicast | BGP MVPN with SRv6 ingress replication (`srv6-mcast ingress-replication partitioned`) |
+| Feature | IOS-XE support | Since |
+|---------|----------------|:-----:|
+| uSID format | **F3216 only** (`format usid-f3216`), up to 10 uSID locators | 17.12.1a |
+| Headend encapsulation | `H.Encaps.Red` (reduced) | 17.12.1a |
+| End behaviors | `uN` and `uA` with PSP/USD, `uDT4`, `uDT6`; static End.X from 17.15.1a; `End.DTMC4` (multicast VRF decapsulation) | 17.12.1a |
+| uDT46 | Listed as supported, but BGP does not allocate or advertise it, so L3VPN signals uDT4 and uDT6 | — |
+| L3VPN SID allocation | **`alloc-mode per-vrf` only**; per-prefix allocation is not supported. ODN for L3VPN from 17.13.1a | 17.12.1a |
+| IGP | IS-IS only, with multi-topology IPv6 and wide metrics | 17.12.1a |
+| SR-TE | Per-Destination and Per-Flow policies, ePBR + NBAR classification. Dynamic segment lists only; no explicit segment lists, no Binding SIDs, no PCE-initiated policies. PCE-delegated computation from 17.16.1a | 17.12.1a |
+| TI-LFA | Yes, with node-protecting / SRLG-disjoint / linecard-disjoint tiebreakers. The guide notes that IGP TI-LFA "cannot guarantee 50ms FRR failover" on this platform | 17.15.1a |
+| Microloop avoidance | IS-IS SRv6 microloop avoidance | 17.15.1a |
+| Flex-Algo | Up to 8 algorithms, one locator per algorithm, single IS-IS level | 17.18.1a |
+| Performance measurement | Two-way active probes, delay advertisement into IS-IS, liveness detection | 17.12.1a |
+| OAM | SRv6 OAM; `ping srv6` / `traceroute srv6` commands from 17.16.1a | 17.12.1a |
+| Multicast | BGP MVPN with SRv6 ingress replication (`srv6-mcast ingress-replication partitioned`), IPv4 multicast only | 17.18.1a |
+
+Not documented on IOS-XE: EVPN or other L2 services over SRv6, OSPFv3 SRv6, and global-table BGP over SRv6. See the [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) for a side-by-side comparison with IOS-XR and other platforms.
 
 ## Basic Configuration
 
@@ -10924,14 +11296,16 @@ show ip bgp vpnv4 all
 
 ## Further Reading
 
-- [Mission-Critical Networks](https://srv6.md/use-cases/mission-critical/) - The validated design that debuted SRv6 on IOS-XE
+- [Mission-Critical Networks](https://srv6.md/use-cases/mission-critical/) - The Cisco validated design for SRv6 on IOS-XE 26.1
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - IOS-XE next to IOS-XR, Junos, EOS, SR OS and open-source platforms
 - [Cisco IOS-XR](https://srv6.md/implementations/cisco-ios-xr/) - Cisco's service-provider SRv6 implementation
 - [uSID / SRv6 Compression](https://srv6.md/topics/usid-compression/) - The F3216 format explained
 
 ## References
 
-1. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) - Validated design and configuration baseline for SRv6 on IOS-XE 26.1
-2. [Cisco 8000 Series Secure Routers](https://www.cisco.com/site/us/en/products/networking/wan/routers/8000-series-secure-routers/index.html) - Platform family validated for SRv6 uSID on IOS-XE
+1. [Segment Routing Configuration Guide, Cisco IOS XE 17: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html) - Feature history from 17.12.1a, supported platforms, behaviors and restrictions
+2. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) - Validated design and configuration baseline for SRv6 on IOS-XE 26.1
+3. [Cisco 8000 Series Secure Routers](https://www.cisco.com/site/us/en/products/networking/wan/routers/8000-series-secure-routers/index.html) - Platform family validated for SRv6 uSID on IOS-XE
 
 
 ---
@@ -10953,15 +11327,15 @@ Juniper implements SRv6 in **Junos OS** (MX Series) and **Junos OS Evolved** (PT
 
 | Capability | Junos OS (MX) | Junos OS Evolved |
 |------------|---------------|------------------|
-| SRv6 in IS-IS, classic SIDs | 20.3R1 (MX240/480/960/2000; MPC7E/8E/9E or newer) | PTX10002-36QDD 24.2R2, PTX10008 24.4R1-S2 |
+| SRv6 in IS-IS, classic SIDs | 20.3R1 (MX240/480/960/2000; MPC7E/8E/9E or newer; per TechLibrary — Feature Explorer lists MX960 at 21.1R1) | PTX10002-36QDD 24.2R2, PTX10008 24.4R1-S2 |
 | L3 services over SRv6 (BGP) | 20.4R1 (MX and vMX); MX304 22.2R3; MX10004 22.3R1 | PTX10002-36QDD 24.2R2; PTX10008 24.4R1-S2 |
 | uSID in IS-IS transport | 23.4R1 (MX204 through MX10016) | PTX10008 24.4R1-S2 |
 | uSID with L3VPN and IS-IS on ACX | — | ACX7024/7100/7509 23.2R1; ACX7024X/7332/7348 23.4R1 |
 | uSID with TI-LFA, microloop avoidance, Flex-Algo | 23.4R1 | ACX7024X/7348 24.2R1 |
-| SRv6 Flex-Algo | Classic SIDs by 21.2R1 (inter-level leaking); uSID 23.4R1 | ACX7024/7100/7509 23.1R1 |
+| SRv6 Flex-Algo | Classic SIDs 20.3R1 (inter-level leaking 21.2R1); uSID 23.4R1 | ACX7024/7100/7509 23.1R1 |
 | SRv6 microloop avoidance (IS-IS) | 21.1R1 | PTX10002-36QDD 24.4R1 |
 
-Release numbers are the "introduced" values from [Juniper Feature Explorer](https://apps.juniper.net/feature-explorer/); check it for your exact platform and line card. **cRPD** supports SRv6 in IS-IS and L3 services in BGP with limitations (no flavor or Flex-Algo options on End SIDs, no ARM64). There is no official SRv6 support statement for vJunos-router.
+Release numbers are the "introduced" values from [Juniper Feature Explorer](https://apps.juniper.net/feature-explorer/) or, where noted, Juniper TechLibrary; check Feature Explorer for your exact platform and line card. Later additions include static and PCEP SRv6-TE policies (MX 21.3R1), EVPN E-LAN over SRv6 (MX 23.4R1), the End.B6.Encaps binding SID (ACX7000 25.2R1, MX 26.2R1) and TWAMP performance measurement over SRv6 paths (PTX 24.4R1). The [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) compares Junos with other platforms feature by feature. **cRPD** supports SRv6 in IS-IS and L3 services in BGP with limitations (no flavor or Flex-Algo options on End SIDs, no ARM64). There is no official SRv6 support statement for vJunos-router.
 
 ## Building Blocks
 
@@ -11115,7 +11489,7 @@ set protocols isis interface et-0/0/0.0 level 2 post-convergence-lfa node-protec
 set protocols isis spf-options microloop-avoidance post-convergence-path delay 5000
 ```
 
-Link protection is the default once `post-convergence-lfa` is on an interface. The JVD adds node protection with a very high cost, so the node-protecting path is preferred but a link-protecting backup is still used when no node-protecting path exists. uSID-based TI-LFA, microloop avoidance and Flex-Algo protection arrived in Junos 23.4R1. **SRLG is not considered for SRv6 TI-LFA.** The JVD measured worst-case link-failure convergence around 5 ms. See [TI-LFA](https://srv6.md/topics/ti-lfa/) for the algorithm.
+Link protection is the default once `post-convergence-lfa` is on an interface. The JVD adds node protection with a very high cost, so the node-protecting path is preferred but a link-protecting backup is still used when no node-protecting path exists. uSID-based TI-LFA, microloop avoidance and Flex-Algo protection arrived in Junos 23.4R1. **Before Junos 26.2R1, SRLG is not considered for SRv6 TI-LFA**; 26.2R1 adds IS-IS IPv6 SRLG (TLV 139) for SRLG-aware TI-LFA on MX, PTX and ACX7000. The JVD measured worst-case link-failure convergence around 5 ms. See [TI-LFA](https://srv6.md/topics/ti-lfa/) for the algorithm.
 
 ## Verification
 
@@ -11140,7 +11514,7 @@ Link protection is the default once `post-convergence-lfa` is on an interface. T
 - **SID depth** (from the Junos SRv6 docs): MX encapsulates up to 6 SIDs and inserts up to 5; ACX7000 encapsulates 12 and inserts 10; PTX10002-36QDD and PTX10008 (Express 5) support 7. uSID packs up to six 16-bit uSIDs per 128-bit container, which leaves plenty of headroom for TE and TI-LFA.
 - **Encap vs insert**: ingress PEs always encapsulate, so egress SIDs must support USD; transit SRH insertion for TI-LFA needs a PSP-capable last SID.
 - **Static plus IS-IS SIDs**: configuring the same static uA or End.X SID under both the SRv6 manager and IS-IS fails commit (a duplicate uN is allowed; IS-IS wins).
-- **IS-IS SRv6 does not support** anycast locator prefixes, SRLG, End.X interface groups or Flex-Algo locator conflict resolution.
+- **IS-IS SRv6 limits**: the IS-IS SRv6 concept page lists anycast locators, SRLG, End.X interface groups and Flex-Algo locator conflict resolution as unsupported. Feature Explorer has since added anycast locators and summarization (MX10004/MX10008 22.3R1, ACX7000 22.4R1) and SRLG (26.2R1), so check your platform and release.
 - **No `next-hop-self` knob**: Junos IBGP needs an export policy with `then next-hop self` when you redistribute CE routes into plain IPv4/IPv6 BGP.
 
 ## Hands-On
@@ -11150,6 +11524,7 @@ Link protection is the default once `post-convergence-lfa` is on an interface. T
 
 ## Further Reading
 
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - Junos feature by feature next to IOS-XR, EOS, SR OS, VRP and open-source platforms
 - [Implementations Overview](https://srv6.md/implementations/) - Compare Junos with IOS-XR, EOS, SR OS and Linux
 - [uSID Compression](https://srv6.md/topics/usid-compression/) - How uN, uA and uDT SIDs pack into one address
 - [BGP Overlay Services](https://srv6.md/topics/bgp-overlay-services/) - L3VPN and EVPN over SRv6 (RFC 9252)
@@ -11174,6 +11549,8 @@ Link protection is the default once `post-convergence-lfa` is on an interface. T
 13. [Day One: Introduction to SRv6 (PDF)](https://www.juniper.net/documentation/en_US/day-one-books/DayOne-Intro-SRv6.pdf) - Juniper Day One book introducing SRv6 concepts and configuration
 14. [Configuring SRv6 on Junos (ipSpace.net)](https://blog.ipspace.net/2026/09/srv6-junos/) - Hands-on walkthrough of SRv6 locator and IGP configuration on Junos, tested in a netlab topology
 15. [Configuring SRv6 Layer-3 Services on Junos (ipSpace.net)](https://blog.ipspace.net/2026/10/junos-srv6-layer3-services/) - Follow-up covering SRv6 L3VPN service configuration on Junos
+16. [Junos OS 20.3 In Focus Guide (PDF)](https://www.juniper.net/documentation/en_US/junos/information-products/pathway-pages/infocus/20.3/infocus-junos-20.3.pdf) - First SRv6 release: IS-IS End/End.X, flavors, Flex-Algo and TI-LFA for the SRv6 data plane
+17. [Feature Explorer: SRLG-aware TI-LFA](https://apps.juniper.net/feature-explorer/feature/9377) and [anycast locators](https://apps.juniper.net/feature-explorer/feature/4131) - Later additions to IS-IS SRv6
 
 
 ---
@@ -11186,18 +11563,18 @@ Summary: SRv6 uSID support on Arista EOS — uN, static uA, IS-IS, counters, SSU
 
 # SRv6 on Arista EOS
 
-Arista EOS implements SRv6 with a **uSID-first** design: the forwarding model is built around micro-SIDs in the `F3216` format (32-bit block, 16-bit uSIDs), starting with the uN node SID and adding static uA adjacency SIDs, IS-IS integration, counters, and hitless upgrade support over the 4.35 and 4.36 release trains. The authors of OpenAI's **MRC** AI-cluster transport collaborated with Arista to implement SRv6 in EOS on Broadcom Tomahawk 5 switches, and MRC runs in large-scale production — see [AI/ML Networks](https://srv6.md/use-cases/ai-networking/).
+Arista EOS implements SRv6 with a **uSID-first** design: the forwarding model is built around micro-SIDs in the `F3216` format (32-bit block, 16-bit uSIDs), starting with the uN node SID and adding static uA adjacency SIDs, IS-IS integration, counters, and hitless upgrade support over the 4.34 to 4.36 release trains. The authors of OpenAI's **MRC** AI-cluster transport collaborated with Arista to implement SRv6 in EOS on Broadcom Tomahawk 5 switches, and MRC runs in large-scale production — see [AI/ML Networks](https://srv6.md/use-cases/ai-networking/).
 
 !!! info "Source scope"
-    This page summarizes Arista's public EOS user manual (EOS 4.36.2F) and the titles/summaries of Arista's public SRv6 TOI (Technical Overview of Information) listings. Full TOI documents require an Arista login; check them and the release notes for your exact version before deploying.
+    This page summarizes Arista's public EOS user manual (EOS 4.36.2F) and the titles/summaries of Arista's public SRv6 TOI (Transfer of Information) listings. Full TOI documents require an Arista login; check them and the release notes for your exact version before deploying.
 
 ## Feature Timeline
 
 | Feature | EOS release | Source |
 |---------|-------------|--------|
-| uN (End with uSID) | Before 4.35.2F (base support referenced by the uA TOI) | TOI listing |
+| uN (End with uSID) | 4.34.2F | TOI: "SRv6 uN Support" |
 | Static SRv6 adjacency segments (**uA**) | 4.35.2F | TOI: "Support for SRv6 static adjacency segments (uA)" |
-| **IS-IS** SRv6 with micro-SID compression, Flex-Algo, and **TI-LFA** | 4.36.1F | TOI: "Support for SRv6 in IS-IS" |
+| **IS-IS** SRv6 with micro-SID compression and Flex-Algo (7280R4 and 7800R4 series) | 4.36.1F | TOI: "Support for SRv6 in IS-IS"; user manual IS-IS chapter |
 | **Smart System Upgrade (SSU)** with SRv6 uN | 4.36.1F | TOI: "SSU support for SRv6" |
 | Per-endpoint **counters** (packets/bytes per endpoint operation, e.g. uN) | 4.36.2F | TOI: "Support for SRv6 Counters" |
 
@@ -11213,7 +11590,7 @@ The `show srv6 capabilities` example in the user manual reports:
 | uSID formats | F3216 | — |
 
 !!! note
-    Static uA support (an End.X-type adjacency micro-SID) is documented separately in the uA TOI for EOS 4.35.2F and later, so treat the capability table as a snapshot of the manual's example rather than a complete feature list.
+    Static uA support (an End.X-type adjacency micro-SID) arrived in EOS 4.35.2F and is configured per interface in the manual's IS-IS chapter (`adjacency-segment srv6 locator  usid  behavior end.x ...`), even though the capabilities example still prints End.X as unsupported. Treat the capability table as a snapshot of the manual's example rather than a complete feature list. The IS-IS SRv6 TOI is also tagged TI-LFA, but its body requires a login and the manual documents TI-LFA for SR-MPLS only, so SRv6 TI-LFA on EOS is unverified.
 
 ## Supported Platforms
 
@@ -11236,7 +11613,8 @@ The manual organizes SRv6 under `router srv6`:
 | `micro-segment domain` → `block`, `usid length`, `gib range` | Defines the uSID block, uSID length, and Global ID Block range |
 | `locator` → `prefix micro-segment domain  end usid ` | Allocates the node's uN from the domain |
 | `igp algorithm flex-algo ` | Associates a locator with a Flex-Algo |
-| `show srv6 capabilities` / `domain` / `locator` / `routes` | Verification |
+| `adjacency-segment srv6 locator  usid  behavior end.x` (interface, IS-IS) | Static uA adjacency SID |
+| `show srv6 capabilities` / `domain` / `locator` / `route` | Verification |
 | `ping srv6 sid … via segment-list …`, `traceroute srv6 sid …` | SRv6 OAM |
 
 See the user manual for complete configuration examples; exact syntax varies between EOS releases.
@@ -11247,11 +11625,13 @@ See the user manual for complete configuration examples; exact syntax varies bet
 ## Where It Fits
 
 - **AI back-end fabrics** — static, source-routed uSID paths on Tomahawk 5 (7060X6 class) are what MRC uses; see [AI/ML Networks](https://srv6.md/use-cases/ai-networking/) and [CLOS & Load Balancing](https://srv6.md/topics/clos-glb/).
-- **DC/WAN edge and spine** — Jericho-based 7280R3/R4 and 7500R3/7800R3/R4 for uSID with IS-IS, Flex-Algo and TI-LFA.
+- **DC/WAN edge and spine** — Jericho-based 7280R3/R4 and 7500R3/7800R3/R4 for uSID forwarding; IS-IS SRv6 and Flex-Algo are documented for the 7280R4 and 7800R4 series only.
+- **L3VPN and EVPN RT5 PE** — not in Arista's public documentation, but 7280R3 (2025) and 7280R4 (2026) acted as SRv6 L3VPN and EVPN RT5 PEs in the [EANTC interoperability tests](https://wiki.eantc.de/wiki/publicreports/view/Main/EANTC%20Transport%20%26%20Cloud%20Networks%20Interop%20Test%20Report%202026/SRv6/L3VPN%20%20over%20SRv6). Ask Arista which EOS release supports it before planning a design around it.
 
 ## Further Reading
 
 - [Implementations Overview](https://srv6.md/implementations/)
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - EOS feature by feature next to IOS-XR, Junos, SR OS and open-source platforms
 - [MRC and SRv6](https://srv6.md/ai/mrc/) - EOS on Tomahawk 5 in OpenAI's and Microsoft's SRv6 AI fabrics
 - [uSID Compression](https://srv6.md/topics/usid-compression/) - F3216 format and shift-and-forward
 - [AI/ML Networks](https://srv6.md/use-cases/ai-networking/) - MRC: OpenAI's SRv6 static source routing in production
@@ -11265,6 +11645,9 @@ See the user manual for complete configuration examples; exact syntax varies bet
 4. [Arista TOI: SSU support for SRv6](https://www.arista.com/en/support/toi/eos-4-36-1f/24348-ssu-support-for-srv6) - EOS 4.36.1F Smart System Upgrade with SRv6 uN (login required)
 5. [Arista TOI: Support for SRv6 Counters](https://www.arista.com/en/support/toi/eos-4-36-2f/24770-support-for-srv6-counters) - EOS 4.36.2F per-endpoint packet/byte counters (login required)
 6. [Resilient AI Supercomputer Networking using MRC and SRv6](https://cdn.openai.com/pdf/resilient-ai-supercomputer-networking-using-mrc-and-srv6.pdf) - OpenAI et al. paper; states SRv6 was implemented with Arista in EOS on Broadcom Tomahawk 5 switches for MRC
+7. [Arista TOI: SRv6 uN Support](https://www.arista.com/en/support/toi/eos-4-34-2f/22062-srv6-un-support) - EOS 4.34.2F uN support (login required)
+8. [Arista EOS User Manual: IS-IS (Configuring SRv6 for IS-IS)](https://www.arista.com/en/um-eos/eos-is-is) - IS-IS SRv6, Flex-Algo and static uA configuration; 7280R4/7800R4 platforms
+9. [EANTC 2026 Interop Test Report: L3VPN over SRv6](https://wiki.eantc.de/wiki/publicreports/view/Main/EANTC%20Transport%20%26%20Cloud%20Networks%20Interop%20Test%20Report%202026/SRv6/L3VPN%20%20over%20SRv6) - Independent multi-vendor test with an Arista 7280R4 as SRv6 L3VPN PE
 
 
 ---
@@ -11277,7 +11660,7 @@ Summary: SRv6 on Nokia SR OS — classic SIDs and micro-segment (uSID) SRv6 side
 
 # SRv6 on Nokia SR OS
 
-Nokia SR OS supports SRv6 in two forms: **classic** (full-length SIDs per RFC 8986) and **micro-segment SRv6 (uSID)**, which Nokia describes as an extension of the SRv6 network-programming model rather than a replacement. Both can run on the same router at the same time, and Nokia's application note states that uSIDs and classic SIDs can be combined **in the same segment list** — keeping most of the path compressed while still carrying a full-length service or function SID where needed.
+Nokia SR OS supports SRv6 in two forms: **classic** (full-length SIDs per RFC 8986) and **micro-segment SRv6 (uSID)**, which Nokia describes as an extension of the SRv6 network-programming model rather than a replacement. Both can run on the same router at the same time, and Nokia's application note states that uSIDs and classic SIDs can be combined **in the same segment list** — keeping most of the path compressed while still carrying a full-length service or function SID where needed. SRv6 first shipped in **SR OS 21.5.R2 on FP4-based hardware** (IS-IS, VPRN, Flex-Algo, LFA/TI-LFA); EVPN-IFL followed in 22.5.R1 and EVPN-VPLS/VPWS and SRv6 policies in 22.7.R1.
 
 ## Key Characteristics
 
@@ -11288,7 +11671,7 @@ Nokia SR OS supports SRv6 in two forms: **classic** (full-length SIDs per RFC 89
 | Classic SID length | Variable: 32-bit, 16-bit or 128-bit | Application note |
 | uSID container | 32-bit block carrying up to six 16-bit uSIDs; uSIDs are global (node) or local (adjacency, service, function) | Application note |
 | uSID allocation | `global-sid-entries` (default 16) splits the 16-bit space: `0x0000-0x3FFF` global, `0x4000-0xFFFF` local; `block-length` must be identical network-wide | SR OS 26.7 user guide |
-| Maximum SID depth | Up to 9 classic SIDs or 47 uSIDs (including primary path, LFA backup and service SID) | Application note |
+| Maximum SID depth | The application note quotes up to 9 classic SIDs or 47 uSIDs including primary path, LFA backup and service SID. The configurable limit per SR policy segment list is 7 classic segments or 24 micro-segments (42 uSIDs with pre-compressed containers) | Application note; SR OS 26.7 user guide |
 | Coexistence | Classic SRv6, uSID and MPLS/SR-MPLS enabled together on the same router, service or IP interface | Application note |
 
 ## Behaviors (SR OS 26.7)
@@ -11296,7 +11679,9 @@ Nokia SR OS supports SRv6 in two forms: **classic** (full-length SIDs per RFC 89
 | Mode | Behaviors |
 |------|-----------|
 | **Micro-segment** | uN and uA (advertised by IS-IS); uDT4, uDT6, uDT46, uDX2, uDT2U, uDT2M (BGP services or static) |
-| **Classic** | End and End.X (with PSP/USP/USD flavors), End.DT4, End.DT6, End.DT46, End.DX2 |
+| **Classic** | End and End.X (with PSP/USP/USD flavors), End.DT4, End.DT6, End.DT46, End.DX2, End.DT2U, End.DT2M; End.B6.Encaps.Red as the SR policy binding SID |
+| **Headend** | H.Encaps.Red and H.Encaps.L2.Red only (plain H.Encaps and H.Encaps.L2 are not supported); H.Insert.Red for LFA repair |
+| **Not supported** | End.T, End.DX4, End.DX6 |
 
 ## Services and Traffic Engineering
 
@@ -11304,9 +11689,11 @@ Nokia SR OS supports SRv6 in two forms: **classic** (full-length SIDs per RFC 89
 |------|------------------------------|
 | **L3 services** | Base-router BGP routes, VPRN (IP-VPN), EVPN-IFL |
 | **L2 services** | EVPN-VPLS and EVPN-VPWS with single-active or all-active multihoming |
-| **Multicast** | Point-to-multipoint SRv6 policy tunnels for multicast replication (see [Multicast](https://srv6.md/topics/multicast/)) |
+| **Multicast** | Tree-SID SRv6 (replication segments) for NG-MVPN I-PMSI/S-PMSI, first documented in 25.3: static CLI configuration, classic SIDs only, no LFA or BFD protection (see [Multicast](https://srv6.md/topics/multicast/)) |
 | **IGP** | IS-IS, including Flex-Algo |
-| **TE** | Flex-Algo; SRv6 policies configured statically, via BGP SR-TE policy AF, or from a PCE over PCEP ([RFC 9603](https://srv6.md/rfcs/rfc9603/)) |
+| **TE** | Flex-Algo; SRv6 policies configured statically or via the BGP SR Policy address family (22.7.R1), or from a PCE over PCEP ([RFC 9603](https://srv6.md/rfcs/rfc9603/), first documented in 26.7) |
+| **IGP** extras | IS-IS MT0 and MT2; microloop avoidance for SRv6 (first documented in 26.3); BGP-LS export of SRv6 information (IS-IS only) |
+| **OAM** | Ping and traceroute to SRv6 SIDs, VRF prefixes and SRv6 policies |
 | **Protection** | LFA, remote LFA, TI-LFA (link, node, SRLG); SR OS originates and terminates repair tunnels with `H.Insert.Red` and can terminate `H.Encaps.Red` repair tunnels from other vendors |
 | **Gateway** | Interworking between MPLS, SR-MPLS, SRv6 classic, SRv6 uSID, VXLAN and MPLS-over-UDP at transport and service layers |
 
@@ -11315,11 +11702,14 @@ Nokia SR OS supports SRv6 in two forms: **classic** (full-length SIDs per RFC 89
 
 ## Platforms
 
-The SR OS 26.7 Segment Routing and PCE User Guide's SRv6 chapter applies to the **7450 ESS, 7750 SR, 7950 XRS and VSR**. The application note covers "Nokia routing platforms" generically and refers to product documentation for per-platform support.
+The SR OS 26.7 Segment Routing and PCE User Guide's SRv6 chapter applies to the **7450 ESS, 7750 SR, 7950 XRS and VSR**. Nokia's advanced configuration guides add the hardware condition: SRv6 "is supported on FP4-based equipment in SR OS Release 21.5.R2 and later", and the EVPN chapters require FP4-based network ports. The application note covers "Nokia routing platforms" generically.
+
+**SR Linux** (Nokia's data-center NOS) is a separate implementation: its SRv6 chapter first appears in SR Linux 26.3 and lists the 7730 SXR and the 7220 IXR-H5/H6, the latter as basic uSID transit nodes for AI back-end fabrics. EVPN-VPLS (MAC-VRF) over SRv6 is not supported there.
 
 ## Further Reading
 
 - [Implementations Overview](https://srv6.md/implementations/)
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - SR OS feature by feature next to IOS-XR, Junos, EOS, VRP and open-source platforms
 - [uSID Compression](https://srv6.md/topics/usid-compression/) - How uSID containers and shift-and-forward work
 - [Interworking & Migration](https://srv6.md/topics/interworking-migration/) - MPLS/SRv6 gateway designs
 - [EVPN Multihoming](https://srv6.md/topics/evpn-multihoming/) - All-active EVPN over SRv6
@@ -11329,6 +11719,9 @@ The SR OS 26.7 Segment Routing and PCE User Guide's SRv6 chapter applies to the 
 1. [Nokia: Segment Routing IPv6 (SRv6) on Nokia routing platforms — Application note](https://onestore.nokia.com/asset/f/213966) - 2024 application note: uSID as an extension of SRv6, mixing uSID and classic SIDs, services, TE, protection, gateway
 2. [Nokia SR OS 26.7 Segment Routing and PCE User Guide: Segment routing with IPv6 data plane (SRv6)](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html) - Official SRv6 configuration guide: classic and micro-segment modes, behaviors, IS-IS, BGP services, TI-LFA
 3. [RFC 9800](https://datatracker.ietf.org/doc/rfc9800/) - Compressed SRv6 Segment List Encoding (NEXT-C-SID, the IETF form of uSID)
+4. [Nokia Advanced Configuration Guide: Segment Routing with IPv6 Data Plane](https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c233-seg-rout-ipv6.html) - SRv6 on FP4-based equipment from SR OS 21.5.R2
+5. [Nokia SR OS 26.7 Multicast Guide: SR P2MP policy](https://documentation.nokia.com/sr/26-7/7x50-shared/multicast/sr-p2mp-policy.html) - Tree-SID SRv6 for NG-MVPN and its restrictions
+6. [Nokia SR Linux 26.7 Segment Routing Guide: SRv6](https://documentation.nokia.com/srlinux/26-7/books/segment-routing/segment_routing_with_ipv6_data_plane_srv6.html) - SR Linux SRv6 platforms and features
 
 
 ---
@@ -11337,31 +11730,34 @@ The SR OS 26.7 Segment Routing and PCE User Guide's SRv6 chapter applies to the 
 
 URL: https://srv6.md/implementations/frrouting/
 Path: implementations/frrouting.md
-Summary: Run SRv6 on FRRouting (FRR): current support status, uSID locators and L3VPN over SRv6, a configuration example, and the feature history from FRR 10.3 to 10.7.
+Summary: Run SRv6 on FRRouting (FRR): support status from 8.1 to 10.7, uSID locators, IS-IS and L3VPN over SRv6, global-table services, BGP-LS and what is still missing.
 
 # SRv6 on FRRouting (FRR)
 
-FRRouting is an open-source routing suite that provides SRv6 support through its IS-IS and BGP daemons.
+FRRouting is an open-source routing suite that provides SRv6 support through its zebra, IS-IS, BGP and static daemons. FRR programs the [Linux kernel](https://srv6.md/implementations/linux-kernel/) `seg6`/`seg6local` data plane over netlink, so it can only use the SRv6 behaviors the kernel implements.
 
 ## SRv6 Support Status
 
 | Feature | Status | FRR Version |
 |---------|:------:|:-----------:|
-| IS-IS SRv6 locator | | 8.4+ |
-| BGP SRv6 VPN | | 8.4+ |
-| SRv6 static SIDs | | 10.3+ |
-| SRv6 uSID (uA, headend behaviors, BGP uSID instructions) | | 10.4+ |
+| BGP SRv6 L3VPN, VPNv6 (End.DT6) | | 8.1+ |
+| BGP SRv6 L3VPN, VPNv4 (End.DT4) | | 8.3+ |
+| Per-VRF End.DT46 SID; SRv6 uSID (`behavior usid`) for BGP services | | 8.5+ |
+| IS-IS SRv6 ([RFC 9352](https://srv6.md/rfcs/rfc9352/)): locators, End/uN and End.X/uA SIDs; static SRv6 segment routes (IPv6) | | 9.1+ |
+| SRv6 static SIDs (uN, uDT4/6/46) | | 10.3+ |
+| Static uA, H.Encaps.Red (staticd and BGP), PSP flavor (End only), IPv4 static segment routes | | 10.4+ |
 | Multiple SRv6 locators / locator per VRF | | 10.5+ |
 | MPLS and SRv6 coexistence on the same L3VRF | | 10.5+ |
 | Global (default-VRF) IPv4/IPv6 unicast over SRv6 core (RFC 9252) | | 10.6+ |
-| EVPN with IPv6 VTEPs | | 10.6+ |
 | BGP-LS (RFC 9552) with SRv6 extensions (RFC 9514) | | 10.7+ |
 | Shared uDT46 SID for the global table | | 10.7+ |
-| SRv6 TE Policy | | In dev |
+| EVPN over SRv6 | | L3 EVPN (RT5) merged for 10.8, not yet released |
+| SRv6 TI-LFA, SRv6 Flex-Algo | | isisd TI-LFA and Flex-Algo are SR-MPLS only |
+| OSPFv3 SRv6, PCEP / SR policies for SRv6 | | ospf6d has no SRv6; pathd is MPLS-based |
 
-Recent FRR releases have steadily closed the uSID gap: 10.3 (March 2025) added SRv6 static SIDs, 10.4 (July 2025) added uSID behaviors — `uA`, additional headend behaviors, BGP uSID instructions, and the seg6local uSID flavor — and 10.5 (November 2025) added multiple-locator support, per-VRF locator selection, and MPLS/SRv6 coexistence for migration scenarios.
+FRR's SRv6 history starts in **8.1** (zebra SRv6 locator manager and BGP L3VPN for VPNv6). VPNv4 followed in 8.3 and uSID in 8.5 (`behavior usid` locators, PR #12219); IS-IS learned SRv6 in **9.1**. 10.3 (March 2025) added static SRv6 SIDs, 10.4 (July 2025) static uA, H.Encaps.Red and the PSP flavor, and 10.5 (November 2025) multiple-locator support, per-VRF locator selection, and MPLS/SRv6 coexistence for migration scenarios. Release 10.6 also added IPv6 VTEPs for EVPN, but that is EVPN over VXLAN, not SRv6. The [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) compares FRR with the kernel and vendor routers behavior by behavior.
 
-**FRR 10.6** (March 2026) extends SRv6 beyond VPNs: BGP can now carry **global IPv4 and IPv6 unicast over an SRv6 core** in the default VRF, the "Global IPv4/IPv6 over SRv6 Core" services of [RFC 9252](https://srv6.md/rfcs/rfc9252/). The same release adds **IPv6 VTEP** support across the EVPN code, backward compatible with IPv4 VTEPs. Per the implementing pull request, the default-VRF service uses DT4/DT6 SIDs and requires the `sr0` interface to install the DT routes because of a kernel limitation.
+**FRR 10.6** (March 2026) extends SRv6 beyond VPNs: BGP can now carry **global IPv4 and IPv6 unicast over an SRv6 core** in the default VRF, the "Global IPv4/IPv6 over SRv6 Core" services of [RFC 9252](https://srv6.md/rfcs/rfc9252/). Per the implementing pull request, the default-VRF service uses DT4/DT6 SIDs and requires the `sr0` interface to install the DT routes because of a kernel limitation.
 
 **FRR 10.7** (July 2026) brings FRR into controller-driven SRv6 TE: it adds **BGP-LS** ([RFC 9552](https://datatracker.ietf.org/doc/rfc9552/)) with the **SRv6 extensions** of [RFC 9514](https://srv6.md/rfcs/rfc9514/) — SRv6 Capabilities and Locator TLVs, SRv6 SID NLRI for End, End.X and LAN End.X SIDs, and the Endpoint Behavior and SID Structure TLVs. Static SRv6 SIDs configured in zebra can be exported into BGP-LS so a TE controller sees them. The 10.7 changelog also adds a single **uDT46** SID for the global table as an alternative to separate uDT4/uDT6 SIDs.
 
@@ -11405,6 +11801,7 @@ segment-routing
 
 ## Further Reading
 
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - FRR next to the Linux kernel and vendor implementations
 - [Linux Kernel](https://srv6.md/implementations/linux-kernel/) - Data plane for FRR
 - [Containerlab](https://srv6.md/labs/containerlab/) - FRR + Linux labs
 
@@ -11416,13 +11813,16 @@ segment-routing
 4. [Add Support for SRv6 IPv4 L3VPN - FRR PR #9649](https://github.com/FRRouting/frr/pull/9649) - Pull request adding SRv6 VPNv4 support to FRR
 5. [Add Support for SRv6 uSID Behaviors - FRR PR #12219](https://github.com/FRRouting/frr/pull/12219) - Pull request adding SRv6 micro-SID behavior support
 6. [FRR 10.3 Release Notes](https://frrouting.org/release/10.3/) - Adds SRv6 static SIDs
-7. [FRR 10.4.0 Release Notes](https://frrouting.org/release/10.4.0/) - Adds SRv6 uSID behaviors (uA, headend behaviors, BGP uSID instructions, seg6local uSID flavor)
+7. [FRR 10.4.0 Release Notes](https://frrouting.org/release/10.4.0/) - Adds static uA, H.Encaps.Red and the PSP flavor
 8. [FRR 10.5.0 Release Notes](https://frrouting.org/release/10.5.0/) - Adds multiple SRv6 locators, per-VRF locator selection, and MPLS/SRv6 coexistence
-9. [FRR 10.6.0 Release Notes](https://frrouting.org/release/10.6.0/) - Adds global (default-VRF) IPv4/IPv6 unicast over an SRv6 core and EVPN IPv6 VTEPs
+9. [FRR 10.6.0 Release Notes](https://frrouting.org/release/10.6.0/) - Adds global (default-VRF) IPv4/IPv6 unicast over an SRv6 core
 10. [bgpd: add SRv6 unicast at default VRF - FRR PR #19496](https://github.com/FRRouting/frr/pull/19496) - Implementation notes for the global-table SRv6 service (DT4/DT6, `sr0` requirement)
 11. [FRR 10.7.0 Release Notes](https://frrouting.org/release/10.7.0/) - Adds BGP-LS SRv6 extensions and export of static SRv6 SIDs into BGP-LS
 12. [FRR 10.7.0 GitHub Release](https://github.com/FRRouting/frr/releases/tag/frr-10.7.0) - Full changelog including base BGP-LS (RFC 9552) and global-table uDT46 SIDs
 13. [FRR 10.6 BGP User Guide - Global IPv4/6 SRv6 configuration](https://github.com/FRRouting/frr/blob/frr-10.6.0/doc/user/bgp.rst) - `segment-routing srv6` and `sid export` commands
+14. [FRR 9.1 Release Notes](https://frrouting.org/release/9.1/) - IS-IS SRv6 uSID support (RFC 9352)
+15. [FRR 8.5 Release Notes](https://frrouting.org/release/8.5/) - SRv6 uSID implementation and per-VRF SIDs
+16. [FRR 8.1 BGP documentation: L3VPN SRv6](https://github.com/FRRouting/frr/blob/frr-8.1/doc/user/bgp.rst?plain=1#L2689-L2701) - First release with BGP SRv6 L3VPN
 
 
 ---
@@ -11431,38 +11831,48 @@ segment-routing
 
 URL: https://srv6.md/implementations/sonic/
 Path: implementations/sonic.md
-Summary: SRv6 in the SONiC open-source network OS: current feature status, uSID support for AI and data center fabrics, and the SONiC SRv6 architecture with FRR.
+Summary: SRv6 in the SONiC network OS: release-by-release status from 202111, uSID and static CONFIG_DB SIDs for AI fabrics, and the SAI/orchagent architecture with FRR.
 
 # SRv6 on SONiC
 
-SONiC (Software for Open Networking in the Cloud) is actively developing SRv6 support for data center and WAN use cases.
+SONiC (Software for Open Networking in the Cloud) has carried SRv6 code since the **202111** release. On a switch, SRv6 forwarding happens in the ASIC: SONiC programs it through orchagent (`srv6orch`) and the SAI SRv6 objects, so which behaviors actually forward depends on each vendor's SAI implementation.
 
 ## Current Status
 
-!!! warning "Work in Progress"
-    SRv6 support in SONiC is under active development. Check the SONiC GitHub for the latest status.
+| Release | SRv6 change | Source |
+|---------|-------------|--------|
+| 202111 | First orchagent SRv6: End, End.DT46, H.Encaps.Red | [Release notes](https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202111_Release_Notes.md) |
+| 202211 | uSID data plane: uN, uA | [Release notes](https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202211_Release_Notes.md) |
+| 202305 | Selectable SID-list type (encaps / encaps.red / insert) | [sonic-swss #2406](https://github.com/sonic-net/sonic-swss/pull/2406) |
+| 202405 | Adjacency programming for End.X, uA, End.DX4/DX6 (L3Adj) | [Release notes](https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202405_Release_Notes.md) |
+| 202505 | Static SRv6 in CONFIG_DB (uN, uDT46), rated **Alpha** in the release notes; SRv6 VPN support in srv6orch | [Release notes](https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202505_Release_Notes.md), [sonic-swss #3293](https://github.com/sonic-net/sonic-swss/pull/3293) |
+| master (Aug 2026) | Static uA in CONFIG_DB | [sonic-buildimage #27903](https://github.com/sonic-net/sonic-buildimage/pull/27903) |
+
+SAI defines End, End.X, End.T, End.DX4/DX6, End.DT4/DT6/DT46, End.B6.Encaps(.Red) and their uSID variants, but no L2 behaviors (End.DX2, End.DT2U/DT2M), so EVPN over SRv6 has no data plane in SONiC. See the [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) for the full list.
 
 ## Architecture
 
-SONiC's SRv6 implementation leverages:
-
-- **Linux kernel** SRv6 data plane
-- **FRRouting** for control plane (IS-IS, BGP)
-- **SAI (Switch Abstraction Interface)** for hardware offload
+- **ASIC data plane via SAI** — `srv6orch` turns APP_DB entries into SAI `my_sid` and `sidlist` objects. The Linux kernel's seg6 data plane is not what forwards traffic on a SONiC switch.
+- **FRRouting control plane** — `fpmsyncd` carries SRv6 routes from FRR's zebra into APP_DB. SONiC's FRR container runs bgpd, staticd and ospfd (OSPFv2) but **not isisd or ospf6d**, so SIDs come from BGP (L3VPN) or from static configuration, not from an IGP.
+- **Static configuration** — since 202505, `SRV6_MY_LOCATORS` and `SRV6_MY_SIDS` in CONFIG_DB are translated by bgpcfgd into FRR static SIDs. This is the model used for AI back-end fabrics; see [SRv6 AI Fabric Design](https://srv6.md/ai/ai-fabric-design/).
 
 ## Further Reading
 
-- [Linux Kernel](https://srv6.md/implementations/linux-kernel/) - Underlying SRv6 data plane
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - SONiC next to vendor and open-source SRv6 platforms
+- [SONiC & SAI](https://srv6.md/topics/sonic-sai/) - How SAI models SRv6 objects
 - [SRv6 AI Fabric Design](https://srv6.md/ai/ai-fabric-design/) - SONiC static SRv6 (CONFIG_DB) for AI backends, release by release
 - [SONiC SRv6 HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/)
 
 ## References
 
 1. [SONiC SRv6 High Level Design Document](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_hld.md) - Official SRv6 HLD covering architecture and feature design in SONiC
-2. [SONiC SRv6 VPN HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_vpn.md) - Design document for SRv6 VPN services in SONiC
+2. [SONiC SRv6 VPN HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_vpn.md) - Design document for SRv6 VPN services in SONiC (targeted 202305; the code landed in 202505)
 3. [SONiC SRv6 uSID HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/SRv6_uSID.md) - Design document for SRv6 micro-SID support in SONiC
 4. [SONiC Foundation](https://sonicfoundation.dev/) - Official SONiC Foundation site with blog, community resources, and roadmap
 5. [SONiC Roadmap Planning - GitHub Wiki](https://github.com/sonic-net/SONiC/wiki/Sonic-Roadmap-Planning) - Release planning and feature tracking for SONiC including SRv6 milestones
+6. [SONiC SRv6 Static Configuration HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_static_config_hld.md) - CONFIG_DB locators and SIDs (202505+)
+7. [SONiC SRv6 SID L3Adj HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_sid_l3adj.md) - Adjacency programming for End.X, uA and End.DX4/DX6
+8. [SAI saisrv6.h](https://github.com/opencomputeproject/SAI/blob/master/inc/saisrv6.h) - The SRv6 behaviors and SID-list types SAI can express
 
 
 ---

@@ -59,3 +59,70 @@ if (typeof document$ !== "undefined") {
     document.documentElement.lang = m ? m[1] : "en";
   });
 }
+
+// --- SRv6 support matrix: platform and category filters ---
+// hooks/support_matrix.py renders the table and hidden controls; the first
+// cell of each row carries data-cat and each header cell data-p.
+
+function initSupportMatrix() {
+  var controls = document.querySelector(".smx-controls");
+  var table = document.querySelector(".smx table");
+  if (!controls || !table) return;
+
+  var cols = {};
+  table.querySelectorAll("thead th").forEach(function (th, i) {
+    var p = th.querySelector("[data-p]");
+    if (p) cols[p.getAttribute("data-p")] = i;
+  });
+  var rows = Array.prototype.map.call(table.querySelectorAll("tbody tr"), function (tr) {
+    var tag = tr.querySelector(".smx-cat, .smx-row");
+    if (tag && tag.classList.contains("smx-cat")) tr.classList.add("smx-cat-row");
+    if (tag && tag.id) tr.id = tag.id, tag.removeAttribute("id");
+    return { tr: tr, cat: tag ? tag.getAttribute("data-cat") : "" };
+  });
+
+  var boxes = controls.querySelectorAll("input[type=checkbox]");
+  var select = controls.querySelector("select");
+
+  function apply() {
+    var shown = {};
+    boxes.forEach(function (b) { shown[b.value] = b.checked; });
+    Object.keys(cols).forEach(function (p) {
+      var i = cols[p];
+      table.querySelectorAll("tr").forEach(function (tr) {
+        var cell = tr.children[i];
+        if (cell) cell.classList.toggle("smx-hide", !shown[p]);
+      });
+    });
+    var cat = select.value;
+    rows.forEach(function (r) { r.tr.classList.toggle("smx-hide", !!cat && r.cat !== cat); });
+  }
+
+  boxes.forEach(function (b) { b.addEventListener("change", apply); });
+  select.addEventListener("change", apply);
+  controls.querySelectorAll("[data-smx]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var on = btn.getAttribute("data-smx") === "all";
+      boxes.forEach(function (b) { b.checked = on; });
+      apply();
+    });
+  });
+
+  // The ids moved from the spans to the rows, so re-run the hash scroll
+  if (location.hash) {
+    var target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (target && target.tagName === "TR") {
+      target.classList.add("smx-target");
+      target.scrollIntoView({ block: "center" });
+    }
+  }
+  // Open on wide screens; on phones the chips would push the table off screen
+  controls.open = window.matchMedia("(min-width: 45em)").matches;
+  controls.hidden = false;
+}
+
+if (typeof document$ !== "undefined") {
+  document$.subscribe(initSupportMatrix);
+} else {
+  document.addEventListener("DOMContentLoaded", initSupportMatrix);
+}

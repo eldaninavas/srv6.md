@@ -1,0 +1,581 @@
+# SRv6 support matrix data, rendered into support-matrix.md by hooks/support_matrix.py.
+#
+# Cell format:  <row id>: {s: yes|partial|no|unknown, r: "<first release>", note: "<short note>", src: <key or [keys]>}
+# - A missing cell renders as "unknown".
+# - Every yes / partial / no needs a source that states it. Unknown is better than a guess.
+# - r is the first release a source documents. Leave it out when no source states one.
+# - Sources are listed per platform under `sources:` and become footnotes on the page.
+#
+# Corrections: https://github.com/eldaninavas/srv6.md/issues (or edit this file in a pull request)
+
+verified: 2026-10-20
+
+platforms:
+  - {id: iosxr, name: IOS-XR, full: Cisco IOS-XR, page: cisco-ios-xr.md}
+  - {id: iosxe, name: IOS-XE, full: Cisco IOS-XE, page: cisco-ios-xe.md}
+  - {id: junos, name: Junos, full: Juniper Junos / Junos Evolved, page: juniper.md}
+  - {id: eos, name: EOS, full: Arista EOS, page: arista-eos.md}
+  - {id: sros, name: SR OS, full: Nokia SR OS, page: nokia-sros.md}
+  - {id: vrp, name: VRP, full: Huawei VRP}
+  - {id: frr, name: FRR, full: FRRouting, page: frrouting.md}
+  - {id: linux, name: Linux, full: Linux kernel, page: linux-kernel.md}
+  - {id: sonic, name: SONiC, full: SONiC, page: sonic.md}
+  - {id: vpp, name: VPP, full: FD.io VPP}
+  - {id: cilium, name: Cilium, full: Cilium (open source), page: cilium.md}
+
+categories:
+  - id: cat-endpoint
+    name: Endpoint behaviors
+    rows:
+      - {id: end, name: End / uN, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_x, name: End.X / uA, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_t, name: End.T, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_dx2, name: End.DX2 / uDX2, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_dx4, name: End.DX4, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_dx6, name: End.DX6, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_dt4, name: End.DT4 / uDT4, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_dt6, name: End.DT6 / uDT6, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_dt46, name: End.DT46 / uDT46, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_dt2u, name: End.DT2U, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_dt2m, name: End.DT2M, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_b6_encaps, name: End.B6.Encaps (.Red), ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: end_bm, name: End.BM, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+  - id: cat-headend
+    name: Headend behaviors
+    rows:
+      - {id: h_encaps, name: H.Encaps, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: h_encaps_red, name: H.Encaps.Red, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: h_encaps_l2, name: H.Encaps.L2 (.Red), ref: RFC 8986, link: ../rfcs/rfc8986.md}
+  - id: cat-flavors
+    name: Flavors
+    rows:
+      - {id: psp, name: PSP, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: usp, name: USP, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+      - {id: usd, name: USD, ref: RFC 8986, link: ../rfcs/rfc8986.md}
+  - id: cat-compression
+    name: SID compression
+    rows:
+      - {id: next_csid, name: NEXT-C-SID (uSID), ref: RFC 9800, link: ../rfcs/rfc9800.md}
+      - {id: replace_csid, name: REPLACE-C-SID (G-SID), ref: RFC 9800, link: ../rfcs/rfc9800.md}
+  - id: cat-control
+    name: Control plane
+    rows:
+      - {id: isis, name: IS-IS SRv6, ref: RFC 9352, link: ../rfcs/rfc9352.md}
+      - {id: ospfv3, name: OSPFv3 SRv6, ref: RFC 9513, link: ../rfcs/rfc9513.md}
+      - {id: bgp_l3vpn, name: BGP L3VPN over SRv6, ref: RFC 9252, link: ../rfcs/rfc9252.md}
+      - {id: bgp_evpn, name: BGP EVPN over SRv6, ref: RFC 9252, link: ../rfcs/rfc9252.md}
+      - {id: bgp_global, name: Global IPv4/IPv6 over SRv6, ref: RFC 9252, link: ../rfcs/rfc9252.md}
+      - {id: bgp_ls, name: BGP-LS SRv6, ref: RFC 9514, link: ../rfcs/rfc9514.md}
+      - {id: pcep, name: PCEP SRv6, ref: RFC 9603, link: ../rfcs/rfc9603.md}
+      - {id: sr_policy, name: SRv6 SR Policy, ref: RFC 9256 / RFC 9830, link: ../topics/sr-policy.md}
+  - id: cat-protection
+    name: Protection and traffic engineering
+    rows:
+      - {id: ti_lfa, name: TI-LFA, ref: RFC 9855, link: ../topics/ti-lfa.md}
+      - {id: microloop, name: Microloop avoidance, link: ../topics/micro-loop-avoidance.md}
+      - {id: flex_algo, name: Flex-Algo, ref: RFC 9350, link: ../topics/flex-algorithm.md}
+  - id: cat-multicast
+    name: Multicast
+    rows:
+      - {id: multicast, name: SRv6 multicast, ref: RFC 9524 / MVPN, link: ../topics/multicast.md}
+  - id: cat-oam
+    name: OAM
+    rows:
+      - {id: ping_trace, name: Ping / traceroute to SIDs, ref: RFC 9259, link: ../rfcs/rfc9259.md}
+      - {id: pm, name: Performance measurement, ref: RFC 9503, link: ../topics/srpm.md}
+  - id: cat-mobile
+    name: Mobile user plane
+    rows:
+      - {id: mup, name: Mobile user plane, ref: RFC 9433, link: ../rfcs/rfc9433.md}
+
+sources:
+  iosxr:
+    rn661: {title: "Cisco NCS 5500 Release Notes, IOS XR 6.6.1", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/general/66x/release/notes/b-release-notes-ncs5500-r661.html"}
+    n55usid: {title: "Cisco NCS 5500 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/24xx/configuration/guide/b-segment-routing-cg-ncs5500-24xx/configure-srv6-micro-sid.html"}
+    a9kusid: {title: "Cisco ASR 9000 Segment Routing Configuration Guide 24.x: Configure SRv6 Micro-SID", url: "https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/24xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-24xx/configure-srv6-micro-sid.html"}
+    n55fl: {title: "Cisco NCS 5500 Segment Routing Configuration Guide 26.x: Configure SRv6 with Full-Length SIDs", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx/configure-srv6-full-length-sid.html"}
+    n55te: {title: "Cisco NCS 5500 Segment Routing Configuration Guide 7.10.x: SRv6 Traffic Engineering", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/710x/configuration/guide/b-segment-routing-cg-ncs5500-710x/configure-srv6-traffic-engineering.html"}
+    c8kte: {title: "Cisco 8000 Segment Routing Configuration Guide 7.10.x: SRv6 Traffic Engineering", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/710x/configuration/guide/b-segment-routing-cg-cisco8000-710x/m-configuring-srv6-traffic-engineering-8000.html"}
+    c8ktree: {title: "Cisco 8000 Segment Routing Configuration Guide 26.x: Tree-SID", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/26xx/configuration/guide/b-segment-routing-cg-cisco8000-26xx/segment-routing-tree-segment-identifier.html"}
+    n55tree: {title: "Cisco NCS 5500 Segment Routing Configuration Guide 26.x: Tree-SID", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx/segment-routing-tree-segment-identifier.html"}
+    c8kpm: {title: "Cisco 8000 Segment Routing Configuration Guide 24.x: Performance Measurement", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/24xx/configuration/guide/b-segment-routing-cg-cisco8000-24xx/configuring-performance-measurement.html"}
+    c8koam: {title: "Cisco 8000 SRv6 Configuration Guide: SRv6 OAM SID verification", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/SRv6/srv6-config-guide-cisco8000/srv6-with-full-length-sids/srv6-oam-sid-verification.html"}
+    c8kbgpls: {title: "Cisco 8000 SRv6 Configuration Guide: SRv6 SID information in BGP-LS reporting", url: "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/SRv6/srv6-config-guide-cisco8000/advanced-srv6-layer-3-features/srv6-sid-information-in-bgp-ls-reporting.html"}
+    idrsrp: {title: "IETF IDR implementation report: BGP SR Policy SAFI", url: "https://wiki.ietf.org/group/idr/implementations/draft-ietf-idr-sr-policy-safi"}
+  iosxe:
+    srv6: {title: "Cisco IOS XE 17 Segment Routing Configuration Guide: Segment Routing over IPv6", url: "https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html"}
+    tilfa: {title: "Cisco IOS XE 17: IS-IS SRv6 TI-LFA", url: "https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_isis-srv6-tilfa-frr.html"}
+    uloop: {title: "Cisco IOS XE 17: SRv6 microloop avoidance", url: "https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6-uloop-avoid.html"}
+    fa: {title: "Cisco IOS XE 17: SRv6 Flex-Algo with TI-LFA and microloop avoidance", url: "https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m-srv6-flex-algo-with-ti-lfa-and-uloop-avoidance.html"}
+    mvpn: {title: "Cisco IOS XE 17: MVPN ingress replication over SRv6", url: "https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/mvpn-ingress-replication-over-srv6.html"}
+  junos:
+    infocus: {title: "Junos OS 20.3 In Focus Guide", url: "https://www.juniper.net/documentation/en_US/junos/information-products/pathway-pages/infocus/20.3/infocus-junos-20.3.pdf"}
+    isisnp: {title: "Juniper: Understanding SRv6 Network Programming in IS-IS Networks", url: "https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/isis-srv6-network-programming.html"}
+    microsid: {title: "Juniper CLI reference: locator micro-sid", url: "https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/routing-options-source-packet-routing-srv6-locator-micro-sid.html"}
+    block: {title: "Juniper CLI reference: srv6 block", url: "https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/routing-options-source-packet-routing-srv6-block.html"}
+    bgpsid: {title: "Juniper CLI reference: srv6 (protocols bgp source-packet-routing)", url: "https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/srv6-edit-protocols-bgp-source-packet-routing.html"}
+    bgpsrv6: {title: "Juniper: SRv6 Network Programming and Layer 3 Services in BGP Networks", url: "https://www.juniper.net/documentation/us/en/software/junos/segment-routing/topics/topic-map/bgp-srv6-network-programming.html"}
+    advsrv6: {title: "Juniper CLI reference: advertise-srv6-service (family inet unicast)", url: "https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/advertise-srv6-service-edit-protocols-bgp-family-inet-unicast.html"}
+    vpws: {title: "Juniper CLI reference: vpws-service-id", url: "https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/vpws-service-id.html"}
+    vpwsc: {title: "Juniper: EVPN-VPWS over SRv6", url: "https://www.juniper.net/documentation/us/en/software/junos/evpn/topics/concept/configuring-vpws-srv6.html"}
+    evpncli: {title: "Juniper CLI reference: source-packet-routing (routing-instances protocols evpn)", url: "https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/statement/routing-instances-protocols-evpn-source-packet-routing.html"}
+    elan: {title: "Juniper: Configuring EVPN-ELAN over SRv6", url: "https://www.juniper.net/documentation/us/en/software/junos/evpn/topics/topic-map/configuring-evpn-elan-over-srv6.html"}
+    fe7314: {title: "Juniper Feature Explorer: EVPN over SRv6", url: "https://apps.juniper.net/feature-explorer/feature/7314"}
+    b6: {title: "Juniper: End.B6 SID for SRv6", url: "https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/endb6-sid-srv6.html"}
+    std: {title: "Juniper: Supported segment routing standards", url: "https://www.juniper.net/documentation/us/en/software/junos/standards/topics/concept/segment-routing.html"}
+    fe5654: {title: "Juniper Feature Explorer: BGP-LS SRv6", url: "https://apps.juniper.net/feature-explorer/feature/5654"}
+    bgppdf: {title: "Juniper BGP User Guide (PDF): SR-TE policy for SRv6 tunnels", url: "https://www.juniper.net/documentation/us/en/software/junos/bgp/bgp.pdf"}
+    fe9377: {title: "Juniper Feature Explorer: SRLG-aware TI-LFA (IS-IS IPv6 SRLG)", url: "https://apps.juniper.net/feature-explorer/feature/9377"}
+    fe5681: {title: "Juniper Feature Explorer: IS-IS microloop avoidance for SRv6", url: "https://apps.juniper.net/feature-explorer/feature/5681"}
+    ping: {title: "Juniper: ping srv6", url: "https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/ref/command/ping-srv6.html"}
+    rn254: {title: "Junos 25.4R1 release notes: segment routing features", url: "https://www.juniper.net/documentation/us/en/software/junos/release-notes/25.4/junos-release-notes-25.4r1/topics/new-features/feature-descriptions/segment-routing-3.html"}
+  eos:
+    um: {title: "Arista EOS 4.36.2F User Manual: Segment Routing over IPv6", url: "https://www.arista.com/en/um-eos/eos-segment-routing-over-ipv6-srv6"}
+    umisis: {title: "Arista EOS 4.36.2F User Manual: IS-IS (Configuring SRv6 for IS-IS)", url: "https://www.arista.com/en/um-eos/eos-is-is"}
+    toiun: {title: "Arista TOI: SRv6 uN support (EOS 4.34.2F)", url: "https://www.arista.com/en/support/toi/eos-4-34-2f/22062-srv6-un-support"}
+    toiua: {title: "Arista TOI: SRv6 static adjacency segments (uA), EOS 4.35.2F", url: "https://www.arista.com/en/support/toi/eos-4-35-2f/23704-support-for-srv6-static-adjacency-segments-ua"}
+    toitag: {title: "Arista TOI listing: SRv6", url: "https://www.arista.com/en/support/toi/tag/srv6"}
+    toisrte: {title: "Arista TOI: SR-TE policy (EOS 4.21.0F)", url: "https://www.arista.com/en/support/toi/eos-4-21-0f/14071-segment-routing-traffic-engineering-policy-sr-te"}
+    e25l3: {title: "EANTC 2025 interop report: L3VPN over SRv6", url: "https://wiki.eantc.de/wiki/publicreports/view/Main/Multi-Vendor%20MPLS%20%26%20SDN%20Interoperability%20Test%20Report%202025/SRv6/L3VPN%20over%20SRv6"}
+    e26l3: {title: "EANTC 2026 interop report: L3VPN over SRv6", url: "https://wiki.eantc.de/wiki/publicreports/view/Main/EANTC%20Transport%20%26%20Cloud%20Networks%20Interop%20Test%20Report%202026/SRv6/L3VPN%20%20over%20SRv6"}
+    e25rt5: {title: "EANTC 2025 interop report: EVPN RT5 over SRv6", url: "https://wiki.eantc.de/wiki/publicreports/view/Main/Multi-Vendor%20MPLS%20%26%20SDN%20Interoperability%20Test%20Report%202025/SRv6/EVPN%20RT5%20over%20SRv6"}
+    e26rt5: {title: "EANTC 2026 interop report: EVPN RT5 over SRv6", url: "https://wiki.eantc.de/wiki/publicreports/view/Main/EANTC%20Transport%20%26%20Cloud%20Networks%20Interop%20Test%20Report%202026/SRv6/EVPN%20RT5%20over%20SRv6"}
+  sros:
+    ug267: {title: "Nokia SR OS 26.7 Segment Routing and PCE User Guide: SRv6", url: "https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html"}
+    ug263: {title: "Nokia SR OS 26.3 Segment Routing and PCE User Guide: SRv6", url: "https://documentation.nokia.com/sr/26-3/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html"}
+    ug2210: {title: "Nokia SR OS 22.10 Segment Routing and PCE User Guide: SRv6", url: "https://documentation.nokia.com/sr/22-10-7/books/Segment%20Routing%20and%20PCE%20User%20Guide/segment-rout-with-ipv6-data-plane-srv6.html"}
+    acgsrv6: {title: "Nokia Advanced Configuration Guide: Segment Routing with IPv6 data plane (21.5.R2 on FP4)", url: "https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c233-seg-rout-ipv6.html"}
+    acglfa: {title: "Nokia Advanced Configuration Guide: SRv6 loop-free alternate", url: "https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c239-srv6-loop-free-alternate.html"}
+    acgpol: {title: "Nokia Advanced Configuration Guide: SRv6 policies for Layer 2 and Layer 3 services", url: "https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c255-srv6-policy-layer2-layer3-services.html"}
+    acgfa: {title: "Nokia Advanced Configuration Guide: SRv6 Flex-Algo for VPRN", url: "https://documentation.nokia.com/acg/25-3-2/books/layer-3-services-classic/c242-srv6-flex-algo-for-vprn.html"}
+    acgvpls: {title: "Nokia Advanced Configuration Guide: EVPN-VPLS over SRv6", url: "https://documentation.nokia.com/acg/25-3-2/books/layer-2-services-evpn-classic/c254-evpn-vpls-srv6.html"}
+    acgvpws: {title: "Nokia Advanced Configuration Guide: EVPN-VPWS with SRv6 transport", url: "https://documentation.nokia.com/acg/25-3-2/books/layer-2-services-evpn-classic/c244-evpn-vpws-services-with-srv6-transport.html"}
+    acgifl: {title: "Nokia Advanced Configuration Guide: VPRN EVPN-IFL over SRv6", url: "https://documentation.nokia.com/acg/25-3-2/books/layer-2-services-evpn-classic/c252-vprn-evpn-ifl-srv6.html"}
+    acgbase: {title: "Nokia Advanced Configuration Guide: SRv6 encapsulation in the base routing instance", url: "https://documentation.nokia.com/acg/25-3-2/books/segment-routing-and-pce-classic/c234-srv6-enc-baseroutinginst.html"}
+    bgp267: {title: "Nokia SR OS 26.7 Unicast Routing Protocols Guide: BGP (BGP-LS)", url: "https://documentation.nokia.com/sr/26-7/7x50-shared/unicast-routing-protocols/bgp.html"}
+    oam267: {title: "Nokia SR OS 26.7 OAM and Diagnostics Guide", url: "https://documentation.nokia.com/sr/26-7/7x50-shared/oam-diagnostics/oam-fault-performance-tools-protocols.html"}
+    mc267: {title: "Nokia SR OS 26.7 Multicast Guide: SR P2MP policy (Tree-SID SRv6)", url: "https://documentation.nokia.com/sr/26-7/7x50-shared/multicast/sr-p2mp-policy.html"}
+    std267: {title: "Nokia SR OS 26.7 Standards and protocol support", url: "https://documentation.nokia.com/sr/26-7/7750-sr/books/common/dita_standards-10.html"}
+  vrp:
+    seg: {title: "Huawei NetEngine 8000 V800R025C00 Configuration Guide: SRv6 description, SRv6 segments", url: "https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0197730816"}
+    srcnode: {title: "Huawei NetEngine 8000 V800R025C00 Configuration Guide: SRv6 description, source node behaviors", url: "https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0222318700"}
+    cfg: {title: "Huawei NetEngine 8000 V800R025C00 Configuration Guide: Segment Routing IPv6 configuration", url: "https://support.huawei.com/enterprise/en/doc/EDOC1100519743/f1ef5696/segment-routing-ipv6-configuration"}
+    c16: {title: "Huawei NetEngine 8000 V800R025C00: SRH 16-bit compression", url: "https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0000001456450793"}
+    gsrv6: {title: "Huawei NetEngine 8000 V800R025C00: G-SRv6 compression", url: "https://support.huawei.com/enterprise/en/doc/EDOC1100519743/380ac76a/segment-routing-ipv6-description#EN-US_CONCEPT_0000001456130469"}
+    draft: {title: "draft-ietf-spring-srv6-srh-compression-23, implementation status (Huawei)", url: "https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression-23"}
+    ifit: {title: "Huawei NetEngine 8000 V800R025C00: IFIT configuration", url: "https://support.huawei.com/enterprise/en/doc/EDOC1100519743/6331f549/ifit-configuration#EN-US_TASK_0000001277193221"}
+    bierv6: {title: "Huawei NetEngine 8000 V800R025C00: BIERv6 configuration", url: "https://support.huawei.com/enterprise/en/doc/EDOC1100519743/b93747e7/bierv6-configuration"}
+  frr:
+    isis91: {title: "FRR 9.1 isisd documentation: SRv6", url: "https://github.com/FRRouting/frr/blob/frr-9.1/doc/user/isisd.rst?plain=1#L599-L615"}
+    rn91: {title: "FRR 9.1 release notes", url: "https://frrouting.org/release/9.1/"}
+    static: {title: "FRR 10.7.1 staticd documentation: SRv6 SIDs and segment routes", url: "https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L319-L362"}
+    staticsid: {title: "FRR 10.7.1 staticd documentation: static SRv6 SID behaviors", url: "https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/static.rst?plain=1#L512-L523"}
+    srv6h: {title: "FRR 10.7.1 source: lib/srv6.h seg6local actions", url: "https://github.com/FRRouting/frr/blob/frr-10.7.1/lib/srv6.h#L59-L77"}
+    pr9649: {title: "FRR PR #9649: SRv6 IPv4 L3VPN", url: "https://github.com/FRRouting/frr/pull/9649"}
+    bgp81: {title: "FRR 8.1 bgpd documentation: L3VPN SRv6", url: "https://github.com/FRRouting/frr/blob/frr-8.1/doc/user/bgp.rst?plain=1#L2689-L2701"}
+    rn85: {title: "FRR 8.5 release notes", url: "https://frrouting.org/release/8.5/"}
+    pr12219: {title: "FRR PR #12219: SRv6 uSID", url: "https://github.com/FRRouting/frr/pull/12219"}
+    pr18647: {title: "FRR PR #18647: SRv6 PSP flavor", url: "https://github.com/FRRouting/frr/pull/18647"}
+    zebra: {title: "FRR 10.7.1 zebra documentation: SRv6 SID formats", url: "https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/zebra.rst?plain=1#L1132-L1139"}
+    kflv: {title: "Linux v7.3 seg6_local.c: supported RFC 8986 flavors (PSP only)", url: "https://github.com/torvalds/linux/blob/v7.3/net/ipv6/seg6_local.c#L119-L124"}
+    ospfd: {title: "FRR 10.7.1 ospfd documentation: segment routing is OSPFv2 SR-MPLS only", url: "https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/ospfd.rst?plain=1#L1238-L1242"}
+    pr21927: {title: "FRR PR #21927: SRv6 L3 EVPN (merged for 10.8)", url: "https://github.com/FRRouting/frr/pull/21927"}
+    rn106: {title: "FRR 10.6.0 release notes", url: "https://frrouting.org/release/10.6.0/"}
+    rn107: {title: "FRR 10.7.0 release notes", url: "https://frrouting.org/release/10.7.0/"}
+    pathd: {title: "FRR 10.7.1 pathd documentation (MPLS-based)", url: "https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/pathd.rst?plain=1#L7-L17"}
+    lfa: {title: "FRR 10.7.1 source: isisd/isis_lfa.c (TI-LFA builds MPLS label stacks)", url: "https://github.com/FRRouting/frr/blob/frr-10.7.1/isisd/isis_lfa.c#L428-L436"}
+    frr: {title: "FRR 10.7.1 isisd documentation: fast reroute (LFA, Remote LFA, TI-LFA)", url: "https://github.com/FRRouting/frr/blob/frr-10.7.1/doc/user/isisd.rst?plain=1#L141-L147"}
+    fa: {title: "FRR 10.7.1 source: isis_nb_config.c (SRv6 Flex-Algo not yet supported)", url: "https://github.com/FRRouting/frr/blob/frr-10.7.1/isisd/isis_nb_config.c#L3040-L3045"}
+  linux:
+    c140: {title: "Linux commit 140f04c33bbc: seg6local (4.14)", url: "https://github.com/torvalds/linux/commit/140f04c33bbc"}
+    c891: {title: "Linux commit 891ef8dd2a8d: End.T, End.DX2, End.DX4, End.DT6 (4.14)", url: "https://github.com/torvalds/linux/commit/891ef8dd2a8d"}
+    c664: {title: "Linux commit 664d6f86868b: End.DT4 (5.11)", url: "https://github.com/torvalds/linux/commit/664d6f86868b"}
+    c8b5: {title: "Linux commit 8b532109bf88: End.DT46 (5.14)", url: "https://github.com/torvalds/linux/commit/8b532109bf88"}
+    c6c8: {title: "Linux commit 6c8702c60b88: seg6 encapsulation (4.10)", url: "https://github.com/torvalds/linux/commit/6c8702c60b88"}
+    cb07: {title: "Linux commit b07c8cdbe918: H.Encaps.Red (6.0)", url: "https://github.com/torvalds/linux/commit/b07c8cdbe918"}
+    c38e: {title: "Linux commit 38ee7f2d4756: L2 encapsulation (4.14)", url: "https://github.com/torvalds/linux/commit/38ee7f2d4756"}
+    cbdf: {title: "Linux commit bdf3c0b9c10b: PSP flavor (6.3)", url: "https://github.com/torvalds/linux/commit/bdf3c0b9c10b"}
+    c848: {title: "Linux commit 848f3c0d4769: NEXT-C-SID flavor (6.1)", url: "https://github.com/torvalds/linux/commit/848f3c0d4769"}
+    actions: {title: "Linux v7.3 seg6_local.c: action table", url: "https://github.com/torvalds/linux/blob/v7.3/net/ipv6/seg6_local.c#L1584-L1680"}
+    flv: {title: "Linux v7.3 seg6_local.c: supported flavors (PSP and NEXT-C-SID)", url: "https://github.com/torvalds/linux/blob/v7.3/net/ipv6/seg6_local.c#L115-L124"}
+    dp: {title: "srv6.md: SRv6 on Linux — the kernel is a data plane; control planes such as FRRouting program it", url: "linux-kernel.md"}
+    iproute: {title: "ip-route(8): seg6 encapsulation with explicit segment lists", url: "https://man7.org/linux/man-pages/man8/ip-route.8.html"}
+  sonic:
+    rn2111: {title: "SONiC 202111 release notes", url: "https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202111_Release_Notes.md"}
+    rn2211: {title: "SONiC 202211 release notes", url: "https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202211_Release_Notes.md"}
+    rn2405: {title: "SONiC 202405 release notes", url: "https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202405_Release_Notes.md"}
+    rn2505: {title: "SONiC 202505 release notes", url: "https://github.com/sonic-net/SONiC/blob/master/doc/release-notes/SONiC_202505_Release_Notes.md"}
+    orch: {title: "sonic-swss srv6orch.cpp (forwarding depends on each ASIC's SAI implementation)", url: "https://github.com/sonic-net/sonic-swss/blob/master/orchagent/srv6orch.cpp"}
+    sai: {title: "SAI saisrv6.h (SRv6 behaviors SAI can express)", url: "https://github.com/opencomputeproject/SAI/blob/master/inc/saisrv6.h"}
+    hld: {title: "SONiC SRv6 HLD", url: "https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_hld.md"}
+    l3adj: {title: "SONiC SRv6 SID L3Adj HLD", url: "https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_sid_l3adj.md"}
+    static: {title: "SONiC SRv6 static configuration HLD", url: "https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_static_config_hld.md"}
+    vpn: {title: "SONiC SRv6 VPN HLD", url: "https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_vpn.md"}
+    pr2406: {title: "sonic-swss PR #2406: SID list type selection", url: "https://github.com/sonic-net/sonic-swss/pull/2406"}
+    pr3293: {title: "sonic-swss PR #3293: SRv6 VPN in srv6orch", url: "https://github.com/sonic-net/sonic-swss/pull/3293"}
+    frrsup: {title: "sonic-buildimage FRR container supervisord config (daemons launched)", url: "https://github.com/sonic-net/sonic-buildimage/blob/master/dockers/docker-fpm-frr/frr/supervisord/supervisord.conf.common.j2"}
+  vpp:
+    ls: {title: "FD.io VPP 26.06 docs: SR local SIDs", url: "https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_localsid.html"}
+    lsc: {title: "VPP source: sr_localsid.c (CLI behaviors and flavors)", url: "https://github.com/FDio/vpp/blob/master/src/vnet/srv6/sr_localsid.c"}
+    types: {title: "VPP source: sr_types.api (behavior enum)", url: "https://github.com/FDio/vpp/blob/master/src/vnet/srv6/sr_types.api"}
+    pol: {title: "FD.io VPP 26.06 docs: SR policies", url: "https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_policy.html"}
+    steer: {title: "FD.io VPP 26.06 docs: SR steering", url: "https://s3-docs.fd.io/vpp/26.06/developer/corefeatures/sr/sr_steering.html"}
+    fl: {title: "FD.io VPP 26.06 feature list (SRv6)", url: "https://s3-docs.fd.io/vpp/26.06/aboutvpp/featurelist.html"}
+    dp: {title: "FD.io VPP 26.06 feature list: VPP is a data plane with no routing protocols", url: "https://s3-docs.fd.io/vpp/26.06/aboutvpp/featurelist.html"}
+    rewrite: {title: "VPP source: sr_policy_rewrite.c", url: "https://github.com/FDio/vpp/blob/master/src/vnet/srv6/sr_policy_rewrite.c"}
+    mob: {title: "FD.io VPP 26.06 docs: SRv6 mobile plugin", url: "https://s3-docs.fd.io/vpp/26.06/developer/plugins/srv6/mobile_plugin_doc.html"}
+    rn2001: {title: "VPP 20.01 release notes", url: "https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v20.01.html"}
+    rn2005: {title: "VPP 20.05 release notes", url: "https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v20.05.html"}
+    rn2210: {title: "VPP 22.10 release notes", url: "https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v22.10.html"}
+    rn2502: {title: "VPP 25.02 release notes", url: "https://s3-docs.fd.io/vpp/26.06/aboutvpp/releasenotes/v25.02.html"}
+  cilium:
+    srch: {title: "Cilium v1.20 source: bpf/lib/srv6.h (the whole open-source SRv6 datapath)", url: "https://github.com/cilium/cilium/blob/v1.20.0/bpf/lib/srv6.h"}
+    flags: {title: "Cilium v1.20 source: hidden --enable-srv6 (beta) and --srv6-encap-mode flags", url: "https://github.com/cilium/cilium/blob/v1.20.0/daemon/cmd/daemon_main.go#L223-L234"}
+    defaults: {title: "Cilium v1.13 source: default SRv6 encap mode is reduced", url: "https://github.com/cilium/cilium/blob/v1.13.0/pkg/defaults/defaults.go#L202-L203"}
+    bpfhost: {title: "Cilium v1.20 source: bpf_host.c SRv6 decapsulation", url: "https://github.com/cilium/cilium/blob/v1.20.0/bpf/bpf_host.c#L324-L337"}
+    bgpcp: {title: "Cilium docs: BGP Control Plane (BGP only, no IGP or PCEP)", url: "https://docs.cilium.io/en/stable/network/bgp-control-plane/bgp-control-plane/"}
+    advtypes: {title: "Cilium v1.20 source: BGP advertisement types", url: "https://github.com/cilium/cilium/blob/v1.20.0/pkg/k8s/apis/cilium.io/v2/bgp_advert_types.go"}
+    blog113: {title: "Cilium 1.13 release blog: SRv6 is an Isovalent Enterprise feature", url: "https://isovalent.com/blog/post/cilium-release-113/"}
+    ie113: {title: "Isovalent Enterprise for Cilium 1.13: SRv6 L3VPN (Beta)", url: "https://isovalent.com/blog/post/isovalent-enterprise-1-13/"}
+
+cells:
+  iosxr:
+    end: {s: yes, r: "6.6.1", note: "Full-length End in 6.6.1; uN (uSID) from 7.3.1.", src: [rn661, n55usid]}
+    end_x: {s: yes, r: "6.6.1", note: "uA (uSID) from 7.3.1.", src: [rn661, a9kusid]}
+    end_dx2: {s: yes, r: "7.3.2", note: "uDX2 for EVPN-VPWS in 7.3.2; full-length End.DX2 from 7.5.1 on NCS 5500.", src: n55usid}
+    end_dx4: {s: partial, note: "Full-length SIDs only; per-CE uDX4 is not supported with uSID.", src: [n55usid, n55fl]}
+    end_dx6: {s: partial, note: "Full-length SIDs only; per-CE uDX6 is not supported with uSID.", src: [n55usid, n55fl]}
+    end_dt4: {s: yes, r: "6.6.1", note: "Per-VRF uDT4 with uSID from 7.3.1.", src: [rn661, n55usid]}
+    end_dt6: {s: yes, r: "7.2.2", note: "Full-length 7.2.2 (NCS 5500); uDT6 from 7.3.1.", src: [n55fl, n55usid]}
+    end_dt46: {s: yes, r: "7.8.1", note: "First on ASR 9000.", src: a9kusid}
+    end_dt2u: {s: yes, r: "7.5.2", note: "uDT2U for EVPN E-LAN.", src: a9kusid}
+    end_dt2m: {s: yes, r: "7.5.2", note: "uDT2M for EVPN E-LAN BUM with ESI filtering.", src: a9kusid}
+    end_b6_encaps: {s: partial, r: "7.10.1", note: "Cisco 8000 binds SRv6-TE policies with uB6.Encaps.Red; NCS 5500 and ASR 9000 document uB6.Insert.Red.", src: [c8kte, n55te]}
+    h_encaps: {s: unknown, note: "Cisco guides document H.Encaps.Red (and H.Insert.Red), not plain H.Encaps.", src: n55usid}
+    h_encaps_red: {s: yes, src: n55usid}
+    h_encaps_l2: {s: yes, r: "7.3.2", note: "H.Encaps.L2.Red for EVPN VPWS and E-LAN.", src: n55usid}
+    psp: {s: yes, r: "7.3.1", src: n55usid}
+    usd: {s: yes, r: "7.3.1", note: "uSID 7.3.1; USD on full-length SIDs from 7.5.2.", src: [n55usid, n55fl]}
+    next_csid: {s: yes, r: "7.3.1", note: "F3216. First-generation NCS 5500 needs an hw-module profile and a reload.", src: n55usid}
+    isis: {s: yes, r: "6.6.1", src: rn661}
+    bgp_l3vpn: {s: yes, r: "6.6.1", note: "uSID L3VPN from 7.3.1.", src: [rn661, n55usid]}
+    bgp_evpn: {s: yes, r: "7.3.2", note: "EVPN-VPWS 7.3.2, E-LAN 7.5.2, RT5 7.9.1 (ASR 9000).", src: [a9kusid, n55usid]}
+    bgp_global: {s: yes, r: "7.2.2", note: "IPv6 7.2.2, IPv4 7.5.1 (NCS 5500).", src: [n55fl, n55usid]}
+    bgp_ls: {s: yes, r: "24.4.1", note: "Release stated for Cisco 8000.", src: c8kbgpls}
+    pcep: {s: partial, note: "PCE-delegated SRv6 policies; PCE-initiated SRv6 policies listed as not supported.", src: [n55te, c8kte]}
+    sr_policy: {s: partial, r: "7.3.2", note: "Local and PCE-delegated SRv6-TE with uSID segments; the BGP SR Policy SAFI does not carry SRv6 segments.", src: [n55te, idrsrp]}
+    ti_lfa: {s: yes, r: "6.6.1", src: rn661}
+    microloop: {s: yes, r: "7.3.1", note: "Earliest entry found: microloop avoidance with Flex-Algo on ASR 9000.", src: a9kusid}
+    flex_algo: {s: yes, note: "Up to 8 locators, algorithms 128-255.", src: n55usid}
+    multicast: {s: no, note: "Tree-SID is SR-MPLS only: SRv6 Tree-SID and SRv6 P2MP policies are listed as not supported.", src: [c8ktree, n55tree]}
+    ping_trace: {s: yes, r: "6.6.1", src: [rn661, c8koam]}
+    pm: {s: yes, r: "7.4.1", note: "Delay over SRv6 on Cisco 8000 in 7.4.1; SR policy liveness over SRv6 from 7.11.1.", src: c8kpm}
+  iosxe:
+    end: {s: yes, r: "17.12.1a", note: "uN only (uSID), with PSP/USD.", src: srv6}
+    end_x: {s: yes, r: "17.12.1a", note: "uA; static End.X from 17.15.1a.", src: srv6}
+    end_dt4: {s: yes, r: "17.12.1a", note: "Per-VRF allocation only.", src: srv6}
+    end_dt6: {s: yes, r: "17.12.1a", note: "Per-VRF allocation only.", src: srv6}
+    end_dt46: {s: partial, note: "uDT46 is listed, but BGP does not allocate or advertise it.", src: srv6}
+    end_b6_encaps: {s: no, note: "SRv6 Binding SIDs are not supported.", src: srv6}
+    h_encaps_red: {s: yes, r: "17.12.1a", src: srv6}
+    psp: {s: yes, r: "17.12.1a", src: srv6}
+    usd: {s: yes, r: "17.12.1a", src: srv6}
+    next_csid: {s: yes, r: "17.12.1a", note: "F3216 only; up to 10 uSID locators.", src: srv6}
+    isis: {s: yes, r: "17.12.1a", src: srv6}
+    bgp_l3vpn: {s: yes, r: "17.12.1a", note: "VPNv4/VPNv6 with per-VRF SIDs; ODN from 17.13.1a.", src: srv6}
+    pcep: {s: partial, r: "17.16.1a", note: "PCE-delegated computation only; PCE-initiated policies are not supported.", src: srv6}
+    sr_policy: {s: partial, r: "17.12.1a", note: "Local SRv6-TE with dynamic segment lists only; no explicit lists, no Binding SID, no BGP SR Policy.", src: srv6}
+    ti_lfa: {s: yes, r: "17.15.1a", src: tilfa}
+    microloop: {s: yes, r: "17.15.1a", src: uloop}
+    flex_algo: {s: yes, r: "17.18.1a", note: "Up to 8 algorithms, single IS-IS level.", src: fa}
+    multicast: {s: partial, r: "17.18.1a", note: "IPv4 MVPN ingress replication (End.DTMC4); no Tree-SID.", src: mvpn}
+    ping_trace: {s: yes, r: "17.12.1a", note: "SRv6 OAM in 17.12.1a; ping srv6 / traceroute srv6 commands from 17.16.1a.", src: srv6}
+    pm: {s: yes, r: "17.12.1a", src: srv6}
+  junos:
+    end: {s: yes, r: "20.3R1", note: "MX 20.3R1; uN MX 23.4R1, ACX7000 23.2R1.", src: [infocus, microsid]}
+    end_x: {s: yes, r: "20.3R1", note: "uA from MX 23.4R1.", src: isisnp}
+    end_dx2: {s: yes, r: "22.3R1", note: "EVPN-VPWS on MX; uDX2 24.2R1; End.DX2V also available.", src: vpws}
+    end_dx4: {s: unknown, note: "Not among the BGP SRv6 service SID options (DT4/DT6/DT46 only).", src: bgpsid}
+    end_dx6: {s: unknown, note: "Not among the BGP SRv6 service SID options (DT4/DT6/DT46 only).", src: bgpsid}
+    end_dt4: {s: yes, r: "20.4R1", note: "uDT4 MX 23.4R1, ACX7000 23.2R1.", src: bgpsid}
+    end_dt6: {s: yes, r: "20.4R1", note: "uDT6 MX 23.4R1, ACX7000 23.2R1.", src: bgpsid}
+    end_dt46: {s: yes, r: "22.1R1", note: "uDT46 MX 23.4R1, ACX7000 23.2R1.", src: bgpsid}
+    end_dt2u: {s: yes, r: "23.4R1", note: "EVPN E-LAN end-dt2-sid / micro-dt2-sid on some MX models; more MX and ACX in 24.x.", src: evpncli}
+    end_dt2m: {s: partial, r: "23.4R1", note: "E-LAN BUM traffic is handled, but the docs only name a generic End.DT2 SID.", src: elan}
+    end_b6_encaps: {s: yes, r: "25.2R1", note: "ACX7000 25.2R1, MX 26.2R1; classic and NEXT-C-SID, encaps and .Red.", src: b6}
+    h_encaps: {s: yes, r: "20.3R1", note: "Full SRH with no-reduced-srh.", src: isisnp}
+    h_encaps_red: {s: yes, r: "20.3R1", note: "Default encapsulation mode.", src: isisnp}
+    h_encaps_l2: {s: yes, r: "22.3R1", note: "Used by EVPN over SRv6; not named as such in the docs.", src: vpwsc}
+    psp: {s: yes, r: "20.3R1", src: [isisnp, microsid]}
+    usp: {s: yes, r: "20.3R1", src: isisnp}
+    usd: {s: yes, r: "20.3R1", src: isisnp}
+    next_csid: {s: yes, r: "23.2R1", note: "ACX7000 23.2R1, MX 23.4R1, PTX10008 24.4R1-S2; default F3216.", src: [block, microsid]}
+    replace_csid: {s: no, note: "Standards page for RFC 9800: only SRv6 micro-SIDs are supported.", src: std}
+    isis: {s: yes, r: "20.3R1", note: "MX (MPC7E or newer); ACX7000 23.1R1; PTX10002-36QDD 24.2R2; PTX10008 24.4R1-S2.", src: infocus}
+    bgp_l3vpn: {s: yes, r: "20.4R1", note: "Inter-AS Option C supported, Option B not.", src: bgpsrv6}
+    bgp_evpn: {s: yes, r: "22.3R1", note: "EVPN-VPWS MX 22.3R1; E-LAN MX 23.4R1.", src: [fe7314, vpws]}
+    bgp_global: {s: yes, r: "20.4R1", src: advsrv6}
+    bgp_ls: {s: yes, r: "21.3R1", note: "MX960 21.3R1; MX10004 22.3R1.", src: fe5654}
+    pcep: {s: yes, r: "22.3R1", note: "MX10004 22.3R1; RFC 9603 partial (no NAI-to-SID resolution).", src: std}
+    sr_policy: {s: yes, r: "21.3R1", note: "Static and PCEP SRv6-TE policies; BGP SR Policy SAFI with SRv6 is not documented.", src: bgppdf}
+    ti_lfa: {s: yes, r: "20.3R1", note: "uSID 23.4R1; SRLG-aware from 26.2R1.", src: [infocus, fe9377]}
+    microloop: {s: yes, r: "21.1R1", src: fe5681}
+    flex_algo: {s: yes, r: "20.3R1", note: "uSID 23.4R1. One Flex-Algo definition covers SR-MPLS and SRv6.", src: infocus}
+    ping_trace: {s: yes, r: "21.3R1", note: "ping srv6 21.3R1; traceroute srv6 22.3R1.", src: ping}
+    pm: {s: yes, r: "24.4R1", note: "TWAMP probes over SRv6 segment lists on PTX 24.4R1; MX 25.4R1.", src: rn254}
+  eos:
+    end: {s: yes, r: "4.34.2F", note: "uN only (uSID F3216).", src: [toiun, um]}
+    end_x: {s: partial, r: "4.35.2F", note: "Static uA only.", src: [toiua, umisis]}
+    end_dx4: {s: no, src: um}
+    end_dx6: {s: no, src: um}
+    end_dt4: {s: yes, note: "Listed as supported in show srv6 capabilities; no configuration documented.", src: um}
+    end_dt6: {s: yes, note: "Listed as supported in show srv6 capabilities; no configuration documented.", src: um}
+    end_dt46: {s: partial, note: "Interop-tested at EANTC 2026 (7280R4); not in Arista's public docs.", src: e26l3}
+    h_encaps: {s: yes, src: um}
+    h_encaps_red: {s: no, src: um}
+    psp: {s: yes, src: um}
+    usp: {s: no, src: um}
+    usd: {s: yes, src: um}
+    next_csid: {s: yes, r: "4.34.2F", note: "F3216.", src: [toiun, um]}
+    isis: {s: yes, r: "4.36.1F", note: "7280R4 and 7800R4 series only.", src: umisis}
+    bgp_l3vpn: {s: partial, note: "Interop-tested as PE at EANTC (7280R3 2025, 7280R4 2026); not in Arista's public docs.", src: [e25l3, e26l3]}
+    bgp_evpn: {s: partial, note: "EVPN RT5 interop-tested as PE at EANTC 2025 and 2026; not in Arista's public docs.", src: [e25rt5, e26rt5]}
+    sr_policy: {s: unknown, note: "EOS SR-TE policy is documented for SR-MPLS only.", src: toisrte}
+    ti_lfa: {s: unknown, note: "The IS-IS SRv6 TOI is tagged TI-LFA, but its body needs a login and the manual does not document it.", src: toitag}
+    flex_algo: {s: yes, r: "4.36.1F", note: "7280R4 and 7800R4 series only.", src: umisis}
+    ping_trace: {s: yes, note: "The target uN prefix must be configured on a loopback.", src: um}
+  sros:
+    end: {s: yes, r: "21.5.R2", note: "FP4-based hardware; uN in micro-segment mode.", src: [ug267, acgsrv6]}
+    end_x: {s: yes, r: "21.5.R2", note: "End.X and LAN End.X; uA in micro-segment mode.", src: [ug267, acgsrv6]}
+    end_t: {s: no, src: ug267}
+    end_dx2: {s: yes, r: "22.7.R1", note: "End.DX2 and uDX2 for EVPN-VPWS.", src: [ug267, acgvpws]}
+    end_dx4: {s: no, src: ug267}
+    end_dx6: {s: no, src: ug267}
+    end_dt4: {s: yes, r: "21.5.R2", src: [ug267, acgfa]}
+    end_dt6: {s: yes, r: "21.5.R2", src: [ug267, acgfa]}
+    end_dt46: {s: yes, src: ug267}
+    end_dt2u: {s: yes, r: "22.7.R1", src: [ug267, acgvpls]}
+    end_dt2m: {s: yes, r: "22.7.R1", src: [ug267, acgvpls]}
+    end_b6_encaps: {s: yes, r: "22.7.R1", note: "End.B6.Encaps.Red only, one Binding SID per policy.", src: [ug267, acgpol]}
+    h_encaps: {s: no, note: "Only the reduced variants (H.Encaps.Red, H.Encaps.L2.Red) are supported.", src: ug267}
+    h_encaps_red: {s: yes, src: ug267}
+    h_encaps_l2: {s: yes, r: "22.7.R1", note: "H.Encaps.L2.Red only.", src: [ug267, acgvpls]}
+    psp: {s: yes, src: ug267}
+    usp: {s: yes, src: ug267}
+    usd: {s: yes, src: ug267}
+    next_csid: {s: yes, r: "≤ 22.10", note: "16-bit uSIDs; already documented in the oldest online guide (22.10). Classic and micro SIDs can run together.", src: [ug2210, ug267]}
+    isis: {s: yes, r: "21.5.R2", src: [ug267, acgsrv6]}
+    ospfv3: {s: no, note: "IS-IS is the only SRv6 IGP; RFC 9513 is not in the standards list.", src: [std267, ug267]}
+    bgp_l3vpn: {s: yes, r: "21.5.R2", src: [ug267, acgfa]}
+    bgp_evpn: {s: yes, r: "22.5.R1", note: "EVPN-IFL 22.5.R1; EVPN-VPLS and VPWS 22.7.R1.", src: [acgifl, acgvpls, acgvpws]}
+    bgp_global: {s: yes, src: acgbase}
+    bgp_ls: {s: yes, note: "IS-IS topologies only.", src: bgp267}
+    pcep: {s: yes, r: "26.7", note: "First documented in 26.7.", src: ug267}
+    sr_policy: {s: yes, r: "22.7.R1", note: "Static and BGP SR Policy (SAFI 73); uSID in policies documented from 23.10.", src: [ug267, acgpol]}
+    ti_lfa: {s: yes, r: "21.5.R2", note: "Repair tunnels use H.Insert.Red; H.Encaps.Red repair tunnels from other vendors are terminated.", src: [ug267, acglfa]}
+    microloop: {s: yes, r: "26.3", note: "First documented in 26.3.", src: ug263}
+    flex_algo: {s: yes, r: "21.5.R2", src: acgfa}
+    multicast: {s: partial, r: "25.3", note: "Tree-SID SRv6 for NG-MVPN: static configuration, classic SIDs only, no protection.", src: mc267}
+    ping_trace: {s: yes, src: oam267}
+    mup: {s: no, note: "No RFC 9433 behaviors in the SRv6 chapter or the standards list.", src: std267}
+  vrp:
+    end: {s: yes, src: seg}
+    end_x: {s: yes, src: cfg}
+    end_dx2: {s: yes, note: "EVPN-VPWS.", src: cfg}
+    end_dx4: {s: yes, note: "Per-interface SID for EVPN L3VPN.", src: seg}
+    end_dx6: {s: yes, note: "Per-interface SID for EVPN L3VPN.", src: seg}
+    end_dt4: {s: yes, src: cfg}
+    end_dt6: {s: yes, src: cfg}
+    end_dt46: {s: yes, src: cfg}
+    end_dt2u: {s: yes, note: "EVPN VPLS.", src: cfg}
+    end_dt2m: {s: yes, note: "EVPN VPLS BUM; arguments carry the ESI for split horizon.", src: cfg}
+    end_b6_encaps: {s: yes, note: "Encaps and reduced variants, plus End.B6.Insert.", src: cfg}
+    h_encaps: {s: yes, src: srcnode}
+    h_encaps_red: {s: yes, src: cfg}
+    h_encaps_l2: {s: yes, src: srcnode}
+    psp: {s: yes, src: cfg}
+    usp: {s: yes, note: "Only combined with USD.", src: cfg}
+    usd: {s: yes, src: srcnode}
+    next_csid: {s: partial, note: "16-bit C-SIDs only, as an interop mode; the default 16-bit mode is NEXT&REPLACE, which is not in RFC 9800.", src: c16}
+    replace_csid: {s: yes, r: "V800R021C00", note: "G-SRv6 with 32-bit (and 16-bit) G-SIDs. Release from Huawei's IETF implementation report.", src: [gsrv6, draft]}
+    isis: {s: yes, src: cfg}
+    ospfv3: {s: yes, src: cfg}
+    bgp_l3vpn: {s: yes, src: cfg}
+    bgp_evpn: {s: yes, note: "EVPN L3VPN, VPWS and VPLS.", src: cfg}
+    bgp_global: {s: yes, src: cfg}
+    bgp_ls: {s: yes, src: cfg}
+    pcep: {s: yes, src: cfg}
+    sr_policy: {s: yes, note: "SRv6 TE Policy, from local configuration, PCEP or the BGP SR Policy address family.", src: cfg}
+    ti_lfa: {s: yes, note: "IS-IS and OSPFv3; with compression, only 32-bit C-SIDs.", src: cfg}
+    microloop: {s: yes, src: cfg}
+    flex_algo: {s: yes, src: cfg}
+    multicast: {s: unknown, note: "Huawei documents BIERv6 for IPv6 multicast transport, not SRv6 replication segments.", src: bierv6}
+    ping_trace: {s: yes, src: cfg}
+    pm: {s: partial, note: "IFIT (alternate marking) on SRv6 paths; the STAMP and TWAMP Light chapters do not cover SRv6.", src: ifit}
+  frr:
+    end: {s: yes, r: "9.1", note: "IS-IS allocates End/uN SIDs from 9.1; static uN from 10.3.", src: isis91}
+    end_x: {s: yes, r: "9.1", note: "IS-IS End.X/uA adjacency SIDs; static uA from 10.4.", src: isis91}
+    end_t: {s: no, note: "The kernel has it, but only FRR's sharpd test daemon installs it.", src: staticsid}
+    end_dx2: {s: no, src: staticsid}
+    end_dx4: {s: no, note: "The kernel has it, but only FRR's sharpd test daemon installs it.", src: staticsid}
+    end_dx6: {s: no, note: "The kernel has it, but only FRR's sharpd test daemon installs it.", src: staticsid}
+    end_dt4: {s: yes, r: "8.3", note: "BGP SRv6 VPNv4.", src: pr9649}
+    end_dt6: {s: yes, r: "8.1", note: "BGP SRv6 VPNv6.", src: bgp81}
+    end_dt46: {s: yes, r: "8.5", note: "Per-VRF SID; global-table uDT46 from 10.7.", src: rn85}
+    end_dt2u: {s: no, src: srv6h}
+    end_dt2m: {s: no, src: srv6h}
+    end_b6_encaps: {s: no, note: "Codepoints are parsed, but no daemon configures a binding SID.", src: staticsid}
+    end_bm: {s: no, src: srv6h}
+    h_encaps: {s: yes, r: "8.1", note: "BGP L3VPN; static SRv6 segment routes from 9.1.", src: [bgp81, static]}
+    h_encaps_red: {s: yes, r: "10.4", note: "staticd and BGP encap-behavior H_Encaps_Red.", src: static}
+    h_encaps_l2: {s: no, note: "staticd and bgpd offer only H.Encaps and H.Encaps.Red.", src: static}
+    psp: {s: partial, r: "10.4", note: "Locator flavor psp; applied to End only, the kernel's limit.", src: pr18647}
+    usp: {s: no, note: "The Linux kernel implements only PSP among RFC 8986 flavors.", src: kflv}
+    usd: {s: no, note: "The Linux kernel implements only PSP among RFC 8986 flavors.", src: kflv}
+    next_csid: {s: yes, r: "8.5", note: "BGP uDT SIDs 8.5; IS-IS uN/uA 9.1; usid-f3216 format.", src: [pr12219, rn85]}
+    replace_csid: {s: no, note: "SID formats: usid-f3216 and uncompressed only.", src: zebra}
+    isis: {s: yes, r: "9.1", src: rn91}
+    ospfv3: {s: no, note: "ospf6d has no SRv6; FRR OSPF segment routing is OSPFv2 SR-MPLS.", src: ospfd}
+    bgp_l3vpn: {s: yes, r: "8.1", note: "VPNv6 8.1, VPNv4 8.3; multiple locators and per-VRF locator 10.5.", src: [bgp81, pr9649]}
+    bgp_evpn: {s: no, note: "Not in any release up to 10.7.1; L3 EVPN (RT5) over SRv6 is merged for 10.8.", src: pr21927}
+    bgp_global: {s: yes, r: "10.6", src: rn106}
+    bgp_ls: {s: yes, r: "10.7", src: rn107}
+    pcep: {s: no, note: "pathd and PCEP are SR-MPLS only.", src: pathd}
+    sr_policy: {s: partial, r: "9.1", note: "Static routes into SRv6 SID lists (IPv6 9.1, IPv4 10.4); no SR Policy construct.", src: static}
+    ti_lfa: {s: no, note: "isisd TI-LFA computes SR-MPLS repair paths only.", src: lfa}
+    microloop: {s: no, src: frr}
+    flex_algo: {s: no, note: "isisd rejects SRv6 Flex-Algo as not yet supported.", src: fa}
+    mup: {s: no, src: srv6h}
+  linux:
+    end: {s: yes, r: "4.14", src: c140}
+    end_x: {s: yes, r: "4.14", src: c140}
+    end_t: {s: yes, r: "4.14", src: c891}
+    end_dx2: {s: yes, r: "4.14", src: c891}
+    end_dx4: {s: yes, r: "4.14", src: c891}
+    end_dx6: {s: yes, r: "4.14", src: c140}
+    end_dt4: {s: yes, r: "5.11", note: "vrftable only; needs net.vrf.strict_mode=1.", src: c664}
+    end_dt6: {s: yes, r: "4.14", note: "VRF (vrftable) mode from 5.11.", src: c891}
+    end_dt46: {s: yes, r: "5.14", src: c8b5}
+    end_dt2u: {s: no, src: actions}
+    end_dt2m: {s: no, src: actions}
+    end_b6_encaps: {s: yes, r: "4.14", note: "End.B6.Encaps only; End.B6.Encaps.Red is not implemented.", src: c140}
+    end_bm: {s: no, note: "The name exists in the UAPI and iproute2, but the kernel has no implementation.", src: actions}
+    h_encaps: {s: yes, r: "4.10", src: c6c8}
+    h_encaps_red: {s: yes, r: "6.0", src: cb07}
+    h_encaps_l2: {s: yes, r: "4.14", note: "l2encap 4.14; l2encap.red 6.0.", src: c38e}
+    psp: {s: partial, r: "6.3", note: "End only.", src: cbdf}
+    usp: {s: no, src: flv}
+    usd: {s: no, src: flv}
+    next_csid: {s: yes, r: "6.1", note: "End 6.1, End.X 6.6; default 32/16 (F3216).", src: c848}
+    replace_csid: {s: no, src: flv}
+    isis: {s: no, src: dp}
+    ospfv3: {s: no, src: dp}
+    bgp_l3vpn: {s: no, src: dp}
+    bgp_evpn: {s: no, src: dp}
+    bgp_global: {s: no, src: dp}
+    bgp_ls: {s: no, src: dp}
+    pcep: {s: no, src: dp}
+    sr_policy: {s: partial, r: "4.10", note: "seg6 routes steer into explicit SID lists; no SR Policy construct.", src: iproute}
+    ti_lfa: {s: no, src: dp}
+    microloop: {s: no, src: dp}
+    flex_algo: {s: no, src: dp}
+    multicast: {s: no, src: actions}
+    mup: {s: no, note: "No RFC 9433 behaviors as of 7.3.", src: actions}
+  sonic:
+    end: {s: partial, r: "202111", src: [rn2111, orch]}
+    end_x: {s: partial, r: "202405", note: "Adjacency programming (L3Adj) from 202405.", src: [rn2405, l3adj]}
+    end_t: {s: partial, r: "202111", src: [sai, orch]}
+    end_dx2: {s: no, src: sai}
+    end_dx4: {s: partial, r: "202405", src: [l3adj, orch]}
+    end_dx6: {s: partial, r: "202405", src: [l3adj, orch]}
+    end_dt4: {s: partial, r: "202111", src: orch}
+    end_dt6: {s: partial, r: "202111", src: orch}
+    end_dt46: {s: partial, r: "202111", note: "Static CONFIG_DB uDT46 from 202505 (rated Alpha).", src: [hld, rn2505]}
+    end_dt2u: {s: no, src: sai}
+    end_dt2m: {s: no, src: sai}
+    end_b6_encaps: {s: partial, r: "202111", src: [sai, orch]}
+    end_bm: {s: no, src: sai}
+    h_encaps: {s: partial, r: "202305", src: pr2406}
+    h_encaps_red: {s: partial, r: "202111", note: "Default SID list type.", src: [hld, orch]}
+    h_encaps_l2: {s: no, src: sai}
+    psp: {s: partial, r: "202111", note: "Programmed as PSP and USD together.", src: orch}
+    usp: {s: no, note: "Defined in SAI, never programmed by orchagent.", src: orch}
+    usd: {s: partial, r: "202111", note: "Programmed as PSP and USD together.", src: orch}
+    next_csid: {s: partial, r: "202211", note: "uN, uA, uDT, uDX; static config defaults to F3216.", src: [rn2211, static]}
+    replace_csid: {s: no, src: [hld, sai]}
+    isis: {s: no, note: "The SONiC FRR container does not run isisd; SIDs come from BGP or static config.", src: frrsup}
+    ospfv3: {s: no, note: "The SONiC FRR container does not run ospf6d.", src: frrsup}
+    bgp_l3vpn: {s: partial, r: "202505", note: "SRv6 VPN code in srv6orch; not in the release notes.", src: [vpn, pr3293]}
+    bgp_evpn: {s: no, note: "SAI has no L2 SRv6 behaviors.", src: sai}
+    sr_policy: {s: partial, r: "202111", note: "Static steering into SID lists; no BGP SR Policy.", src: [hld, orch]}
+    multicast: {s: no, src: sai}
+    mup: {s: no, src: sai}
+  vpp:
+    end: {s: yes, r: "17.04", note: "uN from 20.05.", src: [ls, rn2005]}
+    end_x: {s: yes, r: "17.04", note: "uA from 25.02.", src: [ls, rn2502]}
+    end_t: {s: yes, r: "17.07", src: [lsc, fl]}
+    end_dx2: {s: yes, r: "17.04", src: ls}
+    end_dx4: {s: yes, r: "17.04", src: ls}
+    end_dx6: {s: yes, r: "17.04", src: ls}
+    end_dt4: {s: yes, r: "17.04", src: ls}
+    end_dt6: {s: yes, r: "17.04", src: ls}
+    end_dt46: {s: no, src: types}
+    end_dt2u: {s: no, src: types}
+    end_dt2m: {s: no, src: types}
+    end_b6_encaps: {s: yes, r: "17.04", note: "Binding SID of an SR policy.", src: [pol, fl]}
+    end_bm: {s: no, src: fl}
+    h_encaps: {s: yes, r: "17.04", src: pol}
+    h_encaps_red: {s: partial, r: "17.04", note: "The SRH is dropped only for single-SID lists.", src: [fl, rewrite]}
+    h_encaps_l2: {s: yes, r: "17.04", src: [steer, fl]}
+    psp: {s: yes, r: "17.04", src: ls}
+    usp: {s: no, src: lsc}
+    usd: {s: no, src: lsc}
+    next_csid: {s: yes, r: "20.05", note: "uN 20.05, uA 25.02; 16- or 32-bit uSIDs.", src: [rn2005, rn2502]}
+    replace_csid: {s: no, src: types}
+    isis: {s: no, src: dp}
+    ospfv3: {s: no, src: dp}
+    bgp_l3vpn: {s: no, src: dp}
+    bgp_evpn: {s: no, src: dp}
+    bgp_global: {s: no, src: dp}
+    bgp_ls: {s: no, src: dp}
+    pcep: {s: no, src: dp}
+    sr_policy: {s: yes, r: "17.04", note: "Local SR policies with steering; no BGP SR Policy.", src: [pol, steer]}
+    ti_lfa: {s: no, src: dp}
+    microloop: {s: no, src: dp}
+    flex_algo: {s: no, src: dp}
+    multicast: {s: partial, r: "17.04", note: "Spray policies replicate at the headend; not RFC 9524.", src: pol}
+    pm: {s: partial, r: "22.10", note: "SRv6 Path Tracing, not STAMP or TWAMP.", src: rn2210}
+    mup: {s: partial, r: "20.01", note: "srv6-mobile plugin: GTP-U behaviors, no End.MAP.", src: [mob, rn2001]}
+  cilium:
+    end: {s: no, src: srch}
+    end_x: {s: no, src: srch}
+    end_t: {s: no, src: srch}
+    end_dx2: {s: no, src: srch}
+    end_dx4: {s: no, src: srch}
+    end_dx6: {s: no, src: srch}
+    end_dt4: {s: partial, r: "1.13", note: "Hidden beta datapath; nothing in open-source Cilium programs the SIDs (Isovalent Enterprise does).", src: [bpfhost, flags]}
+    end_dt6: {s: partial, r: "1.13", note: "Hidden beta datapath; nothing in open-source Cilium programs the SIDs (Isovalent Enterprise does).", src: [srch, flags]}
+    end_dt2u: {s: no, src: srch}
+    end_dt2m: {s: no, src: srch}
+    end_b6_encaps: {s: no, src: srch}
+    end_bm: {s: no, src: srch}
+    h_encaps: {s: partial, r: "1.13", note: "Single SID, --srv6-encap-mode=srh; hidden beta flag.", src: [srch, flags]}
+    h_encaps_red: {s: partial, r: "1.13", note: "Single SID; the default encap mode; hidden beta flag.", src: [defaults, flags]}
+    h_encaps_l2: {s: no, src: srch}
+    psp: {s: no, src: srch}
+    usp: {s: no, src: srch}
+    usd: {s: no, src: srch}
+    next_csid: {s: no, note: "Not in open-source Cilium; Isovalent Enterprise supports uSID.", src: [srch, blog113]}
+    replace_csid: {s: no, src: srch}
+    isis: {s: no, src: bgpcp}
+    ospfv3: {s: no, src: bgpcp}
+    bgp_l3vpn: {s: no, note: "Not in open-source Cilium; SRv6 L3VPN is an Isovalent Enterprise feature (Beta since 1.13).", src: [advtypes, ie113]}
+    bgp_evpn: {s: no, src: advtypes}
+    bgp_ls: {s: no, src: advtypes}
+    pcep: {s: no, src: bgpcp}
+    sr_policy: {s: no, note: "Single-SID encapsulation only.", src: blog113}
+    ti_lfa: {s: no, src: bgpcp}
+    microloop: {s: no, src: bgpcp}
+    flex_algo: {s: no, src: bgpcp}
+    multicast: {s: no, src: srch}
+    mup: {s: no, src: srch}

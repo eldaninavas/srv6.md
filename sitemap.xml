@@ -94,7 +94,7 @@
     </url>
     <url>
          <loc>https://srv6.md/implementations/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/arista-eos/</loc>
@@ -102,19 +102,19 @@
     </url>
     <url>
          <loc>https://srv6.md/implementations/cilium/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/cisco-ios-xe/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/cisco-ios-xr/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/frrouting/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/juniper/</loc>
@@ -126,19 +126,23 @@
     </url>
     <url>
          <loc>https://srv6.md/implementations/nokia-sros/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/sonic/</loc>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
+         <loc>https://srv6.md/implementations/support-matrix/</loc>
+         <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
          <loc>https://srv6.md/implementations/vinbero/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/zebra-rs/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/ja/</loc>
@@ -326,7 +330,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/multicast/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/network-programming/</loc>
@@ -366,7 +370,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/srpm/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/srv6-vs-sr-mpls/</loc>
@@ -410,7 +414,7 @@
     </url>
     <url>
          <loc>https://srv6.md/use-cases/mission-critical/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/use-cases/network-slicing/</loc>
