@@ -246,7 +246,7 @@
     </url>
     <url>
          <loc>https://srv6.md/rfcs/rfc9602/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/rfcs/rfc9603/</loc>
@@ -258,7 +258,7 @@
     </url>
     <url>
          <loc>https://srv6.md/rfcs/rfc9800/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/rfcs/rfc9819/</loc>
@@ -283,6 +283,10 @@
     <url>
          <loc>https://srv6.md/rfcs/rfc9960/</loc>
          <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/tools/sid-decoder/</loc>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/</loc>
@@ -346,7 +350,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/sid-structure/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/sonic-sai/</loc>
@@ -378,7 +382,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/usid-compression/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/what-is-srv6/</loc>

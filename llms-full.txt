@@ -42,6 +42,12 @@ SRv6 now runs inside some of the largest AI training networks in the world. Open
 
 [SRv6 for AI: the complete guide](https://srv6.md/ai/)    [How MRC uses SRv6](https://srv6.md/ai/mrc/)
 
+## SRv6 SID Decoder
+
+Paste any SRv6 SID or uSID container and see what every bit means: Locator-Block, node, function and argument, F3216 uSIDs, the end-of-container, and a hop-by-hop walk of the RFC 9800 shift-and-forward. It also looks up any IANA behavior codepoint, and every decode has a link you can share.
+
+[Open the SID decoder](https://srv6.md/tools/sid-decoder/)
+
 ## Explore
 
 ### Topics
@@ -1843,6 +1849,9 @@ An SRv6 **Segment Identifier (SID)** is a 128-bit value, formatted as a standard
 | **Function** | Identifies the local behavior (End, End.DT4, etc.) | 16-24 bits |
 | **Arguments** | Optional parameters for the function | 0-48 bits |
 
+!!! tip "Decode a SID"
+    Paste any SID into the [SRv6 SID Decoder](https://srv6.md/tools/sid-decoder/) to see its block, node, function and argument bits for the lengths you choose, and whether it sits in `5f00::/16`.
+
 ## Example
 
 ```
@@ -1939,6 +1948,7 @@ For deployments using operator GUA prefixes, apply the same principle with your 
 
 ## Further Reading
 
+- [SRv6 SID Decoder](https://srv6.md/tools/sid-decoder/) - Decode a SID or uSID container bit by bit
 - [Network Programming](https://srv6.md/topics/network-programming/) - How SIDs map to behaviors
 - [What is SRv6?](https://srv6.md/topics/what-is-srv6/) - Back to overview
 - [uSID Compression](https://srv6.md/topics/usid-compression/) - Compressed SID encoding (RFC 9800)
@@ -2008,7 +2018,7 @@ Only the owner of the locator interprets the function bits. Every other router j
 | **End.BM** | 15 | Bind to an SR-MPLS policy: push an MPLS label stack | SRv6 → SR-MPLS interworking |
 
 !!! note "Codepoints"
-    The IANA column is the base behavior without flavors. Each flavor combination has its own codepoint (End with PSP is 2, End with USP is 3, and so on) in the IANA "SRv6 Endpoint Behaviors" registry. Routers advertise these codepoints in IS-IS, OSPFv3 and BGP so controllers and peers know what each SID does.
+    The IANA column is the base behavior without flavors. Each flavor combination has its own codepoint (End with PSP is 2, End with USP is 3, and so on) in the IANA "SRv6 Endpoint Behaviors" registry. Routers advertise these codepoints in IS-IS, OSPFv3 and BGP so controllers and peers know what each SID does. The [SID Decoder](https://srv6.md/tools/sid-decoder/#function-bits-vs-behavior-codepoints) has a searchable copy of the full registry.
 
 ### Decapsulation behaviors at a glance
 
@@ -2124,6 +2134,7 @@ The "program" here is a single instruction: PE2's End.DT4 SID. Add a TE waypoint
 - [RFC 8986](https://srv6.md/rfcs/rfc8986/) - SRv6 Network Programming
 - [RFC 9800](https://srv6.md/rfcs/rfc9800/) - Compressed SRv6 SID lists (NEXT-CSID, REPLACE-CSID)
 - [SID Structure](https://srv6.md/topics/sid-structure/) - How SIDs encode locator, function and argument
+- [SRv6 SID Decoder](https://srv6.md/tools/sid-decoder/) - Decode a SID and look up any behavior codepoint
 - [SRH & Packet Walk](https://srv6.md/topics/srh-packet-walk/) - End, PSP and the SRH hop by hop
 - [uSID Compression](https://srv6.md/topics/usid-compression/) - NEXT-C-SID in practice
 - [EVPN Multihoming](https://srv6.md/topics/evpn-multihoming/) - End.DT2M and the ESI-filtering argument
@@ -2531,6 +2542,9 @@ Step 4 - Node 3 processes uSID 0003, shifts left:
                   End-of-Container (0000) → Move to next SRH entry
 ```
 
+!!! tip "Try it with your own container"
+    The [uSID calculator](https://srv6.md/tools/sid-decoder/) decodes any F3216 (or custom-length) container and steps through the shift at each node, flagging the end-of-container and how many uSIDs remain.
+
 ## Overhead Comparison
 
 | Scenario | Classic SRv6 | uSID | Savings |
@@ -2588,6 +2602,7 @@ Multiple operators have publicly announced SRv6 uSID deployments. See [Real-Worl
 
 ## Further Reading
 
+- [SRv6 SID Decoder](https://srv6.md/tools/sid-decoder/) - uSID calculator with a shift-and-forward walk
 - [SRH Mechanics & Packet Walk](https://srv6.md/topics/srh-packet-walk/) - How the SRH is processed
 - [SID Structure](https://srv6.md/topics/sid-structure/) - Classic SID format
 - [Real-World Deployments](https://srv6.md/use-cases/deployments/) - Who's running uSID
@@ -11764,6 +11779,270 @@ graph LR
 
 ---
 
+# SRv6 SID Decoder and uSID Calculator (F3216, RFC 9800)
+
+URL: https://srv6.md/tools/sid-decoder/
+Path: tools/sid-decoder.md
+Summary: Free SRv6 SID decoder and uSID calculator. Paste a SID to see its locator, function and argument bits, F3216 uSIDs and the RFC 9800 shift walk.
+
+.sidd 
+.sidd-form 
+.sidd-row 
+.sidd-form label, .sidd-lens legend 
+.sidd-form input, .sidd-form select 
+.sidd-form #sidd-addr 
+.sidd-form input:focus, .sidd-form select:focus 
+.sidd-lens 
+.sidd-lens[hidden] 
+.sidd-lens legend 
+.sidd-lens label 
+.sidd-lens input 
+.sidd-examples 
+.sidd-examples button, .sidd-chipbtn 
+.sidd-examples button:hover, .sidd-chipbtn:hover 
+.sidd-hint 
+.sidd-error 
+.sidd-summary p 
+.sidd-summary p > span:first-child, .sidd-da > span 
+.sidd code 
+.sidd-share 
+.sidd .md-button 
+.sidd .md-button[disabled] 
+.sidd-copied 
+/* Field colors: --c accent, --t tint. Light scheme first, slate below. */
+.sidd-k-block 
+.sidd-k-node 
+.sidd-k-func 
+.sidd-k-arg 
+.sidd-k-active 
+.sidd-k-csid-a 
+.sidd-k-csid-b 
+.sidd-k-eoc 
+.sidd-k-zero 
+.sidd-k-stray 
+.sidd-k-pad 
+[data-md-color-scheme="slate"] .sidd-k-block 
+[data-md-color-scheme="slate"] .sidd-k-node 
+[data-md-color-scheme="slate"] .sidd-k-func 
+[data-md-color-scheme="slate"] .sidd-k-arg 
+[data-md-color-scheme="slate"] .sidd-k-active 
+[data-md-color-scheme="slate"] .sidd-k-csid-a 
+[data-md-color-scheme="slate"] .sidd-k-csid-b 
+[data-md-color-scheme="slate"] .sidd-k-eoc 
+[data-md-color-scheme="slate"] .sidd-k-zero 
+[data-md-color-scheme="slate"] .sidd-k-stray 
+[data-md-color-scheme="slate"] .sidd-k-pad 
+.sidd-chips 
+.sidd-chip 
+.sidd-k-zero.sidd-chip, .sidd-k-eoc.sidd-chip 
+.sidd-chip-val 
+.sidd-chip-lbl 
+.sidd-chip-bits 
+.sidd-bits 
+.sidd-bitrow 
+.sidd-bitlbl 
+.sidd-bitlbl small 
+.sidd-bitcells 
+.sidd-bit 
+.sidd-bit:nth-child(4n):not(:last-child) 
+.sidd-bit.sidd-on 
+.sidd-bit.sidd-edge 
+.sidd-swatch 
+.md-typeset #sidd-out table, .md-typeset #sidd-beh-out table 
+.md-typeset #sidd-out td, .md-typeset #sidd-out th, .md-typeset #sidd-beh-out td, .md-typeset #sidd-beh-out th 
+.sidd table code, .sidd-beh table code 
+.md-typeset #sidd-beh-out .sidd-ref 
+.sidd-facts 
+.md-typeset .sidd-facts li 
+.sidd-fact-icon 
+.sidd-fact-ok .sidd-fact-icon 
+.sidd-fact-info .sidd-fact-icon 
+.sidd-fact-warn .sidd-fact-icon 
+.sidd-fact-error .sidd-fact-icon 
+.sidd-sr 
+.sidd-stepper 
+.sidd-stepnav 
+.sidd-stepcount 
+.sidd-da 
+.sidd-steptext 
+.md-typeset .sidd-steplist 
+.md-typeset .sidd-steplist li 
+.sidd-steplink 
+.sidd-steplink.sidd-current 
+.sidd-beh 
+.sidd-beh .sidd-row 
+.sidd-beh input 
+.sidd-beh label 
+.sidd-beh .sidd-examples 
+
+# SRv6 SID Decoder and uSID Calculator
+
+Paste any **SRv6 SID** — a classic SID or a **uSID** container — and the decoder splits it into its Locator-Block, node, function and argument bits, flags what the address tells you, and walks the container hop by hop the way an RFC 9800 NEXT-CSID router processes it. Every decode has its own URL, so you can link a colleague straight to it. It runs entirely in your browser: nothing you paste is sent anywhere.
+
+SRv6 SID or IPv6 address
+
+SID format
+
+uSID F3216: 32-bit block, 16-bit uSIDs
+uSID F4816: 48-bit block, 16-bit uSIDs
+uSID F1616: 16-bit block, 16-bit uSIDs
+uSID with custom lengths
+Classic SID: Block, Node, Function, Argument
+
+uSID lengths in bits
+Locator-Block 
+uSID (LNFL) 
+
+Field lengths in bits (RFC 8986 Section 3.1)
+Block (B) 
+Node (N) 
+Function (F) 
+Argument (A) 
+
+Examples:
+F3216 uSID path
+5f00::/16 SID
+RFC 9800 container
+Classic SID
+Malformed
+
+The decoder needs JavaScript. The explanations below work without it.
+
+## How to Read an SRv6 SID
+
+An SRv6 SID is a 128-bit IPv6 address that the network treats as an instruction. [RFC 8986](https://srv6.md/rfcs/rfc8986/) splits it into three parts, written **LOC:FUNCT:ARG**:
+
+| Part | What it is | Who reads it |
+|------|-----------|--------------|
+| **Locator** (L bits) | A routable prefix that leads to one node. It is itself split into the **Block** (B), the prefix shared by the whole SR domain, and the **Node** (N) part that picks one router | Every router: it is an ordinary IPv6 route in IS-IS, OSPFv3 or BGP |
+| **Function** (F bits) | Selects the behavior bound to the SID on that node: End, End.X, End.DT4, and so on | Only the node that owns the locator |
+| **Argument** (A bits) | Optional per-packet parameter for the behavior, such as the ESI filter of End.DT2M | Only the owning node, and only for behaviors that take one |
+
+L + F + A can be at most 128, and when it is less, the remaining low bits must be zero (RFC 8986 Section 3.1). The lengths are a **design choice of the operator**, not something you can infer from the address, which is why the decoder asks for them. A common classic layout is a /48 locator (32-bit block + 16-bit node), a 16-bit function, and no argument: `fc00:0:2:e004::` is function `0xe004` on the node with locator `fc00:0:2::/48`.
+
+Transit routers never look past the locator: they do a longest-prefix match on the destination address like for any IPv6 packet. That is the whole trick that lets SRv6 run over routers with no SRv6 support. The full anatomy, including the IANA block, is in [SID Structure](https://srv6.md/topics/sid-structure/).
+
+## SRv6 SID Formats: Classic SIDs and uSIDs
+
+A classic SID spends 128 bits on one instruction. A **uSID** (micro-SID, the NEXT-CSID flavor of [RFC 9800](https://srv6.md/rfcs/rfc9800/)) packs several short instructions into one 128-bit **container**: a Locator-Block followed by a list of compressed SIDs, each one the Node and Function of a SID with the shared block left out. The format name gives the two lengths: **F3216** means a 32-bit Locator-Block and 16-bit uSIDs.
+
+| Format | Locator-Block | uSID length | uSIDs per container | Where you see it |
+|--------|:-------------:|:-----------:|:-------------------:|------------------|
+| **F3216** | 32 bits | 16 bits | 6 | The format every NEXT-CSID implementation must support (RFC 9800 Section 4.1). Cisco [IOS-XR](https://srv6.md/implementations/cisco-ios-xr/) and [IOS-XE](https://srv6.md/implementations/cisco-ios-xe/) call it `usid-f3216`; [Arista EOS](https://srv6.md/implementations/arista-eos/) and [Juniper](https://srv6.md/implementations/juniper/) use it too |
+| **F4816** | 48 bits | 16 bits | 5 | The examples in RFC 9800, with blocks such as `2001:db8:b1::/48` |
+| **F1616** | 16 bits | 16 bits | 7 | Maximum packing, but the block takes a whole /16 |
+| Custom NEXT-CSID | any | any | floor((128 − block) / uSID) | RFC 9800 allows other lengths; leftover bits are padding |
+| Classic SID | — | — | 1 | RFC 8986 SIDs, one per SRH entry |
+
+The capacity formula is from RFC 9800: a container holds K = floor((128 − LBL) / LNFL) uSIDs, where LBL is the Locator-Block length and LNFL the uSID length. RFC 9800's other flavor, REPLACE-CSID (G-SRv6), uses 16- or 32-bit C-SIDs and an index in the argument instead of a shift, so it is not visualized here. See [uSID Compression](https://srv6.md/topics/usid-compression/) for the overhead comparison.
+
+### Reading an F3216 uSID
+
+```text
+fcbb:bb00:0100:0200:0300:e004:0000:0000
+└─block──┘└uN1┘└uN2┘└uN3┘└uDT┘└EoC┘
+```
+
+- `fcbb:bb00` is the 32-bit **Locator-Block**, the same on every node of the domain.
+- `0100` is the **active uSID**. Node 1 advertises `fcbb:bb00:0100::/48` in the IGP, so plain longest-prefix match delivers the packet there.
+- `0200`, `0300` are the next nodes; `e004` is a local service uSID (here uDT4 on node 3).
+- `0000` is the **end-of-container** marker. CSID value 0 is reserved for exactly this (RFC 9800 Section 5).
+
+A common convention from the uSID draft splits the 16-bit space into a **GIB** (`0x0000`–`0xDFFF`, global uSIDs such as a node's uN) and a **LIB** (`0xE000`–`0xFFFF`, local uSIDs such as uA adjacencies and uDT/uDX services). RFC 9800 Section 9.2 leaves the split to the operator, so the decoder labels it as a hint, not a fact.
+
+## How uSID Shift-and-Forward Works
+
+When a router receives a packet whose destination matches one of its NEXT-CSID SIDs, it applies RFC 9800 Section 4.1.1, lines N01 to N09:
+
+1. If the **Argument** (every bit after the active uSID) is not zero, copy it into the bits right after the Locator-Block, overwriting the active uSID, and set the last uSID-length bits to zero. In F3216, that is "shift bits 48–127 left by 16".
+2. Decrement the Hop Limit and forward on the new destination address. Segments Left in the SRH is **not** touched, and in many deployments there is no SRH at all.
+3. If the Argument is zero, this uSID is the last one in the container: the node runs the ordinary RFC 8986 behavior, taking the next 128-bit entry from the SRH if Segments Left is above zero, or acting as the final destination (a uDT4, for example, decapsulates and looks up the inner packet).
+
+Applied to the example above:
+
+```text
+received       fcbb:bb00:0100:0200:0300:e004:0000:0000   node 1 (uN 0100) shifts
+after node 1   fcbb:bb00:0200:0300:e004:0000:0000:0000   node 2 (uN 0200) shifts
+after node 2   fcbb:bb00:0300:e004:0000:0000:0000:0000   node 3 (uN 0300) shifts
+after node 3   fcbb:bb00:e004:0000:0000:0000:0000:0000   node 3 (uDT4 e004): Argument 0, decapsulate
+```
+
+Four instructions, sixteen bytes, no SRH. The decoder's step-through shows the same walk for whatever you paste.
+
+## Worked Examples
+
+Each link opens the decoder with the example loaded.
+
+1. **F3216 uSID path with a VPN service.** [`fcbb:bb00:100:200:300:e004::`](./?addr=fcbb:bb00:100:200:300:e004::&fmt=f3216) carries three node uSIDs and a local uDT4 in one destination address, the case walked through above.
+2. **A SID from the IANA block.** [`5f00:0:1:e001::`](./?addr=5f00:0:1:e001::&fmt=f3216) uses `5f00::/32` as its Locator-Block, carved from `5f00::/16`, the block [RFC 9602](https://srv6.md/rfcs/rfc9602/) reserves for SRv6 SIDs: node uSID `0001`, then local service uSID `e001`. It is the layout of the [Juniper example](https://srv6.md/implementations/juniper/). Using `5f00::/16` is optional; operator GUA and ULA locators are just as valid.
+3. **A full container from RFC 9800.** [`2001:db8:b1:10:20:30:40:50`](./?addr=2001:db8:b1:10:20:30:40:50&fmt=f4816) has a 48-bit block and five uSIDs with no end-of-container marker, like the first container of RFC 9800 Figure 2. After the fifth uSID the Argument is zero and processing continues with the next SRH entry.
+4. **A classic SID.** [`fc00:0:2:e004::`](./?addr=fc00:0:2:e004::&fmt=classic&b=32&n=16&f=16&a=0) with B=32, N=16, F=16, A=0 is function `0xe004` behind locator `fc00:0:2::/48`, the End.DT4 SID used in the [L3VPN example](https://srv6.md/topics/network-programming/#putting-it-together-an-l3vpn-program).
+5. **A malformed container.** [`fcbb:bb00:100:0:300::`](./?addr=fcbb:bb00:100:0:300::&fmt=f3216) has a uSID after the end-of-container. Node 1 shifts `0000` into the active position, no node owns the resulting address, and the decoder says so.
+
+## Function Bits vs Behavior Codepoints
+
+The function bits in a SID are **allocated locally** by the router; `0xe004` means End.DT4 on one node and something else on the next. What is standardized is the **behavior codepoint** a router advertises next to each SID in IS-IS, OSPFv3, BGP and BGP-LS, from the IANA "SRv6 Endpoint Behaviors" registry. So you cannot tell a SID's behavior from its bits alone: look the SID up in the router's SID table, or take the codepoint from the routing protocol and look it up here.
+
+Codepoint (decimal or 0x hex) or behavior name
+
+Try:
+48 (uN)
+57 (uA)
+End.DT*
+NEXT-CSID
+RFC 8986
+
+The lookup needs JavaScript; see the table in Network Programming.
+
+The registry above is the complete IANA list as of October 2026, including codepoints assigned to drafts. Vendors shorten the common NEXT-CSID behaviors as **uN** (End with NEXT-CSID, PSP & USD, codepoint 48) and **uA** (End.X with NEXT-CSID, PSP & USD, codepoint 57). [Network Programming](https://srv6.md/topics/network-programming/) explains what each behavior does.
+
+## Frequently Asked Questions
+
+### What is an SRv6 SID?
+
+An SRv6 Segment Identifier (SID) is a 128-bit IPv6 address that encodes an instruction. Its locator routes the packet to a node, its function selects what that node does (forward, cross-connect, decapsulate into a VRF), and its optional argument parameterizes the function. Routers that do not own the locator forward it as normal IPv6.
+
+### What does F3216 mean?
+
+F3216 is the most common SRv6 uSID format: a 32-bit Locator-Block followed by 16-bit uSIDs, so one 128-bit address holds up to six uSIDs. RFC 9800 requires every NEXT-CSID implementation to support it, and Cisco IOS-XR and IOS-XE configure it as usid-f3216.
+
+### How many uSIDs fit in one container?
+
+floor((128 − Locator-Block length) / uSID length). That is 6 for F3216, 5 for a 48-bit block with 16-bit uSIDs, and 7 for F1616. When a path needs more, the source puts further containers in the SRH and the last uSID of each container moves processing to the next one.
+
+### What is the end-of-container (0000) in a uSID?
+
+RFC 9800 reserves the CSID value 0 to mark the end of a container. When the bits after the active uSID are all zero, the node knows it holds the last uSID of the container and takes the next SID from the SRH, or is the final destination if there is none.
+
+### Do SRv6 SIDs have to be in 5f00::/16?
+
+No. RFC 9602 reserves 5f00::/16 so SIDs are easy to recognize and filter, and marks it as not globally reachable, but operators can keep using their own global unicast or unique local prefixes as locators. Whatever the prefix, filter it at the SR domain edge.
+
+### Can I tell the behavior of a SID from its bits?
+
+No. Function values are allocated locally by each router. The behavior is known from the router's SID table or from the IANA codepoint it advertises in the IGP or BGP, which you can look up in the behavior table on this page.
+
+## Further Reading
+
+- [SID Structure](https://srv6.md/topics/sid-structure/) - Locator, function, argument and the 5f00::/16 block
+- [uSID Compression](https://srv6.md/topics/usid-compression/) - Overhead savings and uSID vs G-SRv6
+- [Network Programming](https://srv6.md/topics/network-programming/) - What every RFC 8986 and RFC 9800 behavior does
+- [SRH & Packet Walk](https://srv6.md/topics/srh-packet-walk/) - Classic SIDs and Segments Left hop by hop
+- [RFC 9800](https://srv6.md/rfcs/rfc9800/) - Compressed SRv6 segment lists (NEXT-CSID, REPLACE-CSID)
+- [RFC 9602](https://srv6.md/rfcs/rfc9602/) - The 5f00::/16 SRv6 SID block
+
+## References
+
+1. [RFC 8986 - SRv6 Network Programming](https://www.rfc-editor.org/rfc/rfc8986) - SID structure (Section 3.1), endpoint behaviors and flavors
+2. [RFC 9800 - Compressed SRv6 Segment List Encoding](https://www.rfc-editor.org/rfc/rfc9800) - NEXT-CSID pseudocode (Section 4.1.1), CSID allocation (Section 5), GIB/LIB guidance (Section 9.2)
+3. [RFC 9602 - SRv6 SIDs in the IPv6 Addressing Architecture](https://www.rfc-editor.org/rfc/rfc9602) - The 5f00::/16 block
+4. [IANA - SRv6 Endpoint Behaviors](https://www.iana.org/assignments/segment-routing/segment-routing.xhtml) - The registry of behavior codepoints used in the lookup table
+5. [draft-filsfils-spring-net-pgm-extension-srv6-usid](https://datatracker.ietf.org/doc/draft-filsfils-spring-net-pgm-extension-srv6-usid/) - uN/uA naming and the 0x0000-0xDFFF / 0xE000-0xFFFF GIB/LIB convention
+6. [RFC 5952 - IPv6 Address Text Representation](https://www.rfc-editor.org/rfc/rfc5952) - The compressed form the decoder prints
+
+
+---
+
 # SRv6 RFCs and IETF Standards: Complete Reference
 
 URL: https://srv6.md/rfcs/
@@ -12190,7 +12469,7 @@ Summary: RFC 9602 explained in plain language: SRv6 Segment Identifiers in the I
 
 RFC 9602 reserves `5f00::/16` from the IPv6 address space for SRv6 Segment Identifiers (SIDs), so SIDs can be recognized and filtered easily within an SR domain. The block is forwardable but not globally reachable. Operators may still use their own GUA prefixes as locators.
 
-See [SID Structure](https://srv6.md/topics/sid-structure/#iana-allocated-srv6-sid-block-5f0016) for the registry properties, allocation hierarchy, and boundary filtering examples.
+See [SID Structure](https://srv6.md/topics/sid-structure/#iana-allocated-srv6-sid-block-5f0016) for the registry properties, allocation hierarchy, and boundary filtering examples. The [SRv6 SID Decoder](https://srv6.md/tools/sid-decoder/) tells you whether a given SID falls inside `5f00::/16`.
 
 
 ---
@@ -12288,6 +12567,7 @@ When a uSID-capable node receives a packet:
 
 ## Related
 
+- [SRv6 SID Decoder](https://srv6.md/tools/sid-decoder/) - Decode a NEXT-CSID container and step through the shift
 - [RFC 8754](https://srv6.md/rfcs/rfc8754/) - IPv6 Segment Routing Header (SRH)
 - [RFC 8986](https://srv6.md/rfcs/rfc8986/) - SRv6 Network Programming
 - [RFC 8402](https://srv6.md/rfcs/rfc8402/) - Segment Routing Architecture
