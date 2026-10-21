@@ -298,6 +298,7 @@ On IOS-XR the delay range is documented as 1–60000 ms with a default of 5000. 
 - :material-arrow-right: [Micro-Loop Avoidance](micro-loop-avoidance.md) - Preventing loops during the convergence window after TI-LFA
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - Efficient backup segment encoding
 - :material-arrow-right: [SRH Mechanics & Packet Walk](srh-packet-walk.md) - How backup segments are processed
+- :material-download: [SRv6 Packet Captures](../labs/pcaps.md#end-x) - What an End.X adjacency SID (the building block of a repair list) looks like in Wireshark
 - :material-arrow-right: [Flex-Algorithm](flex-algorithm.md) - TI-LFA within a Flex-Algo topology
 - :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) - TI-LFA with node/SRLG/linecard-disjoint tiebreakers in a validated defense design
 - :material-file-document: [RFC 9860](../rfcs/rfc9860.md) - MoFRR based on TI-LFA (multicast protection)

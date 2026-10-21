@@ -1,0 +1,9 @@
+# SRv6 capture lab: iproute2 (seg6/seg6local), tcpdump, tshark, scapy, FRR.
+# The container only provides userspace tools; SRv6 processing is done by the
+# host kernel (needs >= 6.1 for NEXT-C-SID). Run it --privileged.
+FROM docker.io/library/debian:trixie-slim
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      iproute2 tcpdump tshark python3-scapy iputils-ping iputils-tracepath traceroute \
+      ethtool bridge-utils procps kmod frr ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /lab

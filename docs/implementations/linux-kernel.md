@@ -219,6 +219,8 @@ IP6 (hlim 64, next-header Routing (43) payload length: 108) 2001:db8:12::1 > fc0
 
 Clean up with `ip netns del r1; ip netns del r2`. To grow this into a multi-hop topology with IS-IS and BGP, move to [Containerlab](../labs/containerlab.md) with FRR.
 
+A six-namespace version of this lab (two PEs, two P routers, parallel links) produces the [SRv6 packet capture library](../labs/pcaps.md): annotated pcapng files of H.Encaps, H.Encaps.Red, End, End.X, End.DT4/DT6/DT46, End.DX2, NEXT-C-SID, SRH HMAC and source-routed traceroute, with the script to regenerate them.
+
 ## Troubleshooting
 
 | Symptom | Likely cause | Fix |

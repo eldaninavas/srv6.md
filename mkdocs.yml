@@ -21,6 +21,7 @@ hooks:
   - hooks/git_dates.py
   - hooks/redirects.py
   - hooks/glossary.py
+  - hooks/pcap_meta.py
 edit_uri: edit/main/docs/
 
 theme:
@@ -259,6 +260,7 @@ nav:
     - Containerlab: labs/containerlab.md
     - netlab: labs/netlab.md
     - GNS3: labs/gns3.md
+    - Packet Captures: labs/pcaps.md
   - Tools:
     - SRv6 SID Decoder: tools/sid-decoder.md
   - RFCs & Standards:

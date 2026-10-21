@@ -37,6 +37,13 @@ Emulate vendor routers (IOS-XR, Junos) for realistic SRv6 testing.
 [:material-arrow-right: Start lab](gns3.md)
 </div>
 
+<div class="srv6-card" markdown>
+### :material-download: Packet Captures
+Nine annotated SRv6 pcaps from a Linux lab, with Wireshark SRH filters and the script to regenerate them.
+
+[:material-arrow-right: Download pcaps](pcaps.md)
+</div>
+
 </div>
 
 ## Quick Comparison

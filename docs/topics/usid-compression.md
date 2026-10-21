@@ -145,6 +145,7 @@ Multiple operators have publicly announced SRv6 uSID deployments. See [Real-Worl
 
 - :material-tools: [SRv6 SID Decoder](../tools/sid-decoder.md) - uSID calculator with a shift-and-forward walk
 - :material-arrow-right: [SRH Mechanics & Packet Walk](srh-packet-walk.md) - How the SRH is processed
+- :material-download: [uSID packet capture](../labs/pcaps.md#usid) - Wireshark pcap of a container shifting hop by hop on Linux
 - :material-arrow-right: [SID Structure](sid-structure.md) - Classic SID format
 - :material-arrow-right: [Real-World Deployments](../use-cases/deployments.md) - Who's running uSID
 - :material-file-document: [RFC 8754](../rfcs/rfc8754.md) - SRH specification

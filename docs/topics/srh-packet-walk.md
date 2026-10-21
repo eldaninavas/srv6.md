@@ -223,6 +223,8 @@ H.Encaps.Red:  SRH [SID-3, SID-2],        SL=2, DA = SID-1  ← SID-1 only in th
     tshark -i eth0 -O ipv6 -Y 'ipv6.routing.type == 4'
     ```
 
+    Real captures of H.Encaps, H.Encaps.Red and End processing, with the Wireshark filters to use on them, are in the [SRv6 packet capture library](../labs/pcaps.md).
+
 === "Cisco IOS-XR"
 
     ```cisco
@@ -243,6 +245,7 @@ H.Encaps.Red:  SRH [SID-3, SID-2],        SL=2, DA = SID-1  ← SID-1 only in th
 - :material-arrow-right: [SID Structure](sid-structure.md) - How the 128-bit SID is composed
 - :material-arrow-right: [Network Programming](network-programming.md) - All SRv6 behaviors
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - Micro-SID optimization
+- :material-download: [SRv6 Packet Captures](../labs/pcaps.md) - Download pcaps of this packet walk and open them in Wireshark
 - :material-file-document: [RFC 8754](../rfcs/rfc8754.md) - SRH specification
 - :material-file-document: [RFC 8986](../rfcs/rfc8986.md) - SRv6 Network Programming
 

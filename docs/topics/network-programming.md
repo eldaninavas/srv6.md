@@ -177,6 +177,7 @@ The "program" here is a single instruction: PE2's End.DT4 SID. Add a TE waypoint
 - :material-arrow-right: [uSID Compression](usid-compression.md) - NEXT-C-SID in practice
 - :material-arrow-right: [EVPN Multihoming](evpn-multihoming.md) - End.DT2M and the ESI-filtering argument
 - :material-arrow-right: [Linux Kernel](../implementations/linux-kernel.md) - SRv6 behaviors you can run on any Linux host
+- :material-download: [SRv6 Packet Captures](../labs/pcaps.md) - pcaps of End, End.X, End.DT4/DT6/DT46, End.DX2 and H.Encaps(.Red) on the wire
 - :material-arrow-right: [Containerlab Labs](../labs/containerlab.md) - Try SRv6 behaviors hands-on
 
 ## References
