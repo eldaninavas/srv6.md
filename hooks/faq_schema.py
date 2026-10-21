@@ -12,7 +12,7 @@ import logging
 log = logging.getLogger("mkdocs.hooks.faq_schema")
 
 _FAQ_HEADING = re.compile(
-    r"^## +(?::[\w-]+: +)?(Frequently Asked Questions|FAQ|Preguntas frecuentes|よくある質問)\s*$",
+    r"^## +(?::[\w-]+: +)?(Frequently Asked Questions|FAQ|Preguntas frecuentes|よくある質問)\s*(?:\{[^}]*\})?\s*$",
     re.M | re.I,
 )
 
