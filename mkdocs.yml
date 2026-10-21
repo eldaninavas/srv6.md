@@ -16,6 +16,7 @@ hooks:
   - hooks/generate_graph.py
   - hooks/script_version.py
   - hooks/llms_txt.py
+  - hooks/support_matrix.py
   - hooks/faq_schema.py
   - hooks/git_dates.py
   - hooks/redirects.py
@@ -84,6 +85,7 @@ theme:
     - content.action.view
     - content.tabs.link
     - content.tooltips
+    - content.footnote.tooltips
     - toc.follow
     - announce.dismiss
     - header.autohide
@@ -237,6 +239,7 @@ nav:
     - Deployments: use-cases/deployments.md
   - Implementations:
     - implementations/index.md
+    - Support Matrix: implementations/support-matrix.md
     - Linux Kernel: implementations/linux-kernel.md
     - Cilium (eBPF): implementations/cilium.md
     - zebra-rs (eBPF): implementations/zebra-rs.md

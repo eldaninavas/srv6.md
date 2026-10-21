@@ -270,6 +270,7 @@ After review of the all-in-one submission, the author split the work into **per-
 
 ## Further Reading
 
+- :material-arrow-right: [SRv6 Support Matrix](support-matrix.md) - The kernel next to FRR, VPP and vendor routers, behavior by behavior
 - :material-arrow-right: [Network Programming](../topics/network-programming.md) - What each behavior does, per RFC 8986
 - :material-arrow-right: [Containerlab](../labs/containerlab.md) - Build a multi-node Linux SRv6 lab
 - :material-arrow-right: [FRRouting](frrouting.md) - Add routing protocol support

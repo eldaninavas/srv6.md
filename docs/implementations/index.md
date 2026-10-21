@@ -15,7 +15,7 @@ tags:
 
 # :material-server-network: Implementations
 
-Practical guides for deploying SRv6 on different platforms.
+Practical guides for deploying SRv6 on different platforms. For a feature-by-feature comparison with minimum releases and a source for every cell, see the **[SRv6 Support Matrix](support-matrix.md)**.
 
 | Platform | Type | Key Behaviors | SID | uSID |
 |----------|------|---------------|:---:|:----:|
@@ -23,12 +23,12 @@ Practical guides for deploying SRv6 on different platforms.
 | [Cisco IOS-XR](cisco-ios-xr.md) | Commercial | End, End.X, End.DT4/6/46, End.DX2/4/6, End.DT2U/M | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
 | [Cisco IOS-XE](cisco-ios-xe.md) | Commercial | uN, uA, uDT4/6/46, End.DTMC4, H.Encaps.Red | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
 | [Arista EOS](arista-eos.md) | Commercial | uN, uA (static), End.DT4/6, H.Encaps (F3216 uSID) | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
-| [Juniper](juniper.md) | Commercial | End, End.X, End.DT4/6, End.DX2/4/6 | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
+| [Juniper](juniper.md) | Commercial | End, End.X, End.DT4/6/46, End.DX2, End.DT2 | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
 | [Nokia SR OS](nokia-sros.md) | Commercial | End, End.X, End.DT4/6/46, End.DX2; uN, uA, uDT4/6/46, uDX2, uDT2U/M | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
-| [FRRouting](frrouting.md) | Open Source | End, End.DT4/6, uA (10.4+), uDT46 (10.7+) | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
+| [FRRouting](frrouting.md) | Open Source | End/uN, End.X/uA (IS-IS, 9.1+), End.DT4/6/46 (BGP; uSID 8.5+) | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
 | [zebra-rs (eBPF)](zebra-rs.md) | Open Source | End, End.X, End.T, End.DT4/6/46, End.DX2/4/6, End.DT2U/M, End.B6, End.M | :material-check-circle:{ .srv6-green } | :material-check-circle:{ .srv6-green } |
 | [Vinbero (eBPF/Go)](vinbero.md) | Open Source | End, End.X, End.T, End.DT4/6/46, End.DX2/4/6, End.DT2U/M, End.B6, GTP4/6, End.AS/AD/AM/AN | :material-check-circle:{ .srv6-green } | :material-close-circle:{ .srv6-red } |
-| [SONiC](sonic.md) | Open Source | End, End.DT4/6, End.DX4/6 | :material-check-circle:{ .srv6-green } | :material-progress-clock: Partial |
+| [SONiC](sonic.md) | Open Source | End, End.X, End.DT4/6/46, End.DX4/6 (ASIC-dependent) | :material-check-circle:{ .srv6-green } | :material-progress-clock: Partial |
 
 ## Conformance Testing: IPv6 Ready SRv6 Logo
 

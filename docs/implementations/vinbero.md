@@ -105,6 +105,7 @@ A VRF cannot be deleted while a SID, an ingress access circuit, or a BGP binding
 
 ## Further Reading
 
+- :material-arrow-right: [SRv6 Support Matrix](support-matrix.md) -- How router OSes and other open-source data planes compare
 - :material-arrow-right: [Network Programming](../topics/network-programming.md) -- The RFC 8986 behavior catalog this implements
 - :material-arrow-right: [5G Transport](../use-cases/5g-transport.md) -- Where the RFC 9433 mobile user plane behaviors belong
 - :material-arrow-right: [zebra-rs (eBPF)](zebra-rs.md) -- The other eBPF stack, approached from the routing side

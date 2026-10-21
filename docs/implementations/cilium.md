@@ -1,7 +1,7 @@
 ---
 title: Cilium (eBPF)
-seo_title: "SRv6 with Cilium: eBPF L3VPN for Kubernetes"
-description: SRv6 L3VPN and cloud-native networking with Cilium eBPF — connecting Kubernetes clusters to an SRv6 fabric using BGP and eBPF-accelerated data plane.
+seo_title: "SRv6 with Cilium: eBPF Datapath and L3VPN for Kubernetes"
+description: "What SRv6 in Cilium really is: a hidden beta eBPF datapath in open-source Cilium since 1.13, and SRv6 L3VPN with uSID in Isovalent Enterprise for Cilium."
 tags:
   - implementations
   - cilium
@@ -14,14 +14,21 @@ tags:
 
 # SRv6 with Cilium (eBPF)
 
-**Cilium** is an open-source, eBPF-based networking solution for Kubernetes that brings SRv6 into the cloud-native world. Instead of relying on the kernel's routing stack, Cilium programs eBPF maps in the kernel data path — enabling SRv6 encapsulation and decapsulation at line rate without context switching.
+**Cilium** is the eBPF-based networking layer (CNI) for Kubernetes. It can make each Kubernetes node an SRv6 endpoint: pod traffic is encapsulated into SRv6 by eBPF programs on the node, and SRv6 packets addressed to the node's SIDs are decapsulated into the right tenant. What you get depends on which Cilium you run:
 
-!!! info "Minimum version"
-    SRv6 L3VPN support requires **Cilium 1.13+** (alpha). Production-ready use is recommended on **Cilium 1.15+**.
+| | Open-source Cilium | Isovalent Enterprise for Cilium |
+|---|---|---|
+| SRv6 datapath (eBPF encap/decap) | Since **1.13**, behind the hidden agent flag `--enable-srv6`, labelled **beta**; still hidden in 1.20 | Yes |
+| Control plane (locators, SID allocation, VRFs, BGP VPN routes) | **None** — nothing in open source programs the SRv6 maps | Yes: SRv6 L3VPN, **Beta** since Enterprise 1.13 |
+| uSID (F3216) | No | Yes (locator pools with `behaviorType: uSID`) |
+| Helm values | None for SRv6 | `enterprise.srv6.*` |
+
+!!! warning "SRv6 L3VPN is not an open-source Cilium feature"
+    The [Cilium 1.13 release blog](https://isovalent.com/blog/post/cilium-release-113/) lists SRv6 under "Isovalent Cilium Enterprise", and open-source Cilium has no SRv6 documentation page, CRD or Helm value. If you need SRv6 L3VPN to Kubernetes pods today, you need the Enterprise product, or you build your own control plane that programs the eBPF maps.
 
 ## Why Cilium + SRv6?
 
-Traditional SRv6 implementations (Cisco, Juniper, FRRouting) live on routers. Cilium extends the SRv6 fabric **into the Kubernetes node** — each worker node becomes an SRv6 endpoint with its own locator, SIDs, and BGP session.
+Router-based SRv6 implementations (IOS-XR, Junos, SR OS, FRRouting) stop at the PE. With SRv6 in the CNI, the fabric extends **into the Kubernetes node**: each worker node gets its own locator and SIDs and exchanges VPN routes with the PE routers over BGP, so tenant traffic leaves the node already encapsulated.
 
 ```mermaid
 graph TB
@@ -29,297 +36,100 @@ graph TB
         P1[Pod] --> N1["K8s Node\n(Cilium agent\n+ eBPF SRv6)"]
     end
     subgraph SRv6 Fabric
-        R1[PE Router] <-->|"BGP VPNv4/v6\nSRv6 SIDs"| N1
-        R1 <-->|"IS-IS/OSPFv3"| R2[P Router]
-        R2 <-->|"BGP VPNv4/v6\nSRv6 SIDs"| N2
+        R1[PE / Route Reflector] <-->|"BGP VPNv4/v6\nSRv6 Prefix-SID"| N1
+        R1 <-->|"IS-IS"| R2[P Router]
+        R2 <-->|"BGP VPNv4/v6\nSRv6 Prefix-SID"| N2
     end
     subgraph K8s Cluster B
         N2["K8s Node\n(Cilium agent\n+ eBPF SRv6)"] --> P2[Pod]
     end
-    style P1 fill:#1b5e2026,stroke:#1b5e20
-    style P2 fill:#1b5e2026,stroke:#1b5e20
 ```
 
-This makes each K8s node a first-class SRv6 PE — pod traffic is natively encapsulated into SRv6 by eBPF before it leaves the NIC, integrating seamlessly with a carrier-grade SRv6 underlay.
+## The Open-Source Datapath
 
-## Supported SRv6 Behaviors
+All of open-source Cilium's SRv6 code is in [`bpf/lib/srv6.h`](https://github.com/cilium/cilium/blob/v1.20.0/bpf/lib/srv6.h) and the maps it reads. It implements:
 
-| Behavior | Role in Cilium | Status |
-|----------|---------------|:------:|
-| `H.Encaps` | Egress: encapsulate pod traffic into SRv6 | :material-check-circle: 1.13+ |
-| `End.DT4` | Ingress: decapsulate SRv6 → IPv4 VRF lookup | :material-check-circle: 1.13+ |
-| `End.DT6` | Ingress: decapsulate SRv6 → IPv6 VRF lookup | :material-check-circle: 1.13+ |
-| `H.Encaps.Red` | Reduced encapsulation (no SRH when single SID) | :material-check-circle: 1.15+ |
+| Function | RFC 8986 equivalent | Notes |
+|----------|--------------------|-------|
+| Encapsulation, `--srv6-encap-mode=reduced` (default) | H.Encaps.Red | Single SID in the outer destination address, no SRH |
+| Encapsulation, `--srv6-encap-mode=srh` | H.Encaps | Outer IPv6 header plus an SRH with exactly one SID |
+| Decapsulation to IPv4 or IPv6 when the destination matches a local SID | End.DT4 / End.DT6 | The SID maps to a VRF ID; the inner packet is re-run through the normal host ingress path |
 
-## Architecture
+There is no transit SRv6 processing (End, End.X), no multi-SID segment lists, no flavors, no L2 behaviors and no uSID in the open-source datapath. Both flags (`--enable-srv6`, `--srv6-encap-mode`) are hidden and marked beta in the agent ([source](https://github.com/cilium/cilium/blob/v1.20.0/daemon/cmd/daemon_main.go#L223-L234)). Reduced encapsulation has been the default since 1.13 ([source](https://github.com/cilium/cilium/blob/v1.13.0/pkg/defaults/defaults.go#L202-L203)).
 
-### How Cilium Implements SRv6 with eBPF
+### eBPF maps
 
-Cilium programs four eBPF maps per node that together implement the SRv6 data plane:
+| Map | Key → value | Purpose |
+|-----|-------------|---------|
+| `cilium_srv6_vrf_v4` / `cilium_srv6_vrf_v6` | source IP + destination CIDR → VRF ID | Classifies pod egress traffic into a VRF |
+| `cilium_srv6_policy_v4` / `cilium_srv6_policy_v6` | VRF ID + destination CIDR → SID | Picks the remote SID to encapsulate toward |
+| `cilium_srv6_sid` | local SID → VRF ID | Matches incoming SRv6 packets for decapsulation |
 
-| eBPF Map | Key | Value | Purpose |
-|----------|-----|-------|---------|
-| `cilium_srv6_vrf` | Source IP + VRF ID | SRv6 locator | Maps pod traffic to a VRF |
-| `cilium_srv6_policy` | Destination CIDR + VRF | Egress SID | Selects the SRv6 SID for encapsulation |
-| `cilium_srv6_sid` | SRv6 SID | VRF table ID | Maps incoming SIDs to a local VRF for decapsulation |
-| `cilium_srv6_state` | Flow state | — | Tracks active SRv6 flows for telemetry |
+Older releases (up to 1.15) also had `cilium_srv6_state_v4/_v6` maps; they were later removed.
 
-At **egress**, the eBPF TC program looks up the destination in `cilium_srv6_policy`, prepends the SRv6 outer header (`H.Encaps`), and sends the packet into the underlay.
+### Where it runs
 
-At **ingress**, the eBPF XDP program matches the destination SID against `cilium_srv6_sid`, strips the SRv6 header, and injects the inner packet into the correct VRF (`End.DT4` / `End.DT6`).
+Both directions are **TC** programs, not XDP: encapsulation runs on pod egress (`bpf_lxc.c`, tail call `CILIUM_CALL_SRV6_ENCAP`) and decapsulation in `cil_from_netdev` in [`bpf_host.c`](https://github.com/cilium/cilium/blob/v1.20.0/bpf/bpf_host.c#L324-L337). The XDP program explicitly skips SRv6 handling. eBPF programs run inside the kernel; this is not kernel bypass.
 
-### BGP Control Plane
-
-Cilium uses an integrated BGP control plane (backed by **GoBGP** or **FRRouting**) to:
-
-- Advertise the node's SRv6 **locator prefix** to PE routers
-- Exchange **VPNv4/VPNv6** routes with route targets for L3VPN
-- Receive remote SIDs and program them into `cilium_srv6_policy`
-
-No external router daemon required — Cilium manages BGP sessions directly via `CiliumBGPPeeringPolicy` CRDs.
-
-### One BGP Session — All VRFs
-
-!!! warning "Common misconception"
-    Cilium does **not** open one BGP session per VRF, nor does it use BGP EVPN (L2VPN AFI 25). It behaves exactly like a traditional PE router: **one BGP session per peer**, carrying routes for all VRFs simultaneously over the **VPNv6 address family** (AFI 2 / SAFI 128).
-
-A single `CiliumBGPPeeringPolicy` neighbor entry covers every tenant/VRF on that node:
-
-```
-Cilium Node (worker-1)  ←──── 1 TCP session (port 179) ────→  PE Router
-                                         │
-                         BGP UPDATE messages contain:
-                         ┌─────────────────────────────────────────┐
-                         │ AFI 2 / SAFI 128 (VPNv6)               │
-                         │                                         │
-                         │  RD 65100:100 | RT 65000:100           │
-                         │    prefix: 10.0.1.0/24                  │
-                         │    next-hop SRv6 SID: fc00:0:10::dt6:100│ ← VRF Tenant-A
-                         │                                         │
-                         │  RD 65100:200 | RT 65000:200           │
-                         │    prefix: 10.0.2.0/24                  │
-                         │    next-hop SRv6 SID: fc00:0:10::dt6:200│ ← VRF Tenant-B
-                         │                                         │
-                         │  RD 65100:300 | RT 65000:300           │
-                         │    prefix: 10.0.3.0/24                  │
-                         │    next-hop SRv6 SID: fc00:0:10::dt6:300│ ← VRF Tenant-C
-                         └─────────────────────────────────────────┘
-```
-
-The PE router uses the **Route Target (RT)** to import each prefix into the correct VRF — no separate BGP session needed.
-
-### VPNv6 vs BGP EVPN — Key Differences
-
-Both can carry L3 reachability for SRv6 tenants, but they are completely different address families:
-
-| | **BGP VPNv6** (Cilium) | **BGP EVPN Type 5** |
-|---|---|---|
-| AFI / SAFI | 2 / 128 | 25 / 70 |
-| NLRI type | VPNv6 prefix + RD | EVPN Route Type 5 (IP Prefix) |
-| Original purpose | MPLS L3VPN (adapted for SRv6) | L2VPN, extended to L3 via Type 5 |
-| Next-hop encoding | SRv6 SID as BGP next-hop | SRv6 SID in Tunnel Encap attribute |
-| VRF signaling | Route Target extended community | Route Target extended community |
-| MAC/L2 info | :material-close-circle: None — L3 only | :material-check-circle: Carries MAC+IP (Type 2) |
-| Valid for SRv6 L3VPN? | :material-check-circle: Yes | :material-check-circle: Yes (RFC 9252 §5) |
-| Cilium uses it? | :material-check-circle: Yes | :material-close-circle: No (implementation choice) |
-
-!!! info "Both are valid for SRv6 L3VPN — but Cilium only speaks VPNv6"
-    EVPN Type 5 (IP Prefix routes) over SRv6 is fully valid per RFC 9252 and widely deployed in carrier and DC fabrics. However, **Cilium's BGP control plane does not implement AFI 25 / SAFI 70 (L2VPN EVPN)**. It only negotiates VPNv6 (AFI 2 / SAFI 128). If your SRv6 fabric uses EVPN Type 5 for L3VPN, Cilium cannot peer directly with those PE routers.
-
-### Interoperability Gap: Cilium ↔ EVPN Fabrics
-
-This is a real-world limitation. If your network already runs EVPN Type 5 over SRv6 (common in DC fabrics using SONiC, Juniper, or Cisco NCS), you have three options:
-
-| Option | How | Trade-off |
-|--------|-----|-----------|
-| **Route Reflector translation** | Deploy an RR (e.g. FRRouting) between Cilium and the PE. The RR peers with Cilium via VPNv6 and re-advertises towards the fabric via EVPN Type 5 | Extra hop in control plane; RR becomes a dependency |
-| **Dual address-family on the PE** | Configure the PE to peer with Cilium using VPNv6 *and* continue using EVPN with the rest of the fabric | Requires PE support; routes must be redistributed between AFIs on the PE |
-| **Wait for Cilium EVPN support** | EVPN is on the Cilium roadmap but not yet implemented for SRv6 | No ETA as of Cilium 1.15 |
-
-```mermaid
-graph LR
-    C["Cilium Node\nVPNv6 only\nAFI 2/128"] -->|"VPNv6"| RR["Route Reflector\nFRRouting\n(bridge)"]
-    RR -->|"EVPN Type 5\nAFI 25/70"| PE["PE Router\nEVPN fabric"]
-    style RR fill:#1b5e2026,stroke:#1b5e20
-```
-
-## Installation
-
-### Enable SRv6 via Helm
+### Inspecting the datapath
 
 ```bash
-helm install cilium cilium/cilium \
-  --namespace kube-system \
-  --set bgpControlPlane.enabled=true \
-  --set srv6.enabled=true \
-  --set srv6.encapMode=srh        # or "reduced" for H.Encaps.Red
+# List the SRv6 maps (the agent CLI was renamed cilium-dbg in 1.15)
+cilium-dbg bpf srv6 vrf
+cilium-dbg bpf srv6 policy
+cilium-dbg bpf srv6 sid
 ```
 
-For Cilium 1.15+ with reduced encapsulation (recommended for production):
+Hubble flows carry the trace reasons `SRV6_ENCAP` and `SRV6_DECAP` (from 1.15). There are no SRv6-specific Prometheus metrics; SRv6 drops are counted by the generic drop metrics.
 
-```yaml
-# values.yaml
-bgpControlPlane:
-  enabled: true
+## Isovalent Enterprise: SRv6 L3VPN
 
-srv6:
-  enabled: true
-  encapMode: reduced    # uses H.Encaps.Red — no SRH when single SID
-```
+Isovalent Enterprise for Cilium adds the control plane. Its documentation requires a login, so the details below come from Isovalent's [Enterprise 1.13 announcement](https://isovalent.com/blog/post/isovalent-enterprise-1-13/) and from public Cisco lab material that runs the Enterprise product ([Cisco Live LTRSPG-2212 lab](https://github.com/cisco-asp-web/LTRSPG-2212/blob/main/lab_3/lab_3-guide.md)); check them against your release.
 
-```bash
-helm upgrade cilium cilium/cilium -f values.yaml -n kube-system
-```
+- **Locators and SIDs** — `IsovalentSRv6LocatorPool` (with `behaviorType: uSID` or `SRH`, e.g. a 32/16/16 F3216 structure) and `IsovalentSRv6SIDManager` allocate a per-node locator and per-VRF SIDs such as uDT4.
+- **VRFs** — `IsovalentVRF` classifies pods into tenants; route distinguishers and import/export route targets are set per VRF in `IsovalentBGPClusterConfig`.
+- **BGP** — the BGP control plane is GoBGP (open source and Enterprise alike; FRR is not used). The lab peers over **VPNv4** (`afi: ipv4, safi: mpls_vpn`) and advertises the locator itself as plain IPv6 unicast via `IsovalentBGPAdvertisement` (`advertisementType: SRv6LocatorPool`).
 
-## Configuration
+### How the routes are signaled
 
-### Step 1 — Assign a Locator to Each Node
+The signaling follows [RFC 9252](../rfcs/rfc9252.md), as on any SRv6 PE:
 
-Label each K8s node with its SRv6 locator prefix. Cilium allocates individual SIDs from this block for `End.DT4` / `End.DT6` behaviors.
+- **One BGP session per peer** carries the routes of every VRF; the route target extended communities place each prefix in the right VRF on the PE.
+- The **BGP next hop is the node's IPv6 address**. The Service SID travels in the **BGP Prefix-SID attribute** (SRv6 L3 Service TLV), with the function bits transposed into the label field. In the Cisco lab, the IOS-XR route reflector shows a uDT4 SID (behavior 63) learned from the Cilium node this way.
+- IPv4 tenant prefixes use **VPNv4** (AFI 1 / SAFI 128) and IPv6 prefixes VPNv6 (AFI 2 / SAFI 128).
 
-```bash
-kubectl label node worker-1 cilium.io/srv6-locator=fc00:0:10::/48
-kubectl label node worker-2 cilium.io/srv6-locator=fc00:0:11::/48
-```
+### EVPN fabrics
 
-### Step 2 — BGP Peering Policy
-
-```yaml
-apiVersion: cilium.io/v2alpha1
-kind: CiliumBGPPeeringPolicy
-metadata:
-  name: srv6-peering
-spec:
-  nodeSelector:
-    matchLabels:
-      kubernetes.io/os: linux
-  virtualRouters:
-    - localASN: 65100
-      exportPodCIDR: false          # pod CIDRs go via SRv6 L3VPN, not plain BGP
-      neighbors:
-        - peerAddress: "fc00:0:1::1/128"   # PE router SID/loopback
-          peerASN: 65000
-          families:
-            - afi: ipv6
-              safi: unicast
-            - afi: ipv6
-              safi: vpn-unicast     # VPNv6 for SRv6 L3VPN
-      srv6:
-        locatorPrefix: "fc00:0:10::/48"    # this node's SRv6 locator
-```
-
-### Step 3 — L3VPN (VRF) Mapping
-
-```yaml
-apiVersion: cilium.io/v2alpha1
-kind: CiliumBGPAdvertisement
-metadata:
-  name: tenant-a-vpn
-spec:
-  advertisements:
-    - advertisementType: "PodCIDR"
-      service:
-        addresses:
-          - ClusterIP
-      attributes:
-        community:
-          standard:
-            - "65000:100"            # route target for Tenant A VRF
-```
-
-### Step 4 — Verify SRv6 State
-
-```bash
-# Check Cilium SRv6 is active
-cilium status | grep -i srv6
-
-# Inspect eBPF SRv6 maps
-cilium bpf srv6 list
-
-# Check BGP session state
-cilium bgp peers
-
-# Verify advertised/received SRv6 SIDs
-cilium bgp routes advertised ipv6 vpn-unicast
-cilium bgp routes received  ipv6 vpn-unicast
-```
-
-## Full Traffic Walk
-
-```mermaid
-sequenceDiagram
-    participant Pod as Pod A (10.0.1.5)
-    participant eBPF as eBPF TC (egress)
-    participant Fab as SRv6 Fabric
-    participant eBPFr as eBPF XDP (ingress)
-    participant PodB as Pod B (10.0.2.7)
-
-    Pod->>eBPF: IPv4 packet → 10.0.2.7
-    eBPF->>eBPF: lookup cilium_srv6_policy<br/>→ SID fc00:0:11::dt4
-    eBPF->>Fab: SRv6 packet<br/>[fc00:0:11::dt4][IPv4: 10.0.2.7]
-    Fab->>eBPFr: Deliver to worker-2<br/>DST = fc00:0:11::dt4
-    eBPFr->>eBPFr: lookup cilium_srv6_sid<br/>→ VRF table 100
-    eBPFr->>eBPFr: End.DT4: strip SRv6 header<br/>inject inner IPv4 into VRF 100
-    eBPFr->>PodB: IPv4 packet → 10.0.2.7
-```
+Cilium does not speak BGP EVPN for SRv6; the open-source advertisement types are PodCIDR, CiliumPodIPPool, Service and Interface only ([source](https://github.com/cilium/cilium/blob/v1.20.0/pkg/k8s/apis/cilium.io/v2/bgp_advert_types.go)). If the rest of your fabric carries tenant routes as EVPN Route Type 5 over SRv6, the PE that peers with the Kubernetes nodes must run VPNv4/VPNv6 toward them and re-originate the routes into EVPN (a gateway function). A plain route reflector cannot do this: it reflects routes within the same address family.
 
 ## Comparison with Router-Based SRv6
 
-| Aspect | Cilium (eBPF) | FRRouting | Cisco IOS-XR |
-|--------|:-------------:|:---------:|:------------:|
-| Data plane | eBPF (kernel bypass) | Linux kernel routing | ASIC / NPU |
-| Control plane | GoBGP / FRR | FRR | IOS-XR BGP/IS-IS |
-| L3VPN support | :material-check-circle: | :material-check-circle: | :material-check-circle: |
-| Kubernetes-native | :material-check-circle: | :material-close-circle: | :material-close-circle: |
-| CRD-driven config | :material-check-circle: | :material-close-circle: | :material-close-circle: |
-| uSID support | :material-clock-outline: Roadmap | :material-check-circle: | :material-check-circle: |
-| Hardware offload | :material-clock-outline: Roadmap | :material-close-circle: | :material-check-circle: |
+| Aspect | Cilium (open source) | Isovalent Enterprise | FRRouting | Cisco IOS-XR |
+|--------|:--------------------:|:--------------------:|:---------:|:------------:|
+| Data plane | eBPF (TC) in the kernel | eBPF (TC) in the kernel | Linux kernel seg6 | ASIC / NPU |
+| Control plane | None for SRv6 | GoBGP + Kubernetes CRDs | FRR (IS-IS, BGP) | IOS-XR (IS-IS, BGP) |
+| L3VPN | :material-close-circle: | :material-check-circle: (Beta) | :material-check-circle: | :material-check-circle: |
+| uSID | :material-close-circle: | :material-check-circle: | :material-check-circle: | :material-check-circle: |
+| Kubernetes-native | :material-check-circle: | :material-check-circle: | :material-close-circle: | :material-close-circle: |
 
-## Observability
-
-Cilium exports SRv6 telemetry via **Hubble** (Cilium's observability layer):
-
-```bash
-# Install Hubble CLI
-hubble observe --type l3 --protocol SRv6
-
-# Flow-level SRv6 visibility
-hubble observe --namespace default \
-  --output json | jq 'select(.destination.srv6_sid != null)'
-```
-
-Key Prometheus metrics exported:
-
-| Metric | Description |
-|--------|-------------|
-| `cilium_srv6_encap_total` | Total SRv6 encapsulations by VRF |
-| `cilium_srv6_decap_total` | Total SRv6 decapsulations by behavior |
-| `cilium_srv6_drop_total` | SRv6 drops (no policy match, invalid SID) |
-| `cilium_bgp_session_state` | BGP session state per peer |
-
-## Vendor Support Matrix
-
-| Feature | Cilium 1.13 | Cilium 1.14 | Cilium 1.15+ |
-|---------|:-----------:|:-----------:|:------------:|
-| SRv6 L3VPN (alpha) | :material-check-circle: | :material-check-circle: | :material-check-circle: |
-| H.Encaps / End.DT4/DT6 | :material-check-circle: | :material-check-circle: | :material-check-circle: |
-| H.Encaps.Red | :material-close-circle: | :material-check-circle: | :material-check-circle: |
-| Hubble SRv6 visibility | :material-close-circle: | :material-check-circle: | :material-check-circle: |
-| Multi-cluster SRv6 | :material-close-circle: | :material-close-circle: | :material-check-circle: |
-| uSID | :material-close-circle: | :material-close-circle: | :material-clock-outline: |
+See the [SRv6 Support Matrix](support-matrix.md) for open-source Cilium next to every other platform, behavior by behavior.
 
 ## Further Reading
 
+- :material-arrow-right: [SRv6 Support Matrix](support-matrix.md) -- Cilium, Linux, FRR, VPP and vendor routers side by side
 - :material-arrow-right: [Host-Based SRv6](../topics/host-based-srv6.md) -- How end-hosts participate in SRv6 without router involvement
 - :material-arrow-right: [BGP Overlay Services](../topics/bgp-overlay-services.md) -- VPNv4/VPNv6 signaling for SRv6 L3VPN
-- :material-arrow-right: [Linux Kernel](linux-kernel.md) -- SRv6 in the kernel that Cilium builds on
-- :material-arrow-right: [FRRouting](frrouting.md) -- Open-source BGP/IS-IS that can peer with Cilium
+- :material-arrow-right: [Linux Kernel](linux-kernel.md) -- The kernel's own seg6 data plane, which Cilium does not use for SRv6
+- :material-arrow-right: [FRRouting](frrouting.md) -- Open-source BGP/IS-IS for SRv6 on Linux hosts
 - :material-arrow-right: [Cloud-Native Backbone](../use-cases/cloud-native-backbone.md) -- SRv6 in cloud and container environments
 
 ## References
 
-1. [Cilium SRv6 L3VPN Documentation](https://docs.cilium.io/en/stable/network/srv6l3vpn/) -- Official Cilium SRv6 configuration guide
-2. [RFC 8986 - SRv6 Network Programming](https://www.rfc-editor.org/rfc/rfc8986) -- Defines H.Encaps, End.DT4, End.DT6 behaviors used by Cilium
-3. [RFC 9252 - BGP Overlay Services Based on SRv6](https://www.rfc-editor.org/rfc/rfc9252) -- VPNv4/VPNv6 signaling with SRv6 Next Hop
-4. [Cilium GitHub — SRv6 eBPF maps](https://github.com/cilium/cilium/tree/main/pkg/maps/srv6map) -- Source code for the eBPF data structures
-5. [KubeCon 2023: Cilium SRv6 L3VPN](https://www.youtube.com/watch?v=R3WnCSOHK3E) -- Talk covering the Cilium SRv6 architecture and use cases
+1. [Cilium source: bpf/lib/srv6.h (v1.20.0)](https://github.com/cilium/cilium/blob/v1.20.0/bpf/lib/srv6.h) -- The complete open-source SRv6 datapath and map definitions
+2. [Cilium source: hidden SRv6 agent flags (v1.20.0)](https://github.com/cilium/cilium/blob/v1.20.0/daemon/cmd/daemon_main.go#L223-L234) -- `--enable-srv6` (beta) and `--srv6-encap-mode`
+3. [Cilium 1.13 release blog](https://isovalent.com/blog/post/cilium-release-113/) -- SRv6 listed under Isovalent Cilium Enterprise; single SID only at the time
+4. [Isovalent Enterprise for Cilium 1.13](https://isovalent.com/blog/post/isovalent-enterprise-1-13/) -- SRv6 L3VPN support, feature status Beta
+5. [cilium-dbg bpf srv6 command reference](https://docs.cilium.io/en/stable/cmdref/cilium-dbg_bpf_srv6/) -- Listing the SRv6 eBPF maps
+6. [Cisco Live LTRSPG-2212 lab guide](https://github.com/cisco-asp-web/LTRSPG-2212/blob/main/lab_3/lab_3-guide.md) -- Public lab running Isovalent Enterprise SRv6 L3VPN with uSID against IOS-XR (secondary source)
+7. [RFC 9252 - BGP Overlay Services Based on SRv6](https://www.rfc-editor.org/rfc/rfc9252) -- Service SIDs in the BGP Prefix-SID attribute
+8. [SRv6 on Cilium: an introductory demo (Isovalent)](https://youtu.be/k_2nMzxi1Hk) -- Video walkthrough of SRv6 L3VPN with Cilium

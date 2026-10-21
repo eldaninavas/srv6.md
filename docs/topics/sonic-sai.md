@@ -20,7 +20,7 @@ tags:
 ┌─────────────────────────────────────────────┐
 │                 SONiC NOS                    │
 ├─────────────────────────────────────────────┤
-│  FRRouting (BGP, IS-IS)  │  SRv6 Manager    │
+│  FRRouting (BGP, static) │  SRv6 Manager    │
 ├──────────────────────────┤                   │
 │  SWSS (Switch State Service)                │
 ├─────────────────────────────────────────────┤
@@ -28,7 +28,7 @@ tags:
 ├─────────────────────────────────────────────┤
 │  ASIC SDK (vendor-specific driver)           │
 ├─────────────────────────────────────────────┤
-│  Switching ASIC (Memory, Memory 2, etc.)     │
+│  Switching ASIC                              │
 └─────────────────────────────────────────────┘
 ```
 
@@ -38,7 +38,7 @@ tags:
 |-----------|------|
 | **SONiC** | Linux-based NOS with containerized services (BGP, LLDP, SNMP, etc.) |
 | **SAI** | Hardware abstraction API — same software runs on any compliant ASIC |
-| **FRRouting** | Routing suite providing BGP and IS-IS with SRv6 support |
+| **FRRouting** | Routing suite; in SONiC it signals SRv6 through BGP and static SIDs (the FRR container does not run isisd) |
 | **SWSS** | Translates high-level intent into SAI API calls |
 | **ASIC SDK** | Vendor-specific driver implementing SAI for a given chip |
 
@@ -82,9 +82,9 @@ SAI defines specific objects for SRv6 programming:
 
 SONiC uses **FRRouting (FRR)** as its routing engine. FRR provides:
 
-- **IS-IS** with SRv6 locator advertisement
+- **staticd** for static SRv6 SIDs, generated from CONFIG_DB since 202505 (SONiC's FRR container does not run isisd, so there is no IGP-signaled SRv6)
 - **BGP** with SRv6 VPN signaling (RFC 9252)
-- **Zebra** for programming SRv6 routes into the kernel and SAI
+- **Zebra** for programming SRv6 routes; on a switch they reach the ASIC through fpmsyncd, SWSS and SAI
 
 ```mermaid
 graph LR
@@ -96,14 +96,7 @@ graph LR
 
 ## Whitebox Hardware
 
-SONiC runs on whitebox switches from multiple vendors, all using SAI for SRv6:
-
-| ASIC Vendor | Example Platforms |
-|-------------|-------------------|
-| Broadcom | Memory 3 / Memory 4-based switches |
-| Intel (formerly Barefoot) | Memory-based programmable switches |
-| Cisco | Silicon One Q100/Q200-based platforms |
-| NVIDIA (Mellanox) | Spectrum-based switches |
+SONiC runs on switches built on ASICs from several vendors — Broadcom, Cisco Silicon One, NVIDIA Spectrum and others. Whether a given SRv6 behavior forwards in hardware depends on that vendor's SAI implementation; the SONiC community does not publish a per-ASIC SRv6 behavior matrix, so check with the switch vendor. The [SRv6 Support Matrix](../implementations/support-matrix.md) lists what SAI and orchagent can express.
 
 ## Further Reading
 

@@ -18,15 +18,15 @@ Juniper implements SRv6 in **Junos OS** (MX Series) and **Junos OS Evolved** (PT
 
 | Capability | Junos OS (MX) | Junos OS Evolved |
 |------------|---------------|------------------|
-| SRv6 in IS-IS, classic SIDs | 20.3R1 (MX240/480/960/2000; MPC7E/8E/9E or newer) | PTX10002-36QDD 24.2R2, PTX10008 24.4R1-S2 |
+| SRv6 in IS-IS, classic SIDs | 20.3R1 (MX240/480/960/2000; MPC7E/8E/9E or newer; per TechLibrary — Feature Explorer lists MX960 at 21.1R1) | PTX10002-36QDD 24.2R2, PTX10008 24.4R1-S2 |
 | L3 services over SRv6 (BGP) | 20.4R1 (MX and vMX); MX304 22.2R3; MX10004 22.3R1 | PTX10002-36QDD 24.2R2; PTX10008 24.4R1-S2 |
 | uSID in IS-IS transport | 23.4R1 (MX204 through MX10016) | PTX10008 24.4R1-S2 |
 | uSID with L3VPN and IS-IS on ACX | — | ACX7024/7100/7509 23.2R1; ACX7024X/7332/7348 23.4R1 |
 | uSID with TI-LFA, microloop avoidance, Flex-Algo | 23.4R1 | ACX7024X/7348 24.2R1 |
-| SRv6 Flex-Algo | Classic SIDs by 21.2R1 (inter-level leaking); uSID 23.4R1 | ACX7024/7100/7509 23.1R1 |
+| SRv6 Flex-Algo | Classic SIDs 20.3R1 (inter-level leaking 21.2R1); uSID 23.4R1 | ACX7024/7100/7509 23.1R1 |
 | SRv6 microloop avoidance (IS-IS) | 21.1R1 | PTX10002-36QDD 24.4R1 |
 
-Release numbers are the "introduced" values from [Juniper Feature Explorer](https://apps.juniper.net/feature-explorer/); check it for your exact platform and line card. **cRPD** supports SRv6 in IS-IS and L3 services in BGP with limitations (no flavor or Flex-Algo options on End SIDs, no ARM64). There is no official SRv6 support statement for vJunos-router.
+Release numbers are the "introduced" values from [Juniper Feature Explorer](https://apps.juniper.net/feature-explorer/) or, where noted, Juniper TechLibrary; check Feature Explorer for your exact platform and line card. Later additions include static and PCEP SRv6-TE policies (MX 21.3R1), EVPN E-LAN over SRv6 (MX 23.4R1), the End.B6.Encaps binding SID (ACX7000 25.2R1, MX 26.2R1) and TWAMP performance measurement over SRv6 paths (PTX 24.4R1). The [SRv6 Support Matrix](support-matrix.md) compares Junos with other platforms feature by feature. **cRPD** supports SRv6 in IS-IS and L3 services in BGP with limitations (no flavor or Flex-Algo options on End SIDs, no ARM64). There is no official SRv6 support statement for vJunos-router.
 
 ## Building Blocks
 
@@ -180,7 +180,7 @@ set protocols isis interface et-0/0/0.0 level 2 post-convergence-lfa node-protec
 set protocols isis spf-options microloop-avoidance post-convergence-path delay 5000
 ```
 
-Link protection is the default once `post-convergence-lfa` is on an interface. The JVD adds node protection with a very high cost, so the node-protecting path is preferred but a link-protecting backup is still used when no node-protecting path exists. uSID-based TI-LFA, microloop avoidance and Flex-Algo protection arrived in Junos 23.4R1. **SRLG is not considered for SRv6 TI-LFA.** The JVD measured worst-case link-failure convergence around 5 ms. See [TI-LFA](../topics/ti-lfa.md) for the algorithm.
+Link protection is the default once `post-convergence-lfa` is on an interface. The JVD adds node protection with a very high cost, so the node-protecting path is preferred but a link-protecting backup is still used when no node-protecting path exists. uSID-based TI-LFA, microloop avoidance and Flex-Algo protection arrived in Junos 23.4R1. **Before Junos 26.2R1, SRLG is not considered for SRv6 TI-LFA**; 26.2R1 adds IS-IS IPv6 SRLG (TLV 139) for SRLG-aware TI-LFA on MX, PTX and ACX7000. The JVD measured worst-case link-failure convergence around 5 ms. See [TI-LFA](../topics/ti-lfa.md) for the algorithm.
 
 ## Verification
 
@@ -205,7 +205,7 @@ Link protection is the default once `post-convergence-lfa` is on an interface. T
 - **SID depth** (from the Junos SRv6 docs): MX encapsulates up to 6 SIDs and inserts up to 5; ACX7000 encapsulates 12 and inserts 10; PTX10002-36QDD and PTX10008 (Express 5) support 7. uSID packs up to six 16-bit uSIDs per 128-bit container, which leaves plenty of headroom for TE and TI-LFA.
 - **Encap vs insert**: ingress PEs always encapsulate, so egress SIDs must support USD; transit SRH insertion for TI-LFA needs a PSP-capable last SID.
 - **Static plus IS-IS SIDs**: configuring the same static uA or End.X SID under both the SRv6 manager and IS-IS fails commit (a duplicate uN is allowed; IS-IS wins).
-- **IS-IS SRv6 does not support** anycast locator prefixes, SRLG, End.X interface groups or Flex-Algo locator conflict resolution.
+- **IS-IS SRv6 limits**: the IS-IS SRv6 concept page lists anycast locators, SRLG, End.X interface groups and Flex-Algo locator conflict resolution as unsupported. Feature Explorer has since added anycast locators and summarization (MX10004/MX10008 22.3R1, ACX7000 22.4R1) and SRLG (26.2R1), so check your platform and release.
 - **No `next-hop-self` knob**: Junos IBGP needs an export policy with `then next-hop self` when you redistribute CE routes into plain IPv4/IPv6 BGP.
 
 ## Hands-On
@@ -215,6 +215,7 @@ Link protection is the default once `post-convergence-lfa` is on an interface. T
 
 ## Further Reading
 
+- :material-arrow-right: [SRv6 Support Matrix](support-matrix.md) - Junos feature by feature next to IOS-XR, EOS, SR OS, VRP and open-source platforms
 - :material-arrow-right: [Implementations Overview](index.md) - Compare Junos with IOS-XR, EOS, SR OS and Linux
 - :material-arrow-right: [uSID Compression](../topics/usid-compression.md) - How uN, uA and uDT SIDs pack into one address
 - :material-arrow-right: [BGP Overlay Services](../topics/bgp-overlay-services.md) - L3VPN and EVPN over SRv6 (RFC 9252)
@@ -239,3 +240,5 @@ Link protection is the default once `post-convergence-lfa` is on an interface. T
 13. [Day One: Introduction to SRv6 (PDF)](https://www.juniper.net/documentation/en_US/day-one-books/DayOne-Intro-SRv6.pdf) - Juniper Day One book introducing SRv6 concepts and configuration
 14. [Configuring SRv6 on Junos (ipSpace.net)](https://blog.ipspace.net/2026/09/srv6-junos/) - Hands-on walkthrough of SRv6 locator and IGP configuration on Junos, tested in a netlab topology
 15. [Configuring SRv6 Layer-3 Services on Junos (ipSpace.net)](https://blog.ipspace.net/2026/10/junos-srv6-layer3-services/) - Follow-up covering SRv6 L3VPN service configuration on Junos
+16. [Junos OS 20.3 In Focus Guide (PDF)](https://www.juniper.net/documentation/en_US/junos/information-products/pathway-pages/infocus/20.3/infocus-junos-20.3.pdf) - First SRv6 release: IS-IS End/End.X, flavors, Flex-Algo and TI-LFA for the SRv6 data plane
+17. [Feature Explorer: SRLG-aware TI-LFA](https://apps.juniper.net/feature-explorer/feature/9377) and [anycast locators](https://apps.juniper.net/feature-explorer/feature/4131) - Later additions to IS-IS SRv6

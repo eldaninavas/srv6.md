@@ -89,7 +89,7 @@ The table size grows with the switch radix, not with the number of paths, flows 
 
 ### SONiC
 
-Since SONiC **202505**, static SRv6 is configured in CONFIG_DB with two tables, which bgpcfgd compiles into FRR. This is the format from the SONiC static SRv6 design document:
+Since SONiC **202505**, static SRv6 is configured in CONFIG_DB with two tables, which bgpcfgd compiles into FRR (the 202505 release notes rate the feature Alpha). This is the format from the SONiC static SRv6 design document:
 
 ```json
 {
@@ -159,7 +159,7 @@ Give every host the ability to probe paths that loop back to itself through a T0
 | NVIDIA | Spectrum-4/5 with Cumulus or SONiC forward SRv6 for MRC (MRC paper). Cumulus Linux 5.18 documents static uN and uA on Spectrum-4. |
 | Arista | EOS on Broadcom Tomahawk 5 forwards SRv6 for MRC. EOS 4.36.2F documents uN (NEXT-CSID) in F3216 format. |
 | Broadcom | Tomahawk 5 switches and Thor Ultra NICs in the MRC clusters. |
-| Cisco | Silicon One G200 is marketed with native SRv6 uSID for GPU-to-GPU path steering. Any Silicon One system running SONiC supports SRv6 uSID. |
+| Cisco | Silicon One G200 is marketed with native SRv6 uSID for GPU-to-GPU path steering. SRv6 on a SONiC system depends on the vendor's SAI implementation, so confirm uSID support for the specific Silicon One platform and SONiC image. |
 | AMD | Vulcano NIC: NIC-based SR/SRv6 source routing; Pollara and Vulcano run MRC. |
 
 Check each vendor's current documentation for the exact behaviors and formats, because support differs. Arista's documentation lists F3216 only and H.Encaps.Red as unsupported on the switch, which matters if the switch rather than the NIC is the head-end.

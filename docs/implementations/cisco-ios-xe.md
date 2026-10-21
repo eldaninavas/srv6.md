@@ -1,7 +1,7 @@
 ---
 title: Cisco IOS-XE
 seo_title: "SRv6 on Cisco IOS-XE: uSID Configuration Guide"
-description: "Configure SRv6 uSID on Cisco IOS-XE 8000 Series Secure Routers: F3216 locators, IS-IS, per-VRF L3VPN SIDs, Flex-Algo, TI-LFA and verification commands."
+description: "Configure SRv6 uSID on Cisco IOS-XE (ASR 1000, Catalyst 8000, 8000 Secure Routers) since 17.12.1a: F3216 locators, IS-IS, per-VRF L3VPN, Flex-Algo and TI-LFA."
 tags:
   - implementations
   - cisco
@@ -10,27 +10,35 @@ tags:
 
 # SRv6 on Cisco IOS-XE
 
-SRv6 on Cisco has long been an [IOS-XR](cisco-ios-xr.md) story (NCS, ASR 9000, Cisco 8000). That changed with **IOS-XE 26.1**: Cisco's enterprise/edge operating system now ships validated SRv6 uSID support, documented in the 2026 CVD [*Quantum-Safe SRv6 Fabric for Mission-Critical Networks*](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html). This brings SRv6 to the WAN-edge and branch platforms that historically terminated SD-WAN or DMVPN.
+Cisco's SRv6 story is usually told on [IOS-XR](cisco-ios-xr.md) (NCS, ASR 9000, Cisco 8000), but **IOS-XE has shipped SRv6 since 17.12.1a** (Dublin), as the "Segment Routing over IPv6 Dataplane" feature on the ASR 1000 and Catalyst 8000 edge routers. It is uSID-only (F3216) and covers IS-IS, BGP L3VPN with per-VRF SIDs, local SRv6-TE policies, static routes, performance measurement and OAM. Later 17.x releases added TI-LFA, microloop avoidance, Flex-Algo and multicast VPN. The 2026 CVD [*Quantum-Safe SRv6 Fabric for Mission-Critical Networks*](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) validated the design on IOS-XE 26.1.1 with the Cisco 8000 Series Secure Routers, which brings SRv6 to the WAN-edge and branch platforms that historically terminated SD-WAN or DMVPN.
 
-## Supported Platforms (validated in the CVD)
+## Supported Platforms
 
-- Cisco 8000 Series Secure Routers (G2): 8161-G2 (compact edge), 8375-E-G2 / 8475-G2 (branch/campus edge), 8550-G2 / 8570-G2 (aggregation hubs)
-- Catalyst 8000 edge family (SR-TE/ePBR feature lineage)
+| Release | Platforms | Source |
+|---------|-----------|--------|
+| 17.12.1a | ASR 1000 with RP3 and ESP100-X/ESP200-X, ASR 1001-HX, ASR 1002-HX, Catalyst 8000V, C8200, C8300, C8500/8500L | [IOS XE 17 SR configuration guide](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html) |
+| 26.1.1 | IR1101 industrial router | [IR 26.1.x release notes](https://www.cisco.com/c/en/us/td/docs/routers/IIoT/release-notes/26-1-x/IOT-IR-26-1-x-RN.html) |
+| 26.1.1 (CVD) | Cisco 8000 Series Secure Routers (G2) as validated in the CVD, with an ASR 1001-HX route reflector | [CVD](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) |
 
 ## Feature Highlights
 
-| Feature | IOS-XE support |
-|---------|----------------|
-| uSID format | **F3216 only** (`format usid-f3216`) — 32-bit block, 16-bit node, 16-bit function |
-| Headend encapsulation | `H.Encaps.Red` (reduced) |
-| End behaviors | `uN`, `uA`, `uDT4`, `uDT6`, `uDT46`, `End.DTMC4` (multicast VRF decap) |
-| L3VPN SID allocation | **`alloc-mode per-vrf` only** — per-prefix allocation is not supported |
-| IGP | IS-IS with multi-topology IPv6, wide metrics |
-| SR-TE | Per-Destination and Per-Flow policies, ODN/Automated Steering, ePBR + NBAR classification |
-| Flex-Algo | Yes, with per-algorithm locators |
-| TI-LFA | Yes, with node-protecting / SRLG-disjoint / linecard-disjoint tiebreakers |
-| Performance measurement | Two-way active probes, delay advertisement into IS-IS, liveness detection |
-| Multicast | BGP MVPN with SRv6 ingress replication (`srv6-mcast ingress-replication partitioned`) |
+| Feature | IOS-XE support | Since |
+|---------|----------------|:-----:|
+| uSID format | **F3216 only** (`format usid-f3216`), up to 10 uSID locators | 17.12.1a |
+| Headend encapsulation | `H.Encaps.Red` (reduced) | 17.12.1a |
+| End behaviors | `uN` and `uA` with PSP/USD, `uDT4`, `uDT6`; static End.X from 17.15.1a; `End.DTMC4` (multicast VRF decapsulation) | 17.12.1a |
+| uDT46 | Listed as supported, but BGP does not allocate or advertise it, so L3VPN signals uDT4 and uDT6 | — |
+| L3VPN SID allocation | **`alloc-mode per-vrf` only**; per-prefix allocation is not supported. ODN for L3VPN from 17.13.1a | 17.12.1a |
+| IGP | IS-IS only, with multi-topology IPv6 and wide metrics | 17.12.1a |
+| SR-TE | Per-Destination and Per-Flow policies, ePBR + NBAR classification. Dynamic segment lists only; no explicit segment lists, no Binding SIDs, no PCE-initiated policies. PCE-delegated computation from 17.16.1a | 17.12.1a |
+| TI-LFA | Yes, with node-protecting / SRLG-disjoint / linecard-disjoint tiebreakers. The guide notes that IGP TI-LFA "cannot guarantee 50ms FRR failover" on this platform | 17.15.1a |
+| Microloop avoidance | IS-IS SRv6 microloop avoidance | 17.15.1a |
+| Flex-Algo | Up to 8 algorithms, one locator per algorithm, single IS-IS level | 17.18.1a |
+| Performance measurement | Two-way active probes, delay advertisement into IS-IS, liveness detection | 17.12.1a |
+| OAM | SRv6 OAM; `ping srv6` / `traceroute srv6` commands from 17.16.1a | 17.12.1a |
+| Multicast | BGP MVPN with SRv6 ingress replication (`srv6-mcast ingress-replication partitioned`), IPv4 multicast only | 17.18.1a |
+
+Not documented on IOS-XE: EVPN or other L2 services over SRv6, OSPFv3 SRv6, and global-table BGP over SRv6. See the [SRv6 Support Matrix](support-matrix.md) for a side-by-side comparison with IOS-XR and other platforms.
 
 ## Basic Configuration
 
@@ -94,11 +102,13 @@ show ip bgp vpnv4 all
 
 ## Further Reading
 
-- :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) - The validated design that debuted SRv6 on IOS-XE
+- :material-arrow-right: [Mission-Critical Networks](../use-cases/mission-critical.md) - The Cisco validated design for SRv6 on IOS-XE 26.1
+- :material-arrow-right: [SRv6 Support Matrix](support-matrix.md) - IOS-XE next to IOS-XR, Junos, EOS, SR OS and open-source platforms
 - :material-arrow-right: [Cisco IOS-XR](cisco-ios-xr.md) - Cisco's service-provider SRv6 implementation
 - :material-arrow-right: [uSID / SRv6 Compression](../topics/usid-compression.md) - The F3216 format explained
 
 ## References
 
-1. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) - Validated design and configuration baseline for SRv6 on IOS-XE 26.1
-2. [Cisco 8000 Series Secure Routers](https://www.cisco.com/site/us/en/products/networking/wan/routers/8000-series-secure-routers/index.html) - Platform family validated for SRv6 uSID on IOS-XE
+1. [Segment Routing Configuration Guide, Cisco IOS XE 17: Segment Routing over IPv6](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html) - Feature history from 17.12.1a, supported platforms, behaviors and restrictions
+2. [Cisco CVD: Quantum-Safe SRv6 Fabric for Mission-Critical Networks](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) - Validated design and configuration baseline for SRv6 on IOS-XE 26.1
+3. [Cisco 8000 Series Secure Routers](https://www.cisco.com/site/us/en/products/networking/wan/routers/8000-series-secure-routers/index.html) - Platform family validated for SRv6 uSID on IOS-XE

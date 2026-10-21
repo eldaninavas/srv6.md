@@ -123,7 +123,7 @@ graph TD
     Replication segments are standardized in [RFC 9524](../rfcs/rfc9524.md), updated by [RFC 9960](../rfcs/rfc9960.md) (April 2026), which defines the structured Replication-ID used by SR P2MP Policies.
 
 !!! note "Implementation status"
-    End.Replicate is in the open-source [zebra-rs](../implementations/zebra-rs.md) data plane, and Nokia's SRv6 application note lists P2MP SRv6 policy for multicast on its routing platforms (see [Nokia SR OS](../implementations/nokia-sros.md)). On vendor routers replication segments are normally consumed through Tree-SID (below) or EVPN/MVPN ingress replication rather than configured as standalone SIDs — check your platform's release notes for SRv6 (as opposed to SR-MPLS) support.
+    End.Replicate is in the open-source [zebra-rs](../implementations/zebra-rs.md) data plane, and Nokia SR OS documents Tree-SID SRv6 built from replication segments for NG-MVPN from release 25.3 (see [Nokia SR OS](../implementations/nokia-sros.md)). On vendor routers replication segments are normally consumed through Tree-SID (below) or EVPN/MVPN ingress replication rather than configured as standalone SIDs — check your platform's release notes for SRv6 (as opposed to SR-MPLS) support.
 
 ## Approach 3: Tree-SID
 
@@ -158,51 +158,14 @@ graph TD
 !!! info "Standards reference"
     The Tree-SID architecture — SR P2MP Policy, candidate paths, P2MP tree instances built from Replication segments — is [RFC 9960](../rfcs/rfc9960.md) (April 2026). The controller-to-router signaling is still in progress: PCEP in [draft-ietf-pce-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-pce-sr-p2mp-policy/) and BGP in [draft-ietf-idr-sr-p2mp-policy](https://datatracker.ietf.org/doc/draft-ietf-idr-sr-p2mp-policy/).
 
-### Configuration
+### Platform Support
 
-=== "Cisco IOS-XR"
+Tree-SID with an **SRv6** data plane is rare in shipping code, so check before you design around it:
 
-    ```cisco
-    !! SR-PCE Tree-SID configuration (on PCE)
-    pce
-     address ipv6 2001:db8:ffff::1
-     segment-routing
-      traffic-eng
-       p2mp
-        policy MCAST-TREE-1
-         source ipv6 2001:db8::1
-         color 1000
-         treesid srv6
-         candidate-paths
-          preference 100
-           dynamic
-           !
-          !
-         endpoint-set RECEIVERS
-          ipv6 2001:db8::2
-          ipv6 2001:db8::3
-          ipv6 2001:db8::4
-         !
-        !
-       !
-      !
-     !
-    !
-    ```
+- **Nokia SR OS** documents Tree-SID SRv6 (replication segments) for NG-MVPN I-PMSI/S-PMSI from release 25.3, configured statically by CLI, with classic SIDs only and no LFA or BFD protection ([SR OS 26.7 Multicast Guide](https://documentation.nokia.com/sr/26-7/7x50-shared/multicast/sr-p2mp-policy.html)).
+- **Cisco IOS-XR** implements Tree-SID with SR-PCE for **SR-MPLS only**: the 26.x Cisco 8000 guide states "IPv6 Tree-SID or SRv6 is not supported", and the NCS 5500 guide lists SRv6 SR P2MP policies as not supported ([Cisco 8000 Tree-SID guide](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/segment-routing/26xx/configuration/guide/b-segment-routing-cg-cisco8000-26xx/segment-routing-tree-segment-identifier.html)).
 
-### Verification
-
-=== "Cisco IOS-XR"
-
-    ```cisco
-    !! On PCE
-    show pce lsp p2mp
-    show pce lsp p2mp detail
-
-    !! On head-end
-    show segment-routing traffic-eng tree-sid all
-    show segment-routing traffic-eng tree-sid color 1000
-    ```
+See the multicast row of the [SRv6 Support Matrix](../implementations/support-matrix.md#multicast) for other platforms.
 
 ## Approach 4: BIER with SRv6
 

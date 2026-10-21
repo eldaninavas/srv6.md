@@ -311,6 +311,7 @@ Performance context: cradle-rs's DIR-24-8 FIB engine sustains **~51 ns lookups a
 
 ## Further Reading
 
+- :material-arrow-right: [SRv6 Support Matrix](support-matrix.md) -- How router OSes and other open-source data planes compare
 - :material-arrow-right: [uSID Compression](../topics/usid-compression.md) -- NEXT-C-SID and REPLACE-C-SID, both of which this stack implements
 - :material-arrow-right: [Network Programming](../topics/network-programming.md) -- The RFC 8986 behavior catalog
 - :material-arrow-right: [TI-LFA](../topics/ti-lfa.md) -- Fast reroute, implemented here over SRv6 with PSP repair

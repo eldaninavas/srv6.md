@@ -5,6 +5,7 @@ assistants and AI search engines can discover and cite the knowledge base;
 llms-full.txt carries the full English text of every page in nav order.
 """
 
+import importlib.util
 import os
 import re
 import logging
@@ -26,6 +27,13 @@ SECTIONS = [
 _FULL_SKIP_PREFIXES = ("es/", "ja/", "tags", "knowledge-graph")
 
 _nav_pages = []
+
+# The support matrix page is a placeholder until hooks/support_matrix.py
+# expands it, so llms-full.txt runs the same expansion on the raw source
+_spec = importlib.util.spec_from_file_location(
+    "support_matrix", os.path.join(os.path.dirname(__file__), "support_matrix.py"))
+_support_matrix = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_support_matrix)
 
 
 def _split_front_matter(text):
@@ -99,6 +107,7 @@ def _write_full(config, site_url):
             continue
         with open(f.abs_src_path, "r", encoding="utf-8") as fh:
             meta, body = _split_front_matter(fh.read())
+        body = _support_matrix.render_text(config["docs_dir"], body, plain=True)
         title, description = _front_matter(f.abs_src_path)
         url = site_url + ("" if f.url in (".", "./") else f.url)
         out += ["", "---", "", f"# {title or f.src_uri}", "", f"URL: {url}", f"Path: {f.src_uri}"]

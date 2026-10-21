@@ -1042,3 +1042,197 @@ html:lang(ja) input {
 html:lang(ja) .md-typeset {
   line-break: strict;
 }
+
+/* --- SRv6 support matrix (implementations/support-matrix.md, hooks/support_matrix.py) --- */
+:root {
+  --smx-yes: #2e7d32;
+  --smx-yes-bg: rgba(46, 125, 50, 0.12);
+  --smx-partial: #b26a00;
+  --smx-partial-bg: rgba(255, 152, 0, 0.14);
+  --smx-no: #c62828;
+  --smx-no-bg: rgba(198, 40, 40, 0.09);
+  --smx-head-tint: rgba(123, 31, 162, 0.1);
+  --smx-cat-tint: rgba(123, 31, 162, 0.06);
+  --smx-line: rgba(123, 31, 162, 0.18);
+}
+[data-md-color-scheme="slate"] {
+  --smx-yes: #81c784;
+  --smx-yes-bg: rgba(129, 199, 132, 0.13);
+  --smx-partial: #ffb74d;
+  --smx-partial-bg: rgba(255, 183, 77, 0.13);
+  --smx-no: #ef9a9a;
+  --smx-no-bg: rgba(239, 154, 154, 0.1);
+  --smx-head-tint: rgba(123, 31, 162, 0.28);
+  --smx-cat-tint: rgba(171, 71, 188, 0.1);
+  --smx-line: rgba(171, 71, 188, 0.2);
+}
+
+/* The wrapper Material puts around tables becomes the scroll box, so the
+   header row and the capability column can stick inside it */
+.md-typeset .smx .md-typeset__scrollwrap {
+  max-height: 80vh;
+  overflow: auto;
+  margin: 0.6em 0 1em;
+  border: 1px solid var(--smx-line);
+  border-radius: 8px;
+}
+.md-typeset .smx .md-typeset__table {
+  display: block;
+  padding: 0;
+}
+.md-typeset .smx table:not([class]) {
+  display: table;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.68rem;
+  margin: 0;
+  max-width: none;
+}
+.md-typeset .smx table:not([class]) th,
+.md-typeset .smx table:not([class]) td {
+  padding: 0.3em 0.45em;
+  border-top: 0;
+  border-bottom: 1px solid var(--smx-line);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.md-typeset .smx table:not([class]) thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(var(--smx-head-tint), var(--smx-head-tint)), var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  font-weight: 700;
+  min-width: 4.6rem;
+}
+.md-typeset .smx table:not([class]) th:first-child,
+.md-typeset .smx table:not([class]) td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--md-default-bg-color);
+  border-right: 1px solid var(--smx-line);
+  text-align: left;
+  white-space: normal;
+  min-width: 9.5rem;
+}
+.md-typeset .smx table:not([class]) thead th:first-child {
+  z-index: 3;
+  background: linear-gradient(var(--smx-head-tint), var(--smx-head-tint)), var(--md-default-bg-color);
+}
+.md-typeset .smx td:first-child small {
+  display: block;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.85em;
+}
+.md-typeset .smx tr.smx-cat-row td {
+  background: linear-gradient(var(--smx-cat-tint), var(--smx-cat-tint)), var(--md-default-bg-color);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.62rem;
+  color: var(--md-default-fg-color--light);
+}
+.md-typeset .smx tr:target td,
+.md-typeset .smx tr.smx-target td {
+  box-shadow: inset 0 2px 0 var(--md-accent-fg-color), inset 0 -2px 0 var(--md-accent-fg-color);
+}
+.md-typeset .smx-s {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0.05em 0.4em;
+  border-radius: 0.6em;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.md-typeset .smx-y { color: var(--smx-yes); background: var(--smx-yes-bg); }
+.md-typeset .smx-p { color: var(--smx-partial); background: var(--smx-partial-bg); }
+.md-typeset .smx-n { color: var(--smx-no); background: var(--smx-no-bg); }
+.md-typeset .smx-u { color: var(--md-default-fg-color--lighter); }
+.md-typeset .smx sup { margin-left: 0.1em; }
+.smx-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.smx-hide { display: none !important; }
+
+.md-typeset .smx-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-size: 0.72rem;
+}
+.md-typeset .smx-controls {
+  font-size: 0.68rem;
+  margin: 1em 0 0.4em;
+}
+.md-typeset .smx-controls[hidden] { display: none; }
+.md-typeset .smx-controls summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--md-typeset-a-color);
+}
+.md-typeset .smx-controls-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem 1.2rem;
+  margin-top: 0.5rem;
+}
+.md-typeset .smx-plats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.md-typeset .smx-plats legend {
+  width: 100%;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+.md-typeset .smx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  padding: 0.15em 0.55em;
+  border: 1px solid var(--smx-line);
+  border-radius: 1em;
+  cursor: pointer;
+  user-select: none;
+}
+.md-typeset .smx-chip:has(input:checked) {
+  background: var(--smx-head-tint);
+}
+.md-typeset .smx-btn,
+.md-typeset .smx-catsel select {
+  font: inherit;
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--smx-line);
+  border-radius: 1em;
+  padding: 0.15em 0.6em;
+  cursor: pointer;
+}
+.md-typeset .smx-catsel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-weight: 700;
+}
+@media screen and (max-width: 44.9375em) {
+  .md-typeset .smx table:not([class]) th:first-child,
+  .md-typeset .smx table:not([class]) td:first-child {
+    min-width: 7.2rem;
+    max-width: 7.2rem;
+  }
+  .md-typeset .smx .md-typeset__scrollwrap { max-height: 75vh; }
+}

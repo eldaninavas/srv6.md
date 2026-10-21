@@ -11,18 +11,18 @@ tags:
 
 # SRv6 on Arista EOS
 
-Arista EOS implements SRv6 with a **uSID-first** design: the forwarding model is built around micro-SIDs in the `F3216` format (32-bit block, 16-bit uSIDs), starting with the uN node SID and adding static uA adjacency SIDs, IS-IS integration, counters, and hitless upgrade support over the 4.35 and 4.36 release trains. The authors of OpenAI's **MRC** AI-cluster transport collaborated with Arista to implement SRv6 in EOS on Broadcom Tomahawk 5 switches, and MRC runs in large-scale production — see [AI/ML Networks](../use-cases/ai-networking.md).
+Arista EOS implements SRv6 with a **uSID-first** design: the forwarding model is built around micro-SIDs in the `F3216` format (32-bit block, 16-bit uSIDs), starting with the uN node SID and adding static uA adjacency SIDs, IS-IS integration, counters, and hitless upgrade support over the 4.34 to 4.36 release trains. The authors of OpenAI's **MRC** AI-cluster transport collaborated with Arista to implement SRv6 in EOS on Broadcom Tomahawk 5 switches, and MRC runs in large-scale production — see [AI/ML Networks](../use-cases/ai-networking.md).
 
 !!! info "Source scope"
-    This page summarizes Arista's public EOS user manual (EOS 4.36.2F) and the titles/summaries of Arista's public SRv6 TOI (Technical Overview of Information) listings. Full TOI documents require an Arista login; check them and the release notes for your exact version before deploying.
+    This page summarizes Arista's public EOS user manual (EOS 4.36.2F) and the titles/summaries of Arista's public SRv6 TOI (Transfer of Information) listings. Full TOI documents require an Arista login; check them and the release notes for your exact version before deploying.
 
 ## Feature Timeline
 
 | Feature | EOS release | Source |
 |---------|-------------|--------|
-| uN (End with uSID) | Before 4.35.2F (base support referenced by the uA TOI) | TOI listing |
+| uN (End with uSID) | 4.34.2F | TOI: "SRv6 uN Support" |
 | Static SRv6 adjacency segments (**uA**) | 4.35.2F | TOI: "Support for SRv6 static adjacency segments (uA)" |
-| **IS-IS** SRv6 with micro-SID compression, Flex-Algo, and **TI-LFA** | 4.36.1F | TOI: "Support for SRv6 in IS-IS" |
+| **IS-IS** SRv6 with micro-SID compression and Flex-Algo (7280R4 and 7800R4 series) | 4.36.1F | TOI: "Support for SRv6 in IS-IS"; user manual IS-IS chapter |
 | **Smart System Upgrade (SSU)** with SRv6 uN | 4.36.1F | TOI: "SSU support for SRv6" |
 | Per-endpoint **counters** (packets/bytes per endpoint operation, e.g. uN) | 4.36.2F | TOI: "Support for SRv6 Counters" |
 
@@ -38,7 +38,7 @@ The `show srv6 capabilities` example in the user manual reports:
 | uSID formats | F3216 | — |
 
 !!! note
-    Static uA support (an End.X-type adjacency micro-SID) is documented separately in the uA TOI for EOS 4.35.2F and later, so treat the capability table as a snapshot of the manual's example rather than a complete feature list.
+    Static uA support (an End.X-type adjacency micro-SID) arrived in EOS 4.35.2F and is configured per interface in the manual's IS-IS chapter (`adjacency-segment srv6 locator <loc> usid <value> behavior end.x ...`), even though the capabilities example still prints End.X as unsupported. Treat the capability table as a snapshot of the manual's example rather than a complete feature list. The IS-IS SRv6 TOI is also tagged TI-LFA, but its body requires a login and the manual documents TI-LFA for SR-MPLS only, so SRv6 TI-LFA on EOS is unverified.
 
 ## Supported Platforms
 
@@ -61,7 +61,8 @@ The manual organizes SRv6 under `router srv6`:
 | `micro-segment domain` → `block`, `usid length`, `gib range` | Defines the uSID block, uSID length, and Global ID Block range |
 | `locator` → `prefix micro-segment domain <d> end usid <v>` | Allocates the node's uN from the domain |
 | `igp algorithm flex-algo <name>` | Associates a locator with a Flex-Algo |
-| `show srv6 capabilities` / `domain` / `locator` / `routes` | Verification |
+| `adjacency-segment srv6 locator <loc> usid <value> behavior end.x` (interface, IS-IS) | Static uA adjacency SID |
+| `show srv6 capabilities` / `domain` / `locator` / `route` | Verification |
 | `ping srv6 sid … via segment-list …`, `traceroute srv6 sid …` | SRv6 OAM |
 
 See the user manual for complete configuration examples; exact syntax varies between EOS releases.
@@ -72,11 +73,13 @@ See the user manual for complete configuration examples; exact syntax varies bet
 ## Where It Fits
 
 - **AI back-end fabrics** — static, source-routed uSID paths on Tomahawk 5 (7060X6 class) are what MRC uses; see [AI/ML Networks](../use-cases/ai-networking.md) and [CLOS & Load Balancing](../topics/clos-glb.md).
-- **DC/WAN edge and spine** — Jericho-based 7280R3/R4 and 7500R3/7800R3/R4 for uSID with IS-IS, Flex-Algo and TI-LFA.
+- **DC/WAN edge and spine** — Jericho-based 7280R3/R4 and 7500R3/7800R3/R4 for uSID forwarding; IS-IS SRv6 and Flex-Algo are documented for the 7280R4 and 7800R4 series only.
+- **L3VPN and EVPN RT5 PE** — not in Arista's public documentation, but 7280R3 (2025) and 7280R4 (2026) acted as SRv6 L3VPN and EVPN RT5 PEs in the [EANTC interoperability tests](https://wiki.eantc.de/wiki/publicreports/view/Main/EANTC%20Transport%20%26%20Cloud%20Networks%20Interop%20Test%20Report%202026/SRv6/L3VPN%20%20over%20SRv6). Ask Arista which EOS release supports it before planning a design around it.
 
 ## Further Reading
 
 - :material-arrow-right: [Implementations Overview](index.md)
+- :material-arrow-right: [SRv6 Support Matrix](support-matrix.md) - EOS feature by feature next to IOS-XR, Junos, SR OS and open-source platforms
 - :material-arrow-right: [MRC and SRv6](../ai/mrc.md) - EOS on Tomahawk 5 in OpenAI's and Microsoft's SRv6 AI fabrics
 - :material-arrow-right: [uSID Compression](../topics/usid-compression.md) - F3216 format and shift-and-forward
 - :material-arrow-right: [AI/ML Networks](../use-cases/ai-networking.md) - MRC: OpenAI's SRv6 static source routing in production
@@ -90,3 +93,6 @@ See the user manual for complete configuration examples; exact syntax varies bet
 4. [Arista TOI: SSU support for SRv6](https://www.arista.com/en/support/toi/eos-4-36-1f/24348-ssu-support-for-srv6) - EOS 4.36.1F Smart System Upgrade with SRv6 uN (login required)
 5. [Arista TOI: Support for SRv6 Counters](https://www.arista.com/en/support/toi/eos-4-36-2f/24770-support-for-srv6-counters) - EOS 4.36.2F per-endpoint packet/byte counters (login required)
 6. [Resilient AI Supercomputer Networking using MRC and SRv6](https://cdn.openai.com/pdf/resilient-ai-supercomputer-networking-using-mrc-and-srv6.pdf) - OpenAI et al. paper; states SRv6 was implemented with Arista in EOS on Broadcom Tomahawk 5 switches for MRC
+7. [Arista TOI: SRv6 uN Support](https://www.arista.com/en/support/toi/eos-4-34-2f/22062-srv6-un-support) - EOS 4.34.2F uN support (login required)
+8. [Arista EOS User Manual: IS-IS (Configuring SRv6 for IS-IS)](https://www.arista.com/en/um-eos/eos-is-is) - IS-IS SRv6, Flex-Algo and static uA configuration; 7280R4/7800R4 platforms
+9. [EANTC 2026 Interop Test Report: L3VPN over SRv6](https://wiki.eantc.de/wiki/publicreports/view/Main/EANTC%20Transport%20%26%20Cloud%20Networks%20Interop%20Test%20Report%202026/SRv6/L3VPN%20%20over%20SRv6) - Independent multi-vendor test with an Arista 7280R4 as SRv6 L3VPN PE

@@ -15,7 +15,7 @@ tags:
 Mission-critical WANs — defense, public safety, critical infrastructure — have historically run on layered patchworks of MPLS/RSVP-TE overlays and controller-driven SD-WAN. In 2026 Cisco published a Validated Design (CVD) that replaces this stack with a **quantum-safe SRv6 uSID fabric**, targeting exactly these environments. This page summarizes the architecture and its design rules.
 
 !!! info "Primary source"
-    This page is based on the Cisco CVD [*Quantum-Safe SRv6 Fabric for Mission-Critical Networks*](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) (August 2026), validated on Cisco 8000 Series Secure Routers running **IOS-XE 26.1** — notable in itself, since Cisco SRv6 support had previously been an [IOS-XR](../implementations/cisco-ios-xr.md) story. See [Cisco IOS-XE](../implementations/cisco-ios-xe.md) for the platform details.
+    This page is based on the Cisco CVD [*Quantum-Safe SRv6 Fabric for Mission-Critical Networks*](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/SRv6_Fabric-Mission-Critical_Networks.html) (August 2026), validated on Cisco 8000 Series Secure Routers running **IOS-XE 26.1** — a reminder that Cisco SRv6 is not only an [IOS-XR](../implementations/cisco-ios-xr.md) story: IOS-XE has supported SRv6 uSID since 17.12.1a on the ASR 1000 and Catalyst 8000 edge routers. See [Cisco IOS-XE](../implementations/cisco-ios-xe.md) for the platform details.
 
 ## Why SRv6 for Mission-Critical?
 
@@ -30,7 +30,7 @@ Tactical edges operate under **DDIL** conditions — *Disconnected, Disrupted, I
 | **No controller dependency** | Path computation (CSPF) runs locally on the ingress head-end against the IGP link-state database — a cut-off site keeps steering traffic autonomously |
 | **Narrow links can't afford signaling** | Source routing eliminates RSVP-TE refresh storms; the path travels in the packet header, so low-bandwidth SATCOM links carry payload, not protocol chatter |
 | **Any available transport** | SRv6 runs over MACsec-secured private lines, GRE/IPsec over commercial internet, LTE/5G, or LEO satellite — the fabric is transport-agnostic |
-| **Sub-50 ms failover without convergence** | [TI-LFA](../topics/ti-lfa.md) pre-computes repair paths at each Point of Local Repair; failover happens locally, in hardware |
+| **Sub-50 ms failover without convergence** | [TI-LFA](../topics/ti-lfa.md) pre-computes repair paths at each Point of Local Repair; failover happens locally, in hardware. The CVD reports sub-50 ms, but the IOS-XE configuration guide notes that IGP TI-LFA "cannot guarantee 50ms FRR failover" on these platforms, so measure it in your own design |
 | **Detect degraded (not just dead) links** | Active performance measurement probes track per-link delay and steer around congestion or satellite fade before sessions drop |
 
 ### 2. The quantum threat: Harvest Now, Decrypt Later

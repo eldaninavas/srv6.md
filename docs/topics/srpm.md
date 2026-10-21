@@ -184,14 +184,16 @@ Key YANG paths for PM data:
 
 ## Vendor Support
 
-| Capability | Cisco IOS-XR | Juniper | Huawei |
-|-----------|:------------:|:-------:|:------:|
-| STAMP (RFC 8762) | 7.5.1+ | 22.2+ | V800R021+ |
-| Alternate-Marking | 7.7.1+ | -- | V800R022+ |
-| Per-SR Policy PM | 7.3.1+ | 22.4+ | V800R021+ |
-| Color-Aware PM | 7.5.1+ | 23.1+ | V800R022+ |
-| Liveness Detection | 7.0.1+ | 21.4+ | V800R019+ |
-| gRPC Telemetry Export | 7.0.1+ | 21.1+ | V800R019+ |
+| Capability | Cisco IOS-XR | Juniper |
+|-----------|:------------:|:-------:|
+| STAMP (RFC 8762) | 7.5.1+ | 22.2+ |
+| Alternate-Marking | 7.7.1+ | -- |
+| Per-SR Policy PM | 7.3.1+ | 22.4+ |
+| Color-Aware PM | 7.5.1+ | 23.1+ |
+| Liveness Detection | 7.0.1+ | 21.4+ |
+| gRPC Telemetry Export | 7.0.1+ | 21.1+ |
+
+Huawei is not in this table because we could not verify release numbers for it: the NetEngine 8000 V800R025 STAMP and TWAMP Light chapters do not cover SRv6, and Huawei documents SRv6 path measurement as IFIT (alternate marking). For SRv6-specific performance measurement on each platform, see the [SRv6 Support Matrix](../implementations/support-matrix.md#pm).
 
 ## Benefits
 
