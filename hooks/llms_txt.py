@@ -19,6 +19,7 @@ SECTIONS = [
     ("implementations", "Implementations"),
     ("labs", "Labs"),
     ("rfcs", "RFCs & Standards"),
+    ("reports", "Reports"),
     ("es", "En español (Spanish)"),
     ("ja", "日本語 (Japanese)"),
 ]
@@ -52,11 +53,20 @@ def _front_matter(path):
     return field("seo_title") or field("title"), field("description")
 
 
+def _svg_text(m):
+    found = re.search(r"<desc[^>]*>(.*?)</desc>", m.group(0), re.S) or \
+        re.search(r"<title[^>]*>(.*?)</title>", m.group(0), re.S)
+    return f"[Figure: {found.group(1).strip()}]" if found else ""
+
+
 def _clean_prose(text):
     # Drop theme-only syntax and raw HTML that mean nothing outside the site
     text = re.sub(r"\{[ .#][^}\n]*\}", "", text)
     text = re.sub(r":(material|fontawesome|octicons|simple)-[a-z0-9-]+:\s?", "", text)
     text = re.sub(r"<(ul|ol)[^>]*>.*?</\1>", "", text, flags=re.S)
+    # Inline SVG figures become their <desc> (or <title>); their CSS and
+    # labels mean nothing as text
+    text = re.sub(r"<svg\b[^>]*>.*?</svg>", _svg_text, text, flags=re.S)
     text = re.sub(r"<[^>]+>", "", text)
     text = text.replace("&nbsp;", " ")
     # "---" on its own line separates pages for llms-full.txt readers such as

@@ -67,6 +67,12 @@ Paste any SRv6 SID or uSID container and see what every bit means: Locator-Block
 
 [:material-arrow-right: Open the SID decoder](tools/sid-decoder.md){ .md-button .md-button--primary }
 
+## :material-chart-bar: State of SRv6 2026
+
+How far has SRv6 come? Our data report counts 23 SRv6 RFCs, 65 active IETF drafts, 18 organizations with public deployments and uSID support across 11 implementations, with a source for every number and charts you can reuse.
+
+[:material-arrow-right: Read the State of SRv6 2026 report](reports/state-of-srv6-2026.md){ .md-button .md-button--primary }
+
 ## :material-compass: Explore
 
 <div class="srv6-grid" markdown>

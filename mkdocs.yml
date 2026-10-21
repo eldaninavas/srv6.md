@@ -168,6 +168,7 @@ nav:
   - Home:
     - index.md
     - Knowledge Graph: knowledge-graph.md
+    - State of SRv6 2026: reports/state-of-srv6-2026.md
   - SRv6 for AI:
     - ai/index.md
     - MRC and SRv6: ai/mrc.md

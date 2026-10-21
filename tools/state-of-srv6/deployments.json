@@ -1,0 +1,24 @@
+{
+ "verified": "2026-10-20",
+ "note": "Organizations (not announcements) with a public, primary-source account of SRv6 in their own network, taken from docs/use-cases/deployments.md and the 'Who uses SRv6 for AI' table in docs/ai/index.md. Region = where the organization is headquartered. Trials and vendor product listings are left out.",
+ "organizations": [
+  {"org": "China Mobile", "region": "Asia-Pacific", "sector": "Telecom operator", "source": "https://regional.chinadaily.com.cn/wic/2024-12/04/c_1050626.htm"},
+  {"org": "Rakuten Mobile", "region": "Asia-Pacific", "sector": "Telecom operator", "source": "https://corp.mobile.rakuten.co.jp/english/news/press/2024/0729_01/"},
+  {"org": "Reliance Jio", "region": "Asia-Pacific", "sector": "Telecom operator", "source": "https://www.cisco.com/site/us/en/about/case-studies-customer-stories/reliance-jio.html"},
+  {"org": "SoftBank", "region": "Asia-Pacific", "sector": "Telecom operator", "source": "https://www.softbank.jp/en/corp/news/press/sbkk/2022/20220426_01/"},
+  {"org": "Iliad", "region": "Europe", "sector": "Telecom operator", "source": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2019/m04/iliad-launches-5g-ready-ip-network-architecture-with-segment-routing-ipv6-in-italy.html"},
+  {"org": "Swisscom", "region": "Europe", "sector": "Telecom operator", "source": "https://www.segment-routing.net/news/2024-10-09-swisscom-srv6-usid-ipm/"},
+  {"org": "Bell Canada", "region": "North America", "sector": "Telecom operator", "source": "https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf"},
+  {"org": "Verizon", "region": "North America", "sector": "Telecom operator", "source": "https://www.segment-routing.net/conferences/Paris26-Verizon-Luay-Jalil/"},
+  {"org": "Telefonica VIVO", "region": "Latin America", "sector": "Telecom operator", "source": "https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/"},
+  {"org": "Rijkswaterstaat", "region": "Europe", "sector": "Public sector", "source": "https://www.segment-routing.net/conferences/20250213-cleur-rws-srv6-deployment/"},
+  {"org": "Meta", "region": "North America", "sector": "Cloud and AI", "source": "https://engineering.fb.com/2026/10/12/open-source/ocp-summit-2026-powering-ai-with-open-innovations-in-scale-up-scale-out-and-scale-across-networks/"},
+  {"org": "Google", "region": "North America", "sector": "Cloud and AI", "source": "https://www.segment-routing.net/conferences/2026-10-15-ocp-summit26-google-virgo/"},
+  {"org": "Microsoft", "region": "North America", "sector": "Cloud and AI", "source": "https://techcommunity.microsoft.com/blog/azurehighperformancecomputingblog/building-resilient-networks-for-ai-supercomputers/4516919"},
+  {"org": "OpenAI", "region": "North America", "sector": "Cloud and AI", "source": "https://openai.com/index/mrc-supercomputer-networking/"},
+  {"org": "Oracle (OCI)", "region": "North America", "sector": "Cloud and AI", "source": "https://www.ietf.org/archive/id/draft-filsfils-srv6ops-srv6-ai-backend-05.txt"},
+  {"org": "Nebius", "region": "Europe", "sector": "Cloud and AI", "source": "https://www.segment-routing.net/conferences/2026-08-25-atscale-nebius-srv6-interconnects/"},
+  {"org": "Alibaba Cloud", "region": "Asia-Pacific", "sector": "Cloud and AI", "source": "https://datatracker.ietf.org/meeting/125/materials/slides-125-srv6ops-21-ipv6srv6-powering-alibaba-cloud-ai-computing-alibaba-02"},
+  {"org": "LINE", "region": "Asia-Pacific", "sector": "Cloud and AI", "source": "https://www.segment-routing.net/conferences/2019-09-20-SRv6-LINE-DC/"}
+ ]
+}

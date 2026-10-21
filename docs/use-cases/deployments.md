@@ -15,6 +15,9 @@ SRv6 is in production at some of the world's largest networks. The following is 
 !!! info "Sources policy"
     Every entry links to the original public announcement (press release, blog post, or conference talk) by the operator or vendor. We do not reproduce proprietary details — click through to the source for full information.
 
+!!! tip "By the numbers"
+    How many organizations run SRv6, by region and sector, and how that compares with standards and vendor support: see the [State of SRv6 2026](../reports/state-of-srv6-2026.md#deployments-18-organizations) data report.
+
 ## Telecom Operators
 
 ### Asia Pacific

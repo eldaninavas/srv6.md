@@ -1,0 +1,680 @@
+{
+ "retrieved": "2026-10-20",
+ "rule": "title or abstract contains: srv6, segment routing over ipv6, segment routing over the ipv6, ipv6 segment routing, segment routing header",
+ "rfcs": [
+  {
+   "rfc": 8754,
+   "title": "IPv6 Segment Routing Header (SRH)",
+   "published": "March 2020",
+   "year": 2020,
+   "status": "PROPOSED STANDARD",
+   "group": "6man"
+  },
+  {
+   "rfc": 8986,
+   "title": "Segment Routing over IPv6 (SRv6) Network Programming",
+   "published": "February 2021",
+   "year": 2021,
+   "status": "PROPOSED STANDARD",
+   "group": "spring"
+  },
+  {
+   "rfc": 9252,
+   "title": "BGP Overlay Services Based on Segment Routing over IPv6 (SRv6)",
+   "published": "July 2022",
+   "year": 2022,
+   "status": "PROPOSED STANDARD",
+   "group": "bess"
+  },
+  {
+   "rfc": 9259,
+   "title": "Operations, Administration, and Maintenance (OAM) in Segment Routing over IPv6 (SRv6)",
+   "published": "June 2022",
+   "year": 2022,
+   "status": "PROPOSED STANDARD",
+   "group": "6man"
+  },
+  {
+   "rfc": 9350,
+   "title": "IGP Flexible Algorithm",
+   "published": "February 2023",
+   "year": 2023,
+   "status": "PROPOSED STANDARD",
+   "group": "lsr"
+  },
+  {
+   "rfc": 9352,
+   "title": "IS-IS Extensions to Support Segment Routing over the IPv6 Data Plane",
+   "published": "February 2023",
+   "year": 2023,
+   "status": "PROPOSED STANDARD",
+   "group": "lsr"
+  },
+  {
+   "rfc": 9433,
+   "title": "Segment Routing over IPv6 for the Mobile User Plane",
+   "published": "July 2023",
+   "year": 2023,
+   "status": "INFORMATIONAL",
+   "group": "dmm"
+  },
+  {
+   "rfc": 9487,
+   "title": "Export of Segment Routing over IPv6 Information in IP Flow Information Export (IPFIX)",
+   "published": "November 2023",
+   "year": 2023,
+   "status": "PROPOSED STANDARD",
+   "group": "opsawg"
+  },
+  {
+   "rfc": 9503,
+   "title": "Simple Two-Way Active Measurement Protocol (STAMP) Extensions for Segment Routing Networks",
+   "published": "November 2023",
+   "year": 2023,
+   "status": "PROPOSED STANDARD",
+   "group": "ippm"
+  },
+  {
+   "rfc": 9513,
+   "title": "OSPFv3 Extensions for Segment Routing over IPv6 (SRv6)",
+   "published": "December 2023",
+   "year": 2023,
+   "status": "PROPOSED STANDARD",
+   "group": "lsr"
+  },
+  {
+   "rfc": 9514,
+   "title": "Border Gateway Protocol - Link State (BGP-LS) Extensions for Segment Routing over IPv6 (SRv6)",
+   "published": "December 2023",
+   "year": 2023,
+   "status": "PROPOSED STANDARD",
+   "group": "idr"
+  },
+  {
+   "rfc": 9602,
+   "title": "Segment Routing over IPv6 (SRv6) Segment Identifiers in the IPv6 Addressing Architecture",
+   "published": "October 2024",
+   "year": 2024,
+   "status": "INFORMATIONAL",
+   "group": "6man"
+  },
+  {
+   "rfc": 9603,
+   "title": "Path Computation Element Communication Protocol (PCEP) Extensions for IPv6 Segment Routing",
+   "published": "July 2024",
+   "year": 2024,
+   "status": "PROPOSED STANDARD",
+   "group": "pce"
+  },
+  {
+   "rfc": 9702,
+   "title": "YANG Data Model for Maximum Segment Identifier (SID) Depth (MSD) Types and MPLS MSD",
+   "published": "January 2025",
+   "year": 2025,
+   "status": "PROPOSED STANDARD",
+   "group": "mpls"
+  },
+  {
+   "rfc": 9723,
+   "title": "BGP Colored Prefix Routing (CPR) for Services Based on Segment Routing over IPv6 (SRv6)",
+   "published": "May 2025",
+   "year": 2025,
+   "status": "INFORMATIONAL",
+   "group": "idr"
+  },
+  {
+   "rfc": 9746,
+   "title": "BGP EVPN Multihoming Extensions for Split-Horizon Filtering",
+   "published": "March 2025",
+   "year": 2025,
+   "status": "PROPOSED STANDARD",
+   "group": "bess"
+  },
+  {
+   "rfc": 9800,
+   "title": "Compressed SRv6 Segment List Encoding",
+   "published": "June 2025",
+   "year": 2025,
+   "status": "PROPOSED STANDARD",
+   "group": "spring"
+  },
+  {
+   "rfc": 9819,
+   "title": "Argument Signaling for BGP Services in Segment Routing over IPv6 (SRv6)",
+   "published": "July 2025",
+   "year": 2025,
+   "status": "PROPOSED STANDARD",
+   "group": "bess"
+  },
+  {
+   "rfc": 9862,
+   "title": "Path Computation Element Communication Protocol (PCEP) Extensions for Segment Routing (SR) Policy Candidate Paths",
+   "published": "October 2025",
+   "year": 2025,
+   "status": "PROPOSED STANDARD",
+   "group": "pce"
+  },
+  {
+   "rfc": 9871,
+   "title": "BGP Color-Aware Routing (CAR)",
+   "published": "November 2025",
+   "year": 2025,
+   "status": "EXPERIMENTAL",
+   "group": "idr"
+  },
+  {
+   "rfc": 9947,
+   "title": "Application of the Alternate-Marking Method to the Segment Routing Header",
+   "published": "March 2026",
+   "year": 2026,
+   "status": "EXPERIMENTAL",
+   "group": "none"
+  },
+  {
+   "rfc": 9960,
+   "title": "Segment Routing Point-to-Multipoint Policy",
+   "published": "April 2026",
+   "year": 2026,
+   "status": "PROPOSED STANDARD",
+   "group": "pim"
+  },
+  {
+   "rfc": 10038,
+   "title": "Distributing the Segment Routing over IPv6 (SRv6) Locator Using DHCPv6",
+   "published": "August 2026",
+   "year": 2026,
+   "status": "PROPOSED STANDARD",
+   "group": "spring"
+  }
+ ],
+ "drafts": {
+  "spring": {
+   "adopted_total": 19,
+   "individual_total": 21,
+   "adopted": [
+    {
+     "name": "draft-ietf-spring-resource-aware-segments",
+     "title": "Introducing Resource Awareness to SR Segments",
+     "rev": "21",
+     "states": [
+      "No IANA Actions",
+      "Version Changed - Review Needed",
+      "RFC Ed Queue",
+      "In Progress",
+      "Submitted to IESG for Publication"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-sid-as-source-address",
+     "title": "SID as source address in SRv6",
+     "rev": "01",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-sr-policy-yang",
+     "title": "YANG Data Model for Segment Routing Policy",
+     "rev": "08",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-sr-redundancy-protection",
+     "title": "SRv6 for Redundancy Protection",
+     "rev": "09",
+     "states": [
+      "I-D Exists",
+      "In WG Last Call"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-srv6-inter-layer-programming",
+     "title": "SRv6 for Inter-Layer Network Programming",
+     "rev": "03",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-srv6-mpls-interworking",
+     "title": "SRv6 and MPLS interworking",
+     "rev": "03",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-srv6-path-segment",
+     "title": "Path Segment Identifier (PSID) in SRv6 (Segment Routing in IPv6)",
+     "rev": "16",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-srv6-security",
+     "title": "Segment Routing over IPv6 (SRv6) Security Considerations",
+     "rev": "19",
+     "states": [
+      "Version Changed - Review Needed",
+      "IESG Evaluation - Defer",
+      "Submitted to IESG for Publication"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-srv6-service-programming",
+     "title": "SRv6 Service Programming",
+     "rev": "00",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-srv6-yang-base",
+     "title": "YANG Data Model for SRv6 Base",
+     "rev": "02",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-stamp-srpm-mpls",
+     "title": "Performance Measurement Using Simple Two-Way Active Measurement Protocol (STAMP) for Segment Routing over the MPLS Data Plane",
+     "rev": "12",
+     "states": [
+      "I-D Exists",
+      "In WG Last Call"
+     ]
+    },
+    {
+     "name": "draft-ietf-spring-stamp-srpm-srv6",
+     "title": "Performance Measurement Using Simple Two-Way Active Measurement Protocol (STAMP) for Segment Routing over the IPv6 (SRv6) Data Plane",
+     "rev": "09",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    }
+   ],
+   "individual": [
+    {
+     "name": "draft-ajp-spring-srv6-mpte",
+     "title": "SRv6 for Multipath Traffic Engineering",
+     "rev": "01"
+    },
+    {
+     "name": "draft-chen-spring-srv6-compressed-bsid-insertion",
+     "title": "SRv6 NET-PGM extension: Compressed BSID Insertion",
+     "rev": "03"
+    },
+    {
+     "name": "draft-cheng-spring-srv6-encoding-network-sliceid",
+     "title": "Encoding Network Slice Identification for SRv6",
+     "rev": "13"
+    },
+    {
+     "name": "draft-cheng-spring-srv6-for-ai-network",
+     "title": "A SRv6 Traffic Engineering Application for AI Network",
+     "rev": "01"
+    },
+    {
+     "name": "draft-cheng-spring-stateless-nd-srv6-locator",
+     "title": "Distribute SRv6 Locator by IPv6 Stateless Address Autoconfiguration",
+     "rev": "03"
+    },
+    {
+     "name": "draft-filsfils-spring-path-tracing-srmpls",
+     "title": "Path Tracing in SR-MPLS networks",
+     "rev": "08"
+    },
+    {
+     "name": "draft-gong-spring-nd-advertise-srv6-locator",
+     "title": "Advertise SRv6 Locator Information by IPv6 Neighbor Discovery",
+     "rev": "05"
+    },
+    {
+     "name": "draft-gong-spring-sr-policy-group-yang",
+     "title": "YANG Data Model for SR Policy Group",
+     "rev": "04"
+    },
+    {
+     "name": "draft-huang-spring-pppoe-srv6",
+     "title": "SRv6 for PPPoE Transport",
+     "rev": "01"
+    },
+    {
+     "name": "draft-lh-spring-srv6-sfc-csid",
+     "title": "Compressed SID (CSID) for SRv6 SFC",
+     "rev": "07"
+    },
+    {
+     "name": "draft-lin-spring-srv6-aware-context-indicator",
+     "title": "SRv6 Context Indicator SIDs for SR-Aware Services",
+     "rev": "08"
+    },
+    {
+     "name": "draft-liu-spring-srv6-bsid-relay",
+     "title": "SRv6 BSID with Notification Message Relay",
+     "rev": "00"
+    },
+    {
+     "name": "draft-lx-spring-srv6-rate-control",
+     "title": "SRv6-based Rate Control",
+     "rev": "00"
+    },
+    {
+     "name": "draft-watal-spring-srv6-sfc-sr-aware-functions",
+     "title": "SRv6 SFC Architecture with SR-aware Functions",
+     "rev": "05"
+    },
+    {
+     "name": "draft-yan-spring-srv6-int-resource-control",
+     "title": "SRv6-INT: Protocol Extensions to Segment Routing over IPv6 for In-Band Network Telemetry in Support of Closed-Loop Resource Control",
+     "rev": "00"
+    },
+    {
+     "name": "draft-yang-spring-srv6-verification",
+     "title": "SRv6 Path Verification",
+     "rev": "05"
+    }
+   ]
+  },
+  "srv6ops": {
+   "adopted_total": 3,
+   "individual_total": 10,
+   "adopted": [
+    {
+     "name": "draft-ietf-srv6ops-problem-summary",
+     "title": "SRv6 Deployment and Operation Problem Summary",
+     "rev": "02",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-srv6ops-srv6-deployment",
+     "title": "SRv6 Deployment Options",
+     "rev": "03",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-srv6ops-srv6addressing",
+     "title": "Addressing Recommendations for SRv6",
+     "rev": "00",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    }
+   ],
+   "individual": [
+    {
+     "name": "draft-filsfils-srv6ops-srv6-ai-backend",
+     "title": "SRv6 for Deterministic Path Placement in AI Backends",
+     "rev": "05"
+    },
+    {
+     "name": "draft-filsfils-srv6ops-srv6-e2e-dc-frontend-wan",
+     "title": "SRv6 End-to-End DC Frontend and WAN",
+     "rev": "02"
+    },
+    {
+     "name": "draft-hss-srv6ops-srv6-routing-planes",
+     "title": "BGP based SRv6 Routing Planes for DC network",
+     "rev": "02"
+    },
+    {
+     "name": "draft-liu-srv6ops-bfd-srv6-policy-encap",
+     "title": "Operational Considerations for BFD Encapsulation in SRv6 Policy",
+     "rev": "00"
+    },
+    {
+     "name": "draft-liu-srv6ops-sr-protection",
+     "title": "Operational Guidance for Protection Mechanisms in SRv6 Networks",
+     "rev": "06"
+    },
+    {
+     "name": "draft-lll-srv6ops-dci-srv6-lb",
+     "title": "SRv6-based Adaptive Load Balancing for AI DCI",
+     "rev": "00"
+    },
+    {
+     "name": "draft-pang-srv6ops-qkd-srv6-private-line",
+     "title": "Problem Statement and Operational Considerations for QKD-Assisted SRv6 Private Line Services",
+     "rev": "00"
+    },
+    {
+     "name": "draft-watal-srv6ops-srv6-sfc-deployment",
+     "title": "SRv6 Service Function Chaining Deployment",
+     "rev": "00"
+    },
+    {
+     "name": "draft-wdh-srv6ops-secservice",
+     "title": "ESP Protection for Services over SRv6",
+     "rev": "03"
+    },
+    {
+     "name": "draft-ye-srv6ops-sfc-deployment",
+     "title": "SRv6 SFC Deployment Options",
+     "rev": "01"
+    }
+   ]
+  },
+  "idr": {
+   "adopted_total": 50,
+   "individual_total": 84,
+   "adopted": [
+    {
+     "name": "draft-ietf-idr-bgp-bestpath-nh-selection",
+     "title": "BGP best path next-hop selection enhancements",
+     "rev": "00",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-idr-bgp-ls-link-mtu",
+     "title": "Signaling Maximum Transmission Unit (MTU) using BGP-LS",
+     "rev": "12",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-idr-flowspec-srv6",
+     "title": "BGP Flow Specification for SRv6",
+     "rev": "10",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-idr-ts-flowspec-srv6-policy",
+     "title": "Traffic Steering using BGP FlowSpec with SR Policy",
+     "rev": "19",
+     "states": [
+      "IANA - Review Needed",
+      "In Last Call",
+      "Submitted to IESG for Publication"
+     ]
+    }
+   ],
+   "individual": [
+    {
+     "name": "draft-chen-idr-srv6-flowspec-path-redirect",
+     "title": "Flowspec Indirection-id Redirect for SRv6",
+     "rev": "03"
+    },
+    {
+     "name": "draft-gong-idr-inter-domain-srv6-flex-algo",
+     "title": "BGP Extensions for Inter-Domain Flexible Algorithm with Segment Routing over IPv6 (SRv6)",
+     "rev": "01"
+    },
+    {
+     "name": "draft-li-idr-flowspec-sr-policy",
+     "title": "BGP Flowspec Redirects to SR Policy",
+     "rev": "04"
+    },
+    {
+     "name": "draft-ramasamy-idr-sr-policy-composite-perflow",
+     "title": "BGP Extensions for SRv6 Per-Flow Traffic Engineering: Composite Candidate Path and Forwarding-Class Signaling",
+     "rev": "00"
+    },
+    {
+     "name": "draft-sa-idr-bgp-srv6-mpls-transport-iw",
+     "title": "BGP extensions for SRv6/MPLS Transport Interworking",
+     "rev": "03"
+    }
+   ]
+  },
+  "lsr": {
+   "adopted_total": 20,
+   "individual_total": 24,
+   "adopted": [
+    {
+     "name": "draft-ietf-lsr-isis-srv6-yang",
+     "title": "YANG Data Model for IS-IS SRv6",
+     "rev": "10",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-lsr-ospf-srv6-yang",
+     "title": "YANG Data Model for OSPF SRv6",
+     "rev": "10",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-lsr-srv6-mirror-sid-igp-encoding",
+     "title": "IGP Encoding for SRv6 Mirror SID in Egress Protection",
+     "rev": "00",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    }
+   ],
+   "individual": [
+    {
+     "name": "draft-cheng-lsr-extension-opt-srv6-sid-adv",
+     "title": "IGP Extensions for Optimized SRv6 SID Advertisement",
+     "rev": "03"
+    }
+   ]
+  },
+  "6man": {
+   "adopted_total": 13,
+   "individual_total": 17,
+   "adopted": [
+    {
+     "name": "draft-ietf-6man-sidlist-clarification",
+     "title": "Clarifying SRv6 SID List Processing",
+     "rev": "03",
+     "states": [
+      "No IANA Actions",
+      "IANA OK - No Actions Needed",
+      "RFC Ed Queue",
+      "In Progress",
+      "Submitted to IESG for Publication"
+     ]
+    }
+   ],
+   "individual": [
+    {
+     "name": "draft-alivar-6man-icmp-error-srv6-vpn",
+     "title": "ICMP Error Handling for VPNs in SRv6 Networks",
+     "rev": "00"
+    },
+    {
+     "name": "draft-cheng-6man-source-address-programmability",
+     "title": "Source IPv6 Address Programmability",
+     "rev": "06"
+    },
+    {
+     "name": "draft-liu-6man-icmp-verification",
+     "title": "Extending ICMPv6 for SRv6-related Information Validation",
+     "rev": "10"
+    }
+   ]
+  },
+  "bess": {
+   "adopted_total": 15,
+   "individual_total": 20,
+   "adopted": [],
+   "individual": [
+    {
+     "name": "draft-liu-bess-srv6-anycast-vpn-service",
+     "title": "SRv6 Anycast VPN Service",
+     "rev": "02"
+    },
+    {
+     "name": "draft-liu-bess-srv6-evpn-validation",
+     "title": "Data Plane Failure Detection Mechanisms for EVPN over SRv6",
+     "rev": "05"
+    },
+    {
+     "name": "draft-many-bess-rfc9252-dual-sid",
+     "title": "Dual MPLS and SRv6 Service Advertisement in the Absence of Transposition",
+     "rev": "00"
+    },
+    {
+     "name": "draft-rabadan-bess-evpn-srv6-ar",
+     "title": "Applicability of EVPN Assisted Replication to SRv6 Tunnels",
+     "rev": "00"
+    }
+   ]
+  },
+  "pce": {
+   "adopted_total": 20,
+   "individual_total": 14,
+   "adopted": [
+    {
+     "name": "draft-ietf-pce-pcep-srv6-yang",
+     "title": "A YANG Data Model for Segment Routing (SR) Policy and SR in IPv6 (SRv6) support in Path Computation Element Communications Protocol (PCEP)",
+     "rev": "09",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    },
+    {
+     "name": "draft-ietf-pce-stateful-pce-autobw-update",
+     "title": "Update to the Automatic Bandwidth Adjustment Procedure for MPLS-TE and SR-TE LSPs with a Stateful PCE",
+     "rev": "05",
+     "states": [
+      "I-D Exists",
+      "WG Document"
+     ]
+    }
+   ],
+   "individual": [
+    {
+     "name": "draft-ali-pce-sr-policy-msd-consideration",
+     "title": "MSD Consideration in Path Computation Element Communication Protocol (PCEP)",
+     "rev": "02"
+    }
+   ]
+  }
+ }
+}
