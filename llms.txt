@@ -109,6 +109,10 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 - [RFC 9860 Explained: MoFRR Based on TI-LFA](https://srv6.md/rfcs/rfc9860/): RFC 9860 explained in plain language: Multicast-only Fast Reroute (MoFRR) based on TI-LFA — PIM secondary joins along TI-LFA repair paths. What it defines, how it works and how it fits into SRv6 networks.
 - [RFC 9960 Explained: Segment Routing P2MP Policy (Tree-SID)](https://srv6.md/rfcs/rfc9960/): RFC 9960 explained in plain language: Segment Routing Point-to-Multipoint (P2MP) Policy — Tree-SID architecture built from Replication segments. What it defines, how it works and how it fits into SRv6 networks.
 
+## Reports
+
+- [State of SRv6 2026: RFCs, Drafts, Deployments, Vendors](https://srv6.md/reports/state-of-srv6-2026/): Data report on SRv6 in 2026: 23 RFCs, 65 active IETF drafts, 18 public deployments and uSID support across 11 implementations. Every figure sourced.
+
 ## En español (Spanish)
 
 - [SRv6 en español: guía de Segment Routing sobre IPv6](https://srv6.md/es/): Guía abierta de SRv6 en español: qué es Segment Routing sobre IPv6, cómo funcionan los SID, la cabecera SRH y uSID, y en qué se diferencia de MPLS. Gratis y open source.
