@@ -41,7 +41,7 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 - [SRv6 Telemetry and Monitoring: IPFIX, YANG, gNMI](https://srv6.md/topics/telemetry/): Monitor SRv6 networks: what to measure, streaming telemetry, SRv6 YANG models, IPFIX export (RFC 9487), an open-source monitoring stack and what to alert on.
 - [TI-LFA (RFC 9855): Segment Routing Fast Reroute Explained](https://srv6.md/topics/ti-lfa/): TI-LFA explained: P-space, Q-space and PQ nodes with a worked example, link vs node vs SRLG protection, RFC 9855, SRv6 repair, and Cisco IOS-XR, IOS-XE and Junos configs.
 - [SRv6 uSID (Micro-SID) Compression Explained](https://srv6.md/topics/usid-compression/): How SRv6 micro-SIDs (uSID, RFC 9800) shrink header overhead: packing, overhead comparison with classic SRv6, uSID vs G-SRv6, configuration and adoption.
-- [What is SRv6? Segment Routing over IPv6 Explained](https://srv6.md/topics/what-is-srv6/): Learn what SRv6 is, how Segment Routing over IPv6 works, its key concepts (SID, SRH, network programming), benefits over MPLS, and real-world use cases.
+- [What is SRv6? IPv6 Segment Routing Explained (Guide)](https://srv6.md/topics/what-is-srv6/): SRv6 explained: what Segment Routing over IPv6 is, how SIDs and the SRH work, a hop-by-hop packet walk, uSID, SRv6 vs IPv6 and MPLS, use cases and FAQ.
 
 ## Use Cases
 
@@ -114,7 +114,7 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 - [Cabecera SRH de SRv6: recorrido del paquete paso a paso](https://srv6.md/es/cabecera-srh/): Cómo funciona la Segment Routing Header (SRH) de SRv6 (RFC 8754): formato, Segments Left, recorrido de un paquete nodo por nodo, sabores PSP/USP/USD, TLVs y H.Encaps.Red.
 - [Estructura del SID en SRv6: Locator, función y argumentos](https://srv6.md/es/estructura-del-sid/): Cómo se compone un SID de SRv6 de 128 bits: Locator, función y argumentos, el bloque 5f00::/16 asignado por IANA (RFC 9602) y cómo filtrarlo en los bordes del dominio.
 - [SRv6 para IA: guía completa de SRv6 en redes de IA](https://srv6.md/es/ia/): SRv6 para IA en español: quién lo usa (OpenAI, Microsoft, Oracle, Meta, Alibaba, Google), cómo funcionan MRC y el enrutamiento de origen con uSID en fabrics de GPU, scale-across, estándares y preguntas frecuentes.
-- [¿Qué es SRv6? Segment Routing sobre IPv6 explicado](https://srv6.md/es/que-es-srv6/): Qué es SRv6 y cómo funciona Segment Routing sobre IPv6: SID, cabecera SRH, enrutamiento de origen, programación de red y ventajas frente a MPLS, explicado paso a paso.
+- [¿Qué es SRv6? Segment Routing sobre IPv6 explicado](https://srv6.md/es/que-es-srv6/): Qué es SRv6 y cómo funciona: SID, cabecera SRH, recorrido de un paquete salto a salto, uSID, diferencias con IPv6 y MPLS, casos de uso y preguntas frecuentes.
 - [SRv6 vs SR-MPLS: diferencias y cuándo usar cada uno](https://srv6.md/es/srv6-vs-sr-mpls/): SRv6 vs SR-MPLS comparados lado a lado: plano de datos, tamaño y espacio de SID, sobrecarga y MTU, programación de red y madurez, y cuándo conviene elegir cada uno.
 - [uSID en SRv6: compresión de micro-SID explicada](https://srv6.md/es/usid/): Qué es uSID (micro-SID) en SRv6 y cómo reduce la sobrecarga del encabezado: estructura, operación shift-and-lookup, comparación con SRv6 clásico, uSID vs G-SRv6 y RFC 9800.
 
@@ -126,4 +126,4 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 - [SRv6のSRH（Segment Routing Header）とパケット処理](https://srv6.md/ja/srh-packet-walk/): SRv6のSegment Routing Header（SRH、RFC 8754）を図解。フォーマット、Segments Left、ノードごとのパケットウォーク、PSP/USP/USDフレーバー、TLV、H.Encaps.Red、確認コマンドまで。
 - [SRv6とSR-MPLSの違い：比較と使い分け](https://srv6.md/ja/srv6-vs-sr-mpls/): SRv6とSR-MPLSの違いを比較。データプレーン、SIDのサイズと空間、カプセル化とMTUのオーバーヘッド、ネットワークプログラミング、成熟度、そしてどちらを選ぶべきかを解説します。
 - [SRv6 uSID（マイクロSID）とは：SID圧縮の仕組み](https://srv6.md/ja/usid/): SRv6のuSID（マイクロSID、RFC 9800）がヘッダーのオーバーヘッドをどう削減するかを解説。コンテナの構造、シフト＆ルックアップ動作、従来のSRv6との比較、uSIDとG-SRv6の違い、設定例まで。
-- [SRv6とは？仕組みとメリットをわかりやすく解説](https://srv6.md/ja/what-is-srv6/): SRv6（Segment Routing over IPv6）とは何か、その仕組みとメリットを解説。SID、SRH、ソースルーティング、ネットワークプログラミング、MPLSとの違いまで順を追って説明します。
+- [SRv6とは？仕組みとメリットをわかりやすく解説](https://srv6.md/ja/what-is-srv6/): SRv6（Segment Routing over IPv6）とは何かを図解。SID、SRH、パケットの転送の流れ、uSID、IPv6やMPLSとの違い、ユースケース、よくある質問まで一通り解説します。
