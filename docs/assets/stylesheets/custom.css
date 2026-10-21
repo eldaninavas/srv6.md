@@ -1027,6 +1027,42 @@
   }
 }
 
+/* --- Glossary (topics/glossary.md, hooks/glossary.py) --- */
+.md-typeset .gl-az {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 1.2em 0;
+}
+.md-typeset .gl-az a,
+.md-typeset .gl-az span {
+  min-width: 2.1em;
+  padding: 0.25em 0.45em;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.2rem;
+  font-weight: 600;
+  text-align: center;
+}
+.md-typeset .gl-az a:hover {
+  background: var(--md-accent-fg-color--transparent);
+}
+.md-typeset .gl-az span {
+  color: var(--md-default-fg-color--lighter);
+}
+.md-typeset h2.gl-letter {
+  padding-bottom: 0.2em;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+.md-typeset .gl-ref {
+  margin-top: -0.4em;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.72rem;
+}
+.md-typeset a.gl-term {
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+
 /* --- Language switch links (EN / ES / JA) --- */
 .md-typeset .srv6-lang-switch {
   margin: -0.4rem 0 1.2rem;

@@ -111,6 +111,9 @@
   }
   </script>
   {% endif %}
+  {% if page.meta and page.meta.defined_term_set_schema %}
+  <script type="application/ld+json">{{ page.meta.defined_term_set_schema | tojson }}</script>
+  {% endif %}
   {% if page.meta and page.meta.faq_schema %}
   <script type="application/ld+json">
   {

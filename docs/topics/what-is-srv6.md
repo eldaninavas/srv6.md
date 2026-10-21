@@ -28,6 +28,8 @@ tags:
     9. [How to try SRv6](#how-to-try-srv6)
     10. [Frequently asked questions](#frequently-asked-questions)
 
+New to the vocabulary? Every term on this page has a short definition, with the RFC section behind it, in the [SRv6 Glossary](glossary.md).
+
 ## SRv6 at a glance
 
 | | |
@@ -422,6 +424,7 @@ uSID (micro-SID) is SRv6 compression, standardized as the NEXT-C-SID flavor in R
 - :material-arrow-right: [Interworking & Migration](interworking-migration.md): moving from MPLS to SRv6
 - :material-arrow-right: [Security](security.md): filtering, HMAC and attack vectors
 - :material-arrow-right: [Implementations](../implementations/index.md): configuration guides for Cisco, Juniper, Arista, Nokia, FRR and Linux
+- :material-book-alphabet: [SRv6 Glossary](glossary.md): every SRv6 term defined, with its RFC section
 - :material-file-document: [RFCs & Standards](../rfcs/index.md): every SRv6 RFC explained
 
 ## References

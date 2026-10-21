@@ -24,6 +24,7 @@ The core concepts you need before diving deeper.
 | [Network Programming](network-programming.md) | SRv6 behaviors and functions |
 | [SRH Mechanics & Packet Walk](srh-packet-walk.md) | Step-by-step packet processing through the SRH |
 | [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md) | Comparing the two SR approaches |
+| [Glossary](glossary.md) | Every SRv6 term defined, with the RFC section behind it |
 
 ## Architecture
 

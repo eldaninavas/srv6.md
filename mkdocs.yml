@@ -20,6 +20,7 @@ hooks:
   - hooks/faq_schema.py
   - hooks/git_dates.py
   - hooks/redirects.py
+  - hooks/glossary.py
 edit_uri: edit/main/docs/
 
 theme:
@@ -202,6 +203,7 @@ nav:
       - Network Programming: topics/network-programming.md
       - SRH & Packet Walk: topics/srh-packet-walk.md
       - SRv6 vs SR-MPLS: topics/srv6-vs-sr-mpls.md
+      - Glossary: topics/glossary.md
     - Architecture:
       - uSID Compression: topics/usid-compression.md
       - Flex-Algorithm: topics/flex-algorithm.md

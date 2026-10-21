@@ -155,7 +155,7 @@ The source node builds an ordered list of segments that defines the packet's pat
 - **Scalability** — 128-bit SID space supports massive networks and micro-segmentation
 - **Unified data plane** — Single protocol stack for transport, VPN, and TE services
 
-[:material-arrow-right: What is SRv6? The full explanation](topics/what-is-srv6.md){ .md-button }  &nbsp; [:material-arrow-right: See how SRv6 works](topics/network-programming.md){ .md-button }
+[:material-arrow-right: What is SRv6? The full explanation](topics/what-is-srv6.md){ .md-button }  &nbsp; [:material-arrow-right: See how SRv6 works](topics/network-programming.md){ .md-button }  &nbsp; [:material-book-alphabet: SRv6 glossary](topics/glossary.md){ .md-button }
 
 !!! tip "This is a community project"
     SRv6.md is built and maintained by the networking community. Every page has an **edit button** (:material-pencil:) — if you spot an error or want to add content, we welcome your contributions!
