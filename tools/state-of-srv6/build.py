@@ -69,6 +69,11 @@ def esc(s):
     return html.escape(str(s), quote=True)
 
 
+def plural(unit, n):
+    """'RFCs' -> 'RFC' and 'drafts' -> 'draft' when n == 1."""
+    return unit[:-1] if n == 1 else unit
+
+
 def bar_path(x, y, w, h, r, end):
     """Rectangle with only the data end rounded ('right' or 'top')."""
     r = min(r, w if end == "right" else h, h / 2 if end == "right" else w / 2)
@@ -113,7 +118,7 @@ def hbar(cid, rows, series, title, desc, unit):
         x = label_w
         total = sum(values)
         parts = [f"{n}: {v}" for n, v in zip(series, values)] if len(series) > 1 else []
-        tip = f"{label}: {total} {unit}" + (f" ({', '.join(parts)})" if parts else "")
+        tip = f"{label}: {total} {plural(unit, total)}" + (f" ({', '.join(parts)})" if parts else "")
         g = [f'<g class="sor-g"><title>{esc(tip)}</title>',
              f'<rect class="sor-hit" x="0" y="{top + i * row_h}" width="{width}" height="{row_h}"/>',
              f'<text class="sor-t" x="{label_w - 8}" y="{y + bar_h - 3}" text-anchor="end">{esc(label)}</text>']
@@ -147,7 +152,7 @@ def columns(cid, rows, title, desc, unit):
     for i, (label, v) in enumerate(rows):
         cx = left + slot * i + slot / 2
         h = v / vmax * plot_h
-        g = [f'<g class="sor-g"><title>{esc(f"{label}: {v} {unit}")}</title>',
+        g = [f'<g class="sor-g"><title>{esc(f"{label}: {v} {plural(unit, v)}")}</title>',
              f'<rect class="sor-hit" x="{cx - slot / 2:.1f}" y="{top - 20}" width="{slot:.1f}" height="{plot_h + 40}"/>']
         if v:
             g.append(f'<path class="sor-b1" d="{bar_path(cx - bar_w / 2, base - h, bar_w, h, 4, "top")}"/>')
