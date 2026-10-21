@@ -298,7 +298,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/bgp-overlay-services/</loc>
@@ -315,6 +315,10 @@
     <url>
          <loc>https://srv6.md/topics/flex-algorithm/</loc>
          <lastmod>2026-10-18</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/topics/glossary/</loc>
+         <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/host-based-srv6/</loc>
