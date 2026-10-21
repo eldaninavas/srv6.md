@@ -81,6 +81,7 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 - [SRv6 Lab with Containerlab: Step-by-Step Topology](https://srv6.md/labs/containerlab/): Build a free SRv6 lab with Containerlab: prerequisites, a sample topology file, deployment steps and commands to verify Segment Routing over IPv6 forwarding.
 - [SRv6 Lab with GNS3: Emulating Vendor Routers](https://srv6.md/labs/gns3/): Emulate an SRv6 network in GNS3 with vendor router images such as Cisco IOS-XR and Juniper Junos: prerequisites, topology design and practical lab tips.
 - [SRv6 Lab with netlab: Ready-Made Multi-Vendor Topologies](https://srv6.md/labs/netlab/): Spin up preconfigured SRv6 labs with netlab: IS-IS, unnumbered core, multivendor, IPv4 islands, BGP-free core and L3VPN topologies on FRR, IOS XE/XR and Junos.
+- [SRv6 pcap Library: Wireshark Captures and SRH Filters](https://srv6.md/labs/pcaps/): Free annotated SRv6 packet captures (pcapng) from a real Linux lab: H.Encaps, End.X, End.DT4/DT6/DT46, End.DX2, uSID, HMAC, and SRH Wireshark filters.
 
 ## RFCs & Standards
 
