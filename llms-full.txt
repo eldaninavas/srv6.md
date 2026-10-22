@@ -1005,9 +1005,21 @@ graph LR
       P2((plane 2))
       P8((plane 8))
     end
-    P1 --> T0a[T0 plane 1] --> T1a[T1 plane 1] --> T0b[T0 plane 1] --> D[Destination NIC]
-    P2 --> T0c[T0 plane 2] --> T1c[T1 plane 2] --> T0d[T0 plane 2] --> D
-    P8 --> T0e[T0 plane 8] --> T1e[T1 plane 8] --> T0f[T0 plane 8] --> D
+    P1 a1@--> T0a[T0 plane 1] a2@--> T1a[T1 plane 1] a3@--> T0b[T0 plane 1] a4@--> D[Destination NIC]
+    P2 b1@--> T0c[T0 plane 2] b2@--> T1c[T1 plane 2] b3@--> T0d[T0 plane 2] b4@--> D
+    P8 c1@--> T0e[T0 plane 8] c2@--> T1e[T1 plane 8] c3@--> T0f[T0 plane 8] c4@--> D
+    a1@{ animate: true }
+    a2@{ animate: true }
+    a3@{ animate: true }
+    a4@{ animate: true }
+    b1@{ animate: true }
+    b2@{ animate: true }
+    b3@{ animate: true }
+    b4@{ animate: true }
+    c1@{ animate: true }
+    c2@{ animate: true }
+    c3@{ animate: true }
+    c4@{ animate: true }
 ```
 
 ## How SRv6 is used
@@ -4287,17 +4299,19 @@ SRv6 provides a clean, unified underlay for delivering **L3VPN** and **L2VPN (EV
 
 ```mermaid
 graph TB
-    subgraph Overlay - BGP Control Plane
+    subgraph overlay[Overlay - BGP Control Plane]
         BGP1[PE1 BGP] <-->|MP-BGP with SRv6 SIDs| BGP2[PE2 BGP]
     end
 
-    subgraph Underlay - SRv6 Data Plane
+    subgraph underlay[Underlay - SRv6 Data Plane]
         PE1[PE1] -->|SRv6 Transport| P1[P Node]
         P1 -->|SRv6 Transport| PE2[PE2]
     end
 
     CE1[CE1 - Customer] --- PE1
     CE2[CE2 - Customer] --- PE2
+    overlay ~~~ CE1
+    overlay ~~~ CE2
 ```
 
 **Key principle:** BGP carries service information (VPN prefixes, EVPN routes) with SRv6 SIDs instead of MPLS labels. The SRv6 SID tells the remote PE exactly what to do with the packet (decap to which VRF, cross-connect to which interface, etc.).
@@ -4514,12 +4528,14 @@ Six routers, IS-IS metrics on the links. S is the PLR, protecting its link to N,
 
 ```mermaid
 graph LR
-    S((S)) ---|10 · protected| N((N))
-    N ---|10| D((D))
-    S ---|10| A((A))
-    A ---|10| B((B))
-    B ---|40| C((C))
-    C ---|10| D
+    S((S)) p1@---|10 · protected| N((N))
+    N p2@---|10| D((D))
+    S q1@---|10| A((A))
+    A q2@---|10| B((B))
+    B q3@---|40| C((C))
+    C q4@---|10| D
+    p1@{ animate: true }
+    p2@{ animate: true }
 ```
 
 **Before the failure**, S reaches D via N (cost 20). A also reaches D via S and N (cost 30), so A is **not** an LFA: by the RFC 5286 inequality, A is loop-free only if dist(A,D) < dist(A,S) + dist(S,D), i.e. 30 < 10 + 20, which is false. Classic LFA has nothing to offer here.
@@ -12031,17 +12047,17 @@ Router-based SRv6 implementations (IOS-XR, Junos, SR OS, FRRouting) stop at the 
 
 ```mermaid
 graph TB
-    subgraph K8s Cluster A
-        P1[Pod] --> N1["K8s Node\n(Cilium agent\n+ eBPF SRv6)"]
+    subgraph clusterA[K8s Cluster A]
+        P1[Pod] --> N1["K8s Node<br/>Cilium agent + eBPF SRv6"]
     end
-    subgraph SRv6 Fabric
-        R1[PE / Route Reflector] <-->|"BGP VPNv4/v6\nSRv6 Prefix-SID"| N1
-        R1 <-->|"IS-IS"| R2[P Router]
-        R2 <-->|"BGP VPNv4/v6\nSRv6 Prefix-SID"| N2
+    subgraph fabric[SRv6 Fabric]
+        R1[PE / Route Reflector] <-->|IS-IS| R2[P Router]
     end
-    subgraph K8s Cluster B
-        N2["K8s Node\n(Cilium agent\n+ eBPF SRv6)"] --> P2[Pod]
+    subgraph clusterB[K8s Cluster B]
+        N2["K8s Node<br/>Cilium agent + eBPF SRv6"] --> P2[Pod]
     end
+    clusterA <-->|"BGP VPNv4/v6<br/>SRv6 Prefix-SID"| R1
+    R2 <-->|"BGP VPNv4/v6<br/>SRv6 Prefix-SID"| clusterB
 ```
 
 ## The Open-Source Datapath
@@ -16794,10 +16810,14 @@ graph TD
     PCE -.->|Replication segment| L1[Leaf 1]
     PCE -.->|Replication segment| L2[Leaf 2]
     PCE -.->|Replication segment| L3[Leaf 3]
-    R -->|copy, DA = M Replication-SID| M
-    R -->|copy, DA = L1 Replication-SID| L1
-    M -->|copy| L2
-    M -->|copy| L3
+    R r1@-->|copy, DA = M Replication-SID| M
+    R r2@-->|copy, DA = L1 Replication-SID| L1
+    M r3@-->|copy| L2
+    M r4@-->|copy| L3
+    r1@{ animate: true }
+    r2@{ animate: true }
+    r3@{ animate: true }
+    r4@{ animate: true }
 ```
 
 | Step | Controller action |
