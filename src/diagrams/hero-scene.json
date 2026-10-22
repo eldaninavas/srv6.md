@@ -1,0 +1,478 @@
+{
+  "_comment": "Home page hero: the SRv6 fabric that src/diagrams/hero.jsx builds act by act, and that hooks/diagrams.py renders as the static first frame. Node x/y are centres in scene units. uSID F3216: block fc00:0::/32 for algo 0, fc00:80::/32 for Flex-Algo 128, one 16-bit uSID per node. flex: links in the algo-128 plane. mrc: links that exist only in the AI act. bar: scene units kept free at the bottom for the caption bar.",
+  "acts": [
+    {
+      "id": "fabric",
+      "title": "Leaf–spine fabric",
+      "note": "Spines, leaves and edge PEs, every link IPv6",
+      "href": "topics/clos-glb/"
+    },
+    {
+      "id": "isis",
+      "title": "IS-IS underlay",
+      "note": "Each node advertises its uSID locator · RFC 9352",
+      "href": "rfcs/rfc9352/"
+    },
+    {
+      "id": "flex",
+      "title": "Flex-Algo 128",
+      "note": "A low-latency plane with its own locators · RFC 9350",
+      "href": "topics/flex-algorithm/"
+    },
+    {
+      "id": "bgp",
+      "title": "BGP services",
+      "note": "PE-B advertises a VPN SID (End.DT46) · RFC 9252",
+      "href": "topics/bgp-overlay-services/"
+    },
+    {
+      "id": "mrc",
+      "title": "AI fabric · MRC",
+      "note": "GPU NICs spray over static uSID paths, no BGP or IS-IS",
+      "href": "ai/mrc/"
+    }
+  ],
+  "desktop": {
+    "width": 1000,
+    "height": 780,
+    "node": {
+      "w": 118,
+      "h": 42
+    },
+    "nodes": [
+      {
+        "id": "S1",
+        "label": "Spine 1",
+        "kind": "spine",
+        "x": 215,
+        "y": 80,
+        "loc": "fc00:0:11::/48"
+      },
+      {
+        "id": "S2",
+        "label": "Spine 2",
+        "kind": "spine",
+        "x": 405,
+        "y": 80,
+        "loc": "fc00:0:12::/48"
+      },
+      {
+        "id": "S3",
+        "label": "Spine 3",
+        "kind": "spine",
+        "x": 595,
+        "y": 80,
+        "loc": "fc00:0:13::/48",
+        "algo": "fc00:80:13::/48"
+      },
+      {
+        "id": "S4",
+        "label": "Spine 4",
+        "kind": "spine",
+        "x": 785,
+        "y": 80,
+        "loc": "fc00:0:14::/48",
+        "algo": "fc00:80:14::/48"
+      },
+      {
+        "id": "L1",
+        "label": "Leaf 1",
+        "kind": "leaf",
+        "x": 125,
+        "y": 400,
+        "loc": "fc00:0:21::/48",
+        "algo": "fc00:80:21::/48"
+      },
+      {
+        "id": "L2",
+        "label": "Leaf 2",
+        "kind": "leaf",
+        "x": 375,
+        "y": 400,
+        "loc": "fc00:0:22::/48"
+      },
+      {
+        "id": "L3",
+        "label": "Leaf 3",
+        "kind": "leaf",
+        "x": 625,
+        "y": 400,
+        "loc": "fc00:0:23::/48"
+      },
+      {
+        "id": "L4",
+        "label": "Leaf 4",
+        "kind": "leaf",
+        "x": 875,
+        "y": 400,
+        "loc": "fc00:0:24::/48",
+        "algo": "fc00:80:24::/48"
+      },
+      {
+        "id": "PA",
+        "label": "PE-A",
+        "kind": "pe",
+        "x": 70,
+        "y": 700,
+        "loc": "fc00:0:a::/48",
+        "algo": "fc00:80:a::/48"
+      },
+      {
+        "id": "GA",
+        "label": "GPU-A",
+        "kind": "gpu",
+        "x": 250,
+        "y": 700
+      },
+      {
+        "id": "GB",
+        "label": "GPU-B",
+        "kind": "gpu",
+        "x": 750,
+        "y": 700
+      },
+      {
+        "id": "PB",
+        "label": "PE-B",
+        "kind": "pe",
+        "x": 930,
+        "y": 700,
+        "loc": "fc00:0:b::/48",
+        "algo": "fc00:80:b::/48"
+      }
+    ],
+    "links": [
+      [
+        "L1",
+        "S1"
+      ],
+      [
+        "L1",
+        "S2"
+      ],
+      [
+        "L1",
+        "S3",
+        "flex"
+      ],
+      [
+        "L1",
+        "S4",
+        "flex"
+      ],
+      [
+        "L2",
+        "S1"
+      ],
+      [
+        "L2",
+        "S2"
+      ],
+      [
+        "L2",
+        "S3"
+      ],
+      [
+        "L2",
+        "S4"
+      ],
+      [
+        "L3",
+        "S1"
+      ],
+      [
+        "L3",
+        "S2"
+      ],
+      [
+        "L3",
+        "S3"
+      ],
+      [
+        "L3",
+        "S4"
+      ],
+      [
+        "L4",
+        "S1"
+      ],
+      [
+        "L4",
+        "S2"
+      ],
+      [
+        "L4",
+        "S3",
+        "flex"
+      ],
+      [
+        "L4",
+        "S4",
+        "flex"
+      ],
+      [
+        "PA",
+        "L1",
+        "flex"
+      ],
+      [
+        "PB",
+        "L4",
+        "flex"
+      ],
+      [
+        "GA",
+        "L1",
+        "mrc"
+      ],
+      [
+        "GA",
+        "L2",
+        "mrc"
+      ],
+      [
+        "GB",
+        "L3",
+        "mrc"
+      ],
+      [
+        "GB",
+        "L4",
+        "mrc"
+      ]
+    ],
+    "bgp": {
+      "from": "PB",
+      "to": "PA",
+      "sid": "fc00:0:b:e046::",
+      "behavior": "End.DT46",
+      "depth": 150
+    },
+    "packet": {
+      "path": [
+        "PA",
+        "L1",
+        "S3",
+        "L4",
+        "PB"
+      ],
+      "da": [
+        "fc00:0:13:b:e046::",
+        "fc00:0:13:b:e046::",
+        "fc00:0:b:e046::",
+        "fc00:0:b:e046::",
+        "decap · VRF lookup"
+      ]
+    },
+    "mrc": {
+      "paths": [
+        [
+          "GA",
+          "L1",
+          "S1",
+          "L3",
+          "GB"
+        ],
+        [
+          "GA",
+          "L2",
+          "S2",
+          "L4",
+          "GB"
+        ],
+        [
+          "GA",
+          "L1",
+          "S3",
+          "L3",
+          "GB"
+        ],
+        [
+          "GA",
+          "L2",
+          "S4",
+          "L4",
+          "GB"
+        ]
+      ],
+      "fail": [
+        "S2",
+        "L4"
+      ]
+    },
+    "bar": 78
+  },
+  "mobile": {
+    "width": 400,
+    "height": 470,
+    "node": {
+      "w": 84,
+      "h": 36
+    },
+    "nodes": [
+      {
+        "id": "S1",
+        "label": "Spine 1",
+        "kind": "spine",
+        "x": 120,
+        "y": 40,
+        "loc": "fc00:0:11::/48"
+      },
+      {
+        "id": "S2",
+        "label": "Spine 2",
+        "kind": "spine",
+        "x": 280,
+        "y": 40,
+        "loc": "fc00:0:12::/48",
+        "algo": "fc00:80:12::/48"
+      },
+      {
+        "id": "L1",
+        "label": "Leaf 1",
+        "kind": "leaf",
+        "x": 100,
+        "y": 225,
+        "loc": "fc00:0:21::/48",
+        "algo": "fc00:80:21::/48"
+      },
+      {
+        "id": "L2",
+        "label": "Leaf 2",
+        "kind": "leaf",
+        "x": 300,
+        "y": 225,
+        "loc": "fc00:0:22::/48",
+        "algo": "fc00:80:22::/48"
+      },
+      {
+        "id": "PA",
+        "label": "PE-A",
+        "kind": "pe",
+        "x": 45,
+        "y": 390,
+        "loc": "fc00:0:a::/48",
+        "algo": "fc00:80:a::/48"
+      },
+      {
+        "id": "GA",
+        "label": "GPU-A",
+        "kind": "gpu",
+        "x": 150,
+        "y": 390
+      },
+      {
+        "id": "GB",
+        "label": "GPU-B",
+        "kind": "gpu",
+        "x": 250,
+        "y": 390
+      },
+      {
+        "id": "PB",
+        "label": "PE-B",
+        "kind": "pe",
+        "x": 355,
+        "y": 390,
+        "loc": "fc00:0:b::/48",
+        "algo": "fc00:80:b::/48"
+      }
+    ],
+    "links": [
+      [
+        "L1",
+        "S1"
+      ],
+      [
+        "L1",
+        "S2",
+        "flex"
+      ],
+      [
+        "L2",
+        "S1"
+      ],
+      [
+        "L2",
+        "S2",
+        "flex"
+      ],
+      [
+        "PA",
+        "L1",
+        "flex"
+      ],
+      [
+        "PB",
+        "L2",
+        "flex"
+      ],
+      [
+        "GA",
+        "L1",
+        "mrc"
+      ],
+      [
+        "GA",
+        "L2",
+        "mrc"
+      ],
+      [
+        "GB",
+        "L1",
+        "mrc"
+      ],
+      [
+        "GB",
+        "L2",
+        "mrc"
+      ]
+    ],
+    "bgp": {
+      "from": "PB",
+      "to": "PA",
+      "sid": "fc00:0:b:e046::",
+      "behavior": "End.DT46",
+      "depth": 110
+    },
+    "packet": {
+      "path": [
+        "PA",
+        "L1",
+        "S2",
+        "L2",
+        "PB"
+      ],
+      "da": [
+        "fc00:0:12:b:e046::",
+        "fc00:0:12:b:e046::",
+        "fc00:0:b:e046::",
+        "fc00:0:b:e046::",
+        "decap · VRF lookup"
+      ]
+    },
+    "mrc": {
+      "paths": [
+        [
+          "GA",
+          "L1",
+          "S1",
+          "L2",
+          "GB"
+        ],
+        [
+          "GA",
+          "L2",
+          "S2",
+          "L1",
+          "GB"
+        ]
+      ],
+      "fail": [
+        "S2",
+        "L1"
+      ]
+    },
+    "bar": 120
+  }
+}

@@ -19,6 +19,8 @@ import xyCss from '@xyflow/react/dist/style.css';
 import flowCss from './flow.css';
 import { ICONS as NODE_ICONS } from './icons.mjs';
 import { createSim, hasPackets } from './packets.js';
+import { Hero, heroActs } from './hero.jsx';
+import heroCss from './hero.css';
 
 // ---------------------------------------------------------------- color mode
 
@@ -603,7 +605,7 @@ function injectCss() {
   if (document.getElementById('srv6-flow-css')) return;
   const style = document.createElement('style');
   style.id = 'srv6-flow-css';
-  style.textContent = xyCss + flowCss;
+  style.textContent = xyCss + flowCss + heroCss;
   document.head.appendChild(style);
 }
 
@@ -613,6 +615,21 @@ function mount() {
       root.unmount();
       roots.delete(el);
     }
+  }
+  for (const host of document.querySelectorAll('.srv6-hero-stage:not([data-mounted])')) {
+    injectCss();
+    host.dataset.mounted = '1';
+    const canvas = document.createElement('div');
+    canvas.className = 'srv6-hero__canvas';
+    host.appendChild(canvas);
+    const root = createRoot(canvas);
+    root.render(
+      <ReactFlowProvider>
+        <Hero host={host} acts={heroActs} />
+      </ReactFlowProvider>,
+    );
+    roots.set(host, root);
+    requestAnimationFrame(() => host.classList.add('is-live'));
   }
   const hosts = document.querySelectorAll('.srv6-flow:not([data-mounted])');
   if (!hosts.length) return;

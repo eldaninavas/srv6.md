@@ -1,0 +1,360 @@
+/* Home hero (src/diagrams/hero.jsx). The stage size, the static first frame
+   and the color tokens are in custom.css; this styles the live scene. */
+
+.srv6-hero__canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.srv6-hero-stage.is-live .srv6-hero__canvas {
+  opacity: 1;
+}
+
+.srv6-hero-scene,
+.srv6-hero-scene .react-flow {
+  position: absolute;
+  inset: 0;
+}
+
+.srv6-hero-scene .react-flow {
+  --xy-background-color: transparent;
+}
+
+.srv6-hero-scene .react-flow__pane {
+  cursor: default;
+}
+
+.srv6-hero-scene svg {
+  max-width: none; /* Material's .md-typeset svg rule collapses edge layers */
+}
+
+/* Nodes: the diagram cards, plus locator chips under each router. */
+
+.srv6-hero__node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.srv6-hero__node .srv6-flow__label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.srv6-hero__node.is-gpu {
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+.show-gpu .srv6-hero__node.is-gpu {
+  opacity: 1;
+  transform: none;
+}
+
+.show-mrc .srv6-hero__node:not(.is-gpu) {
+  opacity: 0.55;
+}
+
+.is-building .srv6-hero__node {
+  animation: srv6-hero-pop 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.3) both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+
+@keyframes srv6-hero-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.85);
+  }
+}
+
+.srv6-hero__loc {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  padding: 1px 7px;
+  border-radius: 999px;
+  color: var(--srv6-chip-fg);
+  background: var(--srv6-chip-bg);
+  font: 600 10.5px/16px var(--md-code-font-family);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, -4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition-delay: calc(var(--i) * 60ms);
+  pointer-events: none;
+}
+
+.srv6-hero__loc.is-algo {
+  top: calc(100% + 24px);
+  color: var(--md-default-bg-color);
+  background: var(--srv6-hero-algo);
+}
+
+.show-loc .srv6-hero__loc:not(.is-algo),
+.show-algo .srv6-hero__loc.is-algo {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Links */
+
+.srv6-hero__link line {
+  stroke: var(--srv6-edge);
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  transition: stroke 0.4s ease, stroke-width 0.4s ease, opacity 0.4s ease;
+}
+
+.srv6-hero__link.is-mrc line {
+  opacity: 0;
+}
+
+.show-gpu .srv6-hero__link.is-mrc line {
+  opacity: 1;
+}
+
+.show-flex .srv6-hero__link.is-flex line {
+  stroke: var(--srv6-hero-algo);
+  stroke-width: 3px;
+  stroke-dasharray: 0.04 0.03;
+  animation: srv6-hero-march 1.6s linear infinite;
+  filter: drop-shadow(0 0 4px var(--srv6-hero-algo));
+}
+
+@keyframes srv6-hero-march {
+  to {
+    stroke-dashoffset: -0.14;
+  }
+}
+
+.show-mrc .srv6-hero__link:not(.is-mrc) line {
+  opacity: 0.5;
+}
+
+.srv6-hero__link.is-failed line {
+  stroke: var(--srv6-flow-fail);
+  stroke-dasharray: 0.03 0.025;
+  opacity: 1;
+}
+
+.is-building .srv6-hero__link line {
+  stroke-dasharray: 1;
+  animation: srv6-hero-draw 0.9s ease-out both;
+  animation-delay: calc(0.5s + var(--i) * 45ms);
+}
+
+@keyframes srv6-hero-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Moving parts (portal layer) */
+
+.srv6-hero__fx {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.srv6-hero__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.srv6-hero__pulse {
+  fill: var(--md-mermaid-node-fg-color);
+  filter: drop-shadow(0 0 4px var(--md-mermaid-node-fg-color));
+}
+
+.srv6-hero__fx .srv6-flow__packet {
+  fill: var(--srv6-flow-packet);
+  stroke: var(--md-default-bg-color);
+  stroke-width: 1.5px;
+  filter: drop-shadow(0 0 4px var(--srv6-flow-packet));
+}
+
+.srv6-hero__bgp {
+  fill: none;
+  stroke: var(--md-mermaid-node-fg-color);
+  stroke-width: 2px;
+  stroke-dasharray: 6 6;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.srv6-hero__bgp.is-on,
+.is-still .srv6-hero__bgp {
+  opacity: 0.8;
+  animation: srv6-hero-bgp 1.2s linear infinite;
+}
+
+@keyframes srv6-hero-bgp {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+.srv6-hero__sid,
+.srv6-hero__da {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font: 600 11px/16px var(--md-code-font-family);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 18%);
+}
+
+.srv6-hero__sid {
+  color: var(--md-default-bg-color);
+  background: var(--md-mermaid-node-fg-color);
+}
+
+.srv6-hero__da {
+  color: var(--md-mermaid-label-fg-color);
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--srv6-flow-packet);
+}
+
+/* Caption and controls: one bar along the bottom, in space the scene keeps
+   free (hero-scene.json "bar"), so it never covers a node. */
+
+.srv6-hero__bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-top: 1px solid var(--srv6-group-border);
+  background: color-mix(in srgb, var(--md-default-bg-color) 82%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.srv6-hero__caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  align-items: baseline;
+  min-width: 0;
+  font-size: 0.66rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.srv6-hero__caption strong {
+  color: var(--md-default-fg-color);
+  font-size: 0.8rem;
+}
+
+.srv6-hero__step {
+  color: var(--srv6-chip-fg);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.srv6-hero__note {
+  color: var(--md-default-fg-color--light);
+}
+
+.srv6-hero__caption a {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.srv6-hero__controls {
+  display: flex;
+  flex: none;
+  gap: 6px;
+  align-items: center;
+}
+
+.srv6-hero__play {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  padding: 4px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--md-default-fg-color--light);
+  background: transparent;
+  cursor: pointer;
+}
+
+.srv6-hero__play:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.srv6-hero__play svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.srv6-hero__dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--srv6-group-border);
+  cursor: pointer;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.srv6-hero__dot.is-on {
+  width: 28px;
+  background: var(--md-mermaid-node-fg-color);
+}
+
+.srv6-hero__dot span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.srv6-hero__play:focus-visible,
+.srv6-hero__dot:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+}
+
+@media (max-width: 599px) {
+  .srv6-hero__bar {
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
+    padding: 8px 10px;
+  }
+
+  .srv6-hero__controls {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .srv6-hero-scene *,
+  .srv6-hero-scene *::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}

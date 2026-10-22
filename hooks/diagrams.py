@@ -112,39 +112,116 @@ def _packet_walk(config):
     return _walk_js["js"]
 
 
+_HERO = re.compile(r'(?:<p>)?<div class="srv6-hero-stage"></div>(?:</p>)?')
+_hero_cache = {}
+
+
+def _hero_data(config):
+    """The hero scene (src/diagrams/hero-scene.json) and the icon paths."""
+    if "scene" not in _hero_cache:
+        root = os.path.dirname(config["config_file_path"])
+        with open(os.path.join(root, "src", "diagrams", "hero-scene.json"), encoding="utf-8") as f:
+            _hero_cache["scene"] = json.load(f)
+        with open(os.path.join(root, "src", "diagrams", "icons.mjs"), encoding="utf-8") as f:
+            _hero_cache["icons"] = dict(re.findall(r"^  (\w+): '([^']+)'", f.read(), re.M))
+    return _hero_cache["scene"], _hero_cache["icons"]
+
+
+_HERO_ICON = {"spine": "switch", "leaf": "switch", "pe": "router", "gpu": "gpu"}
+
+
+def _hero_frame(variant, s, icons):
+    """The built fabric as inline SVG: the first frame, and what stays when
+    there is no JavaScript. Same geometry as src/diagrams/hero.jsx."""
+    pad = 24
+    w, h = s["node"]["w"], s["node"]["h"]
+    at = {n["id"]: n for n in s["nodes"]}
+    gid = f"srv6-hero-g-{variant}"
+    out = [
+        f'<svg class="srv6-hero-static srv6-hero-static--{variant}" viewBox="{-pad} {-pad} {s["width"] + 2 * pad} {s["height"] + s["bar"] + 2 * pad}" '
+        f'preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">'
+        f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1">'
+        f'<stop offset="0" style="stop-color:var(--srv6-node-top)"/><stop offset="1" style="stop-color:var(--srv6-node-bottom)"/>'
+        f"</linearGradient></defs>"
+    ]
+    for a, b, *tags in s["links"]:
+        if "mrc" in tags:
+            continue
+        out.append(f'<line x1="{at[a]["x"]}" y1="{at[a]["y"]}" x2="{at[b]["x"]}" y2="{at[b]["y"]}"/>')
+    for n in s["nodes"]:
+        if n["kind"] == "gpu":
+            continue
+        text_w = len(n["label"]) * 8.4  # 14px bold Inter, near enough for a first frame
+        x0 = (w - (18 + 8 + text_w)) / 2
+        out.append(
+            f'<g transform="translate({n["x"] - w / 2} {n["y"] - h / 2})">'
+            f'<rect width="{w}" height="{h}" rx="10" fill="url(#{gid})"/>'
+            f'<path class="i" transform="translate({x0:.1f} {(h - 18) / 2}) scale(.75)" d="{icons[_HERO_ICON[n["kind"]]]}"/>'
+            f'<text x="{x0 + 26:.1f}" y="{h / 2}" dominant-baseline="central">{html.escape(n["label"])}</text></g>'
+        )
+    out.append("</svg>")
+    return "".join(out)
+
+
+def _hero(config):
+    scene, icons = _hero_data(config)
+    acts = "".join(
+        f'<li><a href="{html.escape(a["href"])}"><strong>{html.escape(a["title"])}</strong> '
+        f'<span>{html.escape(a["note"])}</span></a></li>'
+        for a in scene["acts"]
+    )
+    return (
+        '<div class="srv6-hero-stage" role="group" aria-label="An SRv6 fabric, built step by step">'
+        + _hero_frame("desktop", scene["desktop"], icons)
+        + _hero_frame("mobile", scene["mobile"], icons)
+        + "</div>"
+        + f'<ol class="srv6-hero-acts">{acts}</ol>'
+        # The act list is in the page for crawlers and screen readers; on
+        # screen it only shows without JavaScript (the live scene has dots).
+        + "<noscript><style>.md-typeset .srv6-hero-acts{position:static;width:auto;height:auto;clip:auto;overflow:visible}</style></noscript>"
+    )
+
+
 def on_page_content(content, page, config, files, **kwargs):
     found = page.meta.get("_srv6_diagrams")
-    if not found:
+    hero = _HERO.search(content)
+    if not found and not hero:
         return content
-    entries = _manifest["pages"][page.file.src_uri]
     flows = 0
+    if hero:
+        content = _HERO.sub(lambda m: _hero(config), content, count=1)
+    if found:
+        entries = _manifest["pages"][page.file.src_uri]
 
-    def render(match):
-        nonlocal flows
-        entry = entries[match.group(1)]
-        if entry["kind"] == "sequence":
-            out = f'<div class="srv6-seq">{entry["svg"]}</div>'
-            if entry.get("packetWalk"):
-                svg_id = re.search(r'<svg[^>]*\sid="([^"]+)"', entry["svg"]).group(1)
-                out += f"<script>{_packet_walk(config).replace('__ID__', svg_id)}</script>"
-            return out
-        flows += 1
-        return _flowchart(entry)
+        def render(match):
+            nonlocal flows
+            entry = entries[match.group(1)]
+            if entry["kind"] == "sequence":
+                out = f'<div class="srv6-seq">{entry["svg"]}</div>'
+                if entry.get("packetWalk"):
+                    svg_id = re.search(r'<svg[^>]*\sid="([^"]+)"', entry["svg"]).group(1)
+                    out += f"<script>{_packet_walk(config).replace('__ID__', svg_id)}</script>"
+                return out
+            flows += 1
+            return _flowchart(entry)
 
-    content = _PLACEHOLDER.sub(render, content)
-    if flows:
+        content = _PLACEHOLDER.sub(render, content)
+    if (flows or hero) and _manifest.get("script"):
         src = get_relative_url(_manifest["script"], page.url)
         # The bundle is fetched only once a diagram comes within 400px of the
         # viewport, and never before the load event, so React never competes
-        # with the page's first paint (LCP). The view's space is reserved, so
-        # nothing shifts. After instant navigation the bundle is already
-        # there and re-mounts itself (it subscribes to Material's document$).
+        # with the page's first paint (LCP). The home hero is always in view,
+        # so it waits for the page to go idle as well; its static frame shows
+        # the fabric meanwhile. All this space is reserved, so nothing shifts.
+        # After instant navigation the bundle is already there and re-mounts
+        # itself (it subscribes to document$).
         content += (
             "\n<script>(function(){var u=" + json.dumps(src) + ";"
             "function go(){if(window.__srv6Flow){window.__srv6Flow.mount();return}"
             "if(document.querySelector('script[data-srv6-flow]'))return;"
             "var s=document.createElement('script');s.src=u;s.dataset.srv6Flow='';document.head.appendChild(s)}"
             "function arm(){if(window.__srv6Flow||!('IntersectionObserver' in window))return go();"
+            "if(document.querySelector('.srv6-hero-stage'))return setTimeout(function(){(window.requestIdleCallback||setTimeout)(go,{timeout:2000})},1500);"
             "var io=new IntersectionObserver(function(es){if(es.some(function(e){return e.isIntersecting})){io.disconnect();go()}},{rootMargin:'400px'});"
             "document.querySelectorAll('.srv6-flow').forEach(function(e){io.observe(e)})}"
             "document.readyState==='complete'?arm():addEventListener('load',arm,{once:true})})()</script>"
