@@ -34,8 +34,25 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Test SID decoder
-        run: node --test tests/sid-decoder.test.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      # The runner's Google Chrome parses Mermaid, measures labels and renders
+      # sequence diagrams; no browser download.
+      - name: Test SID decoder and diagram converter
+        run: npm test
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+
+      - name: Convert pilot diagrams
+        run: npm run diagrams
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
 
       - name: Build site
         run: mkdocs build --strict

@@ -1,0 +1,11 @@
+{
+  "_comment": "Mermaid diagrams converted at build time. Everything else stays on Mermaid. index = position among the page's ```mermaid blocks.",
+  "diagrams": [
+    { "page": "ai/mrc.md", "index": 0, "kind": "flowchart", "why": "MRC multi-plane: subgraph + circles + fan-in" },
+    { "page": "implementations/cilium.md", "index": 0, "kind": "flowchart", "why": "three subgraphs, cross-subgraph and bidirectional edges" },
+    { "page": "topics/oam-troubleshooting.md", "index": 2, "kind": "flowchart", "why": "decision diamonds, <br/> labels, labelled edges" },
+    { "page": "rfcs/rfc9960.md", "index": 0, "kind": "flowchart", "why": "dotted labelled edges" },
+    { "page": "topics/flex-algorithm.md", "index": 1, "kind": "flowchart", "why": "subgraph direction, open/dotted edges, style fills" },
+    { "page": "topics/srh-packet-walk.md", "index": 0, "kind": "sequence", "why": "sequence diagram pre-rendered to SVG" }
+  ]
+}

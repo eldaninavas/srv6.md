@@ -27,6 +27,17 @@ mkdocs serve
 mkdocs build
 ```
 
+Diagrams are written in Mermaid. The ones listed in `tools/diagrams/pilot.json` are
+converted at build time (flowcharts to React Flow, sequence diagrams to inline SVG);
+without this step they simply stay on Mermaid. Needs Node 20+ and Chrome
+(`CHROME_PATH`, or Playwright's browser):
+
+```bash
+npm ci
+npm run diagrams   # before mkdocs build/serve
+npm test           # SID decoder + diagram converter
+```
+
 ## Contributing
 
 We welcome contributions! See our [Contributing Guide](docs/community/contributing.md) for details.

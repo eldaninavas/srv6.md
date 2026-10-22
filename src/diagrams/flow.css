@@ -1,0 +1,236 @@
+/* React Flow diagrams. Every color comes from the --md-mermaid-* palette in
+   docs/assets/stylesheets/custom.css (or Material's defaults), so a converted
+   diagram matches the Mermaid ones in both schemes. Text metrics must match
+   tools/diagrams/browser.mjs (TEXT): 16px Inter, 24px line height. */
+
+.srv6-flow {
+  --xy-background-color: transparent;
+  --xy-edge-stroke: var(--md-mermaid-edge-color);
+  --xy-node-color: var(--md-mermaid-label-fg-color);
+
+  position: relative;
+  min-height: 120px;
+  font-family: var(--md-mermaid-font-family);
+}
+
+.srv6-flow__canvas,
+.srv6-flow__view {
+  position: absolute;
+  inset: 0;
+}
+
+.srv6-flow__view {
+  bottom: var(--srv6-flow-toolbar);
+}
+
+.srv6-flow__toolbar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 2px;
+  height: var(--srv6-flow-toolbar);
+  align-items: center;
+}
+
+.srv6-flow__tool {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  border: 0;
+  border-radius: 0.1rem;
+  color: var(--md-default-fg-color--light);
+  background: transparent;
+  cursor: pointer;
+}
+
+.srv6-flow__tool:hover,
+.srv6-flow__tool:focus-visible {
+  color: var(--md-accent-fg-color);
+  background: var(--md-default-fg-color--lightest);
+}
+
+.srv6-flow__tool svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* Material's .md-typeset svg { max-width: 100% } collapses React Flow's
+   zero-width edge layer, which then paints nothing. */
+.srv6-flow svg {
+  max-width: none;
+}
+
+.srv6-flow > noscript {
+  display: none;
+}
+
+.srv6-flow--failed {
+  aspect-ratio: auto !important;
+  min-height: 0;
+}
+
+.srv6-flow--failed .srv6-flow__canvas {
+  display: none;
+}
+
+/* Full screen: native, or a fixed overlay where the element API is missing. */
+.srv6-flow:fullscreen,
+.srv6-flow.srv6-flow--full {
+  max-height: none !important;
+  margin: 0;
+  padding: 0 8px var(--srv6-flow-toolbar);
+  background: var(--md-default-bg-color);
+}
+
+.srv6-flow.srv6-flow--full:not(:fullscreen) {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  box-sizing: border-box;
+  aspect-ratio: auto !important;
+  height: 100%;
+}
+
+.srv6-flow:fullscreen {
+  box-sizing: border-box;
+}
+
+.srv6-flow .react-flow__pane {
+  cursor: default;
+}
+
+.srv6-flow .react-flow__pane.draggable {
+  cursor: grab;
+}
+
+.srv6-flow .react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+.srv6-flow .react-flow__node {
+  cursor: default;
+  transition: opacity 0.15s ease;
+}
+
+/* Nodes */
+
+.srv6-flow__node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.srv6-flow__shape {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  fill: var(--md-mermaid-node-bg-color);
+  stroke: var(--md-mermaid-node-fg-color);
+  stroke-width: 1px;
+}
+
+.srv6-flow__label,
+.srv6-flow__group-label,
+.srv6-flow__edge-label {
+  font-family: var(--md-mermaid-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.srv6-flow__label {
+  position: relative;
+  color: var(--md-mermaid-label-fg-color);
+}
+
+.srv6-flow__line {
+  display: block;
+}
+
+.srv6-flow__label a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.srv6-flow__label a:hover {
+  color: var(--md-accent-fg-color);
+}
+
+/* Subgraphs */
+
+.srv6-flow__group {
+  box-sizing: border-box;
+  background: var(--md-default-fg-color--lightest);
+  border: 1px solid var(--md-default-fg-color--lighter);
+}
+
+.srv6-flow__group-label {
+  padding-top: 8px;
+  color: var(--md-mermaid-label-fg-color);
+}
+
+/* Edges */
+
+.srv6-flow__edge path {
+  stroke: var(--md-mermaid-edge-color);
+  stroke-width: 2px;
+  transition: opacity 0.15s ease, stroke-width 0.15s ease;
+}
+
+.srv6-flow__edge--dotted path {
+  stroke-dasharray: 3 3;
+}
+
+.srv6-flow__edge--thick path {
+  stroke-width: 3.5px;
+}
+
+.srv6-flow__marker {
+  fill: var(--md-mermaid-edge-color);
+  stroke: none;
+}
+
+.srv6-flow__edge .srv6-flow__marker--cross {
+  fill: none;
+  stroke: var(--md-mermaid-edge-color);
+  stroke-width: 2px;
+  stroke-dasharray: none;
+}
+
+.srv6-flow__edge-label {
+  position: absolute;
+  box-sizing: border-box;
+  padding: 0 4px;
+  color: var(--md-mermaid-edge-color);
+  background: var(--md-mermaid-label-bg-color);
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+/* Edges carry zIndex 1 to stay above subgraph boxes; labels go above them. */
+.srv6-flow .react-flow__edgelabel-renderer {
+  z-index: 2;
+}
+
+/* Hover: the node, its neighbours and the edges between them stay lit. */
+
+.srv6-flow .react-flow__node.is-dim,
+.srv6-flow__edge.is-dim,
+.srv6-flow__edge-label.is-dim {
+  opacity: 0.25;
+}
+
+.srv6-flow__edge.is-hot path {
+  stroke-width: 3px;
+}
+
+.srv6-flow__edge--thick.is-hot path {
+  stroke-width: 4.5px;
+}

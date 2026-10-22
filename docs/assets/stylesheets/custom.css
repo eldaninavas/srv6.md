@@ -556,6 +556,37 @@
   --md-mermaid-label-fg-color: #f5eefa;
 }
 
+/* Diagrams converted at build time (tools/diagrams/, hooks/diagrams.py). The
+   React Flow styles ship with the diagram bundle; these apply before it loads.
+   .srv6-flow__text is the diagram as text for screen readers and crawlers.
+   The inline aspect-ratio/max-height (set per diagram) size the view; the
+   padding holds the toolbar, so nothing shifts when the bundle mounts. */
+.srv6-flow {
+  --srv6-flow-toolbar: 32px;
+  box-sizing: content-box;
+  margin: 1em 0;
+  padding-bottom: var(--srv6-flow-toolbar);
+}
+
+.srv6-flow__text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.srv6-seq {
+  margin: 1em 0;
+  line-height: normal;
+}
+
+.srv6-seq svg {
+  display: block;
+  height: auto;
+}
+
 .mermaid {
   background: transparent !important;
   font-family: inherit !important;
