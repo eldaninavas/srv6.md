@@ -1,7 +1,7 @@
 ---
 title: Containerlab
 seo_title: "SRv6 Lab with Containerlab: Step-by-Step Topology"
-description: "Build a free SRv6 lab with Containerlab and FRRouting: IS-IS with SRv6 uSID locators, an explicit SRv6 path steered through a transit node, and packet-level verification of the SRH."
+description: "Free SRv6 lab with Containerlab and FRRouting: IS-IS uSID locators, an SRv6 path steered through a transit node, and SRH checks at packet level."
 tags:
   - labs
   - containerlab
@@ -405,6 +405,7 @@ docker exec clab-srv6-lab-r3 ip -6 route del fc00:0:3:e000::/128
 ## Further Reading
 
 - :material-arrow-right: [SRH Packet Walk](../topics/srh-packet-walk.md)
+- :material-arrow-right: [SRv6 Packet Captures](pcaps.md) - Reference pcaps with Wireshark SRH filters
 - :material-arrow-right: [SRv6 Network Programming](../topics/network-programming.md)
 - :material-arrow-right: [Linux Kernel SRv6](../implementations/linux-kernel.md)
 - :material-arrow-right: [FRRouting](../implementations/frrouting.md)
