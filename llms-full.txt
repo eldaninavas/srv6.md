@@ -12988,7 +12988,7 @@ Nine annotated SRv6 pcaps from a Linux lab, with Wireshark SRH filters and the s
 
 URL: https://srv6.md/labs/containerlab/
 Path: labs/containerlab.md
-Summary: Build a free SRv6 lab with Containerlab and FRRouting: IS-IS with SRv6 uSID locators, an explicit SRv6 path steered through a transit node, and packet-level verification of the SRH.
+Summary: Free SRv6 lab with Containerlab and FRRouting: IS-IS uSID locators, an SRv6 path steered through a transit node, and SRH checks at packet level.
 
 # SRv6 Lab with Containerlab
 
@@ -13387,6 +13387,7 @@ docker exec clab-srv6-lab-r3 ip -6 route del fc00:0:3:e000::/128
 ## Further Reading
 
 - [SRH Packet Walk](https://srv6.md/topics/srh-packet-walk/)
+- [SRv6 Packet Captures](https://srv6.md/labs/pcaps/) - Reference pcaps with Wireshark SRH filters
 - [SRv6 Network Programming](https://srv6.md/topics/network-programming/)
 - [Linux Kernel SRv6](https://srv6.md/implementations/linux-kernel/)
 - [FRRouting](https://srv6.md/implementations/frrouting/)

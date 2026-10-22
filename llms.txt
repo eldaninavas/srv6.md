@@ -78,7 +78,7 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 ## Labs
 
 - [SRv6 Labs: Free Hands-On Labs with netlab, Containerlab, GNS3](https://srv6.md/labs/): Practice SRv6 hands-on with free virtual labs: netlab, Containerlab and GNS3 environments using FRR, Linux and vendor router images. No hardware required.
-- [SRv6 Lab with Containerlab: Step-by-Step Topology](https://srv6.md/labs/containerlab/): Build a free SRv6 lab with Containerlab and FRRouting: IS-IS with SRv6 uSID locators, an explicit SRv6 path steered through a transit node, and packet-level verification of the SRH.
+- [SRv6 Lab with Containerlab: Step-by-Step Topology](https://srv6.md/labs/containerlab/): Free SRv6 lab with Containerlab and FRRouting: IS-IS uSID locators, an SRv6 path steered through a transit node, and SRH checks at packet level.
 - [SRv6 Lab with GNS3: Emulating Vendor Routers](https://srv6.md/labs/gns3/): Emulate an SRv6 network in GNS3 with vendor router images such as Cisco IOS-XR and Juniper Junos: prerequisites, topology design and practical lab tips.
 - [SRv6 Lab with netlab: Ready-Made Multi-Vendor Topologies](https://srv6.md/labs/netlab/): Spin up preconfigured SRv6 labs with netlab: IS-IS, unnumbered core, multivendor, IPv4 islands, BGP-free core and L3VPN topologies on FRR, IOS XE/XR and Junos.
 - [SRv6 pcap Library: Wireshark Captures and SRH Filters](https://srv6.md/labs/pcaps/): Free annotated SRv6 packet captures (pcapng) from a real Linux lab: H.Encaps, End.X, End.DT4/DT6/DT46, End.DX2, uSID, HMAC, and SRH Wireshark filters.
