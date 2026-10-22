@@ -54,6 +54,12 @@ How far has SRv6 come? Our data report counts 23 SRv6 RFCs, 65 active IETF draft
 
 [Read the State of SRv6 2026 report](https://srv6.md/reports/state-of-srv6-2026/)
 
+## SRv6 Documentation and White Papers
+
+The [SRv6 documentation index](https://srv6.md/docs/) links the official SRv6 docs of every vendor and open-source project, from Cisco, Juniper and Nokia configuration guides to the Linux kernel, FRRouting and SONiC. The [SRv6 white paper library](https://srv6.md/white-papers/) collects every public SRv6 white paper with a summary, and the free [SRv6 White Paper 2026](https://srv6.md/white-papers/srv6-white-paper-2026/) covers architecture, design and migration from MPLS.
+
+[SRv6 documentation](https://srv6.md/docs/)    [SRv6 white paper (PDF)](https://srv6.md/white-papers/srv6-white-paper-2026/)
+
 ## Explore
 
 ### Topics
@@ -394,6 +400,412 @@ Publicly documented users include telecom operators such as China Mobile, SoftBa
 ### Which vendors support SRv6 uSID?
 
 Cisco IOS-XR and IOS-XE, Juniper Junos, Arista EOS, Nokia SR OS, FRRouting, the Linux kernel and FD.io VPP document uSID (NEXT-C-SID) support. Huawei VRP and SONiC support it partially. See the [support matrix](https://srv6.md/implementations/support-matrix/) for releases and sources.
+
+
+---
+
+# SRv6 Documentation: Official Docs for Every Vendor and Project
+
+URL: https://srv6.md/docs/
+Path: docs/index.md
+Summary: SRv6 documentation index: official SRv6 configuration guides from Cisco, Juniper, Nokia, Arista, 6WIND and H3C, plus Linux, FRRouting, VPP, SONiC, SAI, IETF and IANA.
+
+# SRv6 Documentation
+
+**The index of SRv6 documentation: the SRv6.md learning path, plus the official SRv6 configuration guides and reference docs of every vendor and open-source project.** Each link goes straight to the SRv6 chapter, not to a generic landing page. Every link was checked on 22 October 2026, against the latest release we could find.
+
+!!! tip "Looking for one place to learn SRv6?"
+    Start with [What is SRv6?](https://srv6.md/topics/what-is-srv6/), then follow the [SRv6 fundamentals learning path](https://srv6.md/topics/). For design and migration decisions, read the free [SRv6 White Paper 2026](https://srv6.md/white-papers/srv6-white-paper-2026/). Every other public white paper is in the [SRv6 white paper library](https://srv6.md/white-papers/).
+
+## SRv6.md documentation
+
+Vendor-neutral documentation, written for engineers, with RFC references on every page.
+
+| Area | Start here | Then |
+|------|-----------|------|
+| Fundamentals | [What is SRv6?](https://srv6.md/topics/what-is-srv6/) | [SID structure](https://srv6.md/topics/sid-structure/), [SRH and packet walk](https://srv6.md/topics/srh-packet-walk/), [network programming](https://srv6.md/topics/network-programming/), [glossary](https://srv6.md/topics/glossary/) |
+| Compression | [uSID](https://srv6.md/topics/usid-compression/) | [SID decoder](https://srv6.md/tools/sid-decoder/), [RFC 9800](https://srv6.md/rfcs/rfc9800/) |
+| Control plane | [Flex-Algorithm](https://srv6.md/topics/flex-algorithm/) | [TI-LFA](https://srv6.md/topics/ti-lfa/), [SR Policy](https://srv6.md/topics/sr-policy/), [BGP overlay services](https://srv6.md/topics/bgp-overlay-services/) |
+| Operations | [OAM and troubleshooting](https://srv6.md/topics/oam-troubleshooting/) | [SRPM](https://srv6.md/topics/srpm/), [telemetry](https://srv6.md/topics/telemetry/), [security](https://srv6.md/topics/security/) |
+| Migration | [Migration from MPLS](https://srv6.md/topics/interworking-migration/) | [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) |
+| Vendors | [Support matrix](https://srv6.md/implementations/support-matrix/) | [Implementations](https://srv6.md/implementations/) |
+| Hands-on | [Labs](https://srv6.md/labs/) | [Containerlab](https://srv6.md/labs/containerlab/), [netlab](https://srv6.md/labs/netlab/), [packet captures](https://srv6.md/labs/pcaps/) |
+| AI networking | [SRv6 for AI](https://srv6.md/ai/) | [MRC and SRv6](https://srv6.md/ai/mrc/), [AI fabric design](https://srv6.md/ai/ai-fabric-design/) |
+| Standards | [RFCs & Standards](https://srv6.md/rfcs/) | [State of SRv6 2026](https://srv6.md/reports/state-of-srv6-2026/) |
+
+## Vendor documentation
+
+### Cisco IOS XR
+
+Our overview: [Cisco IOS-XR](https://srv6.md/implementations/cisco-ios-xr/).
+
+| Document | Platform and release | Covers |
+|----------|---------------------|--------|
+| [Segment Routing v6 Configuration Guide for Cisco 8000 Series Routers](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/SRv6/srv6-config-guide-cisco8000.html) | Cisco 8000, IOS XR 26.3.1 | The dedicated SRv6 guide: uSID, locators, IS-IS, Flex-Algo, TI-LFA, PCEP, SRv6-TE, L2/L3VPN, SRv6–MPLS gateways, performance measurement, migration |
+| [SRv6 Fundamentals and Key Concepts](https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/SRv6/srv6-config-guide-cisco8000/srv6-fundamentals-and-key-concepts.html) | Cisco 8000, 26.3.1 | SRH, SIDs, node roles, headend and endpoint behaviors, SID management |
+| [Configure SRv6 with Micro-SIDs (NCS 5500/5700)](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx/configure-srv6-micro-sid.html) | NCS 5500 and NCS 5700, 26.x | Locators, IS-IS, BGP services and verification. Part of the [NCS 5500 Segment Routing guide](https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/segment-routing/26xx/configuration/guide/b-segment-routing-cg-ncs5500-26xx.html) |
+| [Configure SRv6 with Micro-SIDs (ASR 9000)](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/26xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-26xx/configure-srv6-micro-sid.html) | ASR 9000, 26.x | uSID concepts, locators, IS-IS and BGP services. Part of the [ASR 9000 Segment Routing guide](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/26xx/segment-routing/configuration/guide/b-segment-routing-cg-asr9000-26xx.html) |
+
+### Cisco IOS XE and NX-OS
+
+Our overview: [Cisco IOS-XE](https://srv6.md/implementations/cisco-ios-xe/).
+
+| Document | Platform and release | Covers |
+|----------|---------------------|--------|
+| [Segment Routing over IPv6 (IOS XE 17)](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book/m_srv6.html) | ASR 1000, Catalyst 8000V/8200/8300/8500, 17.12 to 17.16 | The main IOS XE SRv6 chapter. The full [IOS XE 17 Segment Routing guide](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/seg_routing/configuration/xe-17/segrt-xe-17-book.html) adds uLoop avoidance, TI-LFA, Flex-Algo, path MTU and multicast VPN over SRv6 |
+| [Cisco Nexus 9000 Series NX-OS SRv6 Configuration Guide, Release 10.6(x)](https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/106x/configuration/srv6/cisco-nexus-9000-series-nx-os-srv6-configuration-guide-106x.html) | Nexus 9000, NX-OS 10.6(x) | SRv6, SRv6-TE and SRv6 OAM in the data center |
+
+### Juniper
+
+Our overview: [Juniper](https://srv6.md/implementations/juniper/).
+
+| Document | Platform and release | Covers |
+|----------|---------------------|--------|
+| [Segment Routing User Guide](https://www.juniper.net/documentation/us/en/software/junos/segment-routing/index.html) | Junos OS, current | Landing page for SR-MPLS, SRv6 and micro-SIDs |
+| [SRv6 Network Programming and Layer 3 Services in BGP Networks](https://www.juniper.net/documentation/us/en/software/junos/segment-routing/topics/topic-map/bgp-srv6-network-programming.html) | Junos OS (MX) | BGP L3VPN over SRv6 with End.DT4 and End.DT6 SIDs |
+| [Understanding SRv6 Network Programming in IS-IS Networks](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/isis-srv6-network-programming.html) | Junos OS 20.3R1 and later | IS-IS SRv6 concepts and configuration |
+| [SRv6 in AI-ML Data Centers](https://www.juniper.net/documentation/us/en/software/junos/ai-ml-evo/topics/concept/srv6-overview.html) | Junos OS Evolved | SRv6 in AI and ML data center fabrics |
+| [Day One: Introduction to SRv6](https://www.juniper.net/documentation/en_US/day-one-books/DayOne-Intro-SRv6.pdf) (PDF) | Junos up to 22.3 | Introductory book, from basics to interworking. Older than the guides above |
+
+### Nokia
+
+Our overview: [Nokia SR OS](https://srv6.md/implementations/nokia-sros/).
+
+| Document | Platform and release | Covers |
+|----------|---------------------|--------|
+| [Segment routing with IPv6 data plane (SRv6)](https://documentation.nokia.com/sr/26-7/7x50-shared/segment-routing-pce-user/segment-rout-with-ipv6-data-plane-srv6.html) | SR OS 26.7 | SRv6 encapsulation, SID encoding, SRH and PCE, in the Segment Routing and PCE User Guide |
+| [Segment Routing and PCE Advanced Configuration Guide for MD CLI](https://documentation.nokia.com/acg/26-3-3/pdf/Segment_Routing_and_PCE_Adv_Config_Guide_for_MD_CLI.pdf) (PDF) | SR OS up to 26.3.R3 | Worked examples: SRv6 base encapsulation, SRv6 LFA, SRv6 policies for L2 and L3 services |
+| [Segment routing with IPv6 data plane (SRv6), SR Linux](https://documentation.nokia.com/srlinux/26-7/books/segment-routing/segment_routing_with_ipv6_data_plane_srv6.html) | SR Linux 26.7 | SRv6 on Nokia's data center NOS |
+
+### Arista
+
+Our overview: [Arista EOS](https://srv6.md/implementations/arista-eos/).
+
+| Document | Platform and release | Covers |
+|----------|---------------------|--------|
+| [Segment Routing Over IPv6 (SRv6)](https://www.arista.com/en/um-eos/eos-segment-routing-over-ipv6-srv6) | EOS 4.36.2F user manual | uSID, locators, SRv6 ping and traceroute, show commands |
+| [SRv6 technical notes (TOI)](https://www.arista.com/en/support/toi/tag/srv6) | EOS 4.35.2F to 4.36.2F | Index of feature notes for IS-IS SRv6, static uA, counters and SSU. The notes themselves need an Arista login |
+
+### Huawei and H3C
+
+| Document | Platform and release | Covers |
+|----------|---------------------|--------|
+| [What Is SRv6? How Does SRv6 Work?](https://info.support.huawei.com/info-finder/encyclopedia/en/SRv6.html) | Huawei, not version-specific | Huawei's public explainer. NetEngine configuration guides are on the Huawei support portal, which requires an account |
+| [What Is G-SRv6?](https://info.support.huawei.com/info-finder/encyclopedia/en/G-SRv6.html) | Huawei, not version-specific | Huawei's 32-bit compressed SIDs, standardized as REPLACE-C-SID in [RFC 9800](https://srv6.md/rfcs/rfc9800/) |
+| [SRv6 configuration (VSR)](https://www.h3c.com/en/d_202507/2582224_294551_0.htm) | H3C VSR, Comware V7, July 2025 | SRv6 configuration chapter |
+| [SRv6 configuration (MSR 5600)](https://www.h3c.com/en/d_202507/2577522_294551_0.htm) | H3C MSR 5600, Comware V7, July 2025 | SRv6 configuration chapter |
+| [SRv6 configuration (CR16000-F)](https://www.h3c.com/en/d_202212/1732798_294551_0.htm) | H3C CR16000-F, December 2022 | SRv6 on H3C carrier routers |
+
+### Software routers
+
+| Document | Platform and release | Covers |
+|----------|---------------------|--------|
+| [SRv6 (6WIND VSR)](https://doc.6wind.com/new/vsr-3/latest/vsr-guide/user-guide/cli/routing/srv6/overview.html) | 6WIND VSR 3.12 | Locators, compressed and uncompressed SIDs, source encapsulation. See also [IS-IS SRv6](https://doc.6wind.com/new/vsr-3/latest/vsr-guide/user-guide/cli/routing/isis/segmentroutingipv6.html) and [BGP VPNs](https://doc.6wind.com/new/vsr-3/latest/vsr-guide/user-guide/cli/routing/bgp/vpn/overview.html) |
+| [Segment Routing v6 Configuration (OcNOS-SP)](https://docs.ipinfusion.com/sp-6.3.4-configuration-guide/OcNOS-SP/SegRoute-Config/SR_v6.html) | IP Infusion OcNOS-SP 6.3.4 | SRv6 with IS-IS, locators, VPNv4 SRv6 SIDs and SR-TE |
+
+## Open-source documentation
+
+| Project | Document | Covers | Our page |
+|---------|----------|--------|----------|
+| Linux kernel | [Seg6 sysctl variables](https://docs.kernel.org/networking/seg6-sysctl.html) | `seg6_enabled`, HMAC and flow label settings | [Linux kernel](https://srv6.md/implementations/linux-kernel/) |
+| iproute2 | [ip-route(8)](https://man7.org/linux/man-pages/man8/ip-route.8.html) and [ip-sr(8)](https://man7.org/linux/man-pages/man8/ip-sr.8.html) | `encap seg6` and `seg6local` actions, uSID flavors, tunnel source and HMAC | [Linux kernel](https://srv6.md/implementations/linux-kernel/) |
+| FRRouting | [Zebra: Segment-Routing IPv6](https://docs.frrouting.org/en/latest/zebra.html#segment-routing-ipv6), [IS-IS SRv6](https://docs.frrouting.org/en/latest/isisd.html#segment-routing-over-ipv6-srv6), [BGP L3 services over SRv6](https://docs.frrouting.org/en/latest/bgp.html#bgp-based-l3-service-over-srv6), [static SRv6 SIDs](https://docs.frrouting.org/en/latest/static.html#srv6-static-sids-commands) | Locators, IS-IS, L3VPN and static SIDs | [FRRouting](https://srv6.md/implementations/frrouting/) |
+| FD.io VPP | [SRv6: Segment Routing for IPv6](https://s3-docs.fd.io/vpp/26.10/developer/corefeatures/sr/sr_doc.html) and [SRv6 plugins](https://s3-docs.fd.io/vpp/26.10/developer/plugins/srv6/index.html) | Local SIDs, policies, steering, SRv6 proxies and mobile plugins | |
+| SONiC | [SRv6 HLD](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_hld.md) and [related designs](https://github.com/sonic-net/SONiC/tree/master/doc/srv6) | SRv6, uSID, static SRv6 configuration and SRv6 VPN on SONiC | [SONiC](https://srv6.md/implementations/sonic/) |
+| SAI | [SAI IPv6 Segment Routing](https://github.com/opencomputeproject/SAI/blob/master/doc/SAI-Proposal-IPv6_Segment_Routing-1.md) and [SRv6 VPN](https://github.com/opencomputeproject/SAI/blob/master/doc/SAI-IPv6-Segment-Routing-VPN.md) | The switch ASIC API for SRv6 | [SONiC & SAI](https://srv6.md/topics/sonic-sai/) |
+| Cilium | [cilium-dbg bpf srv6](https://docs.cilium.io/en/stable/cmdref/cilium-dbg_bpf_srv6/) | SRv6 BPF map commands (open-source Cilium has no SRv6 feature guide) | [Cilium](https://srv6.md/implementations/cilium/) |
+| GoBGP | [MUP SAFI](https://github.com/osrg/gobgp/blob/master/docs/sources/srv6_mup.md) and [BGP-LS](https://github.com/osrg/gobgp/blob/master/docs/sources/bgp-ls.md) | SRv6 Mobile User Plane and SRv6 fields in BGP-LS | |
+| Vinbero | [README](https://github.com/takehaya/Vinbero) | XDP/TC SRv6 data plane with built-in GoBGP | [Vinbero](https://srv6.md/implementations/vinbero/) |
+| zebra-rs | [SRv6 chapter](https://github.com/zebra-rs/zebra-rs/blob/main/book/src/ch-04-00-srv6.md) | SRv6 and uSID in the Rust routing stack | [zebra-rs](https://srv6.md/implementations/zebra-rs/) |
+| P4 | [ngsdn-tutorial: SRv6 exercise](https://github.com/opennetworkinglab/ngsdn-tutorial/blob/advanced/EXERCISE-6.md) | SRv6 in a P4 pipeline (ONF tutorial) | |
+| Wireshark | [Routing Header display filters](https://www.wireshark.org/docs/dfref/i/ipv6.routing.html) | `ipv6.routing.srh.*` fields for filtering SRv6 captures | [Packet captures](https://srv6.md/labs/pcaps/) |
+
+## Standards and registries
+
+| Source | Link | Covers |
+|--------|------|--------|
+| IETF SPRING WG | [datatracker](https://datatracker.ietf.org/wg/spring/about/) | Segment Routing and SRv6 architecture |
+| IETF srv6ops WG | [datatracker](https://datatracker.ietf.org/wg/srv6ops/about/) | SRv6 operations and deployment practices |
+| IANA | [Segment Routing registries](https://www.iana.org/assignments/segment-routing/segment-routing.xhtml#srv6-endpoint-behaviors) | SRv6 Endpoint Behavior codepoints |
+| IANA | [IPv6 Parameters](https://www.iana.org/assignments/ipv6-parameters/ipv6-parameters.xhtml) | Routing Type 4 (SRH), SRH flags and TLVs |
+| SRv6.md | [RFCs & Standards](https://srv6.md/rfcs/) | Every SRv6 RFC explained, from [RFC 8754](https://srv6.md/rfcs/rfc8754/) to [RFC 10038](https://srv6.md/rfcs/rfc10038/) |
+
+## Missing documentation?
+
+This index only links public documentation that loads without an account. Some vendors (DriveNets, Arrcus, ZTE, and Huawei's configuration guides) keep their SRv6 documentation behind a customer login. If you find a public SRv6 guide that is missing, or a link that broke after a new release, open an issue or pull request on [GitHub](https://github.com/eldaninavas/srv6.md).
+
+## Further Reading
+
+- [SRv6 White Paper 2026](https://srv6.md/white-papers/srv6-white-paper-2026/) - Architecture, design and deployment, free PDF
+- [SRv6 white paper library](https://srv6.md/white-papers/) - Every public SRv6 white paper with a summary
+- [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - Feature support per vendor and project
+- [SRv6 fundamentals](https://srv6.md/topics/) - The learning path
+
+
+---
+
+# SRv6 White Papers: Every Public SRv6 White Paper and PDF (2026)
+
+URL: https://srv6.md/white-papers/
+Path: white-papers/index.md
+Summary: Library of public SRv6 white papers and technical PDFs: Cisco, Nokia, Juniper, H3C, ZTE, IETF srv6ops, ETSI, OpenAI MRC and academic papers, each with a summary.
+
+# SRv6 White Papers
+
+**Every public white paper and in-depth technical paper on Segment Routing over IPv6 (SRv6), in one place.** Each entry links to the original publisher and has a short summary written by the SRv6.md community, so you can pick the right paper before downloading 250 pages. Last checked: 22 October 2026.
+
+!!! tip "Start here: the SRv6.md white paper"
+    **[SRv6 White Paper 2026: Architecture, Design and Deployment](https://srv6.md/white-papers/srv6-white-paper-2026/)** is a vendor-neutral paper for architects: why operators adopt SRv6, uSID addressing, control plane choices, MTU, security, migration from MPLS and AI fabrics. Free, MIT licensed, [available as PDF](../assets/papers/srv6-white-paper-2026.pdf).
+
+## Vendor white papers
+
+| Paper | Publisher | Year | Format | What it covers |
+|-------|-----------|:----:|:------:|----------------|
+| [Building Quantum-Resilient Mission-Critical Networks with SRv6](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/Building_Quantum-Resilient_Mission-Critical_Networks_with_SRv6.html) | Cisco (Validated Design) | 2026 | HTML | An SRv6 uSID (F3216) core on Cisco 8000 Secure Routers with IOS-XE, replacing MPLS/RSVP-TE, with TE, Flex-Algo slicing, TI-LFA, multicast VPN and post-quantum MACsec, IPsec and SSH. Includes complete site configurations. Our summary: [Mission-Critical Networks](https://srv6.md/use-cases/mission-critical/). |
+| [XR Multicast VPN with SRv6 — Dual Stack White Paper](https://www.cisco.com/c/en/us/solutions/collateral/service-provider/xr-multicast-vpn-srv6-dual-stack-wp.html) | Cisco | 2024 | HTML, PDF | How to keep unicast VPNs on an SRv6 core while multicast VPN runs over a separate IPv4 PIM core on IOS XR, with the BGP session split, configuration and limitations. |
+| [Segment Routing IPv6 (SRv6) on Nokia routing platforms](https://www.nokia.com/asset/213966/) | Nokia (application note) | 2024 | PDF | The SRv6 data plane, SID structure and uSID, and the SR OS feature set (VPN services, TE, protection, OAM, SR-MPLS interworking), applied to mobile backhaul and multi-domain IPv6 backbones. |
+| [Day One: Introduction to SRv6](https://www.juniper.net/documentation/en_US/day-one-books/DayOne-Intro-SRv6.pdf) | Juniper Networks Books | 2022 | PDF, 253 pp | A hands-on Junos book: migration preparation, SRv6 transport and services, TI-LFA, SRv6–MPLS interworking, Flex-Algo, micro-loop avoidance, SRv6-TE, EVPN-VPWS, multi-domain and cRPD. |
+| [SRv6 Technology White Paper](https://www.h3c.com/en/Support/Resource_Center/EN/Home/Public/00-Public/Technical_Documents/Technology_Literature/Technology_White_Papers/SRv6_Technology_WP-18617/?CHID=1103560) | New H3C Technologies | 2024 | HTML, PDF | Protocol reference for the SRH, SID structure and flavors, IS-IS SRv6 TLVs, G-SRv6 (32-bit G-SID) compression, BGP-EPE and BGP-LS for SRv6. |
+| [Research and Deployment of SRv6 Header Compression Technology](https://www.zte.com.cn/global/about/magazine/zte-technologies/2022/2-en/special-topic/2.html) | ZTE | 2022 | HTML | Why full 128-bit SIDs cost bandwidth and chip resources, how G-SRv6 compresses them, how it compares with uSID, and China Mobile trials in Henan and Fujian. |
+| [Segment Routing over IPv6 (SRv6)](https://xflowresearch.com/wp-content/uploads/2023/05/SRV6_Paper_WD.pdf) | xFlow Research | 2023 | PDF, 28 pp | A tutorial paper on SR architecture, the SRH and its TLVs, SID format and behaviors, with the Bell Canada uSID deployment and open-source data planes (Linux, VPP). |
+
+## Operator and industry papers
+
+| Paper | Publisher | Year | Format | What it covers |
+|-------|-----------|:----:|:------:|----------------|
+| [Compressed SRv6 Deployment and Operations White Paper](https://ietf-wg-srv6ops.github.io/assets/Copy%20of%20Compressed%20SRv6%20Deployment%20and%20Operations%20White%20Paper.pdf) | China Mobile, Bell Canada, Swisscom, Deutsche Telekom, Alibaba, MTN, Telefonica (IETF srv6ops) | 2025 | PDF, 33 pp | Written by operators: both compression flavors of [RFC 9800](https://srv6.md/rfcs/rfc9800/) (uSID and G-SRv6), interop history, SID planning, inter-AS design, visibility, and case studies from China Mobile and an African operator. The most practical operations paper available. |
+| [EANTC Transport & Cloud Networks Interop Test Report 2026](https://eantc.de/wp-content/uploads/2026/03/EANTC-Interop2026-TestReport.pdf) | EANTC | 2026 | PDF, 16 pp | Independent multi-vendor interop results: SRv6 L3VPN, EVPN and IRB, BGP PIC with summarized locators, S-BFD, Flex-Algo, uSID SR Policies via PCEP and SRv6–SR-MPLS interworking. |
+| [Static Configuration of SRv6 in SONiC (HLD)](https://github.com/sonic-net/SONiC/blob/master/doc/srv6/srv6_static_config_hld.md) | SONiC project | 2024 | HTML | Design for configuring SRv6 locators and uSID SIDs statically in SONiC without BGP, for controller-driven fabrics. See [SONiC & SAI](https://srv6.md/topics/sonic-sai/). |
+| [SRv6: A new approach for the evolution of IP networks](https://www.segment-routing.net/images/2019-IHSM-SRv6-08-06-19.pdf) | IHS Markit | 2019 | PDF, 4 pp | A short analyst brief on SRv6 for 5G transport: fewer protocols, network programming and SDN path computation. Useful for the business case. |
+
+## Standards bodies
+
+| Paper | Publisher | Year | Format | What it covers |
+|-------|-----------|:----:|:------:|----------------|
+| [Compressed SRv6 Deployment and Operations White Paper (slides)](https://datatracker.ietf.org/meeting/123/materials/slides-123-srv6ops-31-compressed-srv6-deployment-and-operations-white-paper-05) | IETF srv6ops WG | 2025 | PDF, 12 pp | The IETF 123 summary of the operators' white paper above. |
+| [GR IPE 005: 5G Transport over IPv6 and SRv6](https://www.etsi.org/deliver/etsi_gr/IPE/001_099/005/01.01.01_60/gr_IPE005v010101p.pdf) | ETSI ISG IPE | 2022 | PDF, 42 pp | 5G service requirements, network prerequisites and an SRv6 transport design for mobile backhaul. See [5G Transport](https://srv6.md/use-cases/5g-transport/). |
+| [GR IPE 009: SRv6 based SFC for Value-Added Service in an Operator Network](https://www.etsi.org/deliver/etsi_gr/IPE/001_099/009/01.01.01_60/gr_IPE009v010101p.pdf) | ETSI ISG IPE | 2022 | PDF, 30 pp | On-demand service function chains with SRv6 and SRv6-aware firewalls. See [Service Chaining](https://srv6.md/use-cases/service-chaining/). |
+
+The RFCs themselves are summarized in the [RFCs & Standards](https://srv6.md/rfcs/) section, starting with [RFC 8754](https://srv6.md/rfcs/rfc8754/) (SRH), [RFC 8986](https://srv6.md/rfcs/rfc8986/) (network programming) and [RFC 9800](https://srv6.md/rfcs/rfc9800/) (compression).
+
+## AI networking
+
+| Paper | Publisher | Year | Format | What it covers |
+|-------|-----------|:----:|:------:|----------------|
+| [Resilient AI Supercomputer Networking using MRC and SRv6](https://cdn.openai.com/pdf/resilient-ai-supercomputer-networking-using-mrc-and-srv6.pdf) | OpenAI, Microsoft, AMD, NVIDIA, Broadcom | 2026 | PDF, 18 pp | Production GPU training clusters built from the MRC multipath transport, multi-plane two-tier Clos fabrics and static SRv6 uSID source routing, with failed paths bypassed in tens of microseconds. Also on [arXiv](https://arxiv.org/abs/2605.04333). Our explainer: [MRC and SRv6](https://srv6.md/ai/mrc/). |
+| [The Multipath Reliable Connection (MRC) Transport](https://arxiv.org/abs/2606.18170) | OpenAI, Microsoft, NVIDIA, AMD, Broadcom et al. | 2026 | HTML, PDF | The companion paper on MRC itself: per-packet multipath over RoCEv2, congestion control and loss recovery. Mostly about the transport; SRv6 appears as the path encoding. |
+
+## Academic papers and surveys
+
+| Paper | Authors | Year | Format | What it covers |
+|-------|---------|:----:|:------:|----------------|
+| [Segment Routing: a Comprehensive Survey of Research Activities, Standardization Efforts and Implementation Results](https://arxiv.org/abs/1904.03471) | Ventre, Salsano, Polverini, Cianfrani, Abdelsalam, Filsfils, Camarillo, Clad | 2019 | HTML, PDF | The reference survey of SR and SRv6: standards, research, open-source and hardware implementations. |
+| [Micro SIDs: a solution for Efficient Representation of Segment IDs in SRv6 Networks](https://arxiv.org/abs/2007.12286) | Tulumello, Mayer, Bonola, Lungaroni, Scarpitta, Salsano, Abdelsalam, Camarillo, Dukes, Clad, Filsfils | 2020 | HTML, PDF | The paper that introduced uSID, with Linux, VPP and P4 implementations and their processing cost. See [uSID Compression](https://srv6.md/topics/usid-compression/). |
+| [Implementing IPv6 Segment Routing in the Linux Kernel](https://www.irtf.org/anrw/2017/anrw17-final3.pdf) | Lebrun, Bonaventure (ANRW 2017) | 2017 | PDF | The first open-source SRv6 implementation, merged in Linux 4.10, with measurements of encapsulation and HMAC cost. See [Linux Kernel](https://srv6.md/implementations/linux-kernel/). |
+| [SRPerf: a Performance Evaluation Framework for IPv6 Segment Routing](https://arxiv.org/abs/2001.06182) | Abdelsalam, Ventre, Scarpitta, Mayer, Salsano, Camarillo, Clad, Filsfils | 2020 | HTML, PDF | An open benchmarking framework for SRv6 throughput and latency on Linux and VPP, which also found behaviors that were missing or wrong. |
+| [SDN Architecture and Southbound APIs for IPv6 Segment Routing Enabled Wide Area Networks](https://arxiv.org/abs/1810.06008) | Ventre, Tajiki, Salsano, Filsfils | 2018 | HTML, PDF | An SDN-controlled SRv6 WAN on Linux nodes with four southbound API options and an evaluation of control-plane performance. |
+| [SRv6: Is There Anybody Out There?](https://arxiv.org/abs/2205.04193) | Pădurean, Gasser, Bush, Feldmann (WTMC 2022) | 2022 | HTML, PDF | The first measurement study of SRv6 on the public Internet. It found almost no leaked SRv6 traffic, a useful data point for the [security](https://srv6.md/topics/security/) discussion. |
+
+## Missing a paper?
+
+This list only includes papers that are public and free to read. If you know one that is missing, or a link stops working, open an issue or pull request on [GitHub](https://github.com/eldaninavas/srv6.md).
+
+## Further Reading
+
+- [SRv6 White Paper 2026](https://srv6.md/white-papers/srv6-white-paper-2026/) - The SRv6.md white paper, free PDF
+- [SRv6 documentation index](https://srv6.md/docs/) - Official SRv6 docs for every vendor and open-source project
+- [State of SRv6 2026](https://srv6.md/reports/state-of-srv6-2026/) - Data report on standards, deployments and vendors
+- [RFCs & Standards](https://srv6.md/rfcs/) - Every SRv6 RFC explained
+
+
+---
+
+# SRv6 White Paper 2026: Architecture, Design and Deployment (PDF)
+
+URL: https://srv6.md/white-papers/srv6-white-paper-2026/
+Path: white-papers/srv6-white-paper-2026.md
+Summary: Free SRv6 white paper (PDF): why operators adopt Segment Routing over IPv6, uSID addressing, control plane design, migration from MPLS, security, operations and AI fabrics.
+
+# SRv6 White Paper 2026: Architecture, Design and Deployment
+
+**A vendor-neutral white paper on Segment Routing over IPv6 (SRv6) for network architects and engineering leaders.** It explains why operators adopt SRv6, how to design an SRv6 network, and what to plan for when migrating from MPLS. Edition of October 2026. Written by [Daniel Navas](https://srv6.md/community/about/) and the SRv6.md community, MIT licensed.
+
+[Download the PDF](../assets/papers/srv6-white-paper-2026.pdf) [All SRv6 white papers](https://srv6.md/white-papers/)
+
+## Executive summary
+
+- **SRv6 is source routing on plain IPv6.** The ingress node writes the path into the packet as a list of IPv6 addresses called segment identifiers (SIDs). Every other router either forwards on the destination address like any IPv6 packet, or executes the instruction that the SID encodes.
+- **It collapses the transport stack.** One IPv6 data plane replaces MPLS, LDP, RSVP-TE and most of the tunnelling protocols that sit on top of them. VPNs, traffic engineering, fast reroute and network slicing all use the same encapsulation.
+- **It is standardized and shipping.** [23 RFCs](https://srv6.md/reports/state-of-srv6-2026/#standards-23-rfcs) are explicitly about SRv6, and 8 of the 11 implementations tracked in the [support matrix](https://srv6.md/implementations/support-matrix/) support the compressed uSID encoding.
+- **It is in production at large scale.** [19 organizations](https://srv6.md/use-cases/deployments/) have documented SRv6 in their own networks, from SoftBank, Rakuten Mobile and Reliance Jio to Microsoft, Meta, Alibaba Cloud and OpenAI.
+- **uSID solved the overhead objection.** Compressed SIDs carry up to six hops in a single 128-bit address, so most paths need no extension header at all.
+- **AI changed the conversation in 2025–2026.** Hyperscalers now use static SRv6 source routing inside GPU training fabrics to spread traffic across many network planes and to steer around failed paths in tens of microseconds.
+
+## 1. Why operators adopt SRv6
+
+### The problem with today's transport
+
+A typical service provider or large enterprise backbone runs IS-IS or OSPF, plus LDP or RSVP-TE for MPLS labels, plus BGP for services, plus VXLAN or GRE wherever MPLS does not reach (data centers, public clouds, hosts). Every boundary between these domains needs stitching, and every protocol needs its own operations, troubleshooting and scaling plan.
+
+### What SRv6 changes
+
+| Area | MPLS / RSVP-TE / LDP | SRv6 |
+|------|----------------------|------|
+| Data plane | MPLS labels, one more header format | Native IPv6 |
+| Label distribution | LDP or RSVP-TE | None: SIDs are advertised by the IGP |
+| Traffic engineering | Per-path state in every transit router | State only at the headend |
+| Fast reroute | RSVP-TE FRR or LFA with coverage gaps | TI-LFA with full topology coverage |
+| Reach into DC, cloud and hosts | Needs gateways or VXLAN stitching | Any IPv6 node can be an endpoint |
+| Services | L3VPN, EVPN over MPLS | Same services, signalled by BGP with SRv6 SIDs |
+
+The operational gain comes from removing protocols, not from adding features. The [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) comparison covers the trade-offs in detail, including when SR-MPLS is still the right call.
+
+### Business drivers seen in public deployments
+
+- **5G transport and mobile user plane.** SoftBank built its 5G transport on SRv6 with Flex-Algo and later deployed the SRv6 Mobile User Plane on a commercial network. Rakuten Mobile migrated its IP transport to SRv6 uSID. See [5G transport](https://srv6.md/use-cases/5g-transport/).
+- **One fabric from data center to WAN.** Nebius runs SRv6 uSID L3VPN from the data center front end to the WAN and peering, replacing VXLAN-EVPN and SR-MPLS stitching, and Alibaba Cloud runs full-stack SRv6 on SONiC routers. See [deployments](https://srv6.md/use-cases/deployments/) and [cloud-native backbones](https://srv6.md/use-cases/cloud-native-backbone/).
+- **AI training networks.** Microsoft, OpenAI and Oracle use SRv6 inside GPU fabrics. Meta and Alibaba use it for traffic engineering between AI sites. See [SRv6 for AI](https://srv6.md/ai/).
+- **Public sector and mission-critical networks.** Rijkswaterstaat migrated its national infrastructure backbone from MPLS to SRv6 uSID. Cisco has published a validated design for quantum-safe SRv6 fabrics. See [mission-critical networks](https://srv6.md/use-cases/mission-critical/).
+
+## 2. Architecture in one page
+
+### SIDs are instructions
+
+An SRv6 SID is a 128-bit IPv6 address with three parts: a **locator** that routes the packet to the node, a **function** that tells the node what to do, and optional **arguments** ([SID structure](https://srv6.md/topics/sid-structure/)). [RFC 8986](https://srv6.md/rfcs/rfc8986/) defines the standard behaviors:
+
+| Behavior | What the endpoint does | Typical use |
+|----------|------------------------|-------------|
+| End (uN) | Move to the next segment | Node waypoint for traffic engineering |
+| End.X (uA) | Move to the next segment, send out a specific link | Adjacency steering, TI-LFA repair paths |
+| End.DT4 / End.DT6 / End.DT46 | Decapsulate and look up in a VRF | L3VPN |
+| End.DX4 / End.DX6 | Decapsulate and send to a fixed next hop | Per-CE VPN |
+| End.DT2U / End.DT2M | Decapsulate into a bridge domain | EVPN |
+| End.B6.Encaps | Apply a new SR Policy (binding SID) | Inter-domain, scaling |
+
+### The packet
+
+The headend encapsulates the customer packet in an outer IPv6 header. The **active segment is always the destination address**, so transit routers that know nothing about SRv6 forward the packet on a normal IPv6 lookup. When a path needs more SIDs than the destination address can carry, the headend adds a Segment Routing Header ([RFC 8754](https://srv6.md/rfcs/rfc8754/)) with the list. The [SRH packet walk](https://srv6.md/topics/srh-packet-walk/) shows each hop.
+
+### uSID: the compressed form
+
+[RFC 9800](https://srv6.md/rfcs/rfc9800/) standardizes compressed SIDs. With the common **F3216** format, a 32-bit block is followed by 16-bit micro-SIDs, so one 128-bit address carries up to **six** instructions. Each endpoint shifts its own uSID out of the address and forwards on the next one. In practice:
+
+- A VPN path with a few traffic engineering waypoints fits in the destination address alone: **40 bytes of overhead, the same as plain IPv6-in-IPv6**, and no SRH.
+- Hardware only looks at the first 128 bits for most forwarding decisions, which keeps line rate on merchant silicon.
+
+The [uSID page](https://srv6.md/topics/usid-compression/) and the [SID decoder](https://srv6.md/tools/sid-decoder/) let you step through the shift operation on real addresses.
+
+## 3. Designing an SRv6 network
+
+### Addressing plan
+
+1. **Pick the SID block.** Either use a prefix from the IANA block reserved for SRv6 SIDs, `5f00::/16` ([RFC 9602](https://srv6.md/rfcs/rfc9602/)), or carve a block out of your own global prefix. `5f00::/16` makes edge filtering trivial because nothing outside the SR domain should ever use it.
+2. **Choose the uSID format.** F3216 (32-bit block, 16-bit uSID) is the default on most platforms and gives 65,536 uSID values per block, enough for node and local IDs in all but the largest single domains.
+3. **Give every node a locator**, typically a `/48` inside the block. Keep loopbacks outside the SID block so management traffic and SRv6 traffic can be filtered separately.
+4. **Reserve one locator per Flex-Algo** if you plan to slice the network. Each algorithm gets its own locator per node, which is what makes the path selection automatic.
+
+### Control plane
+
+| Function | Recommended choice | Reference |
+|----------|-------------------|-----------|
+| Underlay and locator advertisement | IS-IS (or OSPFv3) with SRv6 extensions | [RFC 9352](https://srv6.md/rfcs/rfc9352/), [RFC 9513](https://srv6.md/rfcs/rfc9513/) |
+| Intent-based paths (low latency, disjoint planes) | Flexible Algorithm | [RFC 9350](https://srv6.md/rfcs/rfc9350/), [Flex-Algo](https://srv6.md/topics/flex-algorithm/) |
+| Fast reroute | TI-LFA | [RFC 9855](https://srv6.md/rfcs/rfc9855/), [TI-LFA](https://srv6.md/topics/ti-lfa/) |
+| VPN and EVPN services | BGP with SRv6 service SIDs | [RFC 9252](https://srv6.md/rfcs/rfc9252/), [BGP overlay](https://srv6.md/topics/bgp-overlay-services/) |
+| Explicit traffic engineering | SR Policy from a PCE or BGP | [RFC 9256](https://srv6.md/rfcs/rfc9256/), [RFC 9603](https://srv6.md/rfcs/rfc9603/), [RFC 9830](https://srv6.md/rfcs/rfc9830/) |
+| Topology export to controllers | BGP-LS | [RFC 9514](https://srv6.md/rfcs/rfc9514/) |
+
+A sound default is **IS-IS + Flex-Algo for the transport, BGP for services, SR Policy only where Flex-Algo cannot express the intent**. Most networks need far fewer explicit policies than they had RSVP-TE tunnels, because Flex-Algo and TI-LFA cover the common cases with no per-path state.
+
+Large data center fabrics often run BGP as the only routing protocol. SRv6 works there too: locators are advertised as ordinary IPv6 prefixes in BGP. The trade-off is that Flex-Algo and TI-LFA are IGP features, so a BGP-only fabric relies on ECMP and fast BGP convergence instead.
+
+### Data plane and MTU
+
+- Use **reduced encapsulation** (H.Encaps.Red), which leaves the first SID out of the SRH because it already sits in the destination address.
+- Budget **40 bytes** for the outer IPv6 header, plus **8 + 16 × n bytes** when an SRH is needed. With uSID most paths need no SRH.
+- Raise the core MTU so that customer packets at 1500 bytes (or 9000 in data centers) never fragment. Fragmentation of encapsulated traffic is the most common avoidable SRv6 incident.
+- Check each platform's limits on **how many SIDs it can push** at line rate and **how deep it can parse** the SRH. The [support matrix](https://srv6.md/implementations/support-matrix/) lists uSID support per implementation.
+
+### Services
+
+Each VRF gets an End.DT46 (or uDT46) SID from the PE's locator, which BGP advertises with the VPN routes. EVPN uses End.DT2U and End.DT2M. Because the service SID is routable inside the SR domain, any PE reaches any other PE with no tunnels to configure. See [VPN services](https://srv6.md/use-cases/vpn-services/) and [EVPN multihoming](https://srv6.md/topics/evpn-multihoming/).
+
+## 4. Security
+
+SRv6 turns IPv6 addresses into instructions, so the security model is about **keeping those instructions inside a trusted domain** ([RFC 8754 section 5](https://srv6.md/rfcs/rfc8754/)).
+
+1. **Filter the SID block at every external interface.** Drop packets from outside the domain whose destination falls in the SID block, and drop packets with an SRH arriving from outside. With `5f00::/16` this is one filter line.
+2. **Never advertise locators to the Internet.** Summarize the SID block internally and keep it out of eBGP exports.
+3. **Use the SRH HMAC** only where SRH packets must cross a less trusted segment. Most designs rely on edge filtering instead.
+4. **Rate-limit SRv6 OAM** and ICMPv6 generated by endpoints, as for any IPv6 control traffic.
+5. **Encrypt where the transport is not trusted.** SRv6 does not encrypt anything by itself. MACsec on links, or IPsec and post-quantum key exchange on top, are covered on the [security page](https://srv6.md/topics/security/).
+
+## 5. Operations
+
+- **Reachability and path tracing.** Ping and traceroute work on SIDs with standard IPv6 tools, plus the SRv6 OAM extensions of [RFC 9259](https://srv6.md/rfcs/rfc9259/). See [OAM and troubleshooting](https://srv6.md/topics/oam-troubleshooting/).
+- **Performance measurement.** SR Performance Measurement (TWAMP-based delay and loss per link and per policy) feeds Flex-Algo latency metrics. See [SRPM](https://srv6.md/topics/srpm/).
+- **Flow visibility.** IPFIX exports SRv6 fields ([RFC 9487](https://srv6.md/rfcs/rfc9487/)). Streaming telemetry covers locator and SID counters. See [telemetry](https://srv6.md/topics/telemetry/).
+- **Packet captures.** Wireshark decodes the SRH natively. The [pcap library](https://srv6.md/labs/pcaps/) has reference captures for every common behavior.
+
+## 6. Migration from MPLS
+
+There is no flag day. Public migrations follow four patterns, detailed on the [migration page](https://srv6.md/topics/interworking-migration/):
+
+| Strategy | When it fits |
+|----------|-------------|
+| Greenfield SRv6 | New network or new region (Iliad launched a greenfield SRv6 network) |
+| Ship in the night | Run SRv6 services in parallel with MPLS, move VRFs one by one |
+| SR-MPLS first, then SRv6 | Hardware not yet SRv6-ready across the whole network |
+| Direct MPLS to SRv6 | Hardware is SRv6-ready and an intermediate SR-MPLS step adds nothing (Rijkswaterstaat went straight from MPLS to SRv6 uSID) |
+
+Interworking gateways and binding SIDs connect SR-MPLS and SRv6 domains during the transition, so services keep working end to end while the core changes underneath.
+
+A practical sequence:
+
+1. Enable IPv6 everywhere in the core and fix the MTU.
+2. Turn on SRv6 locators in the IGP. Nothing uses them yet, so the risk is low.
+3. Add TI-LFA for SRv6 and verify repair coverage.
+4. Move one low-risk VRF to SRv6 services, then the rest.
+5. Replace RSVP-TE tunnels with Flex-Algo or SR Policy.
+6. Retire LDP and RSVP-TE.
+
+## 7. SRv6 in AI networks
+
+AI training clusters with tens of thousands of GPUs need every link busy and recovery from failures faster than any routing protocol can converge. SRv6 gives the **host** control of the path:
+
+- The NIC encapsulates each packet with an SRv6 path chosen from many parallel planes, so traffic spreads evenly instead of colliding on hashed ECMP paths.
+- Switches are plain SRv6 transit nodes running a **static** configuration. No routing protocol is involved in choosing paths.
+- When a path fails, the NIC retires it within tens of microseconds and the job keeps running.
+
+OpenAI's MRC design, built with Microsoft, AMD, Broadcom and NVIDIA for clusters of more than 100,000 GPUs, is the best documented example. See [MRC and SRv6](https://srv6.md/ai/mrc/), [AI fabric design](https://srv6.md/ai/ai-fabric-design/) and [SRv6 vs ECMP, adaptive routing and UEC](https://srv6.md/ai/srv6-vs-ai-fabric-alternatives/).
+
+## 8. Adoption and outlook
+
+- **Standards:** the core is complete (architecture, SRH, network programming, IGP and BGP extensions, compression, OAM). Current IETF work focuses on operations (the srv6ops working group), multicast, and path tracing. See the [State of SRv6 2026](https://srv6.md/reports/state-of-srv6-2026/).
+- **Silicon and software:** uSID runs at line rate on current merchant silicon and is supported by Cisco, Juniper, Nokia, Arista, Huawei, the Linux kernel, FRRouting, SONiC and several eBPF data planes.
+- **Where it goes next:** host-based SRv6 in Kubernetes and clouds ([host SRv6](https://srv6.md/topics/host-based-srv6/)), SRv6 in AI back-end and scale-across networks, and SRv6 as the single transport from the GPU to the WAN.
+
+## 9. Recommendations
+
+1. **Design with uSID (F3216) from day one**, even if the first phase uses few SIDs.
+2. **Use `5f00::/16`** or a dedicated block, and filter it at every edge before the first service goes live.
+3. **Prefer Flex-Algo and TI-LFA over explicit policies.** Keep SR Policy for the cases that need it.
+4. **Fix the MTU first.** Most SRv6 incidents in early deployments are MTU incidents.
+5. **Migrate services one VRF at a time** with SRv6 and MPLS running side by side.
+6. **Lab it before you buy it.** The free [Containerlab](https://srv6.md/labs/containerlab/) and [netlab](https://srv6.md/labs/netlab/) labs on this site reproduce every design element above on a laptop.
+
+## How to cite this white paper
+
+> Navas, D. and the SRv6.md community. *SRv6 White Paper 2026: Architecture, Design and Deployment.* SRv6.md, October 2026. https://srv6.md/white-papers/srv6-white-paper-2026/
+
+The text is MIT licensed: reuse it, translate it or adapt it for internal training, with attribution. Corrections are welcome on [GitHub](https://github.com/eldaninavas/srv6.md).
+
+## Further Reading
+
+- [All SRv6 white papers](https://srv6.md/white-papers/) - Vendor, operator, IETF and academic white papers in one place
+- [SRv6 documentation index](https://srv6.md/docs/) - Official documentation for every vendor and open-source project
+- [What is SRv6?](https://srv6.md/topics/what-is-srv6/) - The complete tutorial
+- [State of SRv6 2026](https://srv6.md/reports/state-of-srv6-2026/) - Data report on standards, deployments and vendors
 
 
 ---
@@ -1604,17 +2016,17 @@ AI training clusters bring two vocabularies together: the GPU/HPC world (collect
 
 ---
 
-# SRv6 Topics: Learn Segment Routing over IPv6
+# SRv6 Fundamentals and Key Concepts: A Learning Path
 
 URL: https://srv6.md/topics/
 Path: topics/index.md
-Summary: Learn SRv6 from the ground up. Explore Segment Routing over IPv6 topics covering SID structure, network programming, and packet processing.
+Summary: SRv6 fundamentals and key concepts in order: SIDs, the SRH, network programming, uSID, Flex-Algo, TI-LFA, BGP services, OAM and migration, each with RFC references.
 
-# SRv6 Topics
+# SRv6 Fundamentals and Key Concepts
 
-Whether you're a network engineer new to SRv6 or looking to solidify your understanding, start here. Topics are organized from foundational concepts through architecture, services, operations, and platform-specific guides.
+Whether you're a network engineer new to SRv6 or looking to solidify your understanding, start here. Topics are organized as a learning path, from SRv6 fundamentals through architecture, services, operations, and platform-specific guides. For vendor configuration guides, see the [SRv6 documentation index](https://srv6.md/docs/).
 
-## Foundations
+## Fundamentals
 
 The core concepts you need before diving deeper.
 

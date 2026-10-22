@@ -17,7 +17,7 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 
 ## Topics
 
-- [SRv6 Topics: Learn Segment Routing over IPv6](https://srv6.md/topics/): Learn SRv6 from the ground up. Explore Segment Routing over IPv6 topics covering SID structure, network programming, and packet processing.
+- [SRv6 Fundamentals and Key Concepts: A Learning Path](https://srv6.md/topics/): SRv6 fundamentals and key concepts in order: SIDs, the SRH, network programming, uSID, Flex-Algo, TI-LFA, BGP services, OAM and migration, each with RFC references.
 - [SRv6 L3VPN and EVPN: BGP Overlay Services (RFC 9252)](https://srv6.md/topics/bgp-overlay-services/): How BGP delivers L3VPN and EVPN services over SRv6: overlay architecture, service SIDs, the BGP SRv6 Service TLV from RFC 9252, and verification commands.
 - [SRv6 in CLOS Data Centers: Deterministic Load Balancing](https://srv6.md/topics/clos-glb/): SRv6 in CLOS data center fabrics: the ECMP hash-collision problem, deterministic path placement, global load balancing with flowlets, and SRv6 vs VXLAN.
 - [EVPN Multihoming Explained: ESI, DF Election, Aliasing, SRv6](https://srv6.md/topics/evpn-multihoming/): EVPN multihoming (EVPN-MH) explained: ESI types, all-active vs single-active, DF election (modulo, HRW, preference), aliasing, mass withdrawal and split-horizon over MPLS and SRv6.
@@ -114,6 +114,15 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 ## Reports
 
 - [State of SRv6 2026: RFCs, Drafts, Deployments, Vendors](https://srv6.md/reports/state-of-srv6-2026/): Data report on SRv6 in 2026: 23 RFCs, 65 active IETF drafts, 19 public deployments and uSID support across 11 implementations. Every figure sourced.
+
+## SRv6 documentation index
+
+- [SRv6 Documentation: Official Docs for Every Vendor and Project](https://srv6.md/docs/): SRv6 documentation index: official SRv6 configuration guides from Cisco, Juniper, Nokia, Arista, 6WIND and H3C, plus Linux, FRRouting, VPP, SONiC, SAI, IETF and IANA.
+
+## White papers
+
+- [SRv6 White Papers: Every Public SRv6 White Paper and PDF (2026)](https://srv6.md/white-papers/): Library of public SRv6 white papers and technical PDFs: Cisco, Nokia, Juniper, H3C, ZTE, IETF srv6ops, ETSI, OpenAI MRC and academic papers, each with a summary.
+- [SRv6 White Paper 2026: Architecture, Design and Deployment (PDF)](https://srv6.md/white-papers/srv6-white-paper-2026/): Free SRv6 white paper (PDF): why operators adopt Segment Routing over IPv6, uSID addressing, control plane design, migration from MPLS, security, operations and AI fabrics.
 
 ## En español (Spanish)
 
