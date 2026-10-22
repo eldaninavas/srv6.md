@@ -8,7 +8,7 @@
 // the fades); moving things are drawn imperatively in the portal layer.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ReactFlow, ViewportPortal, Handle, Position, useReactFlow, useStore } from '@xyflow/react';
+import { ReactFlow, ViewportPortal, EdgeLabelRenderer, Handle, Position, useReactFlow, useStore } from '@xyflow/react';
 import scene from './hero-scene.json';
 import { ICONS } from './icons.mjs';
 
@@ -25,11 +25,11 @@ const MRC_FAIL_AT = 4.5; // seconds into the AI act
 const LAYERS = [
   [],
   ['show-loc'],
-  ['show-loc', 'show-algo', 'show-flex'],
+  ['show-loc', 'show-algo', 'show-flex', 'show-delay'],
   ['show-loc', 'show-algo', 'show-flex', 'show-bgp'],
   ['show-gpu', 'show-mrc'],
 ];
-const STILL = ['show-loc', 'show-algo', 'show-flex', 'show-bgp', 'show-gpu'];
+const STILL = ['show-loc', 'show-algo', 'show-flex', 'show-delay', 'show-bgp', 'show-gpu'];
 
 const motionQuery = () => window.matchMedia('(prefers-reduced-motion: reduce)');
 const hidden = { opacity: 0, pointerEvents: 'none' };
@@ -56,13 +56,64 @@ function HeroNode({ data }) {
   );
 }
 
+// Each delay label goes at the first spot along its link (from the middle
+// outwards) where it overlaps no node, locator chip or label placed before.
+function placeDelays(s) {
+  if (!s.delay) return new Map();
+  const { w, h, chip } = s.node;
+  const chipH = chip * 1.45 + 2;
+  const boxes = [];
+  for (const n of s.nodes) {
+    boxes.push({ x: n.x - w / 2, y: n.y - h / 2, w, h });
+    const rows = [n.loc, n.algo].filter(Boolean);
+    rows.forEach((t, r) => {
+      const cw = t.length * chip * 0.62 + 14;
+      boxes.push({ x: n.x - cw / 2, y: n.y + h / 2 + 5 + r * (chipH + 3), w: cw, h: chipH });
+    });
+  }
+  const hit = (b) => boxes.some((o) => b.x < o.x + o.w + 3 && o.x < b.x + b.w + 3 && b.y < o.y + o.h + 3 && o.y < b.y + b.h + 3);
+  const byId = new Map(s.nodes.map((n) => [n.id, n]));
+  const out = new Map();
+  const steps = [0.5, 0.42, 0.58, 0.34, 0.66, 0.27, 0.73, 0.2, 0.8];
+  for (const [a, b] of s.links) {
+    const key = `${a}-${b}`;
+    const d = s.delay[key];
+    if (d === undefined) continue;
+    const lw = `${d} µs`.length * chip * 0.62 + 14;
+    const box = (p) => ({ x: p.x - lw / 2, y: p.y - chipH / 2, w: lw, h: chipH });
+    let at = lerp(byId.get(a), byId.get(b), 0.5);
+    for (const t of steps) {
+      const p = lerp(byId.get(a), byId.get(b), t);
+      if (!hit(box(p))) {
+        at = p;
+        break;
+      }
+    }
+    boxes.push(box(at));
+    out.set(key, at);
+  }
+  return out;
+}
+
 function HeroLink({ data }) {
-  const { a, b, tags, failed, i } = data;
+  const { a, b, tags, failed, i, delay, at } = data;
   const cls = ['srv6-hero__link', ...tags.map((t) => `is-${t}`), failed ? 'is-failed' : ''].join(' ');
   return (
-    <g className={cls} style={{ '--i': i }}>
-      <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} pathLength="1" />
-    </g>
+    <>
+      <g className={cls} style={{ '--i': i }}>
+        <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} pathLength="1" />
+      </g>
+      {delay !== undefined && at && (
+        <EdgeLabelRenderer>
+          <div
+            className={`srv6-hero__delay${tags.includes('flex') ? ' is-flex' : ''}`}
+            style={{ transform: `translate(-50%, -50%) translate(${at.x}px, ${at.y}px)` }}
+          >
+            {delay} µs
+          </div>
+        </EdgeLabelRenderer>
+      )}
+    </>
   );
 }
 
@@ -120,6 +171,7 @@ function Hero({ host, acts }) {
     [s],
   );
   const failKey = s.mrc.fail.join('-');
+  const delayAt = useMemo(() => placeDelays(s), [s]);
   const edges = useMemo(
     () =>
       s.links.map(([a, b, ...tags], i) => ({
@@ -127,9 +179,17 @@ function Hero({ host, acts }) {
         source: a,
         target: b,
         type: 'hero',
-        data: { a: byId.get(a), b: byId.get(b), tags, i, failed: failed && [`${a}-${b}`, `${b}-${a}`].includes(failKey) },
+        data: {
+          a: byId.get(a),
+          b: byId.get(b),
+          tags,
+          i,
+          delay: s.delay?.[`${a}-${b}`],
+          at: delayAt.get(`${a}-${b}`),
+          failed: failed && [`${a}-${b}`, `${b}-${a}`].includes(failKey),
+        },
       })),
-    [s, byId, failed, failKey],
+    [s, byId, failed, failKey, delayAt],
   );
 
   const fit = useCallback(

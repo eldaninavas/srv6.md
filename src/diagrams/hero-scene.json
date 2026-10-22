@@ -1,5 +1,5 @@
 {
-  "_comment": "Home page hero: the SRv6 fabric that src/diagrams/hero.jsx builds act by act, and that hooks/diagrams.py renders as the static first frame. Node x/y are centres in scene units. uSID F3216: block fc00:0::/32 for algo 0, fc00:80::/32 for Flex-Algo 128, one 16-bit uSID per node. flex: links in the algo-128 plane. mrc: links that exist only in the AI act. node.font / node.chip: label and locator-chip font sizes in scene units.",
+  "_comment": "Home page hero: the SRv6 fabric that src/diagrams/hero.jsx builds act by act, and that hooks/diagrams.py renders as the static first frame. Node x/y are centres in scene units. uSID F3216: block fc00:0::/32 for algo 0, fc00:80::/32 for Flex-Algo 128, one 16-bit uSID per node. flex: links in the algo-128 plane. mrc: links that exist only in the AI act. node.font / node.chip: label and locator-chip font sizes in scene units. delay: demo one-way link delay in µs, shown during the Flex-Algo act (algo 128 uses the delay metric, RFC 9350 / RFC 8570); the algo-128 links are the low-delay ones, so its path is the lowest-delay one.",
   "acts": [
     {
       "id": "fabric",
@@ -16,7 +16,7 @@
     {
       "id": "flex",
       "title": "Flex-Algo 128",
-      "note": "A low-latency plane with its own locators · RFC 9350",
+      "note": "Metric: link delay. The low-latency plane, with its own locators · RFC 9350",
       "href": "topics/flex-algorithm/"
     },
     {
@@ -301,6 +301,26 @@
         "S2",
         "L4"
       ]
+    },
+    "delay": {
+      "L1-S1": 7,
+      "L1-S2": 9,
+      "L1-S3": 2,
+      "L1-S4": 3,
+      "L2-S1": 6,
+      "L2-S2": 8,
+      "L2-S3": 7,
+      "L2-S4": 9,
+      "L3-S1": 8,
+      "L3-S2": 6,
+      "L3-S3": 9,
+      "L3-S4": 7,
+      "L4-S1": 9,
+      "L4-S2": 7,
+      "L4-S3": 2,
+      "L4-S4": 3,
+      "PA-L1": 1,
+      "PB-L4": 1
     }
   },
   "mobile": {
@@ -475,6 +495,14 @@
         "S2",
         "L1"
       ]
+    },
+    "delay": {
+      "L1-S1": 8,
+      "L1-S2": 2,
+      "L2-S1": 9,
+      "L2-S2": 3,
+      "PA-L1": 1,
+      "PB-L2": 1
     }
   }
 }

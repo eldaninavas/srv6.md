@@ -162,6 +162,35 @@
   }
 }
 
+/* Link delay (Flex-Algo act): demo values from hero-scene.json. */
+
+.srv6-hero__delay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding: 0 6px;
+  border: 1px solid var(--srv6-group-border);
+  border-radius: 999px;
+  color: var(--md-default-fg-color--light);
+  background: var(--md-default-bg-color);
+  font: 600 var(--hero-chip)/1.45 var(--md-code-font-family);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.srv6-hero__delay.is-flex {
+  border-color: var(--srv6-hero-algo);
+  color: var(--md-default-bg-color);
+  background: var(--srv6-hero-algo);
+}
+
+.show-delay .srv6-hero__delay {
+  opacity: 1;
+}
+
 /* Moving parts (portal layer) */
 
 .srv6-hero__fx {
