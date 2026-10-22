@@ -171,6 +171,9 @@ nav:
     - index.md
     - Knowledge Graph: knowledge-graph.md
     - State of SRv6 2026: reports/state-of-srv6-2026.md
+    - SRv6 Documentation: docs/index.md
+    - SRv6 White Papers: white-papers/index.md
+    - SRv6 White Paper 2026: white-papers/srv6-white-paper-2026.md
   - SRv6 for AI:
     - ai/index.md
     - MRC and SRv6: ai/mrc.md

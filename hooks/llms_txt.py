@@ -20,6 +20,8 @@ SECTIONS = [
     ("labs", "Labs"),
     ("rfcs", "RFCs & Standards"),
     ("reports", "Reports"),
+    ("docs", "SRv6 documentation index"),
+    ("white-papers", "White papers"),
     ("es", "En español (Spanish)"),
     ("ja", "日本語 (Japanese)"),
 ]

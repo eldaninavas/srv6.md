@@ -1,7 +1,7 @@
 ---
 title: Topics
-seo_title: "SRv6 Topics: Learn Segment Routing over IPv6"
-description: Learn SRv6 from the ground up. Explore Segment Routing over IPv6 topics covering SID structure, network programming, and packet processing.
+seo_title: "SRv6 Fundamentals and Key Concepts: A Learning Path"
+description: "SRv6 fundamentals and key concepts in order: SIDs, the SRH, network programming, uSID, Flex-Algo, TI-LFA, BGP services, OAM and migration, each with RFC references."
 tags:
   - topics
   - SRv6
@@ -9,11 +9,11 @@ tags:
   - learn SRv6
 ---
 
-# :material-book-open-variant: SRv6 Topics
+# :material-book-open-variant: SRv6 Fundamentals and Key Concepts
 
-Whether you're a network engineer new to SRv6 or looking to solidify your understanding, start here. Topics are organized from foundational concepts through architecture, services, operations, and platform-specific guides.
+Whether you're a network engineer new to SRv6 or looking to solidify your understanding, start here. Topics are organized as a learning path, from SRv6 fundamentals through architecture, services, operations, and platform-specific guides. For vendor configuration guides, see the [SRv6 documentation index](../docs/index.md).
 
-## Foundations
+## Fundamentals
 
 The core concepts you need before diving deeper.
 

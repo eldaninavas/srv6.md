@@ -73,6 +73,12 @@ How far has SRv6 come? Our data report counts 23 SRv6 RFCs, 65 active IETF draft
 
 [:material-arrow-right: Read the State of SRv6 2026 report](reports/state-of-srv6-2026.md){ .md-button .md-button--primary }
 
+## :material-file-document-multiple: SRv6 Documentation and White Papers
+
+The [SRv6 documentation index](docs/index.md) links the official SRv6 docs of every vendor and open-source project, from Cisco, Juniper and Nokia configuration guides to the Linux kernel, FRRouting and SONiC. The [SRv6 white paper library](white-papers/index.md) collects every public SRv6 white paper with a summary, and the free [SRv6 White Paper 2026](white-papers/srv6-white-paper-2026.md) covers architecture, design and migration from MPLS.
+
+[:material-arrow-right: SRv6 documentation](docs/index.md){ .md-button .md-button--primary }  &nbsp; [:material-file-pdf-box: SRv6 white paper (PDF)](white-papers/srv6-white-paper-2026.md){ .md-button }
+
 ## :material-compass: Explore
 
 <div class="srv6-grid" markdown>

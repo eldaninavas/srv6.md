@@ -19,6 +19,9 @@ REDIRECTS = {
     "topics/what-s-srv6/": "topics/what-is-srv6/",
     "topics/when-is-srv6/": "topics/what-is-srv6/",
     "topics/srv6-v-sr-mpls/": "topics/srv6-vs-sr-mpls/",
+    "documentation/": "docs/",
+    "whitepapers/": "white-papers/",
+    "white-paper/": "white-papers/srv6-white-paper-2026/",
 }
 
 TEMPLATE = """<!doctype html>
