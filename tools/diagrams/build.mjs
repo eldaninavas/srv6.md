@@ -76,6 +76,22 @@ async function bundle() {
   return { path: `assets/diagrams/${name}`, bytes: Buffer.byteLength(code) };
 }
 
+// Scenario edge names must exist in the diagram: a typo would silently show
+// a failover that fails nothing.
+function scenarios(item, diagram) {
+  if (!item.scenarios) return undefined;
+  const ids = new Set(diagram.edges.map((e) => e.id));
+  return item.scenarios.map((sc) => {
+    for (const key of ['fail', 'idle', 'reroute']) {
+      for (const id of sc[key] || []) {
+        if (!ids.has(id)) throw new Error(`${item.page} #${item.index}: scenario "${sc.label}" names unknown edge "${id}"`);
+      }
+    }
+    if (!sc.fail?.length) throw new Error(`${item.page} #${item.index}: scenario "${sc.label}" fails no edge`);
+    return { label: sc.label, restore: sc.restore, note: sc.note, fail: sc.fail, idle: sc.idle || [], reroute: sc.reroute || [] };
+  });
+}
+
 const titles = titleIndex();
 const browser = await openBrowser();
 const pages = {};
@@ -93,13 +109,15 @@ try {
       const model = await browser.flowchart(block.source);
       for (const n of model.nodes) n.href ||= titles.get(n.label.join(' ').toLowerCase());
       const laid = await layout(model);
+      laid.scenarios = scenarios(item, laid);
       entry = { kind: 'flowchart', source: block.source, diagram: laid };
       report.push(`${item.page} #${item.index} flowchart ${laid.nodes.length} nodes ${laid.edges.length} edges ` +
-        `${laid.groups.length} groups ${laid.width}x${laid.height}` +
+        `${laid.groups.length} groups ${laid.width}x${laid.height}, ` +
+        `${laid.edges.filter((e) => e.animate).length} animated, ${laid.scenarios?.length || 0} scenario(s)` +
         (model.warnings.length ? `\n  warn: ${model.warnings.join('\n  warn: ')}` : ''));
     } else if (block.kind === 'sequence') {
       const svg = await browser.sequence(block.source, `srv6-seq-${block.hash}`);
-      entry = { kind: 'sequence', source: block.source, svg };
+      entry = { kind: 'sequence', source: block.source, svg, packetWalk: !!item.packetWalk };
       report.push(`${item.page} #${item.index} sequence ${(svg.length / 1024).toFixed(1)} KB SVG`);
     } else {
       throw new Error(`${item.page} #${item.index}: ${block.kind} diagrams are not supported`);

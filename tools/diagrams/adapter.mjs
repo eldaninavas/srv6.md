@@ -123,13 +123,17 @@ export function fromFlowDb(db) {
       if (end && !ARROWS[end]) warnings.push(`edge ${e.start}->${e.end}: arrow "${end}" rendered as plain line`);
     }
     return {
-      id: `e${i}`,
+      // Named edges (`A e1@--> B`) keep their name so pilot.json scenarios
+      // can refer to them; the rest get an id no Mermaid name can take.
+      id: e.isUserDefinedId ? e.id : `_e${i}`,
       source: e.start,
       target: e.end,
       label: e.label ? labelLines(e.label, e.labelType) : undefined,
       stroke,
       start: ARROWS[e.arrowTypeStart] || 'none',
       end: ARROWS[e.arrowTypeEnd] || 'none',
+      // `e1@{ animate: true }` or `e1@{ animation: fast|slow }`
+      animate: e.animate || e.animation ? e.animation || 'normal' : undefined,
     };
   });
 

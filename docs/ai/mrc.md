@@ -55,9 +55,21 @@ graph LR
       P2((plane 2))
       P8((plane 8))
     end
-    P1 --> T0a[T0 plane 1] --> T1a[T1 plane 1] --> T0b[T0 plane 1] --> D[Destination NIC]
-    P2 --> T0c[T0 plane 2] --> T1c[T1 plane 2] --> T0d[T0 plane 2] --> D
-    P8 --> T0e[T0 plane 8] --> T1e[T1 plane 8] --> T0f[T0 plane 8] --> D
+    P1 a1@--> T0a[T0 plane 1] a2@--> T1a[T1 plane 1] a3@--> T0b[T0 plane 1] a4@--> D[Destination NIC]
+    P2 b1@--> T0c[T0 plane 2] b2@--> T1c[T1 plane 2] b3@--> T0d[T0 plane 2] b4@--> D
+    P8 c1@--> T0e[T0 plane 8] c2@--> T1e[T1 plane 8] c3@--> T0f[T0 plane 8] c4@--> D
+    a1@{ animate: true }
+    a2@{ animate: true }
+    a3@{ animate: true }
+    a4@{ animate: true }
+    b1@{ animate: true }
+    b2@{ animate: true }
+    b3@{ animate: true }
+    b4@{ animate: true }
+    c1@{ animate: true }
+    c2@{ animate: true }
+    c3@{ animate: true }
+    c4@{ animate: true }
 ```
 
 ## How SRv6 is used

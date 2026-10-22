@@ -27,10 +27,47 @@
   position: absolute;
   right: 0;
   bottom: 0;
+  left: 0;
   display: flex;
   gap: 2px;
   height: var(--srv6-flow-toolbar);
   align-items: center;
+}
+
+.srv6-flow__spacer {
+  flex: 1;
+}
+
+/* Failure scenario toggle (pilot.json scenarios) */
+.srv6-flow__scenario {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px 0 6px;
+  border: 1px solid var(--srv6-flow-fail);
+  border-radius: 13px;
+  color: var(--srv6-flow-fail);
+  font: 600 12px/1 var(--md-text-font-family);
+  white-space: nowrap;
+  background: transparent;
+  cursor: pointer;
+}
+
+.srv6-flow__scenario:hover,
+.srv6-flow__scenario:focus-visible {
+  background: color-mix(in srgb, var(--srv6-flow-fail) 12%, transparent);
+}
+
+.srv6-flow__scenario[aria-pressed="true"] {
+  border-color: var(--md-accent-fg-color);
+  color: var(--md-accent-fg-color);
+}
+
+.srv6-flow__scenario svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
 }
 
 .srv6-flow__tool {
@@ -233,4 +270,80 @@
 
 .srv6-flow__edge--thick.is-hot path {
   stroke-width: 4.5px;
+}
+
+/* Packets (src/diagrams/packets.js). A halo in the page background keeps
+   them readable where they cross an edge of the same hue. */
+
+.srv6-flow__packet-layer {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.srv6-flow__packet {
+  fill: var(--srv6-flow-packet);
+  stroke: var(--md-default-bg-color);
+  stroke-width: 1.5px;
+}
+
+.srv6-flow__packets {
+  filter: drop-shadow(0 0 3px var(--srv6-flow-packet));
+}
+
+.srv6-flow__packet.is-drop {
+  fill: var(--srv6-flow-fail);
+}
+
+.srv6-flow__packets {
+  transition: opacity 0.15s ease;
+}
+
+.srv6-flow__packets.is-dim {
+  opacity: 0.2;
+}
+
+.srv6-flow__fault circle {
+  fill: var(--md-default-bg-color);
+  stroke: var(--srv6-flow-fail);
+  stroke-width: 2px;
+}
+
+.srv6-flow__fault path {
+  fill: none;
+  stroke: var(--srv6-flow-fail);
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+}
+
+/* Scenario states on edges */
+
+.srv6-flow__edge.is-failed path {
+  stroke: var(--srv6-flow-fail);
+  stroke-dasharray: 6 4;
+}
+
+.srv6-flow__edge.is-failed .srv6-flow__marker {
+  fill: var(--srv6-flow-fail);
+}
+
+.srv6-flow__edge.is-idle {
+  opacity: 0.3;
+}
+
+.srv6-flow__edge.is-reroute path {
+  stroke: var(--srv6-flow-packet);
+  stroke-width: 3px;
+}
+
+.srv6-flow__edge-label.is-reroute {
+  color: var(--srv6-flow-packet);
+}
+
+.srv6-flow__edge.is-reroute .srv6-flow__marker {
+  fill: var(--srv6-flow-packet);
+}
+
+.srv6-flow__edge-label.is-failed {
+  color: var(--srv6-flow-fail);
 }

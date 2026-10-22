@@ -46,12 +46,14 @@ Six routers, IS-IS metrics on the links. S is the PLR, protecting its link to N,
 
 ```mermaid
 graph LR
-    S((S)) ---|10 · protected| N((N))
-    N ---|10| D((D))
-    S ---|10| A((A))
-    A ---|10| B((B))
-    B ---|40| C((C))
-    C ---|10| D
+    S((S)) p1@---|10 · protected| N((N))
+    N p2@---|10| D((D))
+    S q1@---|10| A((A))
+    A q2@---|10| B((B))
+    B q3@---|40| C((C))
+    C q4@---|10| D
+    p1@{ animate: true }
+    p2@{ animate: true }
 ```
 
 **Before the failure**, S reaches D via N (cost 20). A also reaches D via S and N (cost 30), so A is **not** an LFA: by the RFC 5286 inequality, A is loop-free only if dist(A,D) < dist(A,S) + dist(S,D), i.e. 30 < 10 + 20, which is false. Classic LFA has nothing to offer here.

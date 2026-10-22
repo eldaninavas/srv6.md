@@ -137,8 +137,9 @@ export async function layout(model) {
     const parent = item.parent ? elkNodes.get(item.parent) : root;
     parent.children.push(elkNodes.get(item.id));
   }
+  // ELK ids share one namespace with nodes; Mermaid edge names may not.
   root.edges = model.edges.map((e) => ({
-    id: e.id,
+    id: `edge:${e.id}`,
     sources: [e.source],
     targets: [e.target],
     // ELK ignores labels without `text`.
@@ -191,7 +192,7 @@ export async function layout(model) {
   }));
 
   const edges = model.edges.map((e) => {
-    const laid = out.edges.find((x) => x.id === e.id);
+    const laid = out.edges.find((x) => x.id === `edge:${e.id}`);
     const section = laid.sections?.[0];
     const points = section
       ? [section.startPoint, ...(section.bendPoints || []), section.endPoint].map((p) => [round(p.x), round(p.y)])
@@ -211,6 +212,7 @@ export async function layout(model) {
       stroke: e.stroke,
       start: e.start,
       end: e.end,
+      animate: e.animate,
       label: e.label,
       labelBox,
       curve: ROUTING === 'SPLINES' ? 'spline' : 'orthogonal',

@@ -177,6 +177,33 @@ test('real parser: shapes, edge kinds, subgraphs, styles, click', async (t) => {
   assert.deepEqual([edge('F', 'G').start, edge('F', 'G').end], ['arrow', 'arrow']);
 });
 
+test('real parser: named edges keep their name, animate flags packets', async (t) => {
+  const b = await realParser(t);
+  if (!b) return;
+  const model = await b.flowchart(
+    ['graph LR', '  S((S)) p1@---|10| N((N))', '  N p2@--> D', '  S --> D', '  p1@{ animate: true }', '  p2@{ animation: fast }'].join('\n'),
+  );
+  const edge = Object.fromEntries(model.edges.map((e) => [e.id, e]));
+  assert.equal(edge.p1.animate, 'normal');
+  assert.equal(edge.p2.animate, 'fast');
+  assert.deepEqual(edge.p1.label, ['10']);
+  const unnamed = model.edges.find((e) => !['p1', 'p2'].includes(e.id));
+  assert.match(unnamed.id, /^_e\d+$/);
+  assert.equal(unnamed.animate, undefined);
+});
+
+test('real parser: the converted pilot sources still render in Mermaid itself', async (t) => {
+  const b = await realParser(t);
+  if (!b) return;
+  const { readFileSync } = await import('node:fs');
+  const pilot = JSON.parse(readFileSync('tools/diagrams/pilot.json', 'utf8'));
+  for (const d of pilot.diagrams) {
+    const block = mermaidBlocks(readFileSync(`docs/${d.page}`, 'utf8'))[d.index];
+    const svg = await b.sequence(block.source, `fallback-${d.index}`);
+    assert.match(svg, /^<svg/, `${d.page} #${d.index}`);
+  }
+});
+
 test('real parser: a node keeps the subgraph Mermaid gives it', async (t) => {
   const b = await realParser(t);
   if (!b) return;
@@ -211,6 +238,19 @@ test('edge ends are clipped to the visible outline', () => {
   const box = { x: 0, y: 0, width: 200, height: 100 };
   assert.deepEqual(clipToShape('diamond', box, [60, 100], [60, 130]), [60, 80]);
   assert.deepEqual(clipToShape('rect', box, [60, 100], [60, 130]), [60, 100]);
+});
+
+test('layout: an edge may share its name with a node', async () => {
+  const size = (lines) => ({ width: 40, height: 24 * lines.length });
+  const out = await layout({
+    direction: 'LR',
+    groups: [],
+    nodes: ['A', 'B'].map((id) => ({ id, label: [id], shape: 'rect', labelSize: size([id]) })),
+    edges: [{ id: 'A', source: 'A', target: 'B', stroke: 'solid', start: 'none', end: 'arrow', animate: 'normal' }],
+  });
+  assert.equal(out.edges[0].id, 'A');
+  assert.equal(out.edges[0].animate, 'normal');
+  assert.ok(out.edges[0].points.length >= 2);
 });
 
 test('layout: positions, routes, groups before children, isolated subgraph direction', async () => {

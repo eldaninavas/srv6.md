@@ -546,6 +546,8 @@
   --md-mermaid-node-fg-color: #7b1fa2;
   --md-mermaid-label-bg-color: var(--md-default-bg-color);
   --md-mermaid-label-fg-color: #33203b;
+  --srv6-flow-fail: #c62828;
+  --srv6-flow-packet: #00897b;
 }
 
 [data-md-color-scheme="slate"] {
@@ -554,6 +556,8 @@
   --md-mermaid-node-fg-color: #ab47bc;
   --md-mermaid-label-bg-color: var(--md-default-bg-color);
   --md-mermaid-label-fg-color: #f5eefa;
+  --srv6-flow-fail: #ef5350;
+  --srv6-flow-packet: #64ffda;
 }
 
 /* Diagrams converted at build time (tools/diagrams/, hooks/diagrams.py). The
@@ -577,6 +581,22 @@
   white-space: nowrap;
 }
 
+/* Failure-scenario note: page flow under the diagram, so it never covers
+   the failed link. It only appears after the reader's own click. */
+.srv6-flow__note {
+  margin: -0.4em 0 1em;
+  padding: 0.5em 0.9em;
+  border-left: 3px solid var(--srv6-flow-fail);
+  color: var(--md-default-fg-color);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  background: var(--md-code-bg-color);
+}
+
+.srv6-flow__note:empty {
+  display: none;
+}
+
 .srv6-seq {
   margin: 1em 0;
   line-height: normal;
@@ -585,6 +605,13 @@
 .srv6-seq svg {
   display: block;
   height: auto;
+}
+
+.srv6-seq__packet {
+  fill: var(--srv6-flow-packet);
+  stroke: var(--md-default-bg-color);
+  stroke-width: 2px;
+  pointer-events: none;
 }
 
 .mermaid {

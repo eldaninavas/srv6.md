@@ -4,6 +4,7 @@
 // Material's instant navigation re-runs this script on each page swap.
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import {
   ReactFlow,
@@ -11,10 +12,12 @@ import {
   Handle,
   Position,
   EdgeLabelRenderer,
+  ViewportPortal,
   useReactFlow,
 } from '@xyflow/react';
 import xyCss from '@xyflow/react/dist/style.css';
 import flowCss from './flow.css';
+import { createSim, hasPackets } from './packets.js';
 
 // ---------------------------------------------------------------- color mode
 
@@ -289,6 +292,30 @@ function toFlow(diagram) {
   return { nodes, edges };
 }
 
+const edgePath = (e) => (e.curve === 'spline' ? splinePath(e.points) : roundedPath(e.points));
+
+// Packets and fault markers, in flow coordinates above the edges. The portal
+// target only exists after React Flow's first render, hence the callback ref.
+function PacketLayer({ diagram, host, simRef }) {
+  const [svg, setSvg] = useState(null);
+  useEffect(() => {
+    if (!svg) return undefined;
+    const sim = createSim({ svg, diagram, host, pathFor: edgePath, trimEnd: ARROW });
+    simRef.current = sim;
+    return () => {
+      sim.destroy();
+      simRef.current = null;
+    };
+  }, [svg, diagram, host, simRef]);
+  return (
+    <ViewportPortal>
+      <svg ref={setSvg} className="srv6-flow__packet-layer" width="1" height="1" aria-hidden="true" />
+    </ViewportPortal>
+  );
+}
+
+const SCENARIO_CLASS = { fail: 'is-failed', idle: 'is-idle', reroute: 'is-reroute' };
+
 // Fit the whole laid-out area (edge labels can stick out past the nodes, which
 // is all fitView looks at). hooks/diagrams.py sizes the view to the same box
 // (FIT_PAD), so the inline fit lands at zoom <= 1, like Mermaid's SVG.
@@ -302,6 +329,8 @@ const ICONS = {
   in: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z',
   fit: 'M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5m3 9h2v5h-5v-2h3v-3m-7 3v2H5v-5h2v3h3Z',
   full: 'M10 21v-2H6.41l4.5-4.5-1.41-1.41-4.5 4.5V14H3v7h7m4.5-10.09 4.5-4.5V10h2V3h-7v2h3.59l-4.5 4.5 1.41 1.41Z',
+  bolt: 'M11 15H6l7-14v8h5l-7 14v-8Z',
+  restore: 'M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Z',
   exit: 'M19.5 3.09 15 7.59V4h-2v7h7V9h-3.59l4.5-4.5-1.41-1.41M4 13v2h3.59l-4.5 4.5 1.41 1.41 4.5-4.5V20h2v-7H4Z',
 };
 
@@ -315,7 +344,7 @@ function Tool({ icon, label, onClick }) {
   );
 }
 
-function Diagram({ diagram, host }) {
+function Diagram({ diagram, host, noteSlot }) {
   const base = useMemo(() => toFlow(diagram), [diagram]);
   const [hover, setHover] = useState(null);
   const [full, setFull] = useState(false);
@@ -324,27 +353,48 @@ function Diagram({ diagram, host }) {
   const fit = useCallback(() => fitBounds(bounds(diagram, full)), [fitBounds, diagram, full]);
   const touch = useMemo(coarse, []);
 
-  const { nodes, edges } = useMemo(() => {
-    if (!hover) return base;
+  const scenarios = useMemo(() => diagram.scenarios || [], [diagram]);
+  const [failed, setFailed] = useState(null); // index of the scenario whose links are down
+  const sim = useRef(null);
+  const animated = useMemo(() => hasPackets(diagram) || scenarios.length > 0, [diagram, scenarios.length]);
+
+  const { nodes, edges, dimEdges } = useMemo(() => {
+    const roles = new Map();
+    const sc = failed === null ? null : scenarios[failed];
+    if (sc) for (const key of ['fail', 'idle', 'reroute']) for (const id of sc[key]) roles.set(id, SCENARIO_CLASS[key]);
+    if (!hover && !sc) return { ...base, dimEdges: null };
     const hot = new Set([hover]);
     const hotEdges = new Set();
     for (const e of base.edges) {
-      if (e.source === hover || e.target === hover) {
+      if (hover && (e.source === hover || e.target === hover)) {
         hot.add(e.source);
         hot.add(e.target);
         hotEdges.add(e.id);
       }
     }
+    const lit = (e) => (hover ? (hotEdges.has(e.id) ? 'is-hot' : 'is-dim') : '');
     return {
-      nodes: base.nodes.map((n) =>
-        n.type === 'cluster' ? n : { ...n, className: hot.has(n.id) ? 'is-hot' : 'is-dim' },
-      ),
+      nodes: hover
+        ? base.nodes.map((n) => (n.type === 'cluster' ? n : { ...n, className: hot.has(n.id) ? 'is-hot' : 'is-dim' }))
+        : base.nodes,
       edges: base.edges.map((e) => ({
         ...e,
-        data: { ...e.data, className: hotEdges.has(e.id) ? 'is-hot' : 'is-dim' },
+        data: { ...e.data, className: `${lit(e)} ${roles.get(e.id) || ''}`.trim() },
       })),
+      dimEdges: hover ? new Set(base.edges.filter((e) => !hotEdges.has(e.id)).map((e) => e.id)) : null,
     };
-  }, [base, hover]);
+  }, [base, hover, failed, scenarios]);
+
+  useEffect(() => sim.current?.setDim(dimEdges), [dimEdges]);
+
+  const toggleScenario = useCallback(
+    (i) => {
+      const next = failed === i ? null : i;
+      setFailed(next);
+      sim.current?.setScenario(next);
+    },
+    [failed],
+  );
 
   // Native fullscreen where the element supports it (not iPhone Safari);
   // otherwise a fixed overlay.
@@ -417,9 +467,26 @@ function Diagram({ diagram, host }) {
       onNodeMouseLeave={() => setHover(null)}
       proOptions={{ hideAttribution: true }}
     >
+      {animated && <PacketLayer diagram={diagram} host={host} simRef={sim} />}
     </ReactFlow>
+      {noteSlot && createPortal(failed !== null ? scenarios[failed].note : '', noteSlot)}
       </div>
       <div className="srv6-flow__toolbar" role="toolbar" aria-label="Diagram controls">
+        {scenarios.map((sc, i) => (
+          <button
+            key={i}
+            type="button"
+            className="srv6-flow__scenario"
+            aria-pressed={failed === i}
+            onClick={() => toggleScenario(i)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d={ICONS[failed === i ? 'restore' : 'bolt']} />
+            </svg>
+            {failed === i ? sc.restore || 'Restore' : sc.label}
+          </button>
+        ))}
+        <span className="srv6-flow__spacer" />
         {zoomable && (
           <>
             <Tool icon="out" label="Zoom out" onClick={() => zoomOut()} />
@@ -462,10 +529,18 @@ function mount() {
       const canvas = document.createElement('div');
       canvas.className = 'srv6-flow__canvas';
       host.appendChild(canvas);
+      let noteSlot = null;
+      if (diagram.scenarios?.length) {
+        noteSlot = document.createElement('div');
+        noteSlot.className = 'srv6-flow__note';
+        noteSlot.setAttribute('role', 'status');
+        noteSlot.setAttribute('aria-live', 'polite');
+        host.after(noteSlot);
+      }
       const root = createRoot(canvas);
       root.render(
         <ReactFlowProvider>
-          <Diagram diagram={diagram} host={host} />
+          <Diagram diagram={diagram} host={host} noteSlot={noteSlot} />
         </ReactFlowProvider>,
       );
       roots.set(host, root);

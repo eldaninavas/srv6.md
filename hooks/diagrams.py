@@ -99,6 +99,19 @@ def _flowchart(entry):
     )
 
 
+_walk_js = {}
+
+
+def _packet_walk(config):
+    # Tiny standalone script (src/diagrams/packet-walk.js), inlined so the
+    # sequence page needs no bundle. Comments are stripped; minify does the rest.
+    if "js" not in _walk_js:
+        path = os.path.join(os.path.dirname(config["config_file_path"]), "src", "diagrams", "packet-walk.js")
+        with open(path, encoding="utf-8") as f:
+            _walk_js["js"] = re.sub(r"^\s*//.*\n", "", f.read(), flags=re.M)
+    return _walk_js["js"]
+
+
 def on_page_content(content, page, config, files, **kwargs):
     found = page.meta.get("_srv6_diagrams")
     if not found:
@@ -110,7 +123,11 @@ def on_page_content(content, page, config, files, **kwargs):
         nonlocal flows
         entry = entries[match.group(1)]
         if entry["kind"] == "sequence":
-            return f'<div class="srv6-seq">{entry["svg"]}</div>'
+            out = f'<div class="srv6-seq">{entry["svg"]}</div>'
+            if entry.get("packetWalk"):
+                svg_id = re.search(r'<svg[^>]*\sid="([^"]+)"', entry["svg"]).group(1)
+                out += f"<script>{_packet_walk(config).replace('__ID__', svg_id)}</script>"
+            return out
         flows += 1
         return _flowchart(entry)
 

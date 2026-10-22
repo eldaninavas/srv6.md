@@ -29,7 +29,9 @@ mkdocs build
 
 Diagrams are written in Mermaid. The ones listed in `tools/diagrams/pilot.json` are
 converted at build time (flowcharts to React Flow, sequence diagrams to inline SVG);
-without this step they simply stay on Mermaid. Needs Node 20+ and Chrome
+without this step they simply stay on Mermaid. Packets run on edges you name and
+mark in the Mermaid source (`A e1@--> B` plus `e1@{ animate: true }`), and a
+diagram's `scenarios` in `pilot.json` add a link-failure toggle. Needs Node 20+ and Chrome
 (`CHROME_PATH`, or Playwright's browser):
 
 ```bash
