@@ -1,12 +1,6 @@
 {
   "_comment": "Every Mermaid flowchart and sequence diagram under docs/ is converted at build time (flowcharts to React Flow, sequences to inline SVG). exclude: diagrams that stay on Mermaid, with the reason. diagrams: per-diagram extras. scenarios = a link-failure toggle (fail = links that go down, idle = links that carry nothing while down, reroute = backup links that take the traffic, note = what the reader sees). packetWalk = one packet walks a sequence diagram's messages. Packets themselves run on edges marked `e1@{ animate: true }` in the Mermaid source. index = position among the page's ```mermaid blocks; an entry that matches no block fails the build.",
-  "exclude": [
-    {
-      "page": "implementations/cilium.md",
-      "index": 0,
-      "why": "ELK puts each subgraph in its own band: 2.5x taller than Mermaid, one edge spans the diagram"
-    }
-  ],
+  "exclude": [],
   "diagrams": [
     {
       "page": "ai/mrc.md",
