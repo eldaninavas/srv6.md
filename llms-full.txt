@@ -50,7 +50,7 @@ Paste any SRv6 SID or uSID container and see what every bit means: Locator-Block
 
 ## State of SRv6 2026
 
-How far has SRv6 come? Our data report counts 23 SRv6 RFCs, 65 active IETF drafts, 18 organizations with public deployments and uSID support across 11 implementations, with a source for every number and charts you can reuse.
+How far has SRv6 come? Our data report counts 23 SRv6 RFCs, 65 active IETF drafts, 19 organizations with public deployments and uSID support across 11 implementations, with a source for every number and charts you can reuse.
 
 [Read the State of SRv6 2026 report](https://srv6.md/reports/state-of-srv6-2026/)
 
@@ -124,7 +124,7 @@ The source node builds an ordered list of segments that defines the packet's pat
 
 URL: https://srv6.md/reports/state-of-srv6-2026/
 Path: reports/state-of-srv6-2026.md
-Summary: Data report on SRv6 in 2026: 23 RFCs, 65 active IETF drafts, 18 public deployments and uSID support across 11 implementations. Every figure sourced.
+Summary: Data report on SRv6 in 2026: 23 RFCs, 65 active IETF drafts, 19 public deployments and uSID support across 11 implementations. Every figure sourced.
 
 # State of SRv6 2026
 
@@ -136,7 +136,7 @@ Summary: Data report on SRv6 in 2026: 23 RFCs, 65 active IETF drafts, 18 public 
 2. **2023 and 2025 were the busiest years**, with 7 SRv6 RFCs each. Three more have been published in 2026 so far. [Details](#standards-23-rfcs)
 3. **65 active Internet-Drafts** in seven IETF working groups mention SRv6: 25 adopted by a working group and 40 individual submissions. [Details](#work-in-progress-65-active-drafts)
 4. **SPRING carries 28 of them**, and **srv6ops**, the working group for SRv6 operations, has 13. [Details](#work-in-progress-65-active-drafts)
-5. **18 organizations** have documented SRv6 in their own networks in public: 9 telecom operators, 8 cloud and AI companies and 1 government agency. [Details](#deployments-18-organizations)
+5. **19 organizations** have documented SRv6 in their own networks in public: 10 telecom operators, 8 cloud and AI companies and 1 government agency. [Details](#deployments-19-organizations)
 6. **SRv6 moved into AI training networks.** OpenAI, Microsoft and Oracle use static SRv6 source routing inside GPU fabrics, and Meta and Alibaba Cloud use SRv6 traffic engineering between AI sites. [Details](#milestones-of-2026)
 7. **uSID is the mainstream encoding**: 8 of the 11 implementations in the [support matrix](https://srv6.md/implementations/support-matrix/) support NEXT-C-SID (uSID), and 2 more support it partially. [Details](#implementations-11-tracked)
 
@@ -245,34 +245,34 @@ The 25 working-group drafts, furthest along first:
 | [draft-ietf-pce-pcep-srv6-yang](https://datatracker.ietf.org/doc/draft-ietf-pce-pcep-srv6-yang/) | A YANG Data Model for Segment Routing (SR) Policy and SR in IPv6 (SRv6) support in Path Computation Element Communications Protocol (PCEP) | `pce` | 09 | WG document |
 | [draft-ietf-pce-stateful-pce-autobw-update](https://datatracker.ietf.org/doc/draft-ietf-pce-stateful-pce-autobw-update/) | Update to the Automatic Bandwidth Adjustment Procedure for MPLS-TE and SR-TE LSPs with a Stateful PCE | `pce` | 05 | WG document |
 
-## Deployments: 18 organizations
+## Deployments: 19 organizations
 
 This is a count of organizations, not announcements, with a public account of SRv6 in their own network: a press release, an engineering blog, a conference talk by the operator, or an IETF document. Trials and vendor product listings are not counted. It is a lower bound. Many deployments, especially in China, are not announced in English, and the IETF's own deployment-status draft [stopped being updated in 2022](https://datatracker.ietf.org/doc/draft-matsushima-spring-srv6-deployment-status/).
 
-[Figure: Bar chart of 18 organizations with a public account of SRv6 in their network, by region: North America 7, Asia-Pacific 6, Europe 4, Latin America 1.]
-Organizations with publicly documented SRv6 deployments, by region (18 in total).
+[Figure: Bar chart of 19 organizations with a public account of SRv6 in their network, by region: North America 8, Asia-Pacific 6, Europe 4, Latin America 1.]
+Organizations with publicly documented SRv6 deployments, by region (19 in total).
 
 ??? note "Data: deployments by region"
 
     | Region | Organizations |
     |---|:---:|
-    | North America | 7 |
+    | North America | 8 |
     | Asia-Pacific | 6 |
     | Europe | 4 |
     | Latin America | 1 |
 
-[Figure: Bar chart of 18 organizations with a public account of SRv6 in their network, by sector: Telecom operator 9, Cloud and AI 8, Public sector 1.]
-Organizations with publicly documented SRv6 deployments, by sector (18 in total).
+[Figure: Bar chart of 19 organizations with a public account of SRv6 in their network, by sector: Telecom operator 10, Cloud and AI 8, Public sector 1.]
+Organizations with publicly documented SRv6 deployments, by sector (19 in total).
 
 ??? note "Data: deployments by sector"
 
     | Sector | Organizations |
     |---|:---:|
-    | Telecom operator | 9 |
+    | Telecom operator | 10 |
     | Cloud and AI | 8 |
     | Public sector | 1 |
 
-Cloud and AI companies (8) now nearly match telecom operators (9), and seven of the eight describe SRv6 in AI infrastructure. The operator list is in [Real-World Deployments](https://srv6.md/use-cases/deployments/) and the AI list in [SRv6 for AI](https://srv6.md/ai/#who-uses-srv6-for-ai).
+Telecom operators (10) still lead, but cloud and AI companies (8) are close behind, and seven of the eight describe SRv6 in AI infrastructure. The operator list is in [Real-World Deployments](https://srv6.md/use-cases/deployments/) and the AI list in [SRv6 for AI](https://srv6.md/ai/#who-uses-srv6-for-ai).
 
 | Organization | Sector | Region | Source |
 |--------------|--------|--------|:------:|
@@ -284,6 +284,7 @@ Cloud and AI companies (8) now nearly match telecom operators (9), and seven of 
 | Swisscom | Telecom operator | Europe | [News](https://www.segment-routing.net/news/2024-10-09-swisscom-srv6-usid-ipm/) |
 | Bell Canada | Telecom operator | North America | [Workshop slides](https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf) |
 | Verizon | Telecom operator | North America | [Upperside WC 2026](https://www.segment-routing.net/conferences/Paris26-Verizon-Luay-Jalil/) |
+| Boost Mobile | Telecom operator | North America | [Upperside WC 2026](https://www.segment-routing.net/conferences/Paris26-Boost-Frederico-Luzzi-Jorge-Marquez/) |
 | Telefonica VIVO | Telecom operator | Latin America | [LACNIC blog](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) |
 | Rijkswaterstaat | Public sector | Europe | [Cisco Live 2025](https://www.segment-routing.net/conferences/20250213-cleur-rws-srv6-deployment/) |
 | Meta | Cloud and AI | North America | [Meta Engineering](https://engineering.fb.com/2026/10/12/open-source/ocp-summit-2026-powering-ai-with-open-innovations-in-scale-up-scale-out-and-scale-across-networks/) |
@@ -357,7 +358,7 @@ These are the documents closest to publication or adoption on 20 October 2026, a
 
 - **RFCs.** The [IETF Datatracker API](https://datatracker.ietf.org/api/v1/) was queried for RFCs whose title or abstract contains "SRv6", "Segment Routing over IPv6", "Segment Routing over the IPv6", "IPv6 Segment Routing" or "Segment Routing Header". Publication dates and status come from the RFC Editor's metadata for each RFC. The rule is mechanical: it includes RFCs that cover SRv6 as one of several data planes (for example [RFC 9350](https://srv6.md/rfcs/rfc9350/), Flex-Algo) and leaves out SR RFCs that do not name SRv6 in the abstract.
 - **Drafts.** Same text rule, applied to drafts in the Datatracker state "Active" in seven working groups. Working-group drafts are those named `draft-ietf--…`. Individual drafts are those named `draft---…`. Drafts aimed at other groups, such as `ippm` or `opsawg`, are not counted. Stages come from the Datatracker states.
-- **Deployments.** Organizations listed in [Real-World Deployments](https://srv6.md/use-cases/deployments/) and [SRv6 for AI](https://srv6.md/ai/#who-uses-srv6-for-ai) whose source is the organization itself, a talk by it, or an IETF document naming it. Trials and vendor product listings are not counted. Region is the organization's headquarters.
+- **Deployments.** Organizations listed in [Real-World Deployments](https://srv6.md/use-cases/deployments/) and [SRv6 for AI](https://srv6.md/ai/#who-uses-srv6-for-ai) whose source is the organization itself, a talk by it, or an IETF document naming it. Trials and vendor product listings are not counted. Region is the organization's headquarters. The list was last updated on 22 October 2026, when Boost Mobile was added on the strength of its own conference talk.
 - **Implementations.** Counts come from the [support matrix](https://srv6.md/implementations/support-matrix/) data file, verified 20 October 2026. "Partial" is the matrix's own rating. Unknown cells count as not supported.
 - **Reproduce it.** `python tools/state-of-srv6/fetch_ietf.py` refreshes the IETF snapshot and `python tools/state-of-srv6/build.py --og` redraws the charts and the share image. The data files are [in the repository](https://github.com/eldaninavas/srv6.md/tree/main/tools/state-of-srv6).
 
@@ -388,7 +389,7 @@ As of 20 October 2026, 23 RFCs name SRv6 in their title or abstract. The first w
 
 ### Who uses SRv6 in production?
 
-Publicly documented users include telecom operators such as China Mobile, SoftBank, Rakuten Mobile, Reliance Jio, Swisscom, Bell Canada and Telefonica VIVO, and cloud and AI companies such as Microsoft, OpenAI, Oracle, Meta, Alibaba Cloud and Nebius. This report counts 18 organizations.
+Publicly documented users include telecom operators such as China Mobile, SoftBank, Rakuten Mobile, Reliance Jio, Swisscom, Bell Canada, Boost Mobile and Telefonica VIVO, and cloud and AI companies such as Microsoft, OpenAI, Oracle, Meta, Alibaba Cloud and Nebius. This report counts 19 organizations.
 
 ### Which vendors support SRv6 uSID?
 
@@ -10575,6 +10576,7 @@ Cloud-optimized:
 
 ## References
 
+1. [Boost Mobile: "From traditional MPLS to Cloud-Native SRv6"](https://www.segment-routing.net/conferences/Paris26-Boost-Frederico-Luzzi-Jorge-Marquez/) - Frederico Luzzi and Jorge Marquez (Boost Mobile) on moving the core backbone in AWS from SR-MPLS and 100,000+ GRE tunnels to SRv6, Upperside WC Paris, March 2026
 1. [Boost Mobile: The Newest Wireless Carrier Launches 5G Network](https://about.dish.com/2024-07-17-Boost-Mobile-the-Newest-Wireless-Carrier-Launches-New-State-of-the-Art-Nationwide-5G-Network,-Plans-and-Branding) - DISH press release on Boost Mobile's cloud-native 5G network launch
 2. [Cisco and DISH Wireless Test 5G Hybrid Cloud Network Slicing](https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2024/m02/cisco-and-dish-wireless-test-5g-hybrid-cloud-network-slicing-solution-speeding-launch-of-new-enterprise-services.html) - Cisco press release on DISH Wireless network slicing proof of concept
 3. [Building the Future of Connectivity: Boost Mobile and Cisco](https://blogs.cisco.com/sp/building-the-future-of-connectivity-boost-mobile-and-ciscos-collaborative-journey) - Cisco blog on the Open RAN deployment
@@ -10597,7 +10599,7 @@ SRv6 is in production at some of the world's largest networks. The following is 
     Every entry links to the original public announcement (press release, blog post, or conference talk) by the operator or vendor. We do not reproduce proprietary details — click through to the source for full information.
 
 !!! tip "By the numbers"
-    How many organizations run SRv6, by region and sector, and how that compares with standards and vendor support: see the [State of SRv6 2026](https://srv6.md/reports/state-of-srv6-2026/#deployments-18-organizations) data report.
+    How many organizations run SRv6, by region and sector, and how that compares with standards and vendor support: see the [State of SRv6 2026](https://srv6.md/reports/state-of-srv6-2026/#deployments-19-organizations) data report.
 
 ## Telecom Operators
 
@@ -10624,7 +10626,7 @@ SRv6 is in production at some of the world's largest networks. The following is 
 | Operator | Announcement | Source |
 |----------|-------------|:------:|
 | **Bell Canada** | SRv6 uSID deployment with P4 programmable edge | [](https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf) |
-| **Boost Mobile** (United States) | Cloud-native SRv6 backbone in AWS — migrated from SR-MPLS/GRE to single SRv6 domain | [](https://srv6.md/use-cases/cloud-native-backbone/) |
+| **Boost Mobile** (United States) | "From traditional MPLS to Cloud-Native SRv6": core backbone in AWS moved from SR-MPLS with 100,000+ GRE tunnels to a single SRv6 domain (Upperside WC Paris 2026). Deep dive: [Cloud-Native Backbone](https://srv6.md/use-cases/cloud-native-backbone/) | [](https://www.segment-routing.net/conferences/Paris26-Boost-Frederico-Luzzi-Jorge-Marquez/) |
 | **Verizon** (United States) | "Simplifying the Network, the Journey to Unified Traffic Engineering with SRv6" — target of SRv6 in all domains with a single encapsulation and single TE policy, extending to host-based encapsulation (Upperside WC Paris 2026) | [](https://www.segment-routing.net/conferences/Paris26-Verizon-Luay-Jalil/) |
 | **Telefonica VIVO** (Brazil) | Multi-vendor SRv6 uSID deployment | [](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) |
 | **Telecom District** (Mexico) | The future of routing built on SRv6 | [](https://en.telecomdistrict.com/blog/el-futuro-del-enrutamiento-construido-sobre-srv6) |
@@ -14027,13 +14029,12 @@ Comprehensive reference for all SRv6-related IETF RFCs, with summaries, behavior
 
 | Draft | Topic |
 |-------|-------|
-| `draft-ietf-spring-sr-service-programming` | SR proxy behaviors (End.AS, End.AD, End.AM) for service chaining |
+| `draft-ietf-spring-srv6-service-programming` | SRv6 service programming for service chaining (replaces `draft-ietf-spring-sr-service-programming`) |
 | `draft-ietf-spring-srv6-security` | Security analysis of the SRv6 data plane |
-| `draft-ietf-ippm-ioam-srv6-options` | In-situ OAM (IOAM) data fields in SRv6 |
-| `draft-filsfils-spring-path-tracing` | Lightweight path tracing for SRv6 |
+| `draft-filsfils-ippm-path-tracing` | Lightweight path tracing for SRv6 (moved from SPRING to IPPM) |
 | `draft-ietf-pce-sr-p2mp-policy` | PCEP signaling for SR P2MP Policy (Tree-SID) |
 | `draft-filsfils-srv6ops-srv6-ai-backend` | SRv6 deterministic path placement for AI backends |
-| `draft-ietf-spring-srv6-yang` | YANG data model for SRv6 |
+| `draft-ietf-spring-srv6-yang-base` | YANG data model for SRv6 (base; static SIDs are in `draft-ietf-spring-srv6-yang-static`) |
 
 !!! note "Recently published"
     The BGP SR Policy SAFI drafts are now [RFC 9830](https://srv6.md/rfcs/rfc9830/) (Advertising SR Policies in BGP) and [RFC 9831](https://datatracker.ietf.org/doc/rfc9831/) (Segment Type Extensions for BGP SR Policy).

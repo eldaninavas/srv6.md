@@ -113,7 +113,7 @@ SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundame
 
 ## Reports
 
-- [State of SRv6 2026: RFCs, Drafts, Deployments, Vendors](https://srv6.md/reports/state-of-srv6-2026/): Data report on SRv6 in 2026: 23 RFCs, 65 active IETF drafts, 18 public deployments and uSID support across 11 implementations. Every figure sourced.
+- [State of SRv6 2026: RFCs, Drafts, Deployments, Vendors](https://srv6.md/reports/state-of-srv6-2026/): Data report on SRv6 in 2026: 23 RFCs, 65 active IETF drafts, 19 public deployments and uSID support across 11 implementations. Every figure sourced.
 
 ## En español (Spanish)
 
