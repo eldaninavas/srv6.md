@@ -93,7 +93,7 @@ theme:
     - header.autohide
 
 extra_css:
-  - assets/stylesheets/custom.css?v=20261020
+  - assets/stylesheets/custom.css?v=20261022
 
 extra_javascript:
   - assets/javascripts/custom.js
@@ -160,6 +160,18 @@ extra:
   generator: false
   # Shown as the author in every page's JSON-LD (E-E-A-T). Add more profile
   # URLs (e.g. LinkedIn) to `same_as` to strengthen the author entity.
+  # Header language selector (overrides/partials/language-select.html).
+  # Each language's pages stay in nav for their sidebar, but get no tab.
+  languages:
+    - name: English
+      lang: en
+      link: /
+    - name: Español
+      lang: es
+      link: /es/
+    - name: 日本語
+      lang: ja
+      link: /ja/
   maintainer:
     name: Daniel Navas
     url: https://srv6.md/community/about/

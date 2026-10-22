@@ -1,0 +1,25 @@
+{#- Language selector: each entry links to this page's translation when one
+    exists (page.meta.alternates, set by hooks/i18n.py), else to that
+    language's home page. -#}
+{% set page_url = page.url if page else "" %}
+{% set current = page_url.split("/")[0] if page_url.split("/")[0] in ["es", "ja"] else "en" %}
+{% set alternates = page.meta.alternates if page and page.meta and page.meta.alternates else {} %}
+<div class="md-header__option">
+  <div class="md-select">
+    <button class="md-header__button md-icon" aria-label="{{ lang.t('select.language') }}">
+      {% include ".icons/material/translate.svg" %}
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        {% for alt in config.extra.languages %}
+          {% set target = alternates.get(alt.lang) %}
+          <li class="md-select__item">
+            <a href="{{ (target | url) if target else alt.link }}" hreflang="{{ alt.lang }}" lang="{{ alt.lang }}" class="md-select__link{% if alt.lang == current %} srv6-lang--current{% endif %}"{% if alt.lang == current %} aria-current="true"{% endif %}>
+              {{ alt.name }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
