@@ -568,6 +568,9 @@
 .srv6-flow {
   --srv6-flow-toolbar: 32px;
   box-sizing: content-box;
+  /* No min-height here: with aspect-ratio it becomes a min-width, and a wide,
+     flat diagram would overflow the column. */
+  min-width: 0;
   margin: 1em 0;
   padding-bottom: var(--srv6-flow-toolbar);
 }

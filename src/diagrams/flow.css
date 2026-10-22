@@ -9,7 +9,6 @@
   --xy-node-color: var(--md-mermaid-label-fg-color);
 
   position: relative;
-  min-height: 120px;
   font-family: var(--md-mermaid-font-family);
 }
 
@@ -38,7 +37,7 @@
   flex: 1;
 }
 
-/* Failure scenario toggle (pilot.json scenarios) */
+/* Failure scenario toggle (diagrams.json scenarios) */
 .srv6-flow__scenario {
   display: inline-flex;
   gap: 4px;
@@ -106,7 +105,6 @@
 
 .srv6-flow--failed {
   aspect-ratio: auto !important;
-  min-height: 0;
 }
 
 .srv6-flow--failed .srv6-flow__canvas {

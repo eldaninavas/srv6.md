@@ -55,7 +55,31 @@ const SPACING = {
     'elk.layered.spacing.edgeNodeBetweenLayers': '20',
     'elk.layered.spacing.edgeEdgeBetweenLayers': '12',
     'elk.spacing.edgeLabel': '4',
+    // Keep the author's order, as Mermaid (dagre) does, also between
+    // unconnected pieces of one diagram.
+    'elk.layered.considerModelOrder.strategy': 'NODES_AND_EDGES',
+    'elk.layered.considerModelOrder.components': 'MODEL_ORDER',
 };
+
+// Cycles (probe and back, A->B->A) are broken against declaration order, so
+// the first-declared node stays first. Only for graphs that have a cycle:
+// this ELK strategy reverses every edge that runs against declaration order.
+const CYCLES = { 'elk.layered.cycleBreaking.strategy': 'MODEL_ORDER' };
+
+export function hasCycle(edges) {
+  const next = new Map();
+  for (const e of edges) next.set(e.source, [...(next.get(e.source) || []), e.target]);
+  const state = new Map(); // 1 = on the current path, 2 = done
+  const visit = (n) => {
+    if (state.get(n) === 1) return true;
+    if (state.get(n) === 2) return false;
+    state.set(n, 1);
+    const found = (next.get(n) || []).some(visit);
+    state.set(n, 2);
+    return found;
+  };
+  return [...next.keys()].some(visit);
+}
 
 // ELK routes to the bounding box. For shapes that do not fill it, slide the
 // end point along its first segment until it touches the visible outline.
@@ -86,22 +110,24 @@ export function clipToShape(shape, box, end, next) {
   return end; // the line misses the shape entirely: keep ELK's point
 }
 
-function rootOptions(direction) {
+function rootOptions(direction, cyclic) {
   return {
+    ...(cyclic ? CYCLES : {}),
     'elk.algorithm': 'layered',
     'elk.direction': ELK_DIRECTION[direction],
     'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
     'elk.edgeRouting': ROUTING,
     ...SPACING,
-    'elk.layered.considerModelOrder.strategy': 'NODES_AND_EDGES',
     'elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED',
     'elk.json.edgeCoords': 'ROOT',
     'elk.padding': '[top=8,left=8,bottom=8,right=8]',
   };
 }
 
-// Mermaid only honours a subgraph's own `direction` when none of its nodes
-// link outside it; ELK can only do that for a separately laid-out child graph.
+// A subgraph none of whose nodes link outside it is laid out on its own, in
+// its own `direction`, or else turned a quarter from its parent's (Mermaid:
+// rankdir = dir || (parent === 'TB' ? 'LR' : 'TB')). ELK can only do that for
+// a separately laid-out child graph.
 function isolated(groupId, model, parentOf) {
   const inside = (id) => {
     for (let p = id; p; p = parentOf.get(p)) if (p === groupId) return true;
@@ -115,16 +141,24 @@ export async function layout(model) {
   const parentOf = new Map([...model.groups, ...model.nodes].map((n) => [n.id, n.parent]));
   const elkNodes = new Map();
 
-  for (const g of model.groups) {
+  const cyclic = hasCycle(model.edges);
+  const depthOf = (id) => (parentOf.get(id) ? 1 + depthOf(parentOf.get(id)) : 0);
+  const flowDir = new Map(); // effective direction inside each group
+  const dirOf = (id) => (id ? flowDir.get(id) : model.direction);
+  for (const g of [...model.groups].sort((a, b) => depthOf(a.id) - depthOf(b.id))) {
+    const outer = dirOf(g.parent);
+    const own = isolated(g.id, model, parentOf) ? g.direction || (outer === 'TB' ? 'LR' : 'TB') : outer;
+    flowDir.set(g.id, own);
     const options = {
       ...SPACING,
+      ...(cyclic ? CYCLES : {}),
       'elk.padding': `[top=${g.labelSize.height + GROUP_PAD},left=${GROUP_PAD},bottom=${GROUP_PAD},right=${GROUP_PAD}]`,
       'elk.nodeSize.constraints': 'MINIMUM_SIZE',
       'elk.nodeSize.minimum': `(${g.labelSize.width + 2 * GROUP_PAD}, ${g.labelSize.height + 2 * GROUP_PAD})`,
     };
-    if (g.direction && g.direction !== model.direction && isolated(g.id, model, parentOf)) {
+    if (own !== outer) {
       options['elk.hierarchyHandling'] = 'SEPARATE_CHILDREN';
-      options['elk.direction'] = ELK_DIRECTION[g.direction];
+      options['elk.direction'] = ELK_DIRECTION[own];
     }
     elkNodes.set(g.id, { id: g.id, layoutOptions: options, children: [] });
   }
@@ -132,7 +166,7 @@ export async function layout(model) {
     elkNodes.set(n.id, { id: n.id, ...nodeSize(n.shape, n.labelSize) });
   }
 
-  const root = { id: '__root', layoutOptions: rootOptions(model.direction), children: [], edges: [] };
+  const root = { id: '__root', layoutOptions: rootOptions(model.direction, cyclic), children: [], edges: [] };
   for (const item of [...model.groups, ...model.nodes]) {
     const parent = item.parent ? elkNodes.get(item.parent) : root;
     parent.children.push(elkNodes.get(item.id));
@@ -149,7 +183,27 @@ export async function layout(model) {
       : [],
   }));
 
-  const out = await elk.layout(root);
+  // ELK 0.12 crashes on some graphs whose edges cross subgraph borders when
+  // the model-order options are set (cycle breaking, or model order inside
+  // subgraphs). Those fall back, one step at a time, to ELK's defaults.
+  const fallbacks = [
+    (node, isRoot) => delete node.layoutOptions?.['elk.layered.cycleBreaking.strategy'],
+    (node, isRoot) => !isRoot && delete node.layoutOptions?.['elk.layered.considerModelOrder.strategy'],
+  ];
+  let out;
+  for (let step = 0; ; step++) {
+    try {
+      out = await elk.layout(structuredClone(root));
+      break;
+    } catch (err) {
+      if (step === fallbacks.length) throw err;
+      const strip = (node, isRoot) => {
+        fallbacks[step](node, isRoot);
+        for (const child of node.children || []) strip(child, false);
+      };
+      strip(root, true);
+    }
+  }
 
   const boxes = new Map();
   const walk = (node, parentId) => {

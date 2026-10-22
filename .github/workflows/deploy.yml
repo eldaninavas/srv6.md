@@ -49,7 +49,7 @@ jobs:
         env:
           CHROME_PATH: /usr/bin/google-chrome
 
-      - name: Convert pilot diagrams
+      - name: Convert Mermaid diagrams
         run: npm run diagrams
         env:
           CHROME_PATH: /usr/bin/google-chrome

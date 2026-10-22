@@ -123,7 +123,7 @@ export function fromFlowDb(db) {
       if (end && !ARROWS[end]) warnings.push(`edge ${e.start}->${e.end}: arrow "${end}" rendered as plain line`);
     }
     return {
-      // Named edges (`A e1@--> B`) keep their name so pilot.json scenarios
+      // Named edges (`A e1@--> B`) keep their name so diagrams.json scenarios
       // can refer to them; the rest get an id no Mermaid name can take.
       id: e.isUserDefinedId ? e.id : `_e${i}`,
       source: e.start,

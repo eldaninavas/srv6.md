@@ -14,7 +14,9 @@ const require = createRequire(import.meta.url);
 const pkgDir = (name) => dirname(require.resolve(`${name}/package.json`));
 
 // Must match src/diagrams/flow.css (.srv6-flow__label / __edge-label / __group-label).
-export const TEXT = { fontSize: 16, lineHeight: 24, family: 'Inter' };
+// wrap: Mermaid's flowchart wrappingWidth; longer node and edge label lines
+// break at spaces, as Mermaid does (subgraph titles do not).
+export const TEXT = { fontSize: 16, lineHeight: 24, family: 'Inter', wrap: 200 };
 
 const MATERIAL_THEME = readFileSync(join(here, 'material-mermaid-theme.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//, '').trim();
 
@@ -57,9 +59,23 @@ export async function openBrowser() {
           width: Math.ceil(Math.max(0, ...lines.map((l) => ctx.measureText(l).width))),
           height: lines.length * text.lineHeight,
         });
-        for (const n of model.nodes) n.labelSize = size(n.label);
+        const wrap = (lines) =>
+          lines.flatMap((line) => {
+            if (ctx.measureText(line).width <= text.wrap) return [line];
+            const out = [];
+            let cur = '';
+            for (const word of line.split(' ')) {
+              const next = cur ? `${cur} ${word}` : word;
+              if (cur && ctx.measureText(next).width > text.wrap) {
+                out.push(cur);
+                cur = word;
+              } else cur = next;
+            }
+            return cur ? [...out, cur] : out;
+          });
+        for (const n of model.nodes) n.labelSize = size((n.label = wrap(n.label)));
         for (const g of model.groups) g.labelSize = size(g.label);
-        for (const e of model.edges) if (e.label) e.labelSize = size(e.label);
+        for (const e of model.edges) if (e.label) e.labelSize = size((e.label = wrap(e.label)));
         return model;
       }, { source, text: TEXT });
     },

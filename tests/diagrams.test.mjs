@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { blockHash, mermaidBlocks } from '../tools/diagrams/extract.mjs';
 import { fromFlowDb, labelLines, normalizeDirection, parseStyles } from '../tools/diagrams/adapter.mjs';
-import { clipToShape, layout, nodeSize } from '../tools/diagrams/layout.mjs';
+import { clipToShape, hasCycle, layout, nodeSize } from '../tools/diagrams/layout.mjs';
 
 // ------------------------------------------------------------------ extract
 
@@ -192,12 +192,12 @@ test('real parser: named edges keep their name, animate flags packets', async (t
   assert.equal(unnamed.animate, undefined);
 });
 
-test('real parser: the converted pilot sources still render in Mermaid itself', async (t) => {
+test('real parser: diagrams.json extras still render in Mermaid itself', async (t) => {
   const b = await realParser(t);
   if (!b) return;
   const { readFileSync } = await import('node:fs');
-  const pilot = JSON.parse(readFileSync('tools/diagrams/pilot.json', 'utf8'));
-  for (const d of pilot.diagrams) {
+  const config = JSON.parse(readFileSync('tools/diagrams/diagrams.json', 'utf8'));
+  for (const d of config.diagrams) {
     const block = mermaidBlocks(readFileSync(`docs/${d.page}`, 'utf8'))[d.index];
     const svg = await b.sequence(block.source, `fallback-${d.index}`);
     assert.match(svg, /^<svg/, `${d.page} #${d.index}`);
@@ -238,6 +238,38 @@ test('edge ends are clipped to the visible outline', () => {
   const box = { x: 0, y: 0, width: 200, height: 100 };
   assert.deepEqual(clipToShape('diamond', box, [60, 100], [60, 130]), [60, 80]);
   assert.deepEqual(clipToShape('rect', box, [60, 100], [60, 130]), [60, 100]);
+});
+
+test('cycle detection: only real directed cycles count', () => {
+  const e = (source, target) => ({ source, target });
+  assert.equal(hasCycle([e('A', 'B'), e('B', 'A')]), true);
+  assert.equal(hasCycle([e('A', 'B'), e('B', 'C'), e('C', 'A')]), true);
+  assert.equal(hasCycle([e('R1', 'T'), e('R2', 'T'), e('T', 'DB')]), false);
+});
+
+test('real parser: long labels wrap at 200px like Mermaid', async (t) => {
+  const b = await realParser(t);
+  if (!b) return;
+  const model = await b.flowchart('graph LR\n  A["Fix: Check BGP SRv6 locator and SID allocation on every PE"] -->|short| B');
+  const a = model.nodes.find((n) => n.id === 'A');
+  assert.ok(a.label.length > 1, a.label.join(' | '));
+  assert.equal(a.label.join(' '), 'Fix: Check BGP SRv6 locator and SID allocation on every PE');
+  assert.ok(a.labelSize.width <= 200);
+  assert.deepEqual(model.edges[0].label, ['short']);
+});
+
+test('layout: an isolated subgraph turns a quarter from its parent, like Mermaid', async () => {
+  const size = (lines) => ({ width: 40, height: 24 * lines.length });
+  const n = (id, parent) => ({ id, label: [id], shape: 'rect', parent, labelSize: size([id]) });
+  const out = await layout({
+    direction: 'TB',
+    groups: [{ id: 'G', label: ['G'], labelSize: size(['G']) }],
+    nodes: [n('a', 'G'), n('b', 'G')],
+    edges: [{ id: 'e', source: 'a', target: 'b', stroke: 'solid', start: 'none', end: 'arrow' }],
+  });
+  const [a, b] = ['a', 'b'].map((id) => out.nodes.find((x) => x.id === id));
+  assert.equal(a.y, b.y, 'TB parent: the isolated subgraph runs left to right');
+  assert.ok(b.x > a.x);
 });
 
 test('layout: an edge may share its name with a node', async () => {

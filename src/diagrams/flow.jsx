@@ -159,9 +159,21 @@ function roundedPath(pts, r = 8) {
   return `${d}L${lx},${ly}`;
 }
 
+// ELK can repeat a point (a control point on its end point). Harmless in a
+// Bézier, but it would divide by zero in roundedPath.
+const distinct = (pts) => pts.filter((p, i) => i === 0 || Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) > 0.01);
+
+// The nearest point that gives a direction away from pts[i] (for markers).
+function away(pts, i, step) {
+  for (let j = i + step; j >= 0 && j < pts.length; j += step) {
+    if (Math.hypot(pts[j][0] - pts[i][0], pts[j][1] - pts[i][1]) > 0.5) return pts[j];
+  }
+  return pts[i + step] || pts[i];
+}
+
 // ELK spline sections: start point, then (control, control, end) triples.
 function splinePath(pts) {
-  if ((pts.length - 1) % 3 !== 0) return roundedPath(pts);
+  if ((pts.length - 1) % 3 !== 0) return roundedPath(distinct(pts));
   let d = `M${pts[0][0]},${pts[0][1]}`;
   for (let i = 1; i < pts.length; i += 3) {
     d += `C${pts[i][0]},${pts[i][1]} ${pts[i + 1][0]},${pts[i + 1][1]} ${pts[i + 2][0]},${pts[i + 2][1]}`;
@@ -172,11 +184,12 @@ function splinePath(pts) {
 // Pulls an end point back along its segment so the line stops at the marker.
 function trim(pts, atEnd, by) {
   const p = pts.map((q) => [...q]);
-  const [a, b] = atEnd ? [p.length - 1, p.length - 2] : [0, 1];
-  const len = Math.hypot(p[b][0] - p[a][0], p[b][1] - p[a][1]) || 1;
+  const a = atEnd ? p.length - 1 : 0;
+  const [bx, by2] = away(pts, a, atEnd ? -1 : 1);
+  const len = Math.hypot(bx - p[a][0], by2 - p[a][1]) || 1;
   const k = Math.min(by, len / 2) / len;
-  p[a][0] += (p[b][0] - p[a][0]) * k;
-  p[a][1] += (p[b][1] - p[a][1]) * k;
+  p[a][0] += (bx - p[a][0]) * k;
+  p[a][1] += (by2 - p[a][1]) * k;
   return p;
 }
 
@@ -213,8 +226,9 @@ function Marker({ kind, tip, from }) {
 }
 
 function RoutedEdge({ data }) {
-  const { points, curve, stroke, start, end, label, labelBox, className } = data;
-  if (!points.length || stroke === 'invisible') return null;
+  const { curve, stroke, start, end, label, labelBox, className } = data;
+  const points = curve === 'spline' && (data.points.length - 1) % 3 === 0 ? data.points : distinct(data.points);
+  if (points.length < 2 || stroke === 'invisible') return null;
   let line = points;
   if (end !== 'none') line = trim(line, true, ARROW - 2);
   if (start !== 'none') line = trim(line, false, ARROW - 2);
@@ -223,8 +237,8 @@ function RoutedEdge({ data }) {
     <>
       <g className={`srv6-flow__edge srv6-flow__edge--${stroke} ${className || ''}`}>
         <path d={curve === 'spline' ? splinePath(line) : roundedPath(line)} fill="none" />
-        <Marker kind={end} tip={points[last]} from={points[last - 1]} />
-        <Marker kind={start} tip={points[0]} from={points[1]} />
+        <Marker kind={end} tip={points[last]} from={away(points, last, -1)} />
+        <Marker kind={start} tip={points[0]} from={away(points, 0, 1)} />
       </g>
       {label && labelBox && (
         <EdgeLabelRenderer>
@@ -292,7 +306,7 @@ function toFlow(diagram) {
   return { nodes, edges };
 }
 
-const edgePath = (e) => (e.curve === 'spline' ? splinePath(e.points) : roundedPath(e.points));
+const edgePath = (e) => (e.curve === 'spline' ? splinePath(e.points) : roundedPath(distinct(e.points)));
 
 // Packets and fault markers, in flow coordinates above the edges. The portal
 // target only exists after React Flow's first render, hence the callback ref.

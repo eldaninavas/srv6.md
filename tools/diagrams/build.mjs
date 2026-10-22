@@ -1,5 +1,7 @@
-// Converts the allowlisted Mermaid diagrams (tools/diagrams/pilot.json) at
-// build time. Run before `mkdocs build`; hooks/diagrams.py swaps the blocks.
+// Converts every Mermaid flowchart and sequence diagram under docs/ at build
+// time, except those excluded in tools/diagrams/diagrams.json (which also
+// holds per-diagram extras: failure scenarios, packet walk). Run before
+// `mkdocs build`; hooks/diagrams.py swaps the blocks.
 //
 //   flowchart -> parsed by Mermaid, measured in Inter, laid out by elkjs,
 //                drawn by React Flow (docs/assets/diagrams/flow.<hash>.js)
@@ -7,9 +9,9 @@
 //                var(--md-mermaid-*), so no Mermaid at runtime
 //
 // Outputs (both gitignored): build/diagrams/manifest.json and the bundle.
-// Every other diagram stays on Mermaid. A page whose source no longer matches
-// the manifest hash also stays on Mermaid, so a stale build never shows an
-// outdated diagram.
+// Excluded diagrams, other Mermaid types and any diagram that fails to
+// convert stay on Mermaid. A page whose source no longer matches the manifest
+// hash also stays on Mermaid, so a stale build never shows an outdated diagram.
 
 import { createHash } from 'node:crypto';
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -26,7 +28,18 @@ const outDir = join(repo, 'build', 'diagrams');
 const assetDir = join(docs, 'assets', 'diagrams');
 
 const started = Date.now();
-const pilot = JSON.parse(readFileSync(join(repo, 'tools', 'diagrams', 'pilot.json'), 'utf8'));
+const config = JSON.parse(readFileSync(join(repo, 'tools', 'diagrams', 'diagrams.json'), 'utf8'));
+const key = (page, index) => `${page}#${index}`;
+const excluded = new Map(config.exclude.map((x) => [key(x.page, x.index), x.why]));
+const extras = new Map(config.diagrams.map((x) => [key(x.page, x.index), x]));
+
+function markdownPages(dir = docs) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((ent) => {
+    const path = join(dir, ent.name);
+    if (ent.isDirectory()) return markdownPages(path);
+    return ent.name.endsWith('.md') ? [relative(docs, path)] : [];
+  });
+}
 
 // Page titles (English) for click-to-navigate: a node whose whole label is a
 // page title links to that page.
@@ -97,32 +110,43 @@ const browser = await openBrowser();
 const pages = {};
 const report = [];
 
-try {
-  for (const item of pilot.diagrams) {
-    const md = readFileSync(join(docs, item.page), 'utf8');
-    const block = mermaidBlocks(md)[item.index];
-    if (!block) throw new Error(`${item.page}: no mermaid block #${item.index}`);
-    if (block.kind !== item.kind) throw new Error(`${item.page} #${item.index}: expected ${item.kind}, found ${block.kind}`);
+const unused = new Set([...excluded.keys(), ...extras.keys()]);
+const failed = [];
 
-    let entry;
-    if (block.kind === 'flowchart') {
-      const model = await browser.flowchart(block.source);
-      for (const n of model.nodes) n.href ||= titles.get(n.label.join(' ').toLowerCase());
-      const laid = await layout(model);
-      laid.scenarios = scenarios(item, laid);
-      entry = { kind: 'flowchart', source: block.source, diagram: laid };
-      report.push(`${item.page} #${item.index} flowchart ${laid.nodes.length} nodes ${laid.edges.length} edges ` +
-        `${laid.groups.length} groups ${laid.width}x${laid.height}, ` +
-        `${laid.edges.filter((e) => e.animate).length} animated, ${laid.scenarios?.length || 0} scenario(s)` +
-        (model.warnings.length ? `\n  warn: ${model.warnings.join('\n  warn: ')}` : ''));
-    } else if (block.kind === 'sequence') {
-      const svg = await browser.sequence(block.source, `srv6-seq-${block.hash}`);
-      entry = { kind: 'sequence', source: block.source, svg, packetWalk: !!item.packetWalk };
-      report.push(`${item.page} #${item.index} sequence ${(svg.length / 1024).toFixed(1)} KB SVG`);
-    } else {
-      throw new Error(`${item.page} #${item.index}: ${block.kind} diagrams are not supported`);
+try {
+  for (const page of markdownPages().sort()) {
+    for (const block of mermaidBlocks(readFileSync(join(docs, page), 'utf8'))) {
+      const id = key(page, block.index);
+      unused.delete(id);
+      if (excluded.has(id) || block.kind === 'other') continue;
+      const item = extras.get(id) || { page, index: block.index };
+      if (item.kind && item.kind !== block.kind) throw new Error(`${id}: diagrams.json expects ${item.kind}, found ${block.kind}`);
+      let entry;
+      try {
+        if (block.kind === 'flowchart') {
+          const model = await browser.flowchart(block.source);
+          for (const n of model.nodes) n.href ||= titles.get(n.label.join(' ').toLowerCase());
+          const laid = await layout(model);
+          laid.scenarios = scenarios(item, laid);
+          entry = { kind: 'flowchart', source: block.source, diagram: laid };
+          report.push(`${id} flowchart ${laid.nodes.length}n ${laid.edges.length}e ${laid.groups.length}g ` +
+            `${laid.width}x${laid.height}` +
+            (laid.edges.some((e) => e.animate) ? `, ${laid.edges.filter((e) => e.animate).length} animated` : '') +
+            (laid.scenarios ? `, ${laid.scenarios.length} scenario(s)` : '') +
+            (model.warnings.length ? `\n  warn: ${model.warnings.join('\n  warn: ')}` : ''));
+        } else {
+          const svg = await browser.sequence(block.source, `srv6-seq-${block.hash}`);
+          entry = { kind: 'sequence', source: block.source, svg, packetWalk: !!item.packetWalk };
+          report.push(`${id} sequence ${(svg.length / 1024).toFixed(1)} KB SVG${item.packetWalk ? ', packet walk' : ''}`);
+        }
+      } catch (err) {
+        // Scenario mistakes are ours to fix; a diagram Mermaid can't parse stays on Mermaid.
+        if (/scenario/.test(err.message)) throw err;
+        failed.push(`${id}: ${err.message.split('\n')[0]}`);
+        continue;
+      }
+      (pages[page] ||= {})[block.hash] = entry;
     }
-    (pages[item.page] ||= {})[block.hash] = entry;
   }
 } finally {
   await browser.close();
@@ -133,4 +157,10 @@ mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, 'manifest.json'), JSON.stringify({ script: script.path, pages }));
 
 console.log(report.join('\n'));
+if (failed.length) console.log(`left on Mermaid (could not convert):\n  ${failed.join('\n  ')}`);
+// An exclusion or extra that matches no block is a stale entry: the page moved
+// or its diagrams were reordered, so it would now apply to the wrong diagram.
+if (unused.size) throw new Error(`diagrams.json names blocks that do not exist: ${[...unused].join(', ')}`);
+const count = Object.values(pages).reduce((n, p) => n + Object.keys(p).length, 0);
+console.log(`${count} diagrams converted, ${excluded.size} excluded, ${failed.length} failed`);
 console.log(`bundle ${script.path} ${(script.bytes / 1024).toFixed(1)} KB; done in ${((Date.now() - started) / 1000).toFixed(1)}s`);

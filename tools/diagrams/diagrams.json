@@ -1,0 +1,62 @@
+{
+  "_comment": "Every Mermaid flowchart and sequence diagram under docs/ is converted at build time (flowcharts to React Flow, sequences to inline SVG). exclude: diagrams that stay on Mermaid, with the reason. diagrams: per-diagram extras. scenarios = a link-failure toggle (fail = links that go down, idle = links that carry nothing while down, reroute = backup links that take the traffic, note = what the reader sees). packetWalk = one packet walks a sequence diagram's messages. Packets themselves run on edges marked `e1@{ animate: true }` in the Mermaid source. index = position among the page's ```mermaid blocks; an entry that matches no block fails the build.",
+  "exclude": [
+    {
+      "page": "implementations/cilium.md",
+      "index": 0,
+      "why": "ELK puts each subgraph in its own band: 2.5x taller than Mermaid, one edge spans the diagram"
+    }
+  ],
+  "diagrams": [
+    {
+      "page": "ai/mrc.md",
+      "index": 0,
+      "kind": "flowchart",
+      "scenarios": [
+        {
+          "label": "Fail NIC port 8",
+          "restore": "Restore port 8",
+          "fail": [
+            "c1"
+          ],
+          "idle": [
+            "c2",
+            "c3",
+            "c4"
+          ],
+          "note": "Port 8 down: plane 8 goes dark and packets keep spraying over the other planes. The node loses one port's bandwidth (≈12%), the job keeps running."
+        }
+      ]
+    },
+    {
+      "page": "topics/ti-lfa.md",
+      "index": 0,
+      "kind": "flowchart",
+      "scenarios": [
+        {
+          "label": "Fail link S–N",
+          "restore": "Restore S–N",
+          "fail": [
+            "p1"
+          ],
+          "idle": [
+            "p2"
+          ],
+          "reroute": [
+            "q1",
+            "q2",
+            "q3",
+            "q4"
+          ],
+          "note": "S–N down: S (the PLR) repairs at once onto the post-convergence path S→A→B→C→D, adding RL = ⟨Node-SID(B), Adj-SID(B→C)⟩. No wait for IGP convergence."
+        }
+      ]
+    },
+    {
+      "page": "topics/srh-packet-walk.md",
+      "index": 0,
+      "kind": "sequence",
+      "packetWalk": true
+    }
+  ]
+}

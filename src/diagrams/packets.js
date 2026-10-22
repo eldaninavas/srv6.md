@@ -1,5 +1,5 @@
 // Packets on converted flowcharts: edges marked `e1@{ animate: true }` in the
-// Mermaid source carry a stream of packets, and a pilot.json scenario can
+// Mermaid source carry a stream of packets, and a diagrams.json scenario can
 // fail links and move the stream onto backup links.
 //
 // One clock per diagram. Packet k leaves its source at k*GAP (+ a per-source
