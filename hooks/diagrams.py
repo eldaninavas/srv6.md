@@ -117,5 +117,19 @@ def on_page_content(content, page, config, files, **kwargs):
     content = _PLACEHOLDER.sub(render, content)
     if flows:
         src = get_relative_url(_manifest["script"], page.url)
-        content += f'\n<script src="{src}"></script>'
+        # The bundle is fetched only once a diagram comes within 400px of the
+        # viewport, and never before the load event, so React never competes
+        # with the page's first paint (LCP). The view's space is reserved, so
+        # nothing shifts. After instant navigation the bundle is already
+        # there and re-mounts itself (it subscribes to Material's document$).
+        content += (
+            "\n<script>(function(){var u=" + json.dumps(src) + ";"
+            "function go(){if(window.__srv6Flow){window.__srv6Flow.mount();return}"
+            "if(document.querySelector('script[data-srv6-flow]'))return;"
+            "var s=document.createElement('script');s.src=u;s.dataset.srv6Flow='';document.head.appendChild(s)}"
+            "function arm(){if(window.__srv6Flow||!('IntersectionObserver' in window))return go();"
+            "var io=new IntersectionObserver(function(es){if(es.some(function(e){return e.isIntersecting})){io.disconnect();go()}},{rootMargin:'400px'});"
+            "document.querySelectorAll('.srv6-flow').forEach(function(e){io.observe(e)})}"
+            "document.readyState==='complete'?arm():addEventListener('load',arm,{once:true})})()</script>"
+        )
     return content

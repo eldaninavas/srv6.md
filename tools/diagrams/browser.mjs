@@ -75,9 +75,7 @@ export async function openBrowser() {
         });
         const { svg } = await window.mermaid.render(id, source);
         window.mermaid.initialize({ startOnLoad: false });
-        // Mermaid's own `#id .actor-line` (#9370DB) outranks Material's
-        // `#id line` here; the live render shows Material's lifeline color.
-        return svg.replace('</style>', `#${id} .actor-line{stroke:var(--md-mermaid-sequence-actor-line-color)}</style>`);
+        return svg;
       }, { source, id, themeCSS: MATERIAL_THEME });
     },
 
