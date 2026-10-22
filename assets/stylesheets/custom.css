@@ -1,4 +1,4 @@
-/* =====================================
+/* ============================================
    SRv6.md - Custom Theme: Dark Purple
    ============================================ */
 
@@ -1386,7 +1386,6 @@ html:lang(ja) .md-typeset {
   color: var(--md-accent-fg-color);
   font-weight: 700;
 }
-=======
 /* --- Home hero: text beside the animated SRv6 fabric ----------------------
    The text (H1, language links, tagline, buttons) stays server-rendered: a
    narrow column on desktop, on top on mobile. The stage takes the rest of the
