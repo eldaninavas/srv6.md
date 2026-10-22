@@ -1,4 +1,4 @@
-/* ============================================
+/* =====================================
    SRv6.md - Custom Theme: Dark Purple
    ============================================ */
 
@@ -546,6 +546,9 @@
   --md-mermaid-node-fg-color: #7b1fa2;
   --md-mermaid-label-bg-color: var(--md-default-bg-color);
   --md-mermaid-label-fg-color: #33203b;
+  --srv6-flow-fail: #c62828;
+  --srv6-flow-packet: #00897b;
+  --srv6-hero-algo: #e65100;
 }
 
 [data-md-color-scheme="slate"] {
@@ -554,6 +557,103 @@
   --md-mermaid-node-fg-color: #ab47bc;
   --md-mermaid-label-bg-color: var(--md-default-bg-color);
   --md-mermaid-label-fg-color: #f5eefa;
+  --srv6-flow-fail: #ef5350;
+  --srv6-flow-packet: #64ffda;
+  --srv6-hero-algo: #ffb74d;
+}
+
+/* Look of converted diagrams and the home hero. Derived from the site
+   palette (--md-mermaid-*, --md-default-*), so both schemes follow the
+   toggle; only the mix ratios live here. */
+
+.srv6-flow,
+.srv6-hero-stage {
+  --srv6-node-top: color-mix(in srgb, var(--md-mermaid-node-bg-color) 45%, var(--md-default-bg-color));
+  --srv6-node-bottom: var(--md-mermaid-node-bg-color);
+  --srv6-node-border: color-mix(in srgb, var(--md-mermaid-node-fg-color) 40%, transparent);
+  --srv6-node-shadow: 0 1px 2px rgb(0 0 0 / 6%),
+    0 8px 18px -8px color-mix(in srgb, var(--md-mermaid-node-fg-color) 45%, transparent);
+  --srv6-icon: var(--md-mermaid-node-fg-color);
+  --srv6-group-bg: color-mix(in srgb, var(--md-mermaid-node-fg-color) 4%, transparent);
+  --srv6-group-border: color-mix(in srgb, var(--md-mermaid-node-fg-color) 32%, transparent);
+  --srv6-chip-bg: color-mix(in srgb, var(--md-mermaid-node-fg-color) 12%, var(--md-default-bg-color));
+  --srv6-chip-fg: var(--md-mermaid-node-fg-color);
+  --srv6-edge: color-mix(in srgb, var(--md-mermaid-edge-color) 78%, transparent);
+}
+
+[data-md-color-scheme="slate"] .srv6-flow,
+[data-md-color-scheme="slate"] .srv6-hero-stage {
+  --srv6-node-top: color-mix(in srgb, var(--md-mermaid-node-bg-color) 70%, var(--md-mermaid-node-fg-color));
+  --srv6-node-bottom: color-mix(in srgb, var(--md-mermaid-node-bg-color) 75%, var(--md-default-bg-color));
+  --srv6-node-border: color-mix(in srgb, var(--md-mermaid-node-fg-color) 70%, transparent);
+  --srv6-node-shadow: 0 0 0 1px rgb(0 0 0 / 20%),
+    0 10px 24px -10px color-mix(in srgb, var(--md-mermaid-node-fg-color) 70%, transparent);
+  --srv6-icon: color-mix(in srgb, var(--md-mermaid-label-fg-color) 75%, var(--md-mermaid-node-fg-color));
+  --srv6-group-bg: color-mix(in srgb, var(--md-mermaid-node-fg-color) 7%, transparent);
+  --srv6-group-border: color-mix(in srgb, var(--md-mermaid-node-fg-color) 45%, transparent);
+  --srv6-chip-bg: color-mix(in srgb, var(--md-mermaid-node-bg-color) 80%, var(--md-default-bg-color));
+  --srv6-chip-fg: var(--md-mermaid-label-fg-color);
+}
+
+/* Diagrams converted at build time (tools/diagrams/, hooks/diagrams.py). The
+   React Flow styles ship with the diagram bundle; these apply before it loads.
+   .srv6-flow__text is the diagram as text for screen readers and crawlers.
+   The inline aspect-ratio/max-height (set per diagram) size the view; the
+   padding holds the toolbar, so nothing shifts when the bundle mounts. */
+.srv6-flow {
+  --srv6-flow-toolbar: 36px;
+  box-sizing: content-box;
+  /* No min-height here: with aspect-ratio it becomes a min-width, and a wide,
+     flat diagram would overflow the column. */
+  min-width: 0;
+  margin: 1.2em 0;
+  padding-bottom: var(--srv6-flow-toolbar);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 12px;
+  /* Transparent: the diagram sits on the page, framed by the hairline border. */
+  background: transparent;
+}
+
+.srv6-flow__text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Failure-scenario note: page flow under the diagram, so it never covers
+   the failed link. It only appears after the reader's own click. */
+.srv6-flow__note {
+  margin: -0.4em 0 1em;
+  padding: 0.5em 0.9em;
+  border-left: 3px solid var(--srv6-flow-fail);
+  color: var(--md-default-fg-color);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  background: var(--md-code-bg-color);
+}
+
+.srv6-flow__note:empty {
+  display: none;
+}
+
+.srv6-seq {
+  margin: 1em 0;
+  line-height: normal;
+}
+
+.srv6-seq svg {
+  display: block;
+  height: auto;
+}
+
+.srv6-seq__packet {
+  fill: var(--srv6-flow-packet);
+  stroke: var(--md-default-bg-color);
+  stroke-width: 2px;
+  pointer-events: none;
 }
 
 .mermaid {
@@ -876,28 +976,24 @@
   background: rgba(123, 31, 162, 0.2);
 }
 
-/* --- Contributors Card (Home Page, right-aligned) --- */
+/* --- Contributors strip (home page, full width under the stats) --- */
 .srv6-contributors-card {
-  display: block;
-  width: fit-content;
-  min-width: 200px;
-  max-width: 340px;
-  margin-left: auto;
-  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin: 0 0 2rem;
   background: rgba(26, 26, 62, 0.5);
   border: 1px solid rgba(171, 71, 188, 0.2);
   border-radius: 12px;
-  padding: 1rem;
+  padding: 0.85rem 1.25rem;
   font-size: 0.8rem;
 }
 
 .srv6-contributors-card-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(171, 71, 188, 0.15);
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
 .srv6-contributors-card-title {
@@ -922,11 +1018,13 @@
 /* Contributors list */
 .srv6-contributors-list {
   list-style: none !important;
-  margin: 0 0 0.75rem 0 !important;
+  margin: 0 !important;
   padding: 0 !important;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  /* !important: Material's .md-typeset ul sets display: flow-root */
+  display: flex !important;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
 }
 
 .srv6-contributor-item {
@@ -1000,7 +1098,8 @@
   border-radius: 6px;
   border: 1px solid rgba(171, 71, 188, 0.2);
   transition: all 0.2s ease;
-  margin-top: 0.25rem;
+  padding: 0.4rem 0.9rem;
+  white-space: nowrap;
 }
 
 .srv6-contributors-join:hover {
@@ -1021,9 +1120,18 @@
 /* Responsive: stack on small screens */
 @media (max-width: 768px) {
   .srv6-contributors-card {
-    float: none;
-    width: 100%;
-    margin: 0 0 2rem 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  /* Phones: a row of avatars; names stay in each avatar's alt text */
+  .srv6-contributor-info {
+    display: none;
+  }
+  .srv6-contributor-link {
+    padding: 0.25rem;
+  }
+  .srv6-contributors-join {
+    white-space: normal;
   }
 }
 
@@ -1277,4 +1385,211 @@ html:lang(ja) .md-typeset {
 .md-select__link.srv6-lang--current {
   color: var(--md-accent-fg-color);
   font-weight: 700;
+}
+=======
+/* --- Home hero: text beside the animated SRv6 fabric ----------------------
+   The text (H1, language links, tagline, buttons) stays server-rendered: a
+   narrow column on desktop, on top on mobile. The stage takes the rest of the
+   first screen. Its height is reserved here, so nothing shifts when the live
+   scene (src/diagrams/hero.jsx) replaces the static frame (hooks/diagrams.py). */
+.md-typeset .srv6-hero {
+  display: grid;
+  grid-template-columns: minmax(15rem, 29%) 1fr;
+  gap: 0 1.6rem;
+  align-items: center;
+  padding: 1.2rem 1.2rem 1.4rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.srv6-hero-text {
+  position: relative;
+}
+
+/* The edit/view buttons float at the top of every article; next to them the
+   hero grid would shrink. A landing page does not need them. */
+.md-content__inner:has(.srv6-hero) > .md-content__button {
+  display: none;
+}
+
+.srv6-hero h1 {
+  font-size: 2.35rem !important;
+  line-height: 1.12 !important;
+  margin: 0 0 0.5rem !important;
+}
+
+.md-typeset .srv6-hero .srv6-lang-switch {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+}
+
+.srv6-hero .srv6-tagline {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+}
+
+.srv6-hero h1 .headerlink {
+  display: none; /* its hidden ¶ wrapped onto a line of its own */
+}
+
+/* font-size 0 drops the &nbsp; spacers between the buttons; gap spaces them. */
+.md-typeset .srv6-hero p:has(> .srv6-btn) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0;
+}
+
+.srv6-hero .srv6-btn {
+  padding: 0.55rem 1.25rem;
+  font-size: 0.8rem;
+}
+
+.srv6-hero-stage {
+  --srv6-hero-bar: 54px; /* caption bar; the scene and static frame end above it */
+  position: relative;
+  height: clamp(420px, calc(100svh - 250px), 720px);
+  overflow: hidden;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 16px;
+  background: transparent;
+  text-align: left;
+}
+
+/* .md-typeset: Material's .md-typeset svg { height: auto } would otherwise
+   size the frame from its width and misalign it with the live scene. */
+.md-typeset .srv6-hero-static {
+  position: absolute;
+  inset: 0 0 var(--srv6-hero-bar);
+  width: 100%;
+  max-width: none;
+  height: calc(100% - var(--srv6-hero-bar));
+  transition: opacity 0.5s ease;
+}
+
+.srv6-hero-stage.is-live .srv6-hero-static {
+  opacity: 0;
+}
+
+.srv6-hero-static line {
+  stroke: var(--srv6-edge);
+  stroke-width: 1.5px;
+}
+
+.srv6-hero-static rect {
+  stroke: var(--srv6-node-border);
+  stroke-width: 1px;
+}
+
+.srv6-hero-static .i {
+  fill: var(--srv6-icon);
+}
+
+.srv6-hero-static text {
+  fill: var(--md-mermaid-label-fg-color);
+  font-family: var(--md-text-font-family);
+  font-weight: 700;
+}
+
+.md-typeset .srv6-hero-static--mobile {
+  display: none;
+}
+
+.md-typeset .srv6-hero-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  justify-content: center;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  font-size: 0.7rem;
+  list-style: none;
+  counter-reset: act;
+}
+
+.md-typeset .srv6-hero-acts li {
+  margin: 0;
+  counter-increment: act;
+}
+
+.md-typeset .srv6-hero-acts li::before {
+  content: counter(act) ". ";
+  color: var(--md-default-fg-color--light);
+}
+
+.srv6-hero-acts span {
+  display: none;
+}
+
+/* The act list is for screen readers and crawlers (the live scene has its own
+   step dots); hooks/diagrams.py shows it on screen only without JavaScript.
+   Hidden from the start: hiding it once the scene goes live would shift the
+   page. */
+.md-typeset .srv6-hero-acts {
+  grid-column: 2;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+@media (max-width: 959px) {
+  .md-typeset .srv6-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .md-typeset .srv6-hero p:has(> .srv6-btn) {
+    justify-content: center;
+  }
+
+  .md-typeset .srv6-hero-acts {
+    grid-column: auto;
+  }
+
+  .srv6-hero-stage {
+    height: clamp(320px, 58svh, 560px);
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 599px) {
+  .md-typeset .srv6-hero {
+    padding: 0.8rem 0.4rem 1rem;
+  }
+
+  .srv6-hero h1 {
+    font-size: 1.7rem !important;
+  }
+
+  .srv6-hero .srv6-tagline {
+    margin-bottom: 0.7rem;
+    font-size: 0.86rem;
+  }
+
+  .srv6-hero .srv6-tagline br {
+    display: none;
+  }
+
+  .srv6-hero .srv6-btn {
+    gap: 0.35rem;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.72rem;
+  }
+
+  .srv6-hero-stage {
+    --srv6-hero-bar: 64px;
+    height: max(340px, 58svh);
+    margin: 0.8rem -0.4rem 0;
+  }
+
+  .md-typeset .srv6-hero-static--desktop {
+    display: none;
+  }
+
+  .md-typeset .srv6-hero-static--mobile {
+    display: block;
+  }
 }

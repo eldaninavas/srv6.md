@@ -32,17 +32,17 @@ Router-based SRv6 implementations (IOS-XR, Junos, SR OS, FRRouting) stop at the 
 
 ```mermaid
 graph TB
-    subgraph K8s Cluster A
-        P1[Pod] --> N1["K8s Node\n(Cilium agent\n+ eBPF SRv6)"]
+    subgraph clusterA[K8s Cluster A]
+        P1[Pod] --> N1["K8s Node<br/>Cilium agent + eBPF SRv6"]
     end
-    subgraph SRv6 Fabric
-        R1[PE / Route Reflector] <-->|"BGP VPNv4/v6\nSRv6 Prefix-SID"| N1
-        R1 <-->|"IS-IS"| R2[P Router]
-        R2 <-->|"BGP VPNv4/v6\nSRv6 Prefix-SID"| N2
+    subgraph fabric[SRv6 Fabric]
+        R1[PE / Route Reflector] <-->|IS-IS| R2[P Router]
     end
-    subgraph K8s Cluster B
-        N2["K8s Node\n(Cilium agent\n+ eBPF SRv6)"] --> P2[Pod]
+    subgraph clusterB[K8s Cluster B]
+        N2["K8s Node<br/>Cilium agent + eBPF SRv6"] --> P2[Pod]
     end
+    clusterA <-->|"BGP VPNv4/v6<br/>SRv6 Prefix-SID"| R1
+    R2 <-->|"BGP VPNv4/v6<br/>SRv6 Prefix-SID"| clusterB
 ```
 
 ## The Open-Source Datapath

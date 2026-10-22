@@ -10,9 +10,13 @@ tags:
   - srv6 tutorial
 hide:
   - toc
+  - navigation
+  - tags
 ---
 
 <div class="srv6-hero" markdown>
+
+<div class="srv6-hero-text" markdown>
 
 # SRv6: Segment Routing over IPv6
 
@@ -24,6 +28,10 @@ hide:
 [:material-rocket-launch: &nbsp; Get Started](topics/index.md){ .srv6-btn .srv6-btn-primary }
 &nbsp;&nbsp;
 [:fontawesome-brands-github: &nbsp; Contribute](https://github.com/eldaninavas/srv6.md){ .srv6-btn .srv6-btn-secondary }
+
+</div>
+
+<div class="srv6-hero-stage"></div>
 
 </div>
 

@@ -5,3 +5,6 @@ __pycache__/
 .DS_Store
 .env
 .claude/
+node_modules/
+build/
+docs/assets/diagrams/

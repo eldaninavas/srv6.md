@@ -18,17 +18,19 @@ SRv6 provides a clean, unified underlay for delivering **L3VPN** and **L2VPN (EV
 
 ```mermaid
 graph TB
-    subgraph Overlay - BGP Control Plane
+    subgraph overlay[Overlay - BGP Control Plane]
         BGP1[PE1 BGP] <-->|MP-BGP with SRv6 SIDs| BGP2[PE2 BGP]
     end
 
-    subgraph Underlay - SRv6 Data Plane
+    subgraph underlay[Underlay - SRv6 Data Plane]
         PE1[PE1] -->|SRv6 Transport| P1[P Node]
         P1 -->|SRv6 Transport| PE2[PE2]
     end
 
     CE1[CE1 - Customer] --- PE1
     CE2[CE2 - Customer] --- PE2
+    overlay ~~~ CE1
+    overlay ~~~ CE2
 ```
 
 **Key principle:** BGP carries service information (VPN prefixes, EVPN routes) with SRv6 SIDs instead of MPLS labels. The SRv6 SID tells the remote PE exactly what to do with the packet (decap to which VRF, cross-connect to which interface, etc.).

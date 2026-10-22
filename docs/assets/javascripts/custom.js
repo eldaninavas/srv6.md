@@ -8,11 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function renderContributors(list, contributors) {
   list.innerHTML = "";
-  contributors.slice(0, 3).forEach(function (c) {
+  contributors.slice(0, 6).forEach(function (c) {
     var li = document.createElement("li");
     li.className = "srv6-contributor-item";
     li.innerHTML =
-      '<a href="' + c.html_url + '" target="_blank" rel="noopener noreferrer" class="srv6-contributor-link">' +
+      '<a href="' + c.html_url + '" target="_blank" rel="noopener noreferrer" class="srv6-contributor-link" title="' + c.login + '">' +
         '<img src="' + c.avatar_url + '&s=64" alt="' + c.login + '" width="32" height="32" loading="lazy" />' +
         '<span class="srv6-contributor-info">' +
           '<span class="srv6-contributor-name">' + c.login + '</span>' +

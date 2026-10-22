@@ -22,6 +22,7 @@ hooks:
   - hooks/redirects.py
   - hooks/glossary.py
   - hooks/pcap_meta.py
+  - hooks/diagrams.py
 edit_uri: edit/main/docs/
 
 theme:
@@ -93,7 +94,7 @@ theme:
     - header.autohide
 
 extra_css:
-  - assets/stylesheets/custom.css?v=20261022
+  - assets/stylesheets/custom.css?v=20261022b
 
 extra_javascript:
   - assets/javascripts/custom.js

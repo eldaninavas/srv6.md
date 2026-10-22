@@ -1,0 +1,431 @@
+/* React Flow diagrams. Every color comes from the --md-mermaid-* palette in
+   docs/assets/stylesheets/custom.css (or Material's defaults), so a converted
+   diagram matches the Mermaid ones in both schemes. Text metrics must match
+   tools/diagrams/browser.mjs (TEXT): 16px Inter, 24px line height. */
+
+.srv6-flow {
+  --xy-background-color: transparent;
+  --xy-edge-stroke: var(--md-mermaid-edge-color);
+  --xy-node-color: var(--md-mermaid-label-fg-color);
+
+  position: relative;
+  font-family: var(--md-mermaid-font-family);
+}
+
+.srv6-flow__canvas,
+.srv6-flow__view {
+  position: absolute;
+  inset: 0;
+}
+
+.srv6-flow__view {
+  bottom: var(--srv6-flow-toolbar);
+}
+
+.srv6-flow__toolbar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0 8px 4px;
+  display: flex;
+  gap: 2px;
+  height: var(--srv6-flow-toolbar);
+  align-items: center;
+}
+
+.srv6-flow__spacer {
+  flex: 1;
+}
+
+/* Failure scenario toggle (diagrams.json scenarios) */
+.srv6-flow__scenario {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px 0 6px;
+  border: 1px solid var(--srv6-flow-fail);
+  border-radius: 13px;
+  color: var(--srv6-flow-fail);
+  font: 600 12px/1 var(--md-text-font-family);
+  white-space: nowrap;
+  background: transparent;
+  cursor: pointer;
+}
+
+.srv6-flow__scenario:hover,
+.srv6-flow__scenario:focus-visible {
+  background: color-mix(in srgb, var(--srv6-flow-fail) 12%, transparent);
+}
+
+.srv6-flow__scenario[aria-pressed="true"] {
+  border-color: var(--md-accent-fg-color);
+  color: var(--md-accent-fg-color);
+}
+
+.srv6-flow__scenario svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.srv6-flow__tool {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  border: 0;
+  border-radius: 0.1rem;
+  color: var(--md-default-fg-color--light);
+  background: transparent;
+  cursor: pointer;
+}
+
+.srv6-flow__tool:hover,
+.srv6-flow__tool:focus-visible {
+  color: var(--md-accent-fg-color);
+  background: var(--md-default-fg-color--lightest);
+}
+
+.srv6-flow__tool svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* Material's .md-typeset svg { max-width: 100% } collapses React Flow's
+   zero-width edge layer, which then paints nothing. */
+.srv6-flow svg {
+  max-width: none;
+}
+
+.srv6-flow > noscript {
+  display: none;
+}
+
+.srv6-flow--failed {
+  aspect-ratio: auto !important;
+}
+
+.srv6-flow--failed .srv6-flow__canvas {
+  display: none;
+}
+
+/* Full screen: native, or a fixed overlay where the element API is missing. */
+.srv6-flow:fullscreen,
+.srv6-flow.srv6-flow--full {
+  max-height: none !important;
+  margin: 0;
+  padding: 0 8px var(--srv6-flow-toolbar);
+  border-radius: 0;
+  /* The inline canvas is transparent; full screen needs the page color. */
+  background: var(--md-default-bg-color);
+}
+
+.srv6-flow.srv6-flow--full:not(:fullscreen) {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  box-sizing: border-box;
+  aspect-ratio: auto !important;
+  height: 100%;
+}
+
+.srv6-flow:fullscreen {
+  box-sizing: border-box;
+}
+
+.srv6-flow .react-flow__pane {
+  cursor: default;
+}
+
+.srv6-flow .react-flow__pane.draggable {
+  cursor: grab;
+}
+
+.srv6-flow .react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+.srv6-flow .react-flow__node {
+  cursor: default;
+  transition: opacity 0.15s ease;
+}
+
+/* Color tokens (--srv6-node-*, --srv6-edge, ...) live in custom.css: the
+   hero's static first frame needs them before this file loads. */
+
+/* Nodes. Metrics must match tools/diagrams/browser.mjs (TEXT) and
+   tools/diagrams/layout.mjs (PAD, ICON). */
+
+.srv6-flow__node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.srv6-flow__card {
+  box-sizing: border-box;
+  border: 1px solid var(--srv6-node-border);
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--srv6-node-top), var(--srv6-node-bottom));
+  box-shadow: var(--srv6-node-shadow);
+}
+
+.srv6-flow__card--round {
+  border-radius: 16px;
+}
+
+.srv6-flow__card--stadium,
+.srv6-flow__card--circle {
+  border-radius: 999px;
+}
+
+.srv6-flow__card--subroutine {
+  box-shadow: inset 6px 0 0 -5px var(--srv6-node-border), inset -6px 0 0 -5px var(--srv6-node-border),
+    var(--srv6-node-shadow);
+}
+
+.srv6-flow__shape {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  fill: var(--srv6-node-bottom);
+  stroke: var(--srv6-node-border);
+  stroke-width: 1px;
+  filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--md-mermaid-node-fg-color) 25%, transparent));
+}
+
+.srv6-flow__content {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.srv6-flow__icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: var(--srv6-icon);
+}
+
+.srv6-flow__content.has-icon .srv6-flow__label {
+  text-align: left;
+}
+
+.srv6-flow__label,
+.srv6-flow__group-label,
+.srv6-flow__edge-label {
+  font-family: var(--md-mermaid-font-family);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.srv6-flow__label {
+  color: var(--md-mermaid-label-fg-color);
+  font-size: 15px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.srv6-flow__line {
+  display: block;
+}
+
+.srv6-flow__label a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--srv6-node-border);
+  text-underline-offset: 3px;
+}
+
+.srv6-flow__label a:hover {
+  color: var(--md-accent-fg-color);
+}
+
+/* Subgraphs: a dashed area with its title as a chip, top left, so edges
+   entering from above do not run through it. */
+
+.srv6-flow__group {
+  box-sizing: border-box;
+  border: 1.5px dashed var(--srv6-group-border);
+  border-radius: 14px;
+  background: var(--srv6-group-bg);
+}
+
+.srv6-flow__group-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--srv6-chip-fg);
+  background: var(--srv6-chip-bg);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Edges */
+
+.srv6-flow__edge path {
+  stroke: var(--srv6-edge);
+  stroke-width: 1.75px;
+  stroke-linecap: round;
+  transition: opacity 0.15s ease, stroke-width 0.15s ease;
+}
+
+.srv6-flow__edge--dotted path {
+  stroke-dasharray: 0.1 5;
+  stroke-width: 2.25px;
+}
+
+.srv6-flow__edge--thick path {
+  stroke-width: 3.5px;
+}
+
+.srv6-flow__marker {
+  fill: var(--srv6-edge);
+  stroke: var(--srv6-edge);
+  stroke-width: 1px;
+  stroke-linejoin: round;
+}
+
+.srv6-flow__edge .srv6-flow__marker--cross {
+  fill: none;
+  stroke-width: 2px;
+  stroke-dasharray: none;
+}
+
+.srv6-flow__edge-label {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3px 9px;
+  border: 1px solid color-mix(in srgb, var(--md-mermaid-edge-color) 28%, transparent);
+  border-radius: 999px;
+  color: var(--md-mermaid-edge-color);
+  background: var(--md-default-bg-color);
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.srv6-flow__edge-label:has(.srv6-flow__line + .srv6-flow__line) {
+  border-radius: 10px;
+}
+
+/* Edges carry zIndex 1 to stay above subgraph boxes; labels, subgraph title
+   chips and packets (the viewport portal) go above them. */
+.srv6-flow .react-flow__edgelabel-renderer {
+  z-index: 2;
+}
+
+.srv6-flow .react-flow__viewport-portal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
+
+/* Hover: the node, its neighbours and the edges between them stay lit. */
+
+.srv6-flow .react-flow__node.is-dim,
+.srv6-flow__edge.is-dim,
+.srv6-flow__edge-label.is-dim {
+  opacity: 0.25;
+}
+
+.srv6-flow__edge.is-hot path {
+  stroke-width: 3px;
+}
+
+.srv6-flow__edge--thick.is-hot path {
+  stroke-width: 4.5px;
+}
+
+/* Packets (src/diagrams/packets.js). A halo in the page background keeps
+   them readable where they cross an edge of the same hue. */
+
+.srv6-flow__packet-layer {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.srv6-flow__packet {
+  fill: var(--srv6-flow-packet);
+  stroke: var(--md-default-bg-color);
+  stroke-width: 1.5px;
+}
+
+.srv6-flow__packets {
+  filter: drop-shadow(0 0 3px var(--srv6-flow-packet));
+}
+
+.srv6-flow__packet.is-drop {
+  fill: var(--srv6-flow-fail);
+}
+
+.srv6-flow__packets {
+  transition: opacity 0.15s ease;
+}
+
+.srv6-flow__packets.is-dim {
+  opacity: 0.2;
+}
+
+.srv6-flow__fault circle {
+  fill: var(--md-default-bg-color);
+  stroke: var(--srv6-flow-fail);
+  stroke-width: 2px;
+}
+
+.srv6-flow__fault path {
+  fill: none;
+  stroke: var(--srv6-flow-fail);
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+}
+
+/* Scenario states on edges */
+
+.srv6-flow__edge.is-failed path {
+  stroke: var(--srv6-flow-fail);
+  stroke-dasharray: 6 4;
+}
+
+.srv6-flow__edge.is-failed .srv6-flow__marker {
+  fill: var(--srv6-flow-fail);
+}
+
+.srv6-flow__edge.is-idle {
+  opacity: 0.3;
+}
+
+.srv6-flow__edge.is-reroute path {
+  stroke: var(--srv6-flow-packet);
+  stroke-width: 3px;
+}
+
+.srv6-flow__edge-label.is-reroute {
+  color: var(--srv6-flow-packet);
+}
+
+.srv6-flow__edge.is-reroute .srv6-flow__marker {
+  fill: var(--srv6-flow-packet);
+}
+
+.srv6-flow__edge-label.is-failed {
+  color: var(--srv6-flow-fail);
+}
