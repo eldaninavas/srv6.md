@@ -13,6 +13,8 @@ import { execFileSync } from 'node:child_process';
 import { blockHash, mermaidBlocks } from '../tools/diagrams/extract.mjs';
 import { fromFlowDb, labelLines, normalizeDirection, parseStyles } from '../tools/diagrams/adapter.mjs';
 import { clipToShape, hasCycle, layout, nodeSize } from '../tools/diagrams/layout.mjs';
+import { assignIcons, iconFor } from '../tools/diagrams/icons.mjs';
+import { ICONS } from '../src/diagrams/icons.mjs';
 
 // ------------------------------------------------------------------ extract
 
@@ -166,7 +168,7 @@ test('real parser: shapes, edge kinds, subgraphs, styles, click', async (t) => {
   assert.deepEqual(node.H.label, ['K8s Node', '(Cilium)']);
   assert.deepEqual(node.A.style, { fill: '#1565c026', stroke: '#1565c0' });
   assert.equal(node.G.href, '/topics/ti-lfa/');
-  assert.ok(node.A.labelSize.width > 0 && node.B.labelSize.height === 48);
+  assert.ok(node.A.labelSize.width > 0 && node.B.labelSize.height === 44);
   const edge = (s, d) => model.edges.find((e) => e.source === s && e.target === d);
   assert.deepEqual(edge('A', 'B').label, ['dotted']);
   assert.equal(edge('A', 'B').stroke, 'dotted');
@@ -238,6 +240,45 @@ test('edge ends are clipped to the visible outline', () => {
   const box = { x: 0, y: 0, width: 200, height: 100 };
   assert.deepEqual(clipToShape('diamond', box, [60, 100], [60, 130]), [60, 80]);
   assert.deepEqual(clipToShape('rect', box, [60, 100], [60, 130]), [60, 100]);
+});
+
+test('icons: network roles from short labels, every icon exists', () => {
+  assert.equal(iconFor(['PE1 BGP']), 'router');
+  assert.equal(iconFor(['CE1 - Customer']), 'site');
+  assert.equal(iconFor(['SD-WAN Controller']), 'controller');
+  assert.equal(iconFor(['SRv6 Core']), 'cloud');
+  assert.equal(iconFor(['Leaf 1']), undefined, 'a leaf is only a switch next to a spine');
+  assert.equal(iconFor(['Leaf 1'], { spine: true }), 'switch');
+  assert.equal(iconFor(['Fix: Check egress PE', 'SID table and VRF import']), undefined, 'long labels are prose');
+  for (const re of ['router', 'site', 'controller', 'cloud', 'switch', 'gpu', 'nic', 'dc', 'telemetry', 'database']) assert.ok(ICONS[re], re);
+});
+
+test('icons: only in topology diagrams, never in decision trees', () => {
+  const n = (id, label, shape = 'rect') => ({ id, label: [label], shape });
+  const topo = { nodes: [n('a', 'PE1'), n('b', 'P Node'), n('c', 'Some concept')] };
+  assert.equal(assignIcons(topo), 2);
+  assert.equal(topo.nodes[2].icon, undefined);
+  const tree = { nodes: [n('q', 'Is it up?', 'diamond'), n('a', 'Ingress PE'), n('b', 'Tree-SID + PCE')] };
+  assert.equal(assignIcons(tree), 0);
+  assert.ok(tree.nodes.every((x) => !x.icon));
+});
+
+test('layout: a hint link to a subgraph keeps it isolated', async () => {
+  const size = (lines) => ({ width: 40, height: 24 * lines.length });
+  const n = (id, parent) => ({ id, label: [id], shape: 'rect', parent, labelSize: size([id]) });
+  const out = await layout({
+    direction: 'TB',
+    groups: [{ id: 'G', label: ['G'], labelSize: size(['G']) }],
+    nodes: [n('a', 'G'), n('b', 'G'), n('c')],
+    edges: [
+      { id: 'e', source: 'a', target: 'b', stroke: 'solid', start: 'none', end: 'arrow' },
+      { id: 'h', source: 'G', target: 'c', stroke: 'invisible', start: 'none', end: 'none' },
+    ],
+  });
+  const [a, b, c] = ['a', 'b', 'c'].map((id) => out.nodes.find((x) => x.id === id));
+  assert.equal(a.y, b.y, 'still left to right inside');
+  const g = out.groups[0];
+  assert.ok(c.y > g.y + g.height - 1, 'and the hint puts c below the subgraph');
 });
 
 test('cycle detection: only real directed cycles count', () => {

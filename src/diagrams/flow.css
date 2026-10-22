@@ -27,6 +27,7 @@
   right: 0;
   bottom: 0;
   left: 0;
+  padding: 0 8px 4px;
   display: flex;
   gap: 2px;
   height: var(--srv6-flow-toolbar);
@@ -117,7 +118,7 @@
   max-height: none !important;
   margin: 0;
   padding: 0 8px var(--srv6-flow-toolbar);
-  background: var(--md-default-bg-color);
+  border-radius: 0;
 }
 
 .srv6-flow.srv6-flow--full:not(:fullscreen) {
@@ -150,7 +151,38 @@
   transition: opacity 0.15s ease;
 }
 
-/* Nodes */
+/* Look. Derived from the site palette (--md-mermaid-*, --md-default-*), so
+   both schemes follow the toggle; only the mix ratios live here. */
+
+.srv6-flow {
+  --srv6-node-top: color-mix(in srgb, var(--md-mermaid-node-bg-color) 45%, var(--md-default-bg-color));
+  --srv6-node-bottom: var(--md-mermaid-node-bg-color);
+  --srv6-node-border: color-mix(in srgb, var(--md-mermaid-node-fg-color) 40%, transparent);
+  --srv6-node-shadow: 0 1px 2px rgb(0 0 0 / 6%),
+    0 8px 18px -8px color-mix(in srgb, var(--md-mermaid-node-fg-color) 45%, transparent);
+  --srv6-icon: var(--md-mermaid-node-fg-color);
+  --srv6-group-bg: color-mix(in srgb, var(--md-mermaid-node-fg-color) 4%, transparent);
+  --srv6-group-border: color-mix(in srgb, var(--md-mermaid-node-fg-color) 32%, transparent);
+  --srv6-chip-bg: color-mix(in srgb, var(--md-mermaid-node-fg-color) 12%, var(--md-default-bg-color));
+  --srv6-chip-fg: var(--md-mermaid-node-fg-color);
+  --srv6-edge: color-mix(in srgb, var(--md-mermaid-edge-color) 78%, transparent);
+}
+
+[data-md-color-scheme="slate"] .srv6-flow {
+  --srv6-node-top: color-mix(in srgb, var(--md-mermaid-node-bg-color) 70%, var(--md-mermaid-node-fg-color));
+  --srv6-node-bottom: color-mix(in srgb, var(--md-mermaid-node-bg-color) 75%, var(--md-default-bg-color));
+  --srv6-node-border: color-mix(in srgb, var(--md-mermaid-node-fg-color) 70%, transparent);
+  --srv6-node-shadow: 0 0 0 1px rgb(0 0 0 / 20%),
+    0 10px 24px -10px color-mix(in srgb, var(--md-mermaid-node-fg-color) 70%, transparent);
+  --srv6-icon: color-mix(in srgb, var(--md-mermaid-label-fg-color) 75%, var(--md-mermaid-node-fg-color));
+  --srv6-group-bg: color-mix(in srgb, var(--md-mermaid-node-fg-color) 7%, transparent);
+  --srv6-group-border: color-mix(in srgb, var(--md-mermaid-node-fg-color) 45%, transparent);
+  --srv6-chip-bg: color-mix(in srgb, var(--md-mermaid-node-bg-color) 80%, var(--md-default-bg-color));
+  --srv6-chip-fg: var(--md-mermaid-label-fg-color);
+}
+
+/* Nodes. Metrics must match tools/diagrams/browser.mjs (TEXT) and
+   tools/diagrams/layout.mjs (PAD, ICON). */
 
 .srv6-flow__node {
   position: relative;
@@ -159,29 +191,69 @@
   justify-content: center;
 }
 
+.srv6-flow__card {
+  box-sizing: border-box;
+  border: 1px solid var(--srv6-node-border);
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--srv6-node-top), var(--srv6-node-bottom));
+  box-shadow: var(--srv6-node-shadow);
+}
+
+.srv6-flow__card--round {
+  border-radius: 16px;
+}
+
+.srv6-flow__card--stadium,
+.srv6-flow__card--circle {
+  border-radius: 999px;
+}
+
+.srv6-flow__card--subroutine {
+  box-shadow: inset 6px 0 0 -5px var(--srv6-node-border), inset -6px 0 0 -5px var(--srv6-node-border),
+    var(--srv6-node-shadow);
+}
+
 .srv6-flow__shape {
   position: absolute;
   inset: 0;
   overflow: visible;
-  fill: var(--md-mermaid-node-bg-color);
-  stroke: var(--md-mermaid-node-fg-color);
+  fill: var(--srv6-node-bottom);
+  stroke: var(--srv6-node-border);
   stroke-width: 1px;
+  filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--md-mermaid-node-fg-color) 25%, transparent));
+}
+
+.srv6-flow__content {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.srv6-flow__icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: var(--srv6-icon);
+}
+
+.srv6-flow__content.has-icon .srv6-flow__label {
+  text-align: left;
 }
 
 .srv6-flow__label,
 .srv6-flow__group-label,
 .srv6-flow__edge-label {
   font-family: var(--md-mermaid-font-family);
-  font-size: 16px;
   font-weight: 400;
-  line-height: 24px;
-  text-align: center;
   white-space: nowrap;
 }
 
 .srv6-flow__label {
-  position: relative;
   color: var(--md-mermaid-label-fg-color);
+  font-size: 15px;
+  line-height: 22px;
+  text-align: center;
 }
 
 .srv6-flow__line {
@@ -191,36 +263,52 @@
 .srv6-flow__label a {
   color: inherit;
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration-color: var(--srv6-node-border);
+  text-underline-offset: 3px;
 }
 
 .srv6-flow__label a:hover {
   color: var(--md-accent-fg-color);
 }
 
-/* Subgraphs */
+/* Subgraphs: a dashed area with its title as a chip, top left, so edges
+   entering from above do not run through it. */
 
 .srv6-flow__group {
   box-sizing: border-box;
-  background: var(--md-default-fg-color--lightest);
-  border: 1px solid var(--md-default-fg-color--lighter);
+  border: 1.5px dashed var(--srv6-group-border);
+  border-radius: 14px;
+  background: var(--srv6-group-bg);
 }
 
 .srv6-flow__group-label {
-  padding-top: 8px;
-  color: var(--md-mermaid-label-fg-color);
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--srv6-chip-fg);
+  background: var(--srv6-chip-bg);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 /* Edges */
 
 .srv6-flow__edge path {
-  stroke: var(--md-mermaid-edge-color);
-  stroke-width: 2px;
+  stroke: var(--srv6-edge);
+  stroke-width: 1.75px;
+  stroke-linecap: round;
   transition: opacity 0.15s ease, stroke-width 0.15s ease;
 }
 
 .srv6-flow__edge--dotted path {
-  stroke-dasharray: 3 3;
+  stroke-dasharray: 0.1 5;
+  stroke-width: 2.25px;
 }
 
 .srv6-flow__edge--thick path {
@@ -228,13 +316,14 @@
 }
 
 .srv6-flow__marker {
-  fill: var(--md-mermaid-edge-color);
-  stroke: none;
+  fill: var(--srv6-edge);
+  stroke: var(--srv6-edge);
+  stroke-width: 1px;
+  stroke-linejoin: round;
 }
 
 .srv6-flow__edge .srv6-flow__marker--cross {
   fill: none;
-  stroke: var(--md-mermaid-edge-color);
   stroke-width: 2px;
   stroke-dasharray: none;
 }
@@ -242,16 +331,36 @@
 .srv6-flow__edge-label {
   position: absolute;
   box-sizing: border-box;
-  padding: 0 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3px 9px;
+  border: 1px solid color-mix(in srgb, var(--md-mermaid-edge-color) 28%, transparent);
+  border-radius: 999px;
   color: var(--md-mermaid-edge-color);
-  background: var(--md-mermaid-label-bg-color);
+  background: var(--md-default-bg-color);
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
   pointer-events: none;
   transition: opacity 0.15s ease;
 }
 
-/* Edges carry zIndex 1 to stay above subgraph boxes; labels go above them. */
+.srv6-flow__edge-label:has(.srv6-flow__line + .srv6-flow__line) {
+  border-radius: 10px;
+}
+
+/* Edges carry zIndex 1 to stay above subgraph boxes; labels, subgraph title
+   chips and packets (the viewport portal) go above them. */
 .srv6-flow .react-flow__edgelabel-renderer {
   z-index: 2;
+}
+
+.srv6-flow .react-flow__viewport-portal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
 }
 
 /* Hover: the node, its neighbours and the edges between them stay lit. */

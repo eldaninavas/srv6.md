@@ -6,14 +6,18 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
 
 const ELK_DIRECTION = { LR: 'RIGHT', RL: 'LEFT', TB: 'DOWN', BT: 'UP' };
+// Box geometry; must match src/diagrams/flow.css.
 const PAD = { x: 16, y: 12 };
+const ICON = 26; // 18px icon + 8px gap before the label
 const GROUP_PAD = 16;
+const CHIP = { x: 10, y: 4, top: 10, gap: 12 }; // subgraph title chip: padding, offset, gap below
+const PILL = { x: 9, y: 3 }; // edge label pill padding (plus a 1px border)
 const ROUTING = process.env.ELK_ROUTING || 'SPLINES';
 
 // Node box for a measured label, per shape. The label must fit inside the
 // visible outline (e.g. the inscribed rectangle of a diamond).
-export function nodeSize(shape, label) {
-  const lw = label.width;
+export function nodeSize(shape, label, icon) {
+  const lw = label.width + (icon ? ICON : 0);
   const lh = label.height;
   const h = lh + 2 * PAD.y;
   switch (shape) {
@@ -133,7 +137,50 @@ function isolated(groupId, model, parentOf) {
     for (let p = id; p; p = parentOf.get(p)) if (p === groupId) return true;
     return false;
   };
-  return model.edges.every((e) => inside(e.source) === inside(e.target));
+  // A link to the subgraph itself (`overlay ~~~ underlay`, a placement hint)
+  // connects none of its nodes, so it does not count.
+  return model.edges.every((e) => e.source === groupId || e.target === groupId || inside(e.source) === inside(e.target));
+}
+
+// ELK does not always honour a compound node's minimum size, so a group can
+// end up narrower than its title chip. Widen it by the same amount on both
+// sides: its children keep their absolute place (their relative x moves by
+// the same amount), so no edge moves. Then shift everything so the diagram
+// starts at 0 again and recompute its size.
+export function fitTitles(diagram, model) {
+  const need = new Map(model.groups.map((g) => [g.id, g.labelSize.width + 2 * CHIP.x + 2 * GROUP_PAD]));
+  for (const g of diagram.groups) {
+    const grow = Math.ceil((need.get(g.id) || 0) - g.width);
+    if (grow <= 0) continue;
+    g.x -= grow / 2;
+    g.width += grow;
+    for (const c of [...diagram.groups, ...diagram.nodes]) if (c.parent === g.id) c.x += grow / 2;
+  }
+  const abs = new Map();
+  const absX = (item) => {
+    if (abs.has(item.id)) return abs.get(item.id);
+    const p = item.parent && diagram.groups.find((g) => g.id === item.parent);
+    const x = item.x + (p ? absX(p) : 0);
+    abs.set(item.id, x);
+    return x;
+  };
+  const absY = (item) => {
+    const p = item.parent && diagram.groups.find((g) => g.id === item.parent);
+    return item.y + (p ? absY(p) : 0);
+  };
+  const boxes = [...diagram.groups, ...diagram.nodes];
+  const minX = Math.min(0, ...boxes.map(absX));
+  const maxX = Math.max(diagram.width, ...boxes.map((b) => absX(b) + b.width));
+  if (minX < 0) {
+    for (const b of boxes) if (!b.parent) b.x -= minX;
+    for (const e of diagram.edges) {
+      e.points = e.points.map(([x, y]) => [x - minX, y]);
+      if (e.labelBox) e.labelBox.x -= minX;
+    }
+  }
+  diagram.width = Math.ceil(maxX - minX);
+  diagram.height = Math.ceil(Math.max(diagram.height, ...boxes.map((b) => absY(b) + b.height)));
+  return diagram;
 }
 
 export async function layout(model) {
@@ -152,9 +199,11 @@ export async function layout(model) {
     const options = {
       ...SPACING,
       ...(cyclic ? CYCLES : {}),
-      'elk.padding': `[top=${g.labelSize.height + GROUP_PAD},left=${GROUP_PAD},bottom=${GROUP_PAD},right=${GROUP_PAD}]`,
-      'elk.nodeSize.constraints': 'MINIMUM_SIZE',
-      'elk.nodeSize.minimum': `(${g.labelSize.width + 2 * GROUP_PAD}, ${g.labelSize.height + 2 * GROUP_PAD})`,
+      'elk.padding': `[top=${CHIP.top + g.labelSize.height + 2 * CHIP.y + CHIP.gap},left=${GROUP_PAD},bottom=${GROUP_PAD},right=${GROUP_PAD}]`,
+      // Wide enough for the title chip. An enum set: ELK ignores the plain
+      // string form for compound nodes.
+      'elk.nodeSize.constraints': '[MINIMUM_SIZE]',
+      'elk.nodeSize.minimum': `(${g.labelSize.width + 2 * CHIP.x + 2 * GROUP_PAD}, ${g.labelSize.height + 2 * GROUP_PAD})`,
     };
     if (own !== outer) {
       options['elk.hierarchyHandling'] = 'SEPARATE_CHILDREN';
@@ -163,7 +212,7 @@ export async function layout(model) {
     elkNodes.set(g.id, { id: g.id, layoutOptions: options, children: [] });
   }
   for (const n of model.nodes) {
-    elkNodes.set(n.id, { id: n.id, ...nodeSize(n.shape, n.labelSize) });
+    elkNodes.set(n.id, { id: n.id, ...nodeSize(n.shape, n.labelSize, n.icon) });
   }
 
   const root = { id: '__root', layoutOptions: rootOptions(model.direction, cyclic), children: [], edges: [] };
@@ -179,7 +228,7 @@ export async function layout(model) {
     // ELK ignores labels without `text`.
     // `inline` is a label property: the label sits on its edge, as in Mermaid.
     labels: e.label
-      ? [{ text: e.label.join(' '), width: e.labelSize.width + 8, height: e.labelSize.height, layoutOptions: { 'elk.edgeLabels.inline': 'true' } }]
+      ? [{ text: e.label.join(' '), width: e.labelSize.width + 2 * PILL.x + 2, height: e.labelSize.height + 2 * PILL.y + 2, layoutOptions: { 'elk.edgeLabels.inline': 'true' } }]
       : [],
   }));
 
@@ -239,6 +288,7 @@ export async function layout(model) {
     id: n.id,
     parent: n.parent,
     shape: n.shape,
+    icon: n.icon,
     label: n.label,
     style: n.style,
     href: n.href,
@@ -274,5 +324,5 @@ export async function layout(model) {
     };
   });
 
-  return { direction: model.direction, width: Math.ceil(out.width), height: Math.ceil(out.height), groups, nodes, edges };
+  return fitTitles({ direction: model.direction, width: Math.ceil(out.width), height: Math.ceil(out.height), groups, nodes, edges }, model);
 }

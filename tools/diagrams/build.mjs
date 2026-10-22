@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
 import { openBrowser } from './browser.mjs';
 import { mermaidBlocks } from './extract.mjs';
+import { assignIcons } from './icons.mjs';
 import { layout } from './layout.mjs';
 
 const repo = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -126,6 +127,7 @@ try {
         if (block.kind === 'flowchart') {
           const model = await browser.flowchart(block.source);
           for (const n of model.nodes) n.href ||= titles.get(n.label.join(' ').toLowerCase());
+          const icons = assignIcons(model);
           const laid = await layout(model);
           laid.scenarios = scenarios(item, laid);
           entry = { kind: 'flowchart', source: block.source, diagram: laid };
@@ -133,6 +135,7 @@ try {
             `${laid.width}x${laid.height}` +
             (laid.edges.some((e) => e.animate) ? `, ${laid.edges.filter((e) => e.animate).length} animated` : '') +
             (laid.scenarios ? `, ${laid.scenarios.length} scenario(s)` : '') +
+            (icons ? `, ${icons} icons` : '') +
             (model.warnings.length ? `\n  warn: ${model.warnings.join('\n  warn: ')}` : ''));
         } else {
           const svg = await browser.sequence(block.source, `srv6-seq-${block.hash}`);

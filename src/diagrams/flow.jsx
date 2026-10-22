@@ -3,7 +3,7 @@
 // library ships to the browser. Mounted on every .srv6-flow placeholder;
 // Material's instant navigation re-runs this script on each page swap.
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import {
@@ -17,6 +17,7 @@ import {
 } from '@xyflow/react';
 import xyCss from '@xyflow/react/dist/style.css';
 import flowCss from './flow.css';
+import { ICONS as NODE_ICONS } from './icons.mjs';
 import { createSim, hasPackets } from './packets.js';
 
 // ---------------------------------------------------------------- color mode
@@ -87,13 +88,18 @@ function outline(shape, w, h) {
   }
 }
 
+// Only the properties the `style` directive sets (an undefined key would
+// still override the gradient fill when spread).
 const shapeStyle = (style) =>
-  style && {
-    fill: style.fill,
-    stroke: style.stroke,
-    strokeWidth: style.strokeWidth,
-    strokeDasharray: style.strokeDasharray,
-  };
+  style &&
+  Object.fromEntries(
+    Object.entries({
+      fill: style.fill,
+      stroke: style.stroke,
+      strokeWidth: style.strokeWidth,
+      strokeDasharray: style.strokeDasharray,
+    }).filter(([, v]) => v !== undefined),
+  );
 
 function Lines({ lines }) {
   return lines.map((line, i) => (
@@ -105,19 +111,70 @@ function Lines({ lines }) {
 
 const hidden = { opacity: 0, pointerEvents: 'none' };
 
-function ShapeNode({ data }) {
-  const { w, h, shape, label, style, href } = data;
+// Box-like shapes are drawn as styled cards (gradient, radius, shadow); the
+// rest keep an SVG outline. A `style` directive in the Mermaid source still
+// wins over the theme colors.
+const CARDS = new Set(['rect', 'round', 'stadium', 'subroutine', 'circle']);
+
+function Content({ label, icon, href, color }) {
   const text = <Lines lines={label} />;
   return (
-    <div className="srv6-flow__node" style={{ width: w, height: h }}>
-      <svg className="srv6-flow__shape" width={w} height={h} style={shapeStyle(style)} aria-hidden="true">
-        {outline(shape, w, h)}
-      </svg>
-      <div className="srv6-flow__label" style={style?.color ? { color: style.color } : undefined}>
+    <div className={`srv6-flow__content${icon ? ' has-icon' : ''}`}>
+      {icon && (
+        <svg className="srv6-flow__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d={NODE_ICONS[icon]} />
+        </svg>
+      )}
+      <div className="srv6-flow__label" style={color ? { color } : undefined}>
         {href ? <a href={href}>{text}</a> : text}
       </div>
+    </div>
+  );
+}
+
+function ShapeNode({ data }) {
+  const { w, h, shape, label, style, href, icon } = data;
+  const gradient = `srv6-g${useId().replace(/:/g, '')}`;
+  const content = <Content label={label} icon={icon} href={href} color={style?.color} />;
+  const handles = (
+    <>
       <Handle type="target" position={Position.Top} style={hidden} isConnectable={false} />
       <Handle type="source" position={Position.Bottom} style={hidden} isConnectable={false} />
+    </>
+  );
+  if (CARDS.has(shape)) {
+    const custom = style && {
+      background: style.fill,
+      borderColor: style.stroke,
+      borderWidth: style.strokeWidth,
+      borderStyle: style.strokeDasharray ? 'dashed' : undefined,
+    };
+    return (
+      <div className={`srv6-flow__node srv6-flow__card srv6-flow__card--${shape}`} style={{ width: w, height: h, ...custom }}>
+        {content}
+        {handles}
+      </div>
+    );
+  }
+  return (
+    <div className="srv6-flow__node" style={{ width: w, height: h }}>
+      <svg
+        className="srv6-flow__shape"
+        width={w}
+        height={h}
+        style={{ fill: `url(#${gradient})`, ...shapeStyle(style) }}
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style={{ stopColor: 'var(--srv6-node-top)' }} />
+            <stop offset="1" style={{ stopColor: 'var(--srv6-node-bottom)' }} />
+          </linearGradient>
+        </defs>
+        {outline(shape, w, h)}
+      </svg>
+      {content}
+      {handles}
     </div>
   );
 }
@@ -125,19 +182,42 @@ function ShapeNode({ data }) {
 function ClusterNode({ data }) {
   const { w, h, label, style } = data;
   return (
-    <div className="srv6-flow__group" style={{ width: w, height: h, ...shapeStyle(style), background: style?.fill }}>
-      <div className="srv6-flow__group-label">
-        <Lines lines={label} />
-      </div>
+    <div
+      className="srv6-flow__group"
+      style={{ width: w, height: h, background: style?.fill, borderColor: style?.stroke }}
+    >
       <Handle type="target" position={Position.Top} style={hidden} isConnectable={false} />
       <Handle type="source" position={Position.Bottom} style={hidden} isConnectable={false} />
     </div>
   );
 }
 
+// Subgraph titles live above the edges (like edge labels), so a line that
+// enters a subgraph runs under its title chip instead of across the text.
+function GroupTitles({ groups }) {
+  const byId = new Map(groups.map((g) => [g.id, g]));
+  const abs = (g) => {
+    const p = g.parent && byId.get(g.parent);
+    const o = p ? abs(p) : { x: 0, y: 0 };
+    return { x: o.x + g.x, y: o.y + g.y };
+  };
+  return (
+    <ViewportPortal>
+      {groups.map((g) => {
+        const { x, y } = abs(g);
+        return (
+          <div key={g.id} className="srv6-flow__group-label" style={{ transform: `translate(${x + 14}px, ${y + 10}px)` }}>
+            <Lines lines={g.label} />
+          </div>
+        );
+      })}
+    </ViewportPortal>
+  );
+}
+
 // --------------------------------------------------------------------- edges
 
-const ARROW = 10;
+const ARROW = 9;
 
 // Orthogonal polyline with rounded corners through ELK's points.
 function roundedPath(pts, r = 8) {
@@ -216,7 +296,7 @@ function Marker({ kind, tip, from }) {
   }
   const bx = tip[0] - ux * ARROW;
   const by = tip[1] - uy * ARROW;
-  const hw = ARROW * 0.45;
+  const hw = ARROW * 0.5;
   return (
     <polygon
       className="srv6-flow__marker"
@@ -292,7 +372,7 @@ function toFlow(diagram) {
       width: n.width,
       height: n.height,
       handles: handles(n.width, n.height),
-      data: { w: n.width, h: n.height, shape: n.shape, label: n.label, style: n.style, href: n.href },
+      data: { w: n.width, h: n.height, shape: n.shape, label: n.label, style: n.style, href: n.href, icon: n.icon },
     })),
   ];
   const edges = diagram.edges.map((e) => ({
@@ -481,6 +561,7 @@ function Diagram({ diagram, host, noteSlot }) {
       onNodeMouseLeave={() => setHover(null)}
       proOptions={{ hideAttribution: true }}
     >
+      {diagram.groups.length > 0 && <GroupTitles groups={diagram.groups} />}
       {animated && <PacketLayer diagram={diagram} host={host} simRef={sim} />}
     </ReactFlow>
       {noteSlot && createPortal(failed !== null ? scenarios[failed].note : '', noteSlot)}

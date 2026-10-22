@@ -566,13 +566,19 @@
    The inline aspect-ratio/max-height (set per diagram) size the view; the
    padding holds the toolbar, so nothing shifts when the bundle mounts. */
 .srv6-flow {
-  --srv6-flow-toolbar: 32px;
+  --srv6-flow-toolbar: 36px;
   box-sizing: content-box;
   /* No min-height here: with aspect-ratio it becomes a min-width, and a wide,
      flat diagram would overflow the column. */
   min-width: 0;
-  margin: 1em 0;
+  margin: 1.2em 0;
   padding-bottom: var(--srv6-flow-toolbar);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 12px;
+  /* A canvas: faint dot grid on a slightly tinted card. */
+  background-color: color-mix(in srgb, var(--md-default-fg-color) 2%, var(--md-default-bg-color));
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--md-default-fg-color) 13%, transparent) 1px, transparent 1.4px);
+  background-size: 20px 20px;
 }
 
 .srv6-flow__text {

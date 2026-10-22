@@ -13,10 +13,17 @@ const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const pkgDir = (name) => dirname(require.resolve(`${name}/package.json`));
 
-// Must match src/diagrams/flow.css (.srv6-flow__label / __edge-label / __group-label).
+// Must match src/diagrams/flow.css (.srv6-flow__label, __edge-label,
+// __group-label). Weights are 400/700 only: the site loads Inter 300/400/700.
 // wrap: Mermaid's flowchart wrappingWidth; longer node and edge label lines
 // break at spaces, as Mermaid does (subgraph titles do not).
-export const TEXT = { fontSize: 16, lineHeight: 24, family: 'Inter', wrap: 200 };
+export const TEXT = {
+  family: 'Inter',
+  wrap: 200,
+  node: { size: 15, line: 22, weight: 400 },
+  edge: { size: 13, line: 18, weight: 400 },
+  group: { size: 11, line: 14, weight: 700, spacing: 0.66, upper: true },
+};
 
 const MATERIAL_THEME = readFileSync(join(here, 'material-mermaid-theme.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//, '').trim();
 
@@ -27,10 +34,12 @@ function adapterScript() {
 
 function fontFaces() {
   const dir = join(pkgDir('@fontsource/inter'), 'files');
-  return ['latin', 'latin-ext'].map((subset) => ({
-    subset,
-    data: readFileSync(join(dir, `inter-${subset}-400-normal.woff2`)).toString('base64'),
-  }));
+  return ['latin', 'latin-ext'].flatMap((subset) =>
+    ['400', '700'].map((weight) => ({
+      weight,
+      data: readFileSync(join(dir, `inter-${subset}-${weight}-normal.woff2`)).toString('base64'),
+    })),
+  );
 }
 
 export async function openBrowser() {
@@ -42,7 +51,7 @@ export async function openBrowser() {
   await page.evaluate(async ({ faces, family }) => {
     for (const f of faces) {
       const bytes = Uint8Array.from(atob(f.data), (c) => c.charCodeAt(0));
-      const face = new FontFace(family, bytes, { weight: '400' });
+      const face = new FontFace(family, bytes, { weight: f.weight });
       document.fonts.add(await face.load());
     }
     window.mermaid.initialize({ startOnLoad: false });
@@ -54,28 +63,34 @@ export async function openBrowser() {
         const diagram = await window.mermaid.mermaidAPI.getDiagramFromText(source);
         const model = window.__adapter.fromFlowDb(diagram.db);
         const ctx = document.createElement('canvas').getContext('2d');
-        ctx.font = `400 ${text.fontSize}px ${text.family}`;
-        const size = (lines) => ({
-          width: Math.ceil(Math.max(0, ...lines.map((l) => ctx.measureText(l).width))),
-          height: lines.length * text.lineHeight,
-        });
-        const wrap = (lines) =>
-          lines.flatMap((line) => {
-            if (ctx.measureText(line).width <= text.wrap) return [line];
+        const use = (k) => {
+          ctx.font = `${k.weight} ${k.size}px ${text.family}`;
+          ctx.letterSpacing = `${k.spacing || 0}px`;
+        };
+        const width = (k, l) => ctx.measureText(k.upper ? l.toUpperCase() : l).width;
+        const size = (k, lines) => {
+          use(k);
+          return { width: Math.ceil(Math.max(0, ...lines.map((l) => width(k, l)))), height: lines.length * k.line };
+        };
+        const wrap = (k, lines) => {
+          use(k);
+          return lines.flatMap((line) => {
+            if (width(k, line) <= text.wrap) return [line];
             const out = [];
             let cur = '';
             for (const word of line.split(' ')) {
               const next = cur ? `${cur} ${word}` : word;
-              if (cur && ctx.measureText(next).width > text.wrap) {
+              if (cur && width(k, next) > text.wrap) {
                 out.push(cur);
                 cur = word;
               } else cur = next;
             }
             return cur ? [...out, cur] : out;
           });
-        for (const n of model.nodes) n.labelSize = size((n.label = wrap(n.label)));
-        for (const g of model.groups) g.labelSize = size(g.label);
-        for (const e of model.edges) if (e.label) e.labelSize = size((e.label = wrap(e.label)));
+        };
+        for (const n of model.nodes) n.labelSize = size(text.node, (n.label = wrap(text.node, n.label)));
+        for (const g of model.groups) g.labelSize = size(text.group, g.label);
+        for (const e of model.edges) if (e.label) e.labelSize = size(text.edge, (e.label = wrap(text.edge, e.label)));
         return model;
       }, { source, text: TEXT });
     },
