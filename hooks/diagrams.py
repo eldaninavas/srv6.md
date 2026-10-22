@@ -133,12 +133,12 @@ _HERO_ICON = {"spine": "switch", "leaf": "switch", "pe": "router", "gpu": "gpu"}
 def _hero_frame(variant, s, icons):
     """The built fabric as inline SVG: the first frame, and what stays when
     there is no JavaScript. Same geometry as src/diagrams/hero.jsx."""
-    pad = 24
-    w, h = s["node"]["w"], s["node"]["h"]
+    pad = 10 if variant == "mobile" else 20  # PAD in src/diagrams/hero.jsx
+    w, h, font = s["node"]["w"], s["node"]["h"], s["node"]["font"]
     at = {n["id"]: n for n in s["nodes"]}
     gid = f"srv6-hero-g-{variant}"
     out = [
-        f'<svg class="srv6-hero-static srv6-hero-static--{variant}" viewBox="{-pad} {-pad} {s["width"] + 2 * pad} {s["height"] + s["bar"] + 2 * pad}" '
+        f'<svg class="srv6-hero-static srv6-hero-static--{variant}" viewBox="{-pad} {-pad} {s["width"] + 2 * pad} {s["height"] + 2 * pad}" '
         f'preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">'
         f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1">'
         f'<stop offset="0" style="stop-color:var(--srv6-node-top)"/><stop offset="1" style="stop-color:var(--srv6-node-bottom)"/>'
@@ -151,13 +151,13 @@ def _hero_frame(variant, s, icons):
     for n in s["nodes"]:
         if n["kind"] == "gpu":
             continue
-        text_w = len(n["label"]) * 8.4  # 14px bold Inter, near enough for a first frame
+        text_w = len(n["label"]) * font * 0.6  # bold Inter, near enough for a first frame
         x0 = (w - (18 + 8 + text_w)) / 2
         out.append(
             f'<g transform="translate({n["x"] - w / 2} {n["y"] - h / 2})">'
             f'<rect width="{w}" height="{h}" rx="10" fill="url(#{gid})"/>'
             f'<path class="i" transform="translate({x0:.1f} {(h - 18) / 2}) scale(.75)" d="{icons[_HERO_ICON[n["kind"]]]}"/>'
-            f'<text x="{x0 + 26:.1f}" y="{h / 2}" dominant-baseline="central">{html.escape(n["label"])}</text></g>'
+            f'<text x="{x0 + 26:.1f}" y="{h / 2}" font-size="{font}" dominant-baseline="central">{html.escape(n["label"])}</text></g>'
         )
     out.append("</svg>")
     return "".join(out)

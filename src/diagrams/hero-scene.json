@@ -1,5 +1,5 @@
 {
-  "_comment": "Home page hero: the SRv6 fabric that src/diagrams/hero.jsx builds act by act, and that hooks/diagrams.py renders as the static first frame. Node x/y are centres in scene units. uSID F3216: block fc00:0::/32 for algo 0, fc00:80::/32 for Flex-Algo 128, one 16-bit uSID per node. flex: links in the algo-128 plane. mrc: links that exist only in the AI act. bar: scene units kept free at the bottom for the caption bar.",
+  "_comment": "Home page hero: the SRv6 fabric that src/diagrams/hero.jsx builds act by act, and that hooks/diagrams.py renders as the static first frame. Node x/y are centres in scene units. uSID F3216: block fc00:0::/32 for algo 0, fc00:80::/32 for Flex-Algo 128, one 16-bit uSID per node. flex: links in the algo-128 plane. mrc: links that exist only in the AI act. node.font / node.chip: label and locator-chip font sizes in scene units.",
   "acts": [
     {
       "id": "fabric",
@@ -33,35 +33,37 @@
     }
   ],
   "desktop": {
-    "width": 1000,
-    "height": 780,
+    "width": 880,
+    "height": 500,
     "node": {
-      "w": 118,
-      "h": 42
+      "w": 132,
+      "h": 46,
+      "font": 16,
+      "chip": 12
     },
     "nodes": [
       {
         "id": "S1",
         "label": "Spine 1",
         "kind": "spine",
-        "x": 215,
-        "y": 80,
+        "x": 180,
+        "y": 40,
         "loc": "fc00:0:11::/48"
       },
       {
         "id": "S2",
         "label": "Spine 2",
         "kind": "spine",
-        "x": 405,
-        "y": 80,
+        "x": 350,
+        "y": 40,
         "loc": "fc00:0:12::/48"
       },
       {
         "id": "S3",
         "label": "Spine 3",
         "kind": "spine",
-        "x": 595,
-        "y": 80,
+        "x": 530,
+        "y": 40,
         "loc": "fc00:0:13::/48",
         "algo": "fc00:80:13::/48"
       },
@@ -69,8 +71,8 @@
         "id": "S4",
         "label": "Spine 4",
         "kind": "spine",
-        "x": 785,
-        "y": 80,
+        "x": 700,
+        "y": 40,
         "loc": "fc00:0:14::/48",
         "algo": "fc00:80:14::/48"
       },
@@ -78,8 +80,8 @@
         "id": "L1",
         "label": "Leaf 1",
         "kind": "leaf",
-        "x": 125,
-        "y": 400,
+        "x": 90,
+        "y": 230,
         "loc": "fc00:0:21::/48",
         "algo": "fc00:80:21::/48"
       },
@@ -87,24 +89,24 @@
         "id": "L2",
         "label": "Leaf 2",
         "kind": "leaf",
-        "x": 375,
-        "y": 400,
+        "x": 323,
+        "y": 230,
         "loc": "fc00:0:22::/48"
       },
       {
         "id": "L3",
         "label": "Leaf 3",
         "kind": "leaf",
-        "x": 625,
-        "y": 400,
+        "x": 557,
+        "y": 230,
         "loc": "fc00:0:23::/48"
       },
       {
         "id": "L4",
         "label": "Leaf 4",
         "kind": "leaf",
-        "x": 875,
-        "y": 400,
+        "x": 790,
+        "y": 230,
         "loc": "fc00:0:24::/48",
         "algo": "fc00:80:24::/48"
       },
@@ -112,8 +114,8 @@
         "id": "PA",
         "label": "PE-A",
         "kind": "pe",
-        "x": 70,
-        "y": 700,
+        "x": 60,
+        "y": 420,
         "loc": "fc00:0:a::/48",
         "algo": "fc00:80:a::/48"
       },
@@ -122,21 +124,21 @@
         "label": "GPU-A",
         "kind": "gpu",
         "x": 250,
-        "y": 700
+        "y": 420
       },
       {
         "id": "GB",
         "label": "GPU-B",
         "kind": "gpu",
-        "x": 750,
-        "y": 700
+        "x": 630,
+        "y": 420
       },
       {
         "id": "PB",
         "label": "PE-B",
         "kind": "pe",
-        "x": 930,
-        "y": 700,
+        "x": 820,
+        "y": 420,
         "loc": "fc00:0:b::/48",
         "algo": "fc00:80:b::/48"
       }
@@ -246,7 +248,7 @@
       "to": "PA",
       "sid": "fc00:0:b:e046::",
       "behavior": "End.DT46",
-      "depth": 150
+      "depth": 110
     },
     "packet": {
       "path": [
@@ -299,31 +301,32 @@
         "S2",
         "L4"
       ]
-    },
-    "bar": 78
+    }
   },
   "mobile": {
-    "width": 400,
+    "width": 320,
     "height": 470,
     "node": {
-      "w": 84,
-      "h": 36
+      "w": 100,
+      "h": 38,
+      "font": 15,
+      "chip": 11
     },
     "nodes": [
       {
         "id": "S1",
         "label": "Spine 1",
         "kind": "spine",
-        "x": 120,
-        "y": 40,
+        "x": 85,
+        "y": 25,
         "loc": "fc00:0:11::/48"
       },
       {
         "id": "S2",
         "label": "Spine 2",
         "kind": "spine",
-        "x": 280,
-        "y": 40,
+        "x": 235,
+        "y": 25,
         "loc": "fc00:0:12::/48",
         "algo": "fc00:80:12::/48"
       },
@@ -331,8 +334,8 @@
         "id": "L1",
         "label": "Leaf 1",
         "kind": "leaf",
-        "x": 100,
-        "y": 225,
+        "x": 70,
+        "y": 185,
         "loc": "fc00:0:21::/48",
         "algo": "fc00:80:21::/48"
       },
@@ -340,8 +343,8 @@
         "id": "L2",
         "label": "Leaf 2",
         "kind": "leaf",
-        "x": 300,
-        "y": 225,
+        "x": 250,
+        "y": 185,
         "loc": "fc00:0:22::/48",
         "algo": "fc00:80:22::/48"
       },
@@ -349,8 +352,8 @@
         "id": "PA",
         "label": "PE-A",
         "kind": "pe",
-        "x": 45,
-        "y": 390,
+        "x": 50,
+        "y": 345,
         "loc": "fc00:0:a::/48",
         "algo": "fc00:80:a::/48"
       },
@@ -358,22 +361,22 @@
         "id": "GA",
         "label": "GPU-A",
         "kind": "gpu",
-        "x": 150,
-        "y": 390
+        "x": 95,
+        "y": 440
       },
       {
         "id": "GB",
         "label": "GPU-B",
         "kind": "gpu",
-        "x": 250,
-        "y": 390
+        "x": 225,
+        "y": 440
       },
       {
         "id": "PB",
         "label": "PE-B",
         "kind": "pe",
-        "x": 355,
-        "y": 390,
+        "x": 270,
+        "y": 345,
         "loc": "fc00:0:b::/48",
         "algo": "fc00:80:b::/48"
       }
@@ -433,7 +436,7 @@
       "to": "PA",
       "sid": "fc00:0:b:e046::",
       "behavior": "End.DT46",
-      "depth": 110
+      "depth": 70
     },
     "packet": {
       "path": [
@@ -472,7 +475,6 @@
         "S2",
         "L1"
       ]
-    },
-    "bar": 120
+    }
   }
 }

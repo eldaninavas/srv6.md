@@ -12,10 +12,16 @@
   opacity: 1;
 }
 
-.srv6-hero-scene,
-.srv6-hero-scene .react-flow {
+.srv6-hero-scene {
   position: absolute;
   inset: 0;
+}
+
+/* The scene stops above the caption bar, so the bar never costs it space.
+   A wrapper, because React Flow sets its own size and position inline. */
+.srv6-hero__flow {
+  position: absolute;
+  inset: 0 0 var(--srv6-hero-bar);
 }
 
 .srv6-hero-scene .react-flow {
@@ -41,7 +47,7 @@
 }
 
 .srv6-hero__node .srv6-flow__label {
-  font-size: 14px;
+  font-size: var(--hero-font);
   font-weight: 700;
 }
 
@@ -79,7 +85,7 @@
   border-radius: 999px;
   color: var(--srv6-chip-fg);
   background: var(--srv6-chip-bg);
-  font: 600 10.5px/16px var(--md-code-font-family);
+  font: 600 var(--hero-chip)/1.45 var(--md-code-font-family);
   white-space: nowrap;
   opacity: 0;
   transform: translate(-50%, -4px);
@@ -89,7 +95,7 @@
 }
 
 .srv6-hero__loc.is-algo {
-  top: calc(100% + 24px);
+  top: calc(100% + 8px + var(--hero-chip) * 1.45 + 2px);
   color: var(--md-default-bg-color);
   background: var(--srv6-hero-algo);
 }
@@ -240,7 +246,9 @@
   gap: 12px;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  height: var(--srv6-hero-bar);
+  box-sizing: border-box;
+  padding: 0 14px;
   border-top: 1px solid var(--srv6-group-border);
   background: color-mix(in srgb, var(--md-default-bg-color) 82%, transparent);
   backdrop-filter: blur(6px);
@@ -341,9 +349,14 @@
 @media (max-width: 599px) {
   .srv6-hero__bar {
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     align-items: stretch;
-    padding: 8px 10px;
+    justify-content: center;
+    padding: 0 10px;
+  }
+
+  .srv6-hero__note {
+    display: none;
   }
 
   .srv6-hero__controls {

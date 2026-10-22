@@ -1435,6 +1435,7 @@ html:lang(ja) .md-typeset {
 }
 
 .srv6-hero-stage {
+  --srv6-hero-bar: 54px; /* caption bar; the scene and static frame end above it */
   position: relative;
   height: clamp(420px, calc(100svh - 250px), 720px);
   overflow: hidden;
@@ -1450,10 +1451,10 @@ html:lang(ja) .md-typeset {
    size the frame from its width and misalign it with the live scene. */
 .md-typeset .srv6-hero-static {
   position: absolute;
-  inset: 0;
+  inset: 0 0 var(--srv6-hero-bar);
   width: 100%;
   max-width: none;
-  height: 100%;
+  height: calc(100% - var(--srv6-hero-bar));
   transition: opacity 0.5s ease;
 }
 
@@ -1477,7 +1478,8 @@ html:lang(ja) .md-typeset {
 
 .srv6-hero-static text {
   fill: var(--md-mermaid-label-fg-color);
-  font: 700 14px var(--md-text-font-family);
+  font-family: var(--md-text-font-family);
+  font-weight: 700;
 }
 
 .md-typeset .srv6-hero-static--mobile {
@@ -1568,8 +1570,9 @@ html:lang(ja) .md-typeset {
   }
 
   .srv6-hero-stage {
-    height: max(300px, 56svh);
-    margin-top: 0.8rem;
+    --srv6-hero-bar: 64px;
+    height: max(340px, 58svh);
+    margin: 0.8rem -0.4rem 0;
   }
 
   .md-typeset .srv6-hero-static--desktop {

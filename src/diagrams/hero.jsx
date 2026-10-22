@@ -8,7 +8,7 @@
 // the fades); moving things are drawn imperatively in the portal layer.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ReactFlow, ViewportPortal, Handle, Position, useReactFlow } from '@xyflow/react';
+import { ReactFlow, ViewportPortal, Handle, Position, useReactFlow, useStore } from '@xyflow/react';
 import scene from './hero-scene.json';
 import { ICONS } from './icons.mjs';
 
@@ -16,7 +16,8 @@ const KIND_ICON = { spine: 'switch', leaf: 'switch', pe: 'router', gpu: 'gpu' };
 const DURATION = [5.5, 7.5, 6.5, 9, 10]; // seconds per act
 const STARTS = DURATION.map((_, i) => DURATION.slice(0, i).reduce((a, b) => a + b, 0));
 const TOTAL = DURATION.reduce((a, b) => a + b, 0);
-const PAD = 24; // scene margin, same as the static frame's viewBox
+// Scene margin, same as the static frame's viewBox (hooks/diagrams.py).
+const PAD = { desktop: 20, mobile: 10 };
 const MRC_FAIL_AT = 4.5; // seconds into the AI act
 
 // What each act shows (a class on the stage); `still` is the reduced-motion
@@ -132,8 +133,11 @@ function Hero({ host, acts }) {
   );
 
   const fit = useCallback(
-    () => fitBounds({ x: -PAD, y: -PAD, width: s.width + 2 * PAD, height: s.height + s.bar + 2 * PAD }, { padding: 0 }),
-    [fitBounds, s],
+    () => {
+      const p = PAD[variant];
+      fitBounds({ x: -p, y: -p, width: s.width + 2 * p, height: s.height + 2 * p }, { padding: 0 });
+    },
+    [fitBounds, s, variant],
   );
 
   useEffect(() => {
@@ -145,10 +149,15 @@ function Hero({ host, acts }) {
     return () => ro.disconnect();
   }, [host, fit]);
 
+  // Refit whenever React Flow has measured a new size for itself (it does so
+  // after the host resizes, so fitting on the host's resize alone is early).
+  const rfWidth = useStore((st) => st.width);
+  const rfHeight = useStore((st) => st.height);
   useEffect(() => {
+    if (!rfWidth || !rfHeight) return undefined;
     const id = requestAnimationFrame(fit);
     return () => cancelAnimationFrame(id);
-  }, [fit, variant]);
+  }, [fit, variant, rfWidth, rfHeight]);
 
   // ------------------------------------------------------------ moving parts
   const engine = useMemo(() => {
@@ -345,7 +354,10 @@ function Hero({ host, acts }) {
   const svgRef = useCallback((el) => el && layer.current && engine.attach(el, layer.current), [engine]);
 
   return (
-    <div className={`srv6-hero-scene ${layers.join(' ')} ${act === 0 && !still && rebuild.current ? 'is-building' : ''} ${still ? 'is-still' : ''}`}>
+    <div
+      style={{ '--hero-font': `${s.node.font}px`, '--hero-chip': `${s.node.chip}px` }}
+      className={`srv6-hero-scene ${layers.join(' ')} ${act === 0 && !still && rebuild.current ? 'is-building' : ''} ${still ? 'is-still' : ''}`}>
+      <div className="srv6-hero__flow">
       <ReactFlow
         key={variant}
         nodes={nodes}
@@ -371,6 +383,7 @@ function Hero({ host, acts }) {
           <svg ref={svgRef} className="srv6-hero__fx" width="1" height="1" aria-hidden="true" />
         </ViewportPortal>
       </ReactFlow>
+      </div>
       <div className="srv6-hero__bar">
         <div className="srv6-hero__caption" aria-live="polite">
           <span className="srv6-hero__step">
