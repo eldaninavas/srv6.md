@@ -1272,3 +1272,9 @@ html:lang(ja) .md-typeset {
   }
   .md-typeset .smx .md-typeset__scrollwrap { max-height: 75vh; }
 }
+
+/* Header language selector: mark the language being read */
+.md-select__link.srv6-lang--current {
+  color: var(--md-accent-fg-color);
+  font-weight: 700;
+}
