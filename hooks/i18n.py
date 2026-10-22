@@ -4,8 +4,15 @@ A translated page declares `translation_of: <english src path>` in its front
 matter. Every page of a translation group (the English original plus all its
 translations) gets hreflang alternates for every language in the group
 (page.meta["alternates"]) and a visible link to each of the other languages.
+
+The hreflang annotations go in sitemap.xml, not in each page's <head>:
+Material's instant navigation fetches sitemap.xml relative to every
+<link rel="alternate"> in the head (/es/sitemap.xml,
+/topics/x/sitemap.xml...), which are all 404s. Google treats hreflang in
+the sitemap the same as in the head.
 """
 
+import gzip
 import os
 import re
 import logging
@@ -26,11 +33,14 @@ LANGUAGES = {
 # English src path -> {lang: src path}, and member src path -> English src path
 _groups = {}
 _member_of = {}
+# Page URL (relative to site_url) -> {lang: URL} for every page with translations
+_alternates = {}
 
 
 def on_files(files, config, **kwargs):
     _groups.clear()
     _member_of.clear()
+    _alternates.clear()
     counts = {}
     for f in files.documentation_pages():
         lang = f.src_uri.split("/", 1)[0]
@@ -81,6 +91,7 @@ def on_page_markdown(markdown, page, files, **kwargs):
     page.meta["alternates"] = {
         lang: _url(files.get_file_from_path(member)) for lang, member in members
     }
+    _alternates[_url(page.file)] = page.meta["alternates"]
     links = " · ".join(
         f'[{LANGUAGES[lang]}]({_rel(src, member)}){{ lang="{lang}" hreflang="{lang}" }}'
         for lang, member in members if member != src
@@ -97,3 +108,39 @@ def on_post_page(output, page, config, **kwargs):
     if lang != "en" and lang in LANGUAGES and "/" in page.file.src_uri:
         output = output.replace('<html lang="en"', f'<html lang="{lang}"', 1)
     return output
+
+
+def _hreflang_links(alternates, site_url):
+    links = [(lang, alternates[lang]) for lang in LANGUAGES if lang in alternates]
+    links.append(("x-default", alternates.get("en", links[0][1])))
+    return "".join(
+        f'\n         <xhtml:link rel="alternate" hreflang="{lang}" href="{site_url}{url}"/>'
+        for lang, url in links
+    )
+
+
+def on_post_build(config, **kwargs):
+    site_url = config["site_url"].rstrip("/") + "/"
+    path = os.path.join(config["site_dir"], "sitemap.xml")
+    with open(path, "r", encoding="utf-8") as f:
+        xml = f.read()
+    xml = xml.replace(
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:xhtml="http://www.w3.org/1999/xhtml">', 1)
+    count = 0
+
+    def annotate(m):
+        nonlocal count
+        alternates = _alternates.get(m.group(1)[len(site_url):])
+        if not alternates:
+            return m.group(0)
+        count += 1
+        return m.group(0) + _hreflang_links(alternates, site_url)
+
+    xml = re.sub(r"<loc>([^<]+)</loc>", annotate, xml)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(xml)
+    with gzip.open(path + ".gz", "wb") as f:
+        f.write(xml.encode("utf-8"))
+    log.info(f"i18n: hreflang written to sitemap.xml for {count} pages")
