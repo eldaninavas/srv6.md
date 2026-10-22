@@ -14,7 +14,7 @@
     </url>
     <url>
          <loc>https://srv6.md/ai/</loc>
-         <lastmod>2026-10-20</lastmod>
+         <lastmod>2026-10-22</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/ai/ai-fabric-design/</loc>
@@ -31,6 +31,10 @@
     <url>
          <loc>https://srv6.md/ai/ai-standards/</loc>
          <lastmod>2026-10-20</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/ai/inference-wan/</loc>
+         <lastmod>2026-10-22</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/ai/mrc/</loc>
