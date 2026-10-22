@@ -106,6 +106,12 @@ Cómo OpenAI, Microsoft y Oracle usan MRC sobre SRv6 uSID estático en sus fabri
 
 </div>
 
+## :material-chart-bar: State of SRv6 2026
+
+¿Cuánto ha avanzado SRv6? Nuestro informe de datos cuenta 23 RFC de SRv6, 65 borradores activos en el IETF, 19 organizaciones con despliegues públicos y el soporte de uSID en 11 implementaciones. Cada cifra tiene su fuente y las gráficas se pueden reutilizar. El informe está en inglés.
+
+[:material-arrow-right: Leer el informe State of SRv6 2026](../reports/state-of-srv6-2026.md){ .md-button .md-button--primary }
+
 ## :material-compass: El resto del sitio (en inglés)
 
 El contenido completo de SRv6.md está en inglés y lo vamos traduciendo poco a poco:
