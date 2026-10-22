@@ -193,6 +193,7 @@ nav:
     - AI Fabric Design: ai/ai-fabric-design.md
     - SRv6 vs ECMP, AR and UEC: ai/srv6-vs-ai-fabric-alternatives.md
     - Scale-Across: ai/scale-across.md
+    - Inference WAN: ai/inference-wan.md
     - AI Fabric Telemetry: ai/ai-fabric-telemetry.md
     - Standards Tracker: ai/ai-standards.md
     - AI Networking Glossary: ai/ai-glossary.md

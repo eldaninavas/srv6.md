@@ -60,6 +60,7 @@ For SRv6 deployments outside AI, see [Real-World Deployments](../use-cases/deplo
 | Jul 2026 | IETF 126: AI-backend draft authors request working-group adoption |
 | Sep 2026 | draft-filsfils-srv6ops-srv6-ai-backend-05 (Cisco, OpenAI, Microsoft, Oracle, IBM, NVIDIA, Arrcus) |
 | Oct 2026 | OCP Global Summit: OpenAI Clustermapper, Meta SRv6 backbone in production, Alibaba per-job TE, Google Virgo |
+| 20 Oct 2026 | Cisco publishes an AI inference WAN blueprint built on SRv6 uSID and Flex-Algo SLA planes ([Inference WAN](inference-wan.md)) |
 
 ## Explore the SRv6 for AI section
 
@@ -102,6 +103,16 @@ ECMP, flowlets, adaptive routing, InfiniBand and Ultra Ethernet, and how SRv6 co
 Multi-datacenter AI: Meta's SRv6 backbone, Alibaba's eCore for AI, China Telecom, and what is not SRv6.
 
 [:material-arrow-right: Go beyond one site](scale-across.md){ .md-button }
+
+</div>
+
+<div class="srv6-card" markdown>
+
+### :material-access-point-network: Inference WAN
+
+Distributed AI inference over provider WANs: Flex-Algo SLA planes, per-plane locators, BGP color steering and DCI design.
+
+[:material-arrow-right: Connect users to models](inference-wan.md){ .md-button }
 
 </div>
 
@@ -168,6 +179,10 @@ Ultra Ethernet defines a transport that sprays packets using entropy values that
 ### Which switches support SRv6 for AI fabrics?
 
 Published deployments use NVIDIA Spectrum-4 and Spectrum-5 (Cumulus or SONiC), Arista EOS on Broadcom Tomahawk 5, and Cisco Silicon One systems running SONiC. SONiC has supported static SRv6 uSID configuration since release 202505.
+
+### Is SRv6 used for AI inference?
+
+Yes, in the WAN. Cisco's October 2026 AI inference blueprint for service providers and neoclouds uses SRv6 uSID as the transport, with a Flex-Algo plane per inference SLA and BGP color to steer each inference service onto its plane. See [SRv6 for AI Inference WAN](inference-wan.md).
 
 ### Is SRv6 used between AI data centers?
 

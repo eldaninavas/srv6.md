@@ -51,6 +51,28 @@
       "index": 0,
       "kind": "sequence",
       "packetWalk": true
+    },
+    {
+      "page": "ai/inference-wan.md",
+      "index": 0,
+      "kind": "flowchart",
+      "scenarios": [
+        {
+          "label": "Fail Metro P1–Core P1",
+          "restore": "Restore link",
+          "fail": [
+            "i2"
+          ],
+          "idle": [
+            "i3"
+          ],
+          "reroute": [
+            "r1",
+            "r2"
+          ],
+          "note": "Metro P1–Core P1 down: TI-LFA repairs inside the Flex-Algo 128 topology through Core P3, so inference traffic keeps a low-delay path instead of falling back to best effort."
+        }
+      ]
     }
   ]
 }
