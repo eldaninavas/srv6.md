@@ -16,7 +16,7 @@ SRv6 is in production at some of the world's largest networks. The following is 
     Every entry links to the original public announcement (press release, blog post, or conference talk) by the operator or vendor. We do not reproduce proprietary details — click through to the source for full information.
 
 !!! tip "By the numbers"
-    How many organizations run SRv6, by region and sector, and how that compares with standards and vendor support: see the [State of SRv6 2026](../reports/state-of-srv6-2026.md#deployments-18-organizations) data report.
+    How many organizations run SRv6, by region and sector, and how that compares with standards and vendor support: see the [State of SRv6 2026](../reports/state-of-srv6-2026.md#deployments-19-organizations) data report.
 
 ## Telecom Operators
 
@@ -43,7 +43,7 @@ SRv6 is in production at some of the world's largest networks. The following is 
 | Operator | Announcement | Source |
 |----------|-------------|:------:|
 | **Bell Canada** | SRv6 uSID deployment with P4 programmable edge | [:material-open-in-new:](https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf) |
-| **Boost Mobile** (United States) | Cloud-native SRv6 backbone in AWS — migrated from SR-MPLS/GRE to single SRv6 domain | [:material-open-in-new:](cloud-native-backbone.md) |
+| **Boost Mobile** (United States) | "From traditional MPLS to Cloud-Native SRv6": core backbone in AWS moved from SR-MPLS with 100,000+ GRE tunnels to a single SRv6 domain (Upperside WC Paris 2026). Deep dive: [Cloud-Native Backbone](cloud-native-backbone.md) | [:material-open-in-new:](https://www.segment-routing.net/conferences/Paris26-Boost-Frederico-Luzzi-Jorge-Marquez/) |
 | **Verizon** (United States) | "Simplifying the Network, the Journey to Unified Traffic Engineering with SRv6" — target of SRv6 in all domains with a single encapsulation and single TE policy, extending to host-based encapsulation (Upperside WC Paris 2026) | [:material-open-in-new:](https://www.segment-routing.net/conferences/Paris26-Verizon-Luay-Jalil/) |
 | **Telefonica VIVO** (Brazil) | Multi-vendor SRv6 uSID deployment | [:material-open-in-new:](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) |
 | **Telecom District** (Mexico) | The future of routing built on SRv6 | [:material-open-in-new:](https://en.telecomdistrict.com/blog/el-futuro-del-enrutamiento-construido-sobre-srv6) |

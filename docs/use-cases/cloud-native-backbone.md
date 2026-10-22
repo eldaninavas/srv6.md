@@ -157,6 +157,7 @@ Cloud-optimized:
 
 ## References
 
+1. [Boost Mobile: "From traditional MPLS to Cloud-Native SRv6"](https://www.segment-routing.net/conferences/Paris26-Boost-Frederico-Luzzi-Jorge-Marquez/) - Frederico Luzzi and Jorge Marquez (Boost Mobile) on moving the core backbone in AWS from SR-MPLS and 100,000+ GRE tunnels to SRv6, Upperside WC Paris, March 2026
 1. [Boost Mobile: The Newest Wireless Carrier Launches 5G Network](https://about.dish.com/2024-07-17-Boost-Mobile-the-Newest-Wireless-Carrier-Launches-New-State-of-the-Art-Nationwide-5G-Network,-Plans-and-Branding) - DISH press release on Boost Mobile's cloud-native 5G network launch
 2. [Cisco and DISH Wireless Test 5G Hybrid Cloud Network Slicing](https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2024/m02/cisco-and-dish-wireless-test-5g-hybrid-cloud-network-slicing-solution-speeding-launch-of-new-enterprise-services.html) - Cisco press release on DISH Wireless network slicing proof of concept
 3. [Building the Future of Connectivity: Boost Mobile and Cisco](https://blogs.cisco.com/sp/building-the-future-of-connectivity-boost-mobile-and-ciscos-collaborative-journey) - Cisco blog on the Open RAN deployment

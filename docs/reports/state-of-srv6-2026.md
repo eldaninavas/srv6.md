@@ -1,7 +1,7 @@
 ---
 title: State of SRv6 2026
 seo_title: "State of SRv6 2026: RFCs, Drafts, Deployments, Vendors"
-description: "Data report on SRv6 in 2026: 23 RFCs, 65 active IETF drafts, 18 public deployments and uSID support across 11 implementations. Every figure sourced."
+description: "Data report on SRv6 in 2026: 23 RFCs, 65 active IETF drafts, 19 public deployments and uSID support across 11 implementations. Every figure sourced."
 og_image: assets/images/state-of-srv6-2026.png
 tags:
   - reports
@@ -22,7 +22,7 @@ tags:
 2. **2023 and 2025 were the busiest years**, with 7 SRv6 RFCs each. Three more have been published in 2026 so far. [Details](#standards-23-rfcs)
 3. **65 active Internet-Drafts** in seven IETF working groups mention SRv6: 25 adopted by a working group and 40 individual submissions. [Details](#work-in-progress-65-active-drafts)
 4. **SPRING carries 28 of them**, and **srv6ops**, the working group for SRv6 operations, has 13. [Details](#work-in-progress-65-active-drafts)
-5. **18 organizations** have documented SRv6 in their own networks in public: 9 telecom operators, 8 cloud and AI companies and 1 government agency. [Details](#deployments-18-organizations)
+5. **19 organizations** have documented SRv6 in their own networks in public: 10 telecom operators, 8 cloud and AI companies and 1 government agency. [Details](#deployments-19-organizations)
 6. **SRv6 moved into AI training networks.** OpenAI, Microsoft and Oracle use static SRv6 source routing inside GPU fabrics, and Meta and Alibaba Cloud use SRv6 traffic engineering between AI sites. [Details](#milestones-of-2026)
 7. **uSID is the mainstream encoding**: 8 of the 11 implementations in the [support matrix](../implementations/support-matrix.md) support NEXT-C-SID (uSID), and 2 more support it partially. [Details](#implementations-11-tracked)
 
@@ -143,21 +143,21 @@ The 25 working-group drafts, furthest along first:
 | [draft-ietf-pce-stateful-pce-autobw-update](https://datatracker.ietf.org/doc/draft-ietf-pce-stateful-pce-autobw-update/) | Update to the Automatic Bandwidth Adjustment Procedure for MPLS-TE and SR-TE LSPs with a Stateful PCE | `pce` | 05 | WG document |
 <!-- /chart:wg-drafts -->
 
-## Deployments: 18 organizations
+## Deployments: 19 organizations
 
 This is a count of organizations, not announcements, with a public account of SRv6 in their own network: a press release, an engineering blog, a conference talk by the operator, or an IETF document. Trials and vendor product listings are not counted. It is a lower bound. Many deployments, especially in China, are not announced in English, and the IETF's own deployment-status draft [stopped being updated in 2022](https://datatracker.ietf.org/doc/draft-matsushima-spring-srv6-deployment-status/).
 
 <!-- chart:deployments-by-region -->
 <figure class="srv6-figure sor-figure" style="width:100%">
-<svg viewBox="0 0 420 132" role="img" aria-labelledby="sor-reg-t sor-reg-d" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-width:588px"><title id="sor-reg-t">Public SRv6 deployments by region</title><desc id="sor-reg-d">Bar chart of 18 organizations with a public account of SRv6 in their network, by region: North America 7, Asia-Pacific 6, Europe 4, Latin America 1.</desc><style>.sor-b1{fill:var(--md-primary-fg-color)}.sor-b2{fill:var(--md-primary-fg-color);fill-opacity:.32;stroke:var(--md-primary-fg-color);stroke-width:1}[data-md-color-scheme=slate] .sor-b1{fill:var(--md-primary-fg-color--light)}[data-md-color-scheme=slate] .sor-b2{fill:var(--md-primary-fg-color--light);stroke:var(--md-primary-fg-color--light)}.sor-t{fill:var(--md-default-fg-color);font-family:var(--md-text-font-family,sans-serif);font-size:14px}.sor-v{fill:var(--md-default-fg-color);font-family:var(--md-text-font-family,sans-serif);font-size:13px;font-weight:600}.sor-m{fill:var(--md-default-fg-color--light);font-family:var(--md-text-font-family,sans-serif);font-size:12px}.sor-ax{stroke:var(--md-default-fg-color--lighter);stroke-width:1}.sor-hit{fill:transparent}.sor-g:hover .sor-b1,.sor-g:hover .sor-b2{fill-opacity:.8}</style><line class="sor-ax" x1="178" y1="4" x2="178" y2="128"/><g class="sor-g"><title>North America: 7 organizations</title><rect class="sor-hit" x="0" y="6" width="420" height="30"/><text class="sor-t" x="170" y="26.0" text-anchor="end">North America</text><path class="sor-b1" d="M178.0,13.0h202.0a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-202.0z"/><text class="sor-v" x="390.0" y="26.0">7</text></g><g class="sor-g"><title>Asia-Pacific: 6 organizations</title><rect class="sor-hit" x="0" y="36" width="420" height="30"/><text class="sor-t" x="170" y="56.0" text-anchor="end">Asia-Pacific</text><path class="sor-b1" d="M178.0,43.0h172.6a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-172.6z"/><text class="sor-v" x="360.6" y="56.0">6</text></g><g class="sor-g"><title>Europe: 4 organizations</title><rect class="sor-hit" x="0" y="66" width="420" height="30"/><text class="sor-t" x="170" y="86.0" text-anchor="end">Europe</text><path class="sor-b1" d="M178.0,73.0h113.7a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-113.7z"/><text class="sor-v" x="301.7" y="86.0">4</text></g><g class="sor-g"><title>Latin America: 1 organization</title><rect class="sor-hit" x="0" y="96" width="420" height="30"/><text class="sor-t" x="170" y="116.0" text-anchor="end">Latin America</text><path class="sor-b1" d="M178.0,103.0h25.4a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-25.4z"/><text class="sor-v" x="213.4" y="116.0">1</text></g></svg>
-<figcaption>Organizations with publicly documented SRv6 deployments, by region (18 in total).</figcaption>
+<svg viewBox="0 0 420 132" role="img" aria-labelledby="sor-reg-t sor-reg-d" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-width:588px"><title id="sor-reg-t">Public SRv6 deployments by region</title><desc id="sor-reg-d">Bar chart of 19 organizations with a public account of SRv6 in their network, by region: North America 8, Asia-Pacific 6, Europe 4, Latin America 1.</desc><style>.sor-b1{fill:var(--md-primary-fg-color)}.sor-b2{fill:var(--md-primary-fg-color);fill-opacity:.32;stroke:var(--md-primary-fg-color);stroke-width:1}[data-md-color-scheme=slate] .sor-b1{fill:var(--md-primary-fg-color--light)}[data-md-color-scheme=slate] .sor-b2{fill:var(--md-primary-fg-color--light);stroke:var(--md-primary-fg-color--light)}.sor-t{fill:var(--md-default-fg-color);font-family:var(--md-text-font-family,sans-serif);font-size:14px}.sor-v{fill:var(--md-default-fg-color);font-family:var(--md-text-font-family,sans-serif);font-size:13px;font-weight:600}.sor-m{fill:var(--md-default-fg-color--light);font-family:var(--md-text-font-family,sans-serif);font-size:12px}.sor-ax{stroke:var(--md-default-fg-color--lighter);stroke-width:1}.sor-hit{fill:transparent}.sor-g:hover .sor-b1,.sor-g:hover .sor-b2{fill-opacity:.8}</style><line class="sor-ax" x1="178" y1="4" x2="178" y2="128"/><g class="sor-g"><title>North America: 8 organizations</title><rect class="sor-hit" x="0" y="6" width="420" height="30"/><text class="sor-t" x="170" y="26.0" text-anchor="end">North America</text><path class="sor-b1" d="M178.0,13.0h202.0a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-202.0z"/><text class="sor-v" x="390.0" y="26.0">8</text></g><g class="sor-g"><title>Asia-Pacific: 6 organizations</title><rect class="sor-hit" x="0" y="36" width="420" height="30"/><text class="sor-t" x="170" y="56.0" text-anchor="end">Asia-Pacific</text><path class="sor-b1" d="M178.0,43.0h150.5a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-150.5z"/><text class="sor-v" x="338.5" y="56.0">6</text></g><g class="sor-g"><title>Europe: 4 organizations</title><rect class="sor-hit" x="0" y="66" width="420" height="30"/><text class="sor-t" x="170" y="86.0" text-anchor="end">Europe</text><path class="sor-b1" d="M178.0,73.0h99.0a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-99.0z"/><text class="sor-v" x="287.0" y="86.0">4</text></g><g class="sor-g"><title>Latin America: 1 organization</title><rect class="sor-hit" x="0" y="96" width="420" height="30"/><text class="sor-t" x="170" y="116.0" text-anchor="end">Latin America</text><path class="sor-b1" d="M178.0,103.0h21.8a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-21.8z"/><text class="sor-v" x="209.8" y="116.0">1</text></g></svg>
+<figcaption>Organizations with publicly documented SRv6 deployments, by region (19 in total).</figcaption>
 </figure>
 
 ??? note "Data: deployments by region"
 
     | Region | Organizations |
     |---|:---:|
-    | North America | 7 |
+    | North America | 8 |
     | Asia-Pacific | 6 |
     | Europe | 4 |
     | Latin America | 1 |
@@ -165,20 +165,20 @@ This is a count of organizations, not announcements, with a public account of SR
 
 <!-- chart:deployments-by-sector -->
 <figure class="srv6-figure sor-figure" style="width:100%">
-<svg viewBox="0 0 420 102" role="img" aria-labelledby="sor-sec-t sor-sec-d" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-width:588px"><title id="sor-sec-t">Public SRv6 deployments by sector</title><desc id="sor-sec-d">Bar chart of 18 organizations with a public account of SRv6 in their network, by sector: Telecom operator 9, Cloud and AI 8, Public sector 1.</desc><style>.sor-b1{fill:var(--md-primary-fg-color)}.sor-b2{fill:var(--md-primary-fg-color);fill-opacity:.32;stroke:var(--md-primary-fg-color);stroke-width:1}[data-md-color-scheme=slate] .sor-b1{fill:var(--md-primary-fg-color--light)}[data-md-color-scheme=slate] .sor-b2{fill:var(--md-primary-fg-color--light);stroke:var(--md-primary-fg-color--light)}.sor-t{fill:var(--md-default-fg-color);font-family:var(--md-text-font-family,sans-serif);font-size:14px}.sor-v{fill:var(--md-default-fg-color);font-family:var(--md-text-font-family,sans-serif);font-size:13px;font-weight:600}.sor-m{fill:var(--md-default-fg-color--light);font-family:var(--md-text-font-family,sans-serif);font-size:12px}.sor-ax{stroke:var(--md-default-fg-color--lighter);stroke-width:1}.sor-hit{fill:transparent}.sor-g:hover .sor-b1,.sor-g:hover .sor-b2{fill-opacity:.8}</style><line class="sor-ax" x1="178" y1="4" x2="178" y2="98"/><g class="sor-g"><title>Telecom operator: 9 organizations</title><rect class="sor-hit" x="0" y="6" width="420" height="30"/><text class="sor-t" x="170" y="26.0" text-anchor="end">Telecom operator</text><path class="sor-b1" d="M178.0,13.0h202.0a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-202.0z"/><text class="sor-v" x="390.0" y="26.0">9</text></g><g class="sor-g"><title>Cloud and AI: 8 organizations</title><rect class="sor-hit" x="0" y="36" width="420" height="30"/><text class="sor-t" x="170" y="56.0" text-anchor="end">Cloud and AI</text><path class="sor-b1" d="M178.0,43.0h179.1a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-179.1z"/><text class="sor-v" x="367.1" y="56.0">8</text></g><g class="sor-g"><title>Public sector: 1 organization</title><rect class="sor-hit" x="0" y="66" width="420" height="30"/><text class="sor-t" x="170" y="86.0" text-anchor="end">Public sector</text><path class="sor-b1" d="M178.0,73.0h18.9a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-18.9z"/><text class="sor-v" x="206.9" y="86.0">1</text></g></svg>
-<figcaption>Organizations with publicly documented SRv6 deployments, by sector (18 in total).</figcaption>
+<svg viewBox="0 0 420 102" role="img" aria-labelledby="sor-sec-t sor-sec-d" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-width:588px"><title id="sor-sec-t">Public SRv6 deployments by sector</title><desc id="sor-sec-d">Bar chart of 19 organizations with a public account of SRv6 in their network, by sector: Telecom operator 10, Cloud and AI 8, Public sector 1.</desc><style>.sor-b1{fill:var(--md-primary-fg-color)}.sor-b2{fill:var(--md-primary-fg-color);fill-opacity:.32;stroke:var(--md-primary-fg-color);stroke-width:1}[data-md-color-scheme=slate] .sor-b1{fill:var(--md-primary-fg-color--light)}[data-md-color-scheme=slate] .sor-b2{fill:var(--md-primary-fg-color--light);stroke:var(--md-primary-fg-color--light)}.sor-t{fill:var(--md-default-fg-color);font-family:var(--md-text-font-family,sans-serif);font-size:14px}.sor-v{fill:var(--md-default-fg-color);font-family:var(--md-text-font-family,sans-serif);font-size:13px;font-weight:600}.sor-m{fill:var(--md-default-fg-color--light);font-family:var(--md-text-font-family,sans-serif);font-size:12px}.sor-ax{stroke:var(--md-default-fg-color--lighter);stroke-width:1}.sor-hit{fill:transparent}.sor-g:hover .sor-b1,.sor-g:hover .sor-b2{fill-opacity:.8}</style><line class="sor-ax" x1="178" y1="4" x2="178" y2="98"/><g class="sor-g"><title>Telecom operator: 10 organizations</title><rect class="sor-hit" x="0" y="6" width="420" height="30"/><text class="sor-t" x="170" y="26.0" text-anchor="end">Telecom operator</text><path class="sor-b1" d="M178.0,13.0h202.0a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-202.0z"/><text class="sor-v" x="390.0" y="26.0">10</text></g><g class="sor-g"><title>Cloud and AI: 8 organizations</title><rect class="sor-hit" x="0" y="36" width="420" height="30"/><text class="sor-t" x="170" y="56.0" text-anchor="end">Cloud and AI</text><path class="sor-b1" d="M178.0,43.0h160.8a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-160.8z"/><text class="sor-v" x="348.8" y="56.0">8</text></g><g class="sor-g"><title>Public sector: 1 organization</title><rect class="sor-hit" x="0" y="66" width="420" height="30"/><text class="sor-t" x="170" y="86.0" text-anchor="end">Public sector</text><path class="sor-b1" d="M178.0,73.0h16.6a4,4 0 0 1 4,4v8.0a4,4 0 0 1 -4,4h-16.6z"/><text class="sor-v" x="204.6" y="86.0">1</text></g></svg>
+<figcaption>Organizations with publicly documented SRv6 deployments, by sector (19 in total).</figcaption>
 </figure>
 
 ??? note "Data: deployments by sector"
 
     | Sector | Organizations |
     |---|:---:|
-    | Telecom operator | 9 |
+    | Telecom operator | 10 |
     | Cloud and AI | 8 |
     | Public sector | 1 |
 <!-- /chart:deployments-by-sector -->
 
-Cloud and AI companies (8) now nearly match telecom operators (9), and seven of the eight describe SRv6 in AI infrastructure. The operator list is in [Real-World Deployments](../use-cases/deployments.md) and the AI list in [SRv6 for AI](../ai/index.md#who-uses-srv6-for-ai).
+Telecom operators (10) still lead, but cloud and AI companies (8) are close behind, and seven of the eight describe SRv6 in AI infrastructure. The operator list is in [Real-World Deployments](../use-cases/deployments.md) and the AI list in [SRv6 for AI](../ai/index.md#who-uses-srv6-for-ai).
 
 | Organization | Sector | Region | Source |
 |--------------|--------|--------|:------:|
@@ -190,6 +190,7 @@ Cloud and AI companies (8) now nearly match telecom operators (9), and seven of 
 | Swisscom | Telecom operator | Europe | [News](https://www.segment-routing.net/news/2024-10-09-swisscom-srv6-usid-ipm/) |
 | Bell Canada | Telecom operator | North America | [Workshop slides](https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf) |
 | Verizon | Telecom operator | North America | [Upperside WC 2026](https://www.segment-routing.net/conferences/Paris26-Verizon-Luay-Jalil/) |
+| Boost Mobile | Telecom operator | North America | [Upperside WC 2026](https://www.segment-routing.net/conferences/Paris26-Boost-Frederico-Luzzi-Jorge-Marquez/) |
 | Telefonica VIVO | Telecom operator | Latin America | [LACNIC blog](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) |
 | Rijkswaterstaat | Public sector | Europe | [Cisco Live 2025](https://www.segment-routing.net/conferences/20250213-cleur-rws-srv6-deployment/) |
 | Meta | Cloud and AI | North America | [Meta Engineering](https://engineering.fb.com/2026/10/12/open-source/ocp-summit-2026-powering-ai-with-open-innovations-in-scale-up-scale-out-and-scale-across-networks/) |
@@ -267,7 +268,7 @@ These are the documents closest to publication or adoption on 20 October 2026, a
 
 - **RFCs.** The [IETF Datatracker API](https://datatracker.ietf.org/api/v1/) was queried for RFCs whose title or abstract contains "SRv6", "Segment Routing over IPv6", "Segment Routing over the IPv6", "IPv6 Segment Routing" or "Segment Routing Header". Publication dates and status come from the RFC Editor's metadata for each RFC. The rule is mechanical: it includes RFCs that cover SRv6 as one of several data planes (for example [RFC 9350](../rfcs/rfc9350.md), Flex-Algo) and leaves out SR RFCs that do not name SRv6 in the abstract.
 - **Drafts.** Same text rule, applied to drafts in the Datatracker state "Active" in seven working groups. Working-group drafts are those named `draft-ietf-<wg>-…`. Individual drafts are those named `draft-<author>-<wg>-…`. Drafts aimed at other groups, such as `ippm` or `opsawg`, are not counted. Stages come from the Datatracker states.
-- **Deployments.** Organizations listed in [Real-World Deployments](../use-cases/deployments.md) and [SRv6 for AI](../ai/index.md#who-uses-srv6-for-ai) whose source is the organization itself, a talk by it, or an IETF document naming it. Trials and vendor product listings are not counted. Region is the organization's headquarters.
+- **Deployments.** Organizations listed in [Real-World Deployments](../use-cases/deployments.md) and [SRv6 for AI](../ai/index.md#who-uses-srv6-for-ai) whose source is the organization itself, a talk by it, or an IETF document naming it. Trials and vendor product listings are not counted. Region is the organization's headquarters. The list was last updated on 22 October 2026, when Boost Mobile was added on the strength of its own conference talk.
 - **Implementations.** Counts come from the [support matrix](../implementations/support-matrix.md) data file, verified 20 October 2026. "Partial" is the matrix's own rating. Unknown cells count as not supported.
 - **Reproduce it.** `python tools/state-of-srv6/fetch_ietf.py` refreshes the IETF snapshot and `python tools/state-of-srv6/build.py --og` redraws the charts and the share image. The data files are [in the repository](https://github.com/eldaninavas/srv6.md/tree/main/tools/state-of-srv6).
 
@@ -298,7 +299,7 @@ As of 20 October 2026, 23 RFCs name SRv6 in their title or abstract. The first w
 
 ### Who uses SRv6 in production?
 
-Publicly documented users include telecom operators such as China Mobile, SoftBank, Rakuten Mobile, Reliance Jio, Swisscom, Bell Canada and Telefonica VIVO, and cloud and AI companies such as Microsoft, OpenAI, Oracle, Meta, Alibaba Cloud and Nebius. This report counts 18 organizations.
+Publicly documented users include telecom operators such as China Mobile, SoftBank, Rakuten Mobile, Reliance Jio, Swisscom, Bell Canada, Boost Mobile and Telefonica VIVO, and cloud and AI companies such as Microsoft, OpenAI, Oracle, Meta, Alibaba Cloud and Nebius. This report counts 19 organizations.
 
 ### Which vendors support SRv6 uSID?
 

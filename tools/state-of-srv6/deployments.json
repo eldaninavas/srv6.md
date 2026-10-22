@@ -1,5 +1,5 @@
 {
- "verified": "2026-10-20",
+ "verified": "2026-10-22",
  "note": "Organizations (not announcements) with a public, primary-source account of SRv6 in their own network, taken from docs/use-cases/deployments.md and the 'Who uses SRv6 for AI' table in docs/ai/index.md. Region = where the organization is headquartered. Trials and vendor product listings are left out.",
  "organizations": [
   {"org": "China Mobile", "region": "Asia-Pacific", "sector": "Telecom operator", "source": "https://regional.chinadaily.com.cn/wic/2024-12/04/c_1050626.htm"},
@@ -10,6 +10,7 @@
   {"org": "Swisscom", "region": "Europe", "sector": "Telecom operator", "source": "https://www.segment-routing.net/news/2024-10-09-swisscom-srv6-usid-ipm/"},
   {"org": "Bell Canada", "region": "North America", "sector": "Telecom operator", "source": "https://www.segment-routing.net/images/2023-03-30-srv6-workshop-bell-canada.pdf"},
   {"org": "Verizon", "region": "North America", "sector": "Telecom operator", "source": "https://www.segment-routing.net/conferences/Paris26-Verizon-Luay-Jalil/"},
+  {"org": "Boost Mobile", "region": "North America", "sector": "Telecom operator", "source": "https://www.segment-routing.net/conferences/Paris26-Boost-Frederico-Luzzi-Jorge-Marquez/"},
   {"org": "Telefonica VIVO", "region": "Latin America", "sector": "Telecom operator", "source": "https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/"},
   {"org": "Rijkswaterstaat", "region": "Europe", "sector": "Public sector", "source": "https://www.segment-routing.net/conferences/20250213-cleur-rws-srv6-deployment/"},
   {"org": "Meta", "region": "North America", "sector": "Cloud and AI", "source": "https://engineering.fb.com/2026/10/12/open-source/ocp-summit-2026-powering-ai-with-open-innovations-in-scale-up-scale-out-and-scale-across-networks/"},

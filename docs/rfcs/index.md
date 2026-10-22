@@ -74,13 +74,12 @@ Comprehensive reference for all SRv6-related IETF RFCs, with summaries, behavior
 
 | Draft | Topic |
 |-------|-------|
-| `draft-ietf-spring-sr-service-programming` | SR proxy behaviors (End.AS, End.AD, End.AM) for service chaining |
+| `draft-ietf-spring-srv6-service-programming` | SRv6 service programming for service chaining (replaces `draft-ietf-spring-sr-service-programming`) |
 | `draft-ietf-spring-srv6-security` | Security analysis of the SRv6 data plane |
-| `draft-ietf-ippm-ioam-srv6-options` | In-situ OAM (IOAM) data fields in SRv6 |
-| `draft-filsfils-spring-path-tracing` | Lightweight path tracing for SRv6 |
+| `draft-filsfils-ippm-path-tracing` | Lightweight path tracing for SRv6 (moved from SPRING to IPPM) |
 | `draft-ietf-pce-sr-p2mp-policy` | PCEP signaling for SR P2MP Policy (Tree-SID) |
 | `draft-filsfils-srv6ops-srv6-ai-backend` | SRv6 deterministic path placement for AI backends |
-| `draft-ietf-spring-srv6-yang` | YANG data model for SRv6 |
+| `draft-ietf-spring-srv6-yang-base` | YANG data model for SRv6 (base; static SIDs are in `draft-ietf-spring-srv6-yang-static`) |
 
 !!! note "Recently published"
     The BGP SR Policy SAFI drafts are now [RFC 9830](rfc9830.md) (Advertising SR Policies in BGP) and [RFC 9831](https://datatracker.ietf.org/doc/rfc9831/) (Segment Type Extensions for BGP SR Policy).

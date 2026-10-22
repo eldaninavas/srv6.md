@@ -106,6 +106,12 @@ OpenAI、Microsoft、OracleがMRCとスタティックSRv6 uSIDでGPUファブ�
 
 </div>
 
+## :material-chart-bar: State of SRv6 2026
+
+SRv6はどこまで普及したのか。データレポート「State of SRv6 2026」では、SRv6関連のRFC 23本、IETFで進行中のドラフト65本、SRv6の導入を公表している19の組織、11の実装におけるuSID対応状況をまとめました。すべての数値に出典を付けており、グラフは自由に再利用できます。レポートは英語です。
+
+[:material-arrow-right: State of SRv6 2026を読む](../reports/state-of-srv6-2026.md){ .md-button .md-button--primary }
+
 ## :material-compass: その他のコンテンツ（英語）
 
 SRv6.mdのコンテンツの大半は英語で、順次翻訳を進めています。
