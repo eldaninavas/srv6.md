@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
          <loc>https://srv6.md/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/"/>
          <lastmod>2026-10-22</lastmod>
     </url>
     <url>
@@ -14,6 +18,10 @@
     </url>
     <url>
          <loc>https://srv6.md/ai/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/ai/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/ia/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/ai/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/ai/"/>
          <lastmod>2026-10-22</lastmod>
     </url>
     <url>
@@ -74,30 +82,58 @@
     </url>
     <url>
          <loc>https://srv6.md/es/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/"/>
          <lastmod>2026-10-22</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/es/cabecera-srh/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/srh-packet-walk/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/cabecera-srh/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/srh-packet-walk/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/srh-packet-walk/"/>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/es/estructura-del-sid/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/sid-structure/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/estructura-del-sid/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/sid-structure/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/sid-structure/"/>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/es/ia/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/ai/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/ia/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/ai/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/ai/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/es/que-es-srv6/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/what-is-srv6/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/que-es-srv6/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/what-is-srv6/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/what-is-srv6/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/es/srv6-vs-sr-mpls/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/srv6-vs-sr-mpls/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/srv6-vs-sr-mpls/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/srv6-vs-sr-mpls/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/srv6-vs-sr-mpls/"/>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/es/usid/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/usid-compression/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/usid/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/usid/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/usid-compression/"/>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
@@ -154,30 +190,58 @@
     </url>
     <url>
          <loc>https://srv6.md/ja/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/"/>
          <lastmod>2026-10-22</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/ja/ai/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/ai/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/ia/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/ai/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/ai/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/ja/sid-structure/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/sid-structure/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/estructura-del-sid/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/sid-structure/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/sid-structure/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/ja/srh-packet-walk/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/srh-packet-walk/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/cabecera-srh/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/srh-packet-walk/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/srh-packet-walk/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/ja/srv6-vs-sr-mpls/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/srv6-vs-sr-mpls/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/srv6-vs-sr-mpls/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/srv6-vs-sr-mpls/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/srv6-vs-sr-mpls/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/ja/usid/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/usid-compression/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/usid/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/usid/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/usid-compression/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/ja/what-is-srv6/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/what-is-srv6/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/que-es-srv6/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/what-is-srv6/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/what-is-srv6/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
@@ -374,6 +438,10 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/sid-structure/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/sid-structure/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/estructura-del-sid/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/sid-structure/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/sid-structure/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
@@ -386,6 +454,10 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/srh-packet-walk/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/srh-packet-walk/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/cabecera-srh/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/srh-packet-walk/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/srh-packet-walk/"/>
          <lastmod>2026-10-21</lastmod>
     </url>
     <url>
@@ -394,6 +466,10 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/srv6-vs-sr-mpls/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/srv6-vs-sr-mpls/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/srv6-vs-sr-mpls/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/srv6-vs-sr-mpls/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/srv6-vs-sr-mpls/"/>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
@@ -406,10 +482,18 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/usid-compression/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/usid-compression/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/usid/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/usid/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/usid-compression/"/>
          <lastmod>2026-10-21</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/what-is-srv6/</loc>
+         <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/topics/what-is-srv6/"/>
+         <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/que-es-srv6/"/>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/what-is-srv6/"/>
+         <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/what-is-srv6/"/>
          <lastmod>2026-10-20</lastmod>
     </url>
     <url>
