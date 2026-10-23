@@ -46,9 +46,6 @@ SRv6 is in production at some of the world's largest networks. The following is 
 | **Boost Mobile** (United States) | "From traditional MPLS to Cloud-Native SRv6": core backbone in AWS moved from SR-MPLS with 100,000+ GRE tunnels to a single SRv6 domain (Upperside WC Paris 2026). Deep dive: [Cloud-Native Backbone](cloud-native-backbone.md) | [:material-open-in-new:](https://www.segment-routing.net/conferences/Paris26-Boost-Frederico-Luzzi-Jorge-Marquez/) |
 | **Verizon** (United States) | "Simplifying the Network, the Journey to Unified Traffic Engineering with SRv6" — target of SRv6 in all domains with a single encapsulation and single TE policy, extending to host-based encapsulation (Upperside WC Paris 2026) | [:material-open-in-new:](https://www.segment-routing.net/conferences/Paris26-Verizon-Luay-Jalil/) |
 | **Telefonica VIVO** (Brazil) | Multi-vendor SRv6 uSID deployment | [:material-open-in-new:](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) |
-| **Telecom District** (Mexico) | The future of routing built on SRv6 | [:material-open-in-new:](https://en.telecomdistrict.com/blog/el-futuro-del-enrutamiento-construido-sobre-srv6) |
-| **Telecom District** (Mexico) | Driven by SRv6: Inside Telecom District's Network — segment-routing.net feature | [:material-open-in-new:](https://www.segment-routing.net/conferences/2026-09-28-srv6-at-telecom-district-mexico/) |
-| **CTX Reflector** | Cloud-native SRv6 enablement on AWS | [:material-open-in-new:](https://tryctx.com/reflector/) |
 
 ## Public Sector
 

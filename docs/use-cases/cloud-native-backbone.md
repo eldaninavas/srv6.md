@@ -98,7 +98,7 @@ uSID alignment on 32-bit boundaries ensures single-SRH traversal.
 
 ### Dynamic locator routing
 
-vRouters advertise SRv6 locators via BGP, and a cloud-native route reflector (such as [CTX Reflector](https://tryctx.com/reflector/)) programs cloud route tables in real time:
+vRouters advertise SRv6 locators via BGP, and a cloud-native route reflector programs the cloud route tables in real time:
 
 - SRv6 locators are advertised and withdrawn instantly — no static routes or overlay signaling
 - vRouter-to-vRouter communication works across AZs, regions, clouds, and on-prem
@@ -161,4 +161,3 @@ Cloud-optimized:
 1. [Boost Mobile: The Newest Wireless Carrier Launches 5G Network](https://about.dish.com/2024-07-17-Boost-Mobile-the-Newest-Wireless-Carrier-Launches-New-State-of-the-Art-Nationwide-5G-Network,-Plans-and-Branding) - DISH press release on Boost Mobile's cloud-native 5G network launch
 2. [Cisco and DISH Wireless Test 5G Hybrid Cloud Network Slicing](https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2024/m02/cisco-and-dish-wireless-test-5g-hybrid-cloud-network-slicing-solution-speeding-launch-of-new-enterprise-services.html) - Cisco press release on DISH Wireless network slicing proof of concept
 3. [Building the Future of Connectivity: Boost Mobile and Cisco](https://blogs.cisco.com/sp/building-the-future-of-connectivity-boost-mobile-and-ciscos-collaborative-journey) - Cisco blog on the Open RAN deployment
-4. [CTX Reflector](https://tryctx.com/reflector/) - Cloud-native SRv6 locator programming for AWS and multi-cloud environments
