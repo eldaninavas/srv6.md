@@ -8580,7 +8580,7 @@ Day 0: Deploy SRv6 from scratch
        No MPLS, no LDP, no RSVP-TE
 ```
 
-**Who chose this:** Iliad (Italy), Rakuten Mobile (Japan), Telecom District (Mexico) — all started as new operators and deployed SRv6-only networks from day one.
+**Who chose this:** Iliad (Italy), which launched a greenfield, 5G-ready SRv6 network in 2019. See [Real-World Deployments](https://srv6.md/use-cases/deployments/).
 
 **Pros:** Simplest architecture, no interworking complexity
 **Cons:** Only possible for new networks
@@ -11123,7 +11123,7 @@ uSID alignment on 32-bit boundaries ensures single-SRH traversal.
 
 ### Dynamic locator routing
 
-vRouters advertise SRv6 locators via BGP, and a cloud-native route reflector (such as [CTX Reflector](https://tryctx.com/reflector/)) programs cloud route tables in real time:
+vRouters advertise SRv6 locators via BGP, and a cloud-native route reflector programs the cloud route tables in real time:
 
 - SRv6 locators are advertised and withdrawn instantly — no static routes or overlay signaling
 - vRouter-to-vRouter communication works across AZs, regions, clouds, and on-prem
@@ -11186,7 +11186,6 @@ Cloud-optimized:
 1. [Boost Mobile: The Newest Wireless Carrier Launches 5G Network](https://about.dish.com/2024-07-17-Boost-Mobile-the-Newest-Wireless-Carrier-Launches-New-State-of-the-Art-Nationwide-5G-Network,-Plans-and-Branding) - DISH press release on Boost Mobile's cloud-native 5G network launch
 2. [Cisco and DISH Wireless Test 5G Hybrid Cloud Network Slicing](https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2024/m02/cisco-and-dish-wireless-test-5g-hybrid-cloud-network-slicing-solution-speeding-launch-of-new-enterprise-services.html) - Cisco press release on DISH Wireless network slicing proof of concept
 3. [Building the Future of Connectivity: Boost Mobile and Cisco](https://blogs.cisco.com/sp/building-the-future-of-connectivity-boost-mobile-and-ciscos-collaborative-journey) - Cisco blog on the Open RAN deployment
-4. [CTX Reflector](https://tryctx.com/reflector/) - Cloud-native SRv6 locator programming for AWS and multi-cloud environments
 
 
 ---
@@ -11235,9 +11234,6 @@ SRv6 is in production at some of the world's largest networks. The following is 
 | **Boost Mobile** (United States) | "From traditional MPLS to Cloud-Native SRv6": core backbone in AWS moved from SR-MPLS with 100,000+ GRE tunnels to a single SRv6 domain (Upperside WC Paris 2026). Deep dive: [Cloud-Native Backbone](https://srv6.md/use-cases/cloud-native-backbone/) | [](https://www.segment-routing.net/conferences/Paris26-Boost-Frederico-Luzzi-Jorge-Marquez/) |
 | **Verizon** (United States) | "Simplifying the Network, the Journey to Unified Traffic Engineering with SRv6" — target of SRv6 in all domains with a single encapsulation and single TE policy, extending to host-based encapsulation (Upperside WC Paris 2026) | [](https://www.segment-routing.net/conferences/Paris26-Verizon-Luay-Jalil/) |
 | **Telefonica VIVO** (Brazil) | Multi-vendor SRv6 uSID deployment | [](https://blog.lacnic.net/en/unveiling-the-future-of-the-network-implementation-of-srv6-usid-in-telefonica-vivos-infrastructure/) |
-| **Telecom District** (Mexico) | The future of routing built on SRv6 | [](https://en.telecomdistrict.com/blog/el-futuro-del-enrutamiento-construido-sobre-srv6) |
-| **Telecom District** (Mexico) | Driven by SRv6: Inside Telecom District's Network — segment-routing.net feature | [](https://www.segment-routing.net/conferences/2026-09-28-srv6-at-telecom-district-mexico/) |
-| **CTX Reflector** | Cloud-native SRv6 enablement on AWS | [](https://tryctx.com/reflector/) |
 
 ## Public Sector
 
