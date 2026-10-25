@@ -30,6 +30,11 @@ hide:
 
 **SRv6 (Segment Routing sobre IPv6) es una tecnología de red que usa el propio protocolo IPv6 para dirigir y programar el tráfico.** El router de origen escribe en el paquete la ruta que debe seguir, como una lista ordenada de direcciones IPv6 llamadas SID, y la red la ejecuta sin MPLS, LDP ni RSVP-TE.
 
+<figure markdown="span">
+  ![Formato del paquete SRv6: Ethernet, cabecera IPv6 exterior cuyo destino es el SID activo, Segment Routing Header opcional con la lista de segmentos y el paquete del cliente. Un SID SRv6 es una dirección IPv6 de 128 bits con localizador, función y argumento opcional.](../assets/images/srv6-packet-format.png){ width="1200" height="630" loading="lazy" }
+  <figcaption>Formato del paquete SRv6 y estructura del SID</figcaption>
+</figure>
+
 También se escribe **Segment Routing v6**, SR v6 o **IPv6 Segment Routing**. Técnicamente, SRv6 es el plano de datos IPv6 de la arquitectura Segment Routing ([RFC 8402](../rfcs/rfc8402.md)). Codifica las instrucciones de reenvío directamente en la cabecera de los paquetes IPv6. En lugar de depender de etiquetas MPLS y de protocolos de señalización como LDP o RSVP-TE, SRv6 usa direcciones IPv6 nativas de 128 bits como **identificadores de segmento (SID)** para programar las rutas y los comportamientos de la red.
 
 El nodo de origen arma una lista ordenada de segmentos que define la ruta del paquete y lo que debe hacer cada nodo. El segmento activo va en la dirección IPv6 de destino; cuando hay más de uno, el resto viaja en una **Segment Routing Header (SRH)**, y con [uSID](usid.md) muchas veces la ruta completa cabe en la dirección de destino sin necesidad de SRH. Los routers de tránsito simplemente reenvían según la dirección de destino. Esto habilita ingeniería de tráfico, servicios VPN, fast reroute y encadenamiento de funciones de servicio sobre una red IPv6 normal.

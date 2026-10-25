@@ -13,6 +13,11 @@ tags:
 
 **SRv6 (Segment Routing over IPv6, o Segment Routing sobre IPv6)** es una tecnología de red que dirige y programa el tráfico escribiendo dentro del propio paquete IPv6 una lista ordenada de instrucciones, llamadas *segmentos*. Cada instrucción es una dirección IPv6 de 128 bits (un **SID**). Un router ejecuta la instrucción que está en la dirección de destino del paquete y luego toma su lugar la siguiente. Así, las rutas, las VPN y la protección rápida (*fast reroute*) funcionan sin estado por flujo en el núcleo, sin LDP ni RSVP-TE y sin plano de datos MPLS. SRv6 es un estándar del IETF ([RFC 8402](../rfcs/rfc8402.md), [RFC 8754](../rfcs/rfc8754.md), [RFC 8986](../rfcs/rfc8986.md)) construido sobre el reenvío IPv6 de siempre.
 
+<figure markdown="span">
+  ![Formato del paquete SRv6: Ethernet, cabecera IPv6 exterior cuyo destino es el SID activo, Segment Routing Header opcional con la lista de segmentos y el paquete del cliente. Un SID SRv6 es una dirección IPv6 de 128 bits con localizador, función y argumento opcional.](../assets/images/srv6-packet-format.png){ width="1200" height="630" loading="lazy" }
+  <figcaption>Formato del paquete SRv6 y estructura del SID. El segmento activo es siempre la dirección IPv6 de destino.</figcaption>
+</figure>
+
 !!! abstract "En esta guía"
     1. [SRv6 de un vistazo](#srv6-de-un-vistazo)
     2. [Por qué existe SRv6](#por-que-existe-srv6)

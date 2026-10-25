@@ -1,5 +1,6 @@
 ---
 title: What is SRv6? - Segment Routing over IPv6 Explained
+og_image: assets/images/srv6-packet-format.png
 seo_title: "What is SRv6? IPv6 Segment Routing Explained (Guide)"
 description: "SRv6 explained: what Segment Routing over IPv6 is, how SIDs and the SRH work, a hop-by-hop packet walk, uSID, SRv6 vs IPv6 and MPLS, use cases and FAQ."
 tags:
@@ -14,7 +15,12 @@ tags:
 
 # What is SRv6?
 
-**SRv6 (Segment Routing over IPv6)** is a way to steer and program network traffic by writing an ordered list of instructions, called *segments*, into the IPv6 packet itself. Each instruction is a 128-bit IPv6 address (a **SID**). A router acts on the instruction in the packet's destination address, then the next one takes its place. Paths, VPNs and fast reroute therefore work without per-flow state in the core, without LDP or RSVP-TE, and without an MPLS data plane. SRv6 is an IETF standard ([RFC 8402](../rfcs/rfc8402.md), [RFC 8754](../rfcs/rfc8754.md), [RFC 8986](../rfcs/rfc8986.md)) built on ordinary IPv6 forwarding.
+**SRv6 (Segment Routing over IPv6)** is a networking technology that steers and programs traffic by writing an ordered list of instructions, called *segments*, into the IPv6 packet itself. Each instruction is a 128-bit IPv6 address (a **SID**). A router acts on the instruction in the packet's destination address, then the next one takes its place. Paths, VPNs and fast reroute therefore work without per-flow state in the core, without LDP or RSVP-TE, and without an MPLS data plane. SRv6 is an IETF standard ([RFC 8402](../rfcs/rfc8402.md), [RFC 8754](../rfcs/rfc8754.md), [RFC 8986](../rfcs/rfc8986.md)) built on ordinary IPv6 forwarding.
+
+<figure markdown="span">
+  ![SRv6 packet format: Ethernet, outer IPv6 header whose destination is the active SID, optional Segment Routing Header with the segment list, and the customer packet. An SRv6 SID is a 128-bit IPv6 address made of locator, function and optional argument.](../assets/images/srv6-packet-format.png){ width="1200" height="630" loading="lazy" }
+  <figcaption>SRv6 packet format and SID structure. The active segment is always the IPv6 destination address.</figcaption>
+</figure>
 
 !!! abstract "In this guide"
     1. [SRv6 at a glance](#srv6-at-a-glance)

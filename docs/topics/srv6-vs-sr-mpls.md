@@ -1,5 +1,6 @@
 ---
 title: SRv6 vs MPLS
+og_image: assets/images/srv6-vs-mpls-overhead.png
 seo_title: "SRv6 vs MPLS and SR-MPLS: Differences, Overhead and When to Use Each"
 description: "SRv6 vs MPLS compared: classic MPLS (LDP, RSVP-TE), SR-MPLS and SRv6 side by side. Header overhead with real numbers, hardware, inter-domain, security, operations and when to choose each."
 tags:
@@ -35,6 +36,11 @@ tags:
 Segment Routing ([RFC 8402](../rfcs/rfc8402.md)) is one architecture with two data planes. SR-MPLS and SRv6 share the same ideas: source routing, prefix and adjacency segments, TI-LFA, SR Policy and Flex-Algo. What changes is how a segment is encoded in the packet.
 
 ## How the packet changes
+
+<figure markdown="span">
+  ![SRv6 vs MPLS header overhead for a Layer 3 VPN packet: MPLS or SR-MPLS adds two 4-byte labels (8 bytes), SRv6 with uSID adds one 40-byte outer IPv6 header, and SRv6 with a Segment Routing Header adds 40 + 8 + 16 bytes per extra SID.](../assets/images/srv6-vs-mpls-overhead.png){ width="1200" height="630" loading="lazy" }
+  <figcaption>SRv6 vs MPLS: what each encapsulation adds to a VPN packet</figcaption>
+</figure>
 
 A Layer 3 VPN packet crossing a core, with no traffic engineering:
 
