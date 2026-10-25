@@ -1,6 +1,6 @@
 ---
 title: SRH Mechanics & Packet Walk
-seo_title: "SRv6 Segment Routing Header (SRH): Packet Walk"
+seo_title: "SRv6 Header (SRH) Format and Packet Walk, Step by Step"
 description: "Step-by-step SRv6 packet walk through the Segment Routing Header (RFC 8754): SRH format, PSP/USP/USD flavors, TLVs, reduced encapsulation and verification."
 tags:
   - topics
@@ -8,7 +8,9 @@ tags:
   - packet-walk
 ---
 
-# SRH Mechanics & Packet Walk
+# SRv6 Header (SRH) Format and Packet Walk
+
+The **Segment Routing Header (SRH)** is the IPv6 routing extension header (Routing Type 4, [RFC 8754](../rfcs/rfc8754.md)) that carries the SRv6 segment list when a path needs more SIDs than the destination address can hold.
 
 Understanding how the Segment Routing Header (SRH) works at the packet level is essential for troubleshooting and designing SRv6 networks. This page walks through the mechanics step by step.
 

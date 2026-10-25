@@ -28,7 +28,9 @@ hide:
 
 ## :material-head-question: SRv6（IPv6 Segment Routing）の概要
 
-**SRv6（Segment Routing over IPv6）**は、**Segment Routing v6**や**IPv6 Segment Routing**とも呼ばれ、Segment Routingアーキテクチャ（[RFC 8402](../rfcs/rfc8402.md)）のIPv6データプレーンです。転送の命令をIPv6パケットのヘッダーに直接エンコードします。MPLSラベルや、LDP・RSVP-TEのようなシグナリングプロトコルに頼る代わりに、128ビットのネイティブなIPv6アドレスを**セグメント識別子（SID）**として使い、ネットワークの経路と振る舞いをプログラムします。
+**SRv6（Segment Routing over IPv6）とは、IPv6そのものを使ってトラフィックを柔軟かつプログラマブルに制御するネットワーク技術です。** 送信元のルーターが、たどるべき経路をSIDと呼ばれるIPv6アドレスの順序付きリストとしてパケットに書き込み、ネットワークはMPLS、LDP、RSVP-TEなしでその経路をたどります。
+
+SRv6は**Segment Routing v6**や**IPv6 Segment Routing**とも呼ばれ、技術的にはSegment Routingアーキテクチャ（[RFC 8402](../rfcs/rfc8402.md)）のIPv6データプレーンです。転送の命令をIPv6パケットのヘッダーに直接エンコードします。MPLSラベルや、LDP・RSVP-TEのようなシグナリングプロトコルに頼る代わりに、128ビットのネイティブなIPv6アドレスを**セグメント識別子（SID）**として使い、ネットワークの経路と振る舞いをプログラムします。
 
 送信元ノードは、パケットの経路と各ホップでの処理を定義する、順序付きのセグメントリストを作成します。アクティブなセグメントはIPv6の宛先アドレスに入り、セグメントが複数ある場合は残りが**Segment Routing Header（SRH）**で運ばれます。さらに[uSID](usid.md)による圧縮を使えば、経路全体が宛先アドレスだけに収まり、SRHがまったく不要になることも珍しくありません。トランジットルーターは宛先アドレスに基づいて転送するだけです。これにより、トラフィックエンジニアリング、VPNサービス、高速迂回（FRR）、サービスファンクションチェイニングを、通常のIPv6ネットワーク上で実現できます。
 
@@ -111,6 +113,24 @@ OpenAI、Microsoft、OracleがMRCとスタティックSRv6 uSIDでGPUファブ�
 SRv6はどこまで普及したのか。データレポート「State of SRv6 2026」では、SRv6関連のRFC 23本、IETFで進行中のドラフト65本、SRv6の導入を公表している19の組織、11の実装におけるuSID対応状況をまとめました。すべての数値に出典を付けており、グラフは自由に再利用できます。レポートは英語です。
 
 [:material-arrow-right: State of SRv6 2026を読む](../reports/state-of-srv6-2026.md){ .md-button .md-button--primary }
+
+## よくある質問
+
+### SRv6とは何ですか？
+
+SRv6（Segment Routing over IPv6）は、IPv6を使ってトラフィックを制御・プログラムするネットワーク技術です。送信元が経路をSIDと呼ばれるIPv6アドレスのリストとしてパケットに書き込み、ネットワークはMPLS、LDP、RSVP-TEなしでそれに従います。詳しくは[SRv6とは](what-is-srv6.md)をご覧ください。
+
+### SRv6はどのように動作しますか？
+
+送信元ノードはアクティブなセグメントをIPv6の宛先アドレスに入れ、セグメントが複数ある場合は残りをSegment Routing Header（SRH）に入れます。自分のSIDを認識したノードは、次のセグメントへ進む、特定のリンクから送出する、VPNに引き渡すといった命令を実行し、それ以外のルーターは通常のIPv6パケットとして転送します。
+
+### SRv6とMPLSの違いは何ですか？
+
+MPLSはラベルで転送し、ラベルの配布にLDP、RSVP-TE、またはSR-MPLSが必要です。SRv6はIPv6アドレスで転送するためラベル用のプロトコルが不要で、データセンター、クラウド、ホストまでゲートウェイなしで届きます。その代わりヘッダーは大きく、uSIDで約40バイト、MPLSのVPNは約8バイトです。詳しくは[SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md)をご覧ください。
+
+### SRv6は誰が使っていますか？
+
+ソフトバンク、楽天モバイル、Reliance Jio、China Mobileなどの通信事業者や、Microsoft、Meta、Alibaba Cloud、そしてAIの学習ネットワークで使うOpenAIなどです。出典付きの一覧は[Real-World Deployments](../use-cases/deployments.md)にあります。
 
 ## :material-compass: その他のコンテンツ（英語）
 

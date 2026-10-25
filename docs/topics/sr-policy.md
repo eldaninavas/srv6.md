@@ -1,7 +1,7 @@
 ---
 title: SR Policy
-seo_title: "SRv6 SR Policy: ODN, Color Steering and Binding SID"
-description: SRv6 traffic engineering with SR Policies — ODN, PCE, Binding SID, color steering, and dynamic path computation
+seo_title: "SR Policy Explained (RFC 9256): Color, ODN and Binding SID"
+description: "SR Policy explained: color and endpoint, candidate paths, explicit and dynamic segment lists, on-demand next hop (ODN), PCE, binding SID and automated steering with SRv6."
 tags:
   - topics
   - sr-policy

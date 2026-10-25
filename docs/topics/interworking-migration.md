@@ -10,7 +10,7 @@ tags:
   - brownfield
 ---
 
-# Interworking & Migration
+# MPLS to SRv6 Migration and Interworking
 
 Most networks don't start from zero. Migrating from MPLS or SR-MPLS to SRv6 requires a clear strategy for **coexistence** during the transition. This page covers the common migration paths and interworking mechanisms.
 

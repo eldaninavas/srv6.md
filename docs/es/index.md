@@ -28,7 +28,9 @@ hide:
 
 ## :material-head-question: SRv6 (IPv6 Segment Routing) en pocas palabras
 
-**SRv6 (Segment Routing over IPv6, o Segment Routing sobre IPv6)**, también escrito **Segment Routing v6**, SR v6 o **IPv6 Segment Routing**, es el plano de datos IPv6 de la arquitectura Segment Routing ([RFC 8402](../rfcs/rfc8402.md)). Codifica las instrucciones de reenvío directamente en la cabecera de los paquetes IPv6. En lugar de depender de etiquetas MPLS y de protocolos de señalización como LDP o RSVP-TE, SRv6 usa direcciones IPv6 nativas de 128 bits como **identificadores de segmento (SID)** para programar las rutas y los comportamientos de la red.
+**SRv6 (Segment Routing sobre IPv6) es una tecnología de red que usa el propio protocolo IPv6 para dirigir y programar el tráfico.** El router de origen escribe en el paquete la ruta que debe seguir, como una lista ordenada de direcciones IPv6 llamadas SID, y la red la ejecuta sin MPLS, LDP ni RSVP-TE.
+
+También se escribe **Segment Routing v6**, SR v6 o **IPv6 Segment Routing**. Técnicamente, SRv6 es el plano de datos IPv6 de la arquitectura Segment Routing ([RFC 8402](../rfcs/rfc8402.md)). Codifica las instrucciones de reenvío directamente en la cabecera de los paquetes IPv6. En lugar de depender de etiquetas MPLS y de protocolos de señalización como LDP o RSVP-TE, SRv6 usa direcciones IPv6 nativas de 128 bits como **identificadores de segmento (SID)** para programar las rutas y los comportamientos de la red.
 
 El nodo de origen arma una lista ordenada de segmentos que define la ruta del paquete y lo que debe hacer cada nodo. El segmento activo va en la dirección IPv6 de destino; cuando hay más de uno, el resto viaja en una **Segment Routing Header (SRH)**, y con [uSID](usid.md) muchas veces la ruta completa cabe en la dirección de destino sin necesidad de SRH. Los routers de tránsito simplemente reenvían según la dirección de destino. Esto habilita ingeniería de tráfico, servicios VPN, fast reroute y encadenamiento de funciones de servicio sobre una red IPv6 normal.
 
@@ -111,6 +113,24 @@ Cómo OpenAI, Microsoft y Oracle usan MRC sobre SRv6 uSID estático en sus fabri
 ¿Cuánto ha avanzado SRv6? Nuestro informe de datos cuenta 23 RFC de SRv6, 65 borradores activos en el IETF, 19 organizaciones con despliegues públicos y el soporte de uSID en 11 implementaciones. Cada cifra tiene su fuente y las gráficas se pueden reutilizar. El informe está en inglés.
 
 [:material-arrow-right: Leer el informe State of SRv6 2026](../reports/state-of-srv6-2026.md){ .md-button .md-button--primary }
+
+## Preguntas frecuentes
+
+### ¿Qué es SRv6?
+
+SRv6 (Segment Routing sobre IPv6) es una tecnología de red que usa IPv6 para dirigir y programar el tráfico. El origen escribe la ruta en el paquete como una lista de direcciones IPv6 llamadas SID, y la red la sigue sin MPLS, LDP ni RSVP-TE. La guía completa está en [¿Qué es SRv6?](que-es-srv6.md).
+
+### ¿Cómo funciona SRv6?
+
+El nodo de origen pone el segmento activo en la dirección IPv6 de destino y, si hacen falta más, el resto en la Segment Routing Header (SRH). Cada nodo que reconoce su SID ejecuta la instrucción, por ejemplo avanzar al siguiente segmento, salir por un enlace concreto o entregar el paquete en una VPN. Los demás routers lo reenvían como cualquier paquete IPv6.
+
+### ¿Cuál es la diferencia entre SRv6 y MPLS?
+
+MPLS reenvía con etiquetas y necesita LDP, RSVP-TE o SR-MPLS para distribuirlas. SRv6 reenvía con direcciones IPv6 y no necesita protocolos de etiquetas, así que llega a centros de datos, nubes y hosts sin pasarelas. A cambio, su cabecera es mayor: unos 40 bytes con uSID frente a unos 8 de una VPN MPLS. Ver [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md).
+
+### ¿Quién usa SRv6?
+
+Operadores como SoftBank, Rakuten Mobile, Reliance Jio y China Mobile, y empresas como Microsoft, Meta, Alibaba Cloud y OpenAI, que lo usa en sus redes de entrenamiento de IA. La lista completa, con fuentes, está en [Real-World Deployments](../use-cases/deployments.md).
 
 ## :material-compass: El resto del sitio (en inglés)
 

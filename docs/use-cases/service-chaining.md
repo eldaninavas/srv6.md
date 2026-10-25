@@ -1,6 +1,6 @@
 ---
 title: Service Chaining
-seo_title: "SRv6 Service Function Chaining (SFC) Explained"
+seo_title: "SRv6 Service Function Chaining (SFC) and Dynamic Service Chaining"
 description: "Service function chaining with SRv6: why traditional SFC falls short, packet walk through a service chain, SRv6 proxy behaviors and dynamic chain changes."
 tags:
   - use-cases
@@ -9,7 +9,7 @@ tags:
   - sfc
 ---
 
-# Service Chaining with SRv6
+# Service Function Chaining (SFC) with SRv6
 
 **Service Function Chaining (SFC)** is the ability to steer traffic through an ordered set of network functions — firewalls, IDS/IPS, load balancers, DPI engines, NAT, WAN optimizers, etc. SRv6 provides one of the most elegant solutions for SFC by encoding the entire service chain as a **segment list**.
 
@@ -141,7 +141,7 @@ sequenceDiagram
 
 This is critical because it means **any existing network function** (physical or virtual) can be inserted into an SRv6 service chain without modification.
 
-## Dynamic Chain Modification
+## Dynamic Service Chaining
 
 One of SRv6's most powerful advantages for SFC: changing the chain requires **only updating the segment list at the ingress**. No reconfiguration of intermediate nodes or service functions.
 

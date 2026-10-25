@@ -220,7 +220,7 @@ nav:
       - SID Structure: topics/sid-structure.md
       - Network Programming: topics/network-programming.md
       - SRH & Packet Walk: topics/srh-packet-walk.md
-      - SRv6 vs SR-MPLS: topics/srv6-vs-sr-mpls.md
+      - SRv6 vs MPLS: topics/srv6-vs-sr-mpls.md
       - Glossary: topics/glossary.md
     - Architecture:
       - uSID Compression: topics/usid-compression.md

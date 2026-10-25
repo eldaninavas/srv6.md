@@ -1,13 +1,13 @@
 ---
 title: RFCs & Standards
-seo_title: "SRv6 RFCs and IETF Standards: Complete Reference"
+seo_title: "Segment Routing and SRv6 RFCs: Complete IETF Reference"
 description: "Every SRv6 RFC explained: SRH, network programming, uSID compression, BGP services, IGP extensions, SR Policy, OAM and multicast, with plain-language summaries."
 tags:
   - rfcs
   - standards
 ---
 
-# :material-file-document: RFCs & Standards
+# :material-file-document: Segment Routing and SRv6 RFCs
 
 Comprehensive reference for all SRv6-related IETF RFCs, with summaries, behavior tables, common pitfalls, and links to related drafts.
 

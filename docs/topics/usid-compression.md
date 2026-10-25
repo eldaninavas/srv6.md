@@ -1,6 +1,6 @@
 ---
 title: uSID / SRv6 Compression
-seo_title: "SRv6 uSID (Micro-SID) Compression Explained"
+seo_title: "uSID (SRv6 Micro-SID) Explained: Compression and RFC 9800"
 description: "How SRv6 micro-SIDs (uSID, RFC 9800) shrink header overhead: packing, overhead comparison with classic SRv6, uSID vs G-SRv6, configuration and adoption."
 tags:
   - topics
@@ -9,7 +9,9 @@ tags:
   - rfc9800
 ---
 
-# uSID / SRv6 Compression
+# SRv6 uSID (Micro-SID) Compression
+
+**uSID (micro-SID) is the compressed form of an SRv6 SID**, standardized as the NEXT-C-SID flavor in [RFC 9800](../rfcs/rfc9800.md). Each uSID is a short instruction, usually 16 bits, and up to six of them fit in one 128-bit IPv6 address, so most SRv6 paths need no extension header at all.
 
 One of the early criticisms of SRv6 was **overhead** — each SID is 128 bits (16 bytes), and a segment list of 5 SIDs adds 80 bytes to every packet. **Micro-SID (uSID)** solves this by packing multiple segment instructions into a single 128-bit SID.
 
