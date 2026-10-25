@@ -104,6 +104,9 @@ Join the community! Learn how to contribute, report issues, or suggest new conte
 
 **SRv6 (Segment Routing over IPv6) is a networking technology that uses IPv6 itself to steer and program traffic.** The source router writes the path into the packet as an ordered list of IPv6 addresses called SIDs, and the network follows it without MPLS, LDP or RSVP-TE.
 
+  ![SRv6 packet format: Ethernet, outer IPv6 header whose destination is the active SID, optional Segment Routing Header with the segment list, and the customer packet. An SRv6 SID is a 128-bit IPv6 address made of locator, function and optional argument.](assets/images/srv6-packet-format.png)
+  SRv6 packet format and SID structure
+
 It is also written **Segment Routing v6**, SR v6 or **IPv6 Segment Routing**. Technically, SRv6 is the IPv6 data plane of the Segment Routing architecture ([RFC 8402](https://srv6.md/rfcs/rfc8402/)). It encodes forwarding instructions directly in IPv6 packet headers. Instead of relying on MPLS labels and signaling protocols like LDP or RSVP-TE, SRv6 uses native 128-bit IPv6 addresses as **Segment Identifiers (SIDs)** to program network paths and behaviors.
 
 The source node builds an ordered list of segments that defines the packet's path and the processing at each hop. The active segment sits in the IPv6 destination address; when there is more than one, the rest travel in a **Segment Routing Header (SRH)** — and with [uSID compression](https://srv6.md/topics/usid-compression/) a whole path often fits in the destination address with no SRH at all. Transit routers simply forward on the destination address. This enables traffic engineering, VPN services, fast reroute and service function chaining on a plain IPv6 network.
@@ -2299,7 +2302,10 @@ Summary: SRv6 explained: what Segment Routing over IPv6 is, how SIDs and the SRH
 
 # What is SRv6?
 
-**SRv6 (Segment Routing over IPv6)** is a way to steer and program network traffic by writing an ordered list of instructions, called *segments*, into the IPv6 packet itself. Each instruction is a 128-bit IPv6 address (a **SID**). A router acts on the instruction in the packet's destination address, then the next one takes its place. Paths, VPNs and fast reroute therefore work without per-flow state in the core, without LDP or RSVP-TE, and without an MPLS data plane. SRv6 is an IETF standard ([RFC 8402](https://srv6.md/rfcs/rfc8402/), [RFC 8754](https://srv6.md/rfcs/rfc8754/), [RFC 8986](https://srv6.md/rfcs/rfc8986/)) built on ordinary IPv6 forwarding.
+**SRv6 (Segment Routing over IPv6)** is a networking technology that steers and programs traffic by writing an ordered list of instructions, called *segments*, into the IPv6 packet itself. Each instruction is a 128-bit IPv6 address (a **SID**). A router acts on the instruction in the packet's destination address, then the next one takes its place. Paths, VPNs and fast reroute therefore work without per-flow state in the core, without LDP or RSVP-TE, and without an MPLS data plane. SRv6 is an IETF standard ([RFC 8402](https://srv6.md/rfcs/rfc8402/), [RFC 8754](https://srv6.md/rfcs/rfc8754/), [RFC 8986](https://srv6.md/rfcs/rfc8986/)) built on ordinary IPv6 forwarding.
+
+  ![SRv6 packet format: Ethernet, outer IPv6 header whose destination is the active SID, optional Segment Routing Header with the segment list, and the customer packet. An SRv6 SID is a 128-bit IPv6 address made of locator, function and optional argument.](../assets/images/srv6-packet-format.png)
+  SRv6 packet format and SID structure. The active segment is always the IPv6 destination address.
 
 !!! abstract "In this guide"
     1. [SRv6 at a glance](#srv6-at-a-glance)
@@ -3305,6 +3311,9 @@ Summary: SRv6 vs MPLS compared: classic MPLS (LDP, RSVP-TE), SR-MPLS and SRv6 si
 Segment Routing ([RFC 8402](https://srv6.md/rfcs/rfc8402/)) is one architecture with two data planes. SR-MPLS and SRv6 share the same ideas: source routing, prefix and adjacency segments, TI-LFA, SR Policy and Flex-Algo. What changes is how a segment is encoded in the packet.
 
 ## How the packet changes
+
+  ![SRv6 vs MPLS header overhead for a Layer 3 VPN packet: MPLS or SR-MPLS adds two 4-byte labels (8 bytes), SRv6 with uSID adds one 40-byte outer IPv6 header, and SRv6 with a Segment Routing Header adds 40 + 8 + 16 bytes per extra SID.](../assets/images/srv6-vs-mpls-overhead.png)
+  SRv6 vs MPLS: what each encapsulation adds to a VPN packet
 
 A Layer 3 VPN packet crossing a core, with no traffic engineering:
 

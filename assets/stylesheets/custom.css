@@ -1592,3 +1592,9 @@ html:lang(ja) .md-typeset {
     display: block;
   }
 }
+
+/* Explanatory PNG figures (white cards): round them like the diagram frames */
+.md-typeset figure img[src*="assets/images/srv6-"] {
+  border-radius: 12px;
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
