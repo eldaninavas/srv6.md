@@ -152,7 +152,7 @@ Cloud-optimized:
 - :material-arrow-right: [VPN Services](vpn-services.md) - L3VPN and L2VPN over SRv6
 - :material-arrow-right: [uSID / SRv6 Compression](../topics/usid-compression.md) - Micro-SID for efficient encoding
 - :material-arrow-right: [Flex-Algorithm](../topics/flex-algorithm.md) - Constraint-based path computation
-- :material-arrow-right: [Interworking & Migration](../topics/interworking-migration.md) - SR-MPLS to SRv6 migration strategies
+- :material-arrow-right: [MPLS to SRv6 Migration](../topics/interworking-migration.md) - SR-MPLS to SRv6 migration strategies
 - :material-arrow-right: [Real-World Deployments](deployments.md) - Other operator deployments
 
 ## References

@@ -73,7 +73,7 @@ graph LR
 
 At ASBR1, `BSID-B` is resolved to the internal segment list of AS 65002 — PE1 never knows AS 65002's topology.
 
-For BSID mechanics, see [SR Policy](sr-policy.md). For BSID in migration scenarios, see [Interworking & Migration](interworking-migration.md).
+For BSID mechanics, see [SR Policy](sr-policy.md). For BSID in migration scenarios, see [MPLS to SRv6 Migration](interworking-migration.md).
 
 ### Pattern 4: BGP-LS + SDN Controller
 
@@ -260,7 +260,7 @@ For the full SRv6 security framework, see [Security](security.md).
 ## Further Reading
 
 - :material-arrow-right: [SR Policy](sr-policy.md) — Binding SID, color steering, PCE integration
-- :material-arrow-right: [Interworking & Migration](interworking-migration.md) — BSID gateway for SR-MPLS/SRv6 migration
+- :material-arrow-right: [MPLS to SRv6 Migration](interworking-migration.md) — BSID gateway for SR-MPLS/SRv6 migration
 - :material-arrow-right: [Security](security.md) — SRv6 security best practices including boundary filtering
 - :material-arrow-right: [Flex-Algorithm](flex-algorithm.md) — Per-domain Flex-Algo with inter-domain color steering
 - :material-file-document: [RFC 9514](../rfcs/rfc9514.md) — BGP-LS Extensions for SRv6

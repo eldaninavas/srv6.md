@@ -252,7 +252,7 @@ At AS2 border:  BSID_AS2 expands to [P5::1, PE-Remote::1]
     ```
 
 !!! tip "BSID and inter-domain TE"
-    For a deep dive into Binding SID for multi-domain traffic engineering, see [Inter-Domain SRv6](inter-domain.md). For BSID in the context of SR-MPLS/SRv6 migration, see [Interworking & Migration](interworking-migration.md).
+    For a deep dive into Binding SID for multi-domain traffic engineering, see [Inter-Domain SRv6](inter-domain.md). For BSID in the context of SR-MPLS/SRv6 migration, see [MPLS to SRv6 Migration](interworking-migration.md).
 
 ## Color Steering
 
@@ -353,7 +353,7 @@ Dynamic policies can be reoptimized when:
 - :material-arrow-right: [Flex-Algorithm](flex-algorithm.md) — Constraint-based topology slicing
 - :material-arrow-right: [TI-LFA](ti-lfa.md) — Fast reroute for SR Policies
 - :material-arrow-right: [Inter-Domain SRv6](inter-domain.md) — Multi-domain TE with BSID
-- :material-arrow-right: [Interworking & Migration](interworking-migration.md) — BSID in migration scenarios
+- :material-arrow-right: [MPLS to SRv6 Migration](interworking-migration.md) — BSID in migration scenarios
 - :material-file-document: [RFC 9256](../rfcs/rfc9256.md) — SR Policy Architecture
 - :material-file-document: [RFC 9603](../rfcs/rfc9603.md) — PCEP extensions for SRv6 paths
 - :material-file-document: [RFC 9857](../rfcs/rfc9857.md) — Reporting SR Policy state via BGP-LS

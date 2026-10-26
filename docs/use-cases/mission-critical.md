@@ -91,7 +91,7 @@ The CVD codifies several rules that generalize beyond defense networks:
 
 ## Validated Case Study
 
-The CVD closes with "VeriVault", a fictional defense contractor migrating from an MPLS-TE + SD-WAN patchwork to the SRv6 fabric using three standardized site profiles (compact tactical field sites, dual-router processing centers, and redundant DC hubs with a dedicated route reflector). Migration is a phased parallel build: stand up the SRv6 fabric alongside the legacy WAN, cut over the DC hubs, bridge legacy and new domains via an NNI at the aggregation layer, then migrate spokes site by site. See [Interworking & Migration](../topics/interworking-migration.md) for the general patterns.
+The CVD closes with "VeriVault", a fictional defense contractor migrating from an MPLS-TE + SD-WAN patchwork to the SRv6 fabric using three standardized site profiles (compact tactical field sites, dual-router processing centers, and redundant DC hubs with a dedicated route reflector). Migration is a phased parallel build: stand up the SRv6 fabric alongside the legacy WAN, cut over the DC hubs, bridge legacy and new domains via an NNI at the aggregation layer, then migrate spokes site by site. See [MPLS to SRv6 Migration](../topics/interworking-migration.md) for the general patterns.
 
 ## Further Reading
 

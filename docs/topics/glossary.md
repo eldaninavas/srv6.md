@@ -778,7 +778,7 @@ Defined in: [draft-filsfils-spring-srv6-net-pgm-insertion](https://datatracker.i
 
 **SR-MPLS** is Segment Routing on the MPLS data plane: each segment is an MPLS label and the segment list is a label stack.
 
-Defined in: [RFC 8402 §2](https://www.rfc-editor.org/rfc/rfc8402#section-2), [RFC 8660](https://www.rfc-editor.org/rfc/rfc8660) · Learn more: [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md)
+Defined in: [RFC 8402 §2](https://www.rfc-editor.org/rfc/rfc8402#section-2), [RFC 8660](https://www.rfc-editor.org/rfc/rfc8660) · Learn more: [SRv6 vs MPLS](srv6-vs-sr-mpls.md)
 { .gl-ref }
 
 ### SR P2MP Policy (Tree-SID)<span id="tree-sid"></span> {#sr-p2mp-policy}

@@ -42,7 +42,7 @@ A typical service provider or large enterprise backbone runs IS-IS or OSPF, plus
 | Reach into DC, cloud and hosts | Needs gateways or VXLAN stitching | Any IPv6 node can be an endpoint |
 | Services | L3VPN, EVPN over MPLS | Same services, signalled by BGP with SRv6 SIDs |
 
-The operational gain comes from removing protocols, not from adding features. The [SRv6 vs SR-MPLS](../topics/srv6-vs-sr-mpls.md) comparison covers the trade-offs in detail, including when SR-MPLS is still the right call.
+The operational gain comes from removing protocols, not from adding features. The [SRv6 vs MPLS](../topics/srv6-vs-sr-mpls.md) comparison covers the trade-offs in detail, including when SR-MPLS is still the right call.
 
 ### Business drivers seen in public deployments
 

@@ -62,7 +62,7 @@ The SR OS 26.7 Segment Routing and PCE User Guide's SRv6 chapter applies to the 
 - :material-arrow-right: [Implementations Overview](index.md)
 - :material-arrow-right: [SRv6 Support Matrix](support-matrix.md) - SR OS feature by feature next to IOS-XR, Junos, EOS, VRP and open-source platforms
 - :material-arrow-right: [uSID Compression](../topics/usid-compression.md) - How uSID containers and shift-and-forward work
-- :material-arrow-right: [Interworking & Migration](../topics/interworking-migration.md) - MPLS/SRv6 gateway designs
+- :material-arrow-right: [MPLS to SRv6 Migration](../topics/interworking-migration.md) - MPLS/SRv6 gateway designs
 - :material-arrow-right: [EVPN Multihoming](../topics/evpn-multihoming.md) - All-active EVPN over SRv6
 
 ## References

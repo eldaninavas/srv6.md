@@ -674,7 +674,7 @@ Migrate one region at a time:
 
 ## Further Reading
 
-- :material-arrow-right: [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md) - Detailed comparison
+- :material-arrow-right: [SRv6 vs MPLS](srv6-vs-sr-mpls.md) - Detailed comparison
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - How uSID reduces overhead
 - :material-arrow-right: [Performance & Scaling](performance-scaling.md) - MTU impact analysis
 - :material-arrow-right: [Real-World Deployments](../use-cases/deployments.md) - Migration stories

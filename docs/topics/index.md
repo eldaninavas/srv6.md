@@ -23,7 +23,7 @@ The core concepts you need before diving deeper.
 | [SID Structure](sid-structure.md) | Understanding the 128-bit SRv6 SID |
 | [Network Programming](network-programming.md) | SRv6 behaviors and functions |
 | [SRH Mechanics & Packet Walk](srh-packet-walk.md) | Step-by-step packet processing through the SRH |
-| [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md) | Comparing the two SR approaches |
+| [SRv6 vs MPLS](srv6-vs-sr-mpls.md) | Comparing the two SR approaches |
 | [Glossary](glossary.md) | Every SRv6 term defined, with the RFC section behind it |
 
 ## Architecture
@@ -61,7 +61,7 @@ Running, securing, and monitoring SRv6 in production.
 | [Telemetry & Monitoring](telemetry.md) | IPFIX, YANG models, streaming telemetry, alerting |
 | [Performance & Scaling](performance-scaling.md) | MTU impact, encapsulation overhead, hardware forwarding, FIB scale |
 | [Inter-Domain SRv6](inter-domain.md) | Multi-domain design patterns, BSID stitching, BGP-LS controllers |
-| [Interworking & Migration](interworking-migration.md) | SR-MPLS ↔ SRv6 gateways, brownfield coexistence |
+| [MPLS to SRv6 Migration](interworking-migration.md) | SR-MPLS ↔ SRv6 gateways, brownfield coexistence |
 
 ## Platforms
 

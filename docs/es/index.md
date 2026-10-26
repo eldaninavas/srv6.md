@@ -42,6 +42,8 @@ El nodo de origen arma una lista ordenada de segmentos que define la ruta del pa
 - **Escalabilidad**: el espacio de SID de 128 bits soporta redes de gran escala
 - **Un solo plano de datos**: un único stack para transporte, VPN e ingeniería de tráfico
 
+Las diferencias con MPLS, con números reales de overhead, están en [SRv6 vs MPLS](srv6-vs-sr-mpls.md).
+
 ## :material-book-open-variant: Guías en español
 
 <div class="srv6-grid" markdown>

@@ -147,9 +147,9 @@ SRv6 convergence is comparable to SR-MPLS:
 ## Further Reading
 
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md) - How uSID reduces overhead
-- :material-arrow-right: [Interworking & Migration](interworking-migration.md) - MTU during migration
+- :material-arrow-right: [MPLS to SRv6 Migration](interworking-migration.md) - MTU during migration
 - :material-arrow-right: [TI-LFA](ti-lfa.md) - Fast convergence with SRv6
-- :material-arrow-right: [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md) - Overhead comparison
+- :material-arrow-right: [SRv6 vs MPLS](srv6-vs-sr-mpls.md) - Overhead comparison
 
 ## References
 

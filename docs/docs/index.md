@@ -27,7 +27,7 @@ Vendor-neutral documentation, written for engineers, with RFC references on ever
 | Compression | [uSID](../topics/usid-compression.md) | [SID decoder](../tools/sid-decoder.md), [RFC 9800](../rfcs/rfc9800.md) |
 | Control plane | [Flex-Algorithm](../topics/flex-algorithm.md) | [TI-LFA](../topics/ti-lfa.md), [SR Policy](../topics/sr-policy.md), [BGP overlay services](../topics/bgp-overlay-services.md) |
 | Operations | [OAM and troubleshooting](../topics/oam-troubleshooting.md) | [SRPM](../topics/srpm.md), [telemetry](../topics/telemetry.md), [security](../topics/security.md) |
-| Migration | [Migration from MPLS](../topics/interworking-migration.md) | [SRv6 vs SR-MPLS](../topics/srv6-vs-sr-mpls.md) |
+| Migration | [Migration from MPLS](../topics/interworking-migration.md) | [SRv6 vs MPLS](../topics/srv6-vs-sr-mpls.md) |
 | Vendors | [Support matrix](../implementations/support-matrix.md) | [Implementations](../implementations/index.md) |
 | Hands-on | [Labs](../labs/index.md) | [Containerlab](../labs/containerlab.md), [netlab](../labs/netlab.md), [packet captures](../labs/pcaps.md) |
 | AI networking | [SRv6 for AI](../ai/index.md) | [MRC and SRv6](../ai/mrc.md), [AI fabric design](../ai/ai-fabric-design.md) |

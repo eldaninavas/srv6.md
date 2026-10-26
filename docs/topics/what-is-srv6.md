@@ -313,7 +313,7 @@ SRv6 is **not** a new IP version and not an alternative to IPv6. It is a way of 
 | **Encapsulation overhead** | Smallest | Smallest | 40-byte IPv6 header minimum; per-SID cost removed by uSID |
 | **Maturity** | Decades | Widely deployed | In production since 2019, growing fast |
 
-SRv6 trades a larger fixed header for one data plane everywhere and no LDP or RSVP-TE. The full comparison, with guidance on when to choose each, is in [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md). Migration paths are in [Interworking & Migration](interworking-migration.md).
+SRv6 trades a larger fixed header for one data plane everywhere and no LDP or RSVP-TE. The full comparison, with guidance on when to choose each, is in [SRv6 vs MPLS and SR-MPLS](srv6-vs-sr-mpls.md). Migration paths are in [MPLS to SRv6 migration](interworking-migration.md).
 
 ## What SRv6 is used for
 
@@ -426,8 +426,8 @@ uSID (micro-SID) is SRv6 compression, standardized as the NEXT-C-SID flavor in R
 - :material-arrow-right: [SRH Mechanics & Packet Walk](srh-packet-walk.md): every SRH field and the PSP/USP/USD flavors
 - :material-arrow-right: [Network Programming](network-programming.md): all SRv6 behaviors (End, End.X, End.DT4, End.DX6…)
 - :material-arrow-right: [uSID / SRv6 Compression](usid-compression.md): micro-SIDs and RFC 9800
-- :material-arrow-right: [SRv6 vs SR-MPLS](srv6-vs-sr-mpls.md): when to choose each
-- :material-arrow-right: [Interworking & Migration](interworking-migration.md): moving from MPLS to SRv6
+- :material-arrow-right: [SRv6 vs MPLS](srv6-vs-sr-mpls.md): when to choose each
+- :material-arrow-right: [MPLS to SRv6 Migration](interworking-migration.md): moving from MPLS to SRv6
 - :material-arrow-right: [Security](security.md): filtering, HMAC and attack vectors
 - :material-arrow-right: [Implementations](../implementations/index.md): configuration guides for Cisco, Juniper, Arista, Nokia, FRR and Linux
 - :material-book-alphabet: [SRv6 Glossary](glossary.md): every SRv6 term defined, with its RFC section
