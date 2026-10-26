@@ -157,12 +157,7 @@ Join the community! Learn how to contribute, report issues, or suggest new conte
 
 ## :material-head-question: SRv6 (IPv6 Segment Routing) in a Nutshell
 
-**SRv6 (Segment Routing over IPv6) is a networking technology that uses IPv6 itself to steer and program traffic.** The source router writes the path into the packet as an ordered list of IPv6 addresses called SIDs, and the network follows it without MPLS, LDP or RSVP-TE.
-
-<figure markdown="span">
-  ![SRv6 packet format: Ethernet, outer IPv6 header whose destination is the active SID, optional Segment Routing Header with the segment list, and the customer packet. An SRv6 SID is a 128-bit IPv6 address made of locator, function and optional argument.](assets/images/srv6-packet-format.png){ width="1200" height="630" loading="lazy" }
-  <figcaption>SRv6 packet format and SID structure</figcaption>
-</figure>
+**SRv6 (Segment Routing over IPv6) is a networking technology that uses IPv6 itself to steer and program traffic.** The source router writes the path into the packet as an ordered list of IPv6 addresses called SIDs, and the network follows it without MPLS, LDP or RSVP-TE. The complete guide is in [What is SRv6?](topics/what-is-srv6.md).
 
 It is also written **Segment Routing v6**, SR v6 or **IPv6 Segment Routing**. Technically, SRv6 is the IPv6 data plane of the Segment Routing architecture ([RFC 8402](rfcs/rfc8402.md)). It encodes forwarding instructions directly in IPv6 packet headers. Instead of relying on MPLS labels and signaling protocols like LDP or RSVP-TE, SRv6 uses native 128-bit IPv6 addresses as **Segment Identifiers (SIDs)** to program network paths and behaviors.
 
