@@ -78,7 +78,7 @@
     </url>
     <url>
          <loc>https://srv6.md/docs/</loc>
-         <lastmod>2026-10-22</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/es/</loc>
@@ -170,7 +170,7 @@
     </url>
     <url>
          <loc>https://srv6.md/implementations/nokia-sros/</loc>
-         <lastmod>2026-10-20</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/implementations/sonic/</loc>
@@ -374,7 +374,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/</loc>
-         <lastmod>2026-10-22</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/bgp-overlay-services/</loc>
@@ -394,7 +394,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/glossary/</loc>
-         <lastmod>2026-10-20</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/host-based-srv6/</loc>
@@ -402,11 +402,11 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/inter-domain/</loc>
-         <lastmod>2026-10-20</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/interworking-migration/</loc>
-         <lastmod>2026-10-25</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/micro-loop-avoidance/</loc>
@@ -426,11 +426,11 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/performance-scaling/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/qos/</loc>
-         <lastmod>2026-10-18</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/security/</loc>
@@ -450,7 +450,7 @@
     </url>
     <url>
          <loc>https://srv6.md/topics/sr-policy/</loc>
-         <lastmod>2026-10-25</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/srh-packet-walk/</loc>
@@ -494,7 +494,7 @@
          <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/que-es-srv6/"/>
          <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/what-is-srv6/"/>
          <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/what-is-srv6/"/>
-         <lastmod>2026-10-25</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/use-cases/</loc>
@@ -510,7 +510,7 @@
     </url>
     <url>
          <loc>https://srv6.md/use-cases/cloud-native-backbone/</loc>
-         <lastmod>2026-10-22</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/use-cases/deployments/</loc>
@@ -518,7 +518,7 @@
     </url>
     <url>
          <loc>https://srv6.md/use-cases/mission-critical/</loc>
-         <lastmod>2026-10-20</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/use-cases/network-slicing/</loc>
@@ -550,6 +550,6 @@
     </url>
     <url>
          <loc>https://srv6.md/white-papers/srv6-white-paper-2026/</loc>
-         <lastmod>2026-10-22</lastmod>
+         <lastmod>2026-10-26</lastmod>
     </url>
 </urlset>

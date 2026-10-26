@@ -116,6 +116,8 @@ The source node builds an ordered list of segments that defines the packet's pat
 - **Scalability** — 128-bit SID space supports massive networks and micro-segmentation
 - **Unified data plane** — Single protocol stack for transport, VPN, and TE services
 
+The trade-offs, with real header overhead numbers, are in [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/).
+
 [What is SRv6? The full explanation](https://srv6.md/topics/what-is-srv6/)    [See how SRv6 works](https://srv6.md/topics/network-programming/)    [SRv6 glossary](https://srv6.md/topics/glossary/)
 
 !!! tip "This is a community project"
@@ -429,7 +431,7 @@ Vendor-neutral documentation, written for engineers, with RFC references on ever
 | Compression | [uSID](https://srv6.md/topics/usid-compression/) | [SID decoder](https://srv6.md/tools/sid-decoder/), [RFC 9800](https://srv6.md/rfcs/rfc9800/) |
 | Control plane | [Flex-Algorithm](https://srv6.md/topics/flex-algorithm/) | [TI-LFA](https://srv6.md/topics/ti-lfa/), [SR Policy](https://srv6.md/topics/sr-policy/), [BGP overlay services](https://srv6.md/topics/bgp-overlay-services/) |
 | Operations | [OAM and troubleshooting](https://srv6.md/topics/oam-troubleshooting/) | [SRPM](https://srv6.md/topics/srpm/), [telemetry](https://srv6.md/topics/telemetry/), [security](https://srv6.md/topics/security/) |
-| Migration | [Migration from MPLS](https://srv6.md/topics/interworking-migration/) | [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) |
+| Migration | [Migration from MPLS](https://srv6.md/topics/interworking-migration/) | [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) |
 | Vendors | [Support matrix](https://srv6.md/implementations/support-matrix/) | [Implementations](https://srv6.md/implementations/) |
 | Hands-on | [Labs](https://srv6.md/labs/) | [Containerlab](https://srv6.md/labs/containerlab/), [netlab](https://srv6.md/labs/netlab/), [packet captures](https://srv6.md/labs/pcaps/) |
 | AI networking | [SRv6 for AI](https://srv6.md/ai/) | [MRC and SRv6](https://srv6.md/ai/mrc/), [AI fabric design](https://srv6.md/ai/ai-fabric-design/) |
@@ -661,7 +663,7 @@ A typical service provider or large enterprise backbone runs IS-IS or OSPF, plus
 | Reach into DC, cloud and hosts | Needs gateways or VXLAN stitching | Any IPv6 node can be an endpoint |
 | Services | L3VPN, EVPN over MPLS | Same services, signalled by BGP with SRv6 SIDs |
 
-The operational gain comes from removing protocols, not from adding features. The [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) comparison covers the trade-offs in detail, including when SR-MPLS is still the right call.
+The operational gain comes from removing protocols, not from adding features. The [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) comparison covers the trade-offs in detail, including when SR-MPLS is still the right call.
 
 ### Business drivers seen in public deployments
 
@@ -2228,7 +2230,7 @@ The core concepts you need before diving deeper.
 | [SID Structure](https://srv6.md/topics/sid-structure/) | Understanding the 128-bit SRv6 SID |
 | [Network Programming](https://srv6.md/topics/network-programming/) | SRv6 behaviors and functions |
 | [SRH Mechanics & Packet Walk](https://srv6.md/topics/srh-packet-walk/) | Step-by-step packet processing through the SRH |
-| [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) | Comparing the two SR approaches |
+| [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) | Comparing the two SR approaches |
 | [Glossary](https://srv6.md/topics/glossary/) | Every SRv6 term defined, with the RFC section behind it |
 
 ## Architecture
@@ -2266,7 +2268,7 @@ Running, securing, and monitoring SRv6 in production.
 | [Telemetry & Monitoring](https://srv6.md/topics/telemetry/) | IPFIX, YANG models, streaming telemetry, alerting |
 | [Performance & Scaling](https://srv6.md/topics/performance-scaling/) | MTU impact, encapsulation overhead, hardware forwarding, FIB scale |
 | [Inter-Domain SRv6](https://srv6.md/topics/inter-domain/) | Multi-domain design patterns, BSID stitching, BGP-LS controllers |
-| [Interworking & Migration](https://srv6.md/topics/interworking-migration/) | SR-MPLS ↔ SRv6 gateways, brownfield coexistence |
+| [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/) | SR-MPLS ↔ SRv6 gateways, brownfield coexistence |
 
 ## Platforms
 
@@ -2555,7 +2557,7 @@ SRv6 is **not** a new IP version and not an alternative to IPv6. It is a way of 
 | **Encapsulation overhead** | Smallest | Smallest | 40-byte IPv6 header minimum; per-SID cost removed by uSID |
 | **Maturity** | Decades | Widely deployed | In production since 2019, growing fast |
 
-SRv6 trades a larger fixed header for one data plane everywhere and no LDP or RSVP-TE. The full comparison, with guidance on when to choose each, is in [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/). Migration paths are in [Interworking & Migration](https://srv6.md/topics/interworking-migration/).
+SRv6 trades a larger fixed header for one data plane everywhere and no LDP or RSVP-TE. The full comparison, with guidance on when to choose each, is in [SRv6 vs MPLS and SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/). Migration paths are in [MPLS to SRv6 migration](https://srv6.md/topics/interworking-migration/).
 
 ## What SRv6 is used for
 
@@ -2668,8 +2670,8 @@ uSID (micro-SID) is SRv6 compression, standardized as the NEXT-C-SID flavor in R
 - [SRH Mechanics & Packet Walk](https://srv6.md/topics/srh-packet-walk/): every SRH field and the PSP/USP/USD flavors
 - [Network Programming](https://srv6.md/topics/network-programming/): all SRv6 behaviors (End, End.X, End.DT4, End.DX6…)
 - [uSID / SRv6 Compression](https://srv6.md/topics/usid-compression/): micro-SIDs and RFC 9800
-- [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/): when to choose each
-- [Interworking & Migration](https://srv6.md/topics/interworking-migration/): moving from MPLS to SRv6
+- [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/): when to choose each
+- [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/): moving from MPLS to SRv6
 - [Security](https://srv6.md/topics/security/): filtering, HMAC and attack vectors
 - [Implementations](https://srv6.md/implementations/): configuration guides for Cisco, Juniper, Arista, Nokia, FRR and Linux
 - [SRv6 Glossary](https://srv6.md/topics/glossary/): every SRv6 term defined, with its RFC section
@@ -4111,7 +4113,7 @@ Defined in: [draft-filsfils-spring-srv6-net-pgm-insertion](https://datatracker.i
 
 **SR-MPLS** is Segment Routing on the MPLS data plane: each segment is an MPLS label and the segment list is a label stack.
 
-Defined in: [RFC 8402 §2](https://www.rfc-editor.org/rfc/rfc8402#section-2), [RFC 8660](https://www.rfc-editor.org/rfc/rfc8660) · Learn more: [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/)
+Defined in: [RFC 8402 §2](https://www.rfc-editor.org/rfc/rfc8402#section-2), [RFC 8660](https://www.rfc-editor.org/rfc/rfc8660) · Learn more: [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/)
 
 ### SR P2MP Policy (Tree-SID) 
 
@@ -5352,7 +5354,7 @@ At AS2 border:  BSID_AS2 expands to [P5::1, PE-Remote::1]
     ```
 
 !!! tip "BSID and inter-domain TE"
-    For a deep dive into Binding SID for multi-domain traffic engineering, see [Inter-Domain SRv6](https://srv6.md/topics/inter-domain/). For BSID in the context of SR-MPLS/SRv6 migration, see [Interworking & Migration](https://srv6.md/topics/interworking-migration/).
+    For a deep dive into Binding SID for multi-domain traffic engineering, see [Inter-Domain SRv6](https://srv6.md/topics/inter-domain/). For BSID in the context of SR-MPLS/SRv6 migration, see [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/).
 
 ## Color Steering
 
@@ -5453,7 +5455,7 @@ Dynamic policies can be reoptimized when:
 - [Flex-Algorithm](https://srv6.md/topics/flex-algorithm/) — Constraint-based topology slicing
 - [TI-LFA](https://srv6.md/topics/ti-lfa/) — Fast reroute for SR Policies
 - [Inter-Domain SRv6](https://srv6.md/topics/inter-domain/) — Multi-domain TE with BSID
-- [Interworking & Migration](https://srv6.md/topics/interworking-migration/) — BSID in migration scenarios
+- [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/) — BSID in migration scenarios
 - [RFC 9256](https://srv6.md/rfcs/rfc9256/) — SR Policy Architecture
 - [RFC 9603](https://srv6.md/rfcs/rfc9603/) — PCEP extensions for SRv6 paths
 - [RFC 9857](https://srv6.md/rfcs/rfc9857/) — Reporting SR Policy state via BGP-LS
@@ -6224,7 +6226,7 @@ When a binding SID triggers re-encapsulation, the QoS policy can dictate how the
 - [Traffic Engineering](https://srv6.md/use-cases/traffic-engineering/) — SR Policies and path control
 - [5G Transport](https://srv6.md/use-cases/5g-transport/) — Network slicing for mobile
 - [Performance & Scaling](https://srv6.md/topics/performance-scaling/) — MTU and encapsulation overhead
-- [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) — Comparison including QoS differences
+- [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) — Comparison including QoS differences
 
 ## References
 
@@ -8391,9 +8393,9 @@ SRv6 convergence is comparable to SR-MPLS:
 ## Further Reading
 
 - [uSID / SRv6 Compression](https://srv6.md/topics/usid-compression/) - How uSID reduces overhead
-- [Interworking & Migration](https://srv6.md/topics/interworking-migration/) - MTU during migration
+- [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/) - MTU during migration
 - [TI-LFA](https://srv6.md/topics/ti-lfa/) - Fast convergence with SRv6
-- [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) - Overhead comparison
+- [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) - Overhead comparison
 
 ## References
 
@@ -8472,7 +8474,7 @@ graph LR
 
 At ASBR1, `BSID-B` is resolved to the internal segment list of AS 65002 — PE1 never knows AS 65002's topology.
 
-For BSID mechanics, see [SR Policy](https://srv6.md/topics/sr-policy/). For BSID in migration scenarios, see [Interworking & Migration](https://srv6.md/topics/interworking-migration/).
+For BSID mechanics, see [SR Policy](https://srv6.md/topics/sr-policy/). For BSID in migration scenarios, see [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/).
 
 ### Pattern 4: BGP-LS + SDN Controller
 
@@ -8659,7 +8661,7 @@ For the full SRv6 security framework, see [Security](https://srv6.md/topics/secu
 ## Further Reading
 
 - [SR Policy](https://srv6.md/topics/sr-policy/) — Binding SID, color steering, PCE integration
-- [Interworking & Migration](https://srv6.md/topics/interworking-migration/) — BSID gateway for SR-MPLS/SRv6 migration
+- [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/) — BSID gateway for SR-MPLS/SRv6 migration
 - [Security](https://srv6.md/topics/security/) — SRv6 security best practices including boundary filtering
 - [Flex-Algorithm](https://srv6.md/topics/flex-algorithm/) — Per-domain Flex-Algo with inter-domain color steering
 - [RFC 9514](https://srv6.md/rfcs/rfc9514/) — BGP-LS Extensions for SRv6
@@ -9347,7 +9349,7 @@ Migrate one region at a time:
 
 ## Further Reading
 
-- [SRv6 vs SR-MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) - Detailed comparison
+- [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) - Detailed comparison
 - [uSID / SRv6 Compression](https://srv6.md/topics/usid-compression/) - How uSID reduces overhead
 - [Performance & Scaling](https://srv6.md/topics/performance-scaling/) - MTU impact analysis
 - [Real-World Deployments](https://srv6.md/use-cases/deployments/) - Migration stories
@@ -10438,7 +10440,7 @@ The CVD codifies several rules that generalize beyond defense networks:
 
 ## Validated Case Study
 
-The CVD closes with "VeriVault", a fictional defense contractor migrating from an MPLS-TE + SD-WAN patchwork to the SRv6 fabric using three standardized site profiles (compact tactical field sites, dual-router processing centers, and redundant DC hubs with a dedicated route reflector). Migration is a phased parallel build: stand up the SRv6 fabric alongside the legacy WAN, cut over the DC hubs, bridge legacy and new domains via an NNI at the aggregation layer, then migrate spokes site by site. See [Interworking & Migration](https://srv6.md/topics/interworking-migration/) for the general patterns.
+The CVD closes with "VeriVault", a fictional defense contractor migrating from an MPLS-TE + SD-WAN patchwork to the SRv6 fabric using three standardized site profiles (compact tactical field sites, dual-router processing centers, and redundant DC hubs with a dedicated route reflector). Migration is a phased parallel build: stand up the SRv6 fabric alongside the legacy WAN, cut over the DC hubs, bridge legacy and new domains via an NNI at the aggregation layer, then migrate spokes site by site. See [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/) for the general patterns.
 
 ## Further Reading
 
@@ -11295,7 +11297,7 @@ Cloud-optimized:
 - [VPN Services](https://srv6.md/use-cases/vpn-services/) - L3VPN and L2VPN over SRv6
 - [uSID / SRv6 Compression](https://srv6.md/topics/usid-compression/) - Micro-SID for efficient encoding
 - [Flex-Algorithm](https://srv6.md/topics/flex-algorithm/) - Constraint-based path computation
-- [Interworking & Migration](https://srv6.md/topics/interworking-migration/) - SR-MPLS to SRv6 migration strategies
+- [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/) - SR-MPLS to SRv6 migration strategies
 - [Real-World Deployments](https://srv6.md/use-cases/deployments/) - Other operator deployments
 
 ## References
@@ -13496,7 +13498,7 @@ The SR OS 26.7 Segment Routing and PCE User Guide's SRv6 chapter applies to the 
 - [Implementations Overview](https://srv6.md/implementations/)
 - [SRv6 Support Matrix](https://srv6.md/implementations/support-matrix/) - SR OS feature by feature next to IOS-XR, Junos, EOS, VRP and open-source platforms
 - [uSID Compression](https://srv6.md/topics/usid-compression/) - How uSID containers and shift-and-forward work
-- [Interworking & Migration](https://srv6.md/topics/interworking-migration/) - MPLS/SRv6 gateway designs
+- [MPLS to SRv6 Migration](https://srv6.md/topics/interworking-migration/) - MPLS/SRv6 gateway designs
 - [EVPN Multihoming](https://srv6.md/topics/evpn-multihoming/) - All-active EVPN over SRv6
 
 ## References
