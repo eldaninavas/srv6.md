@@ -13,6 +13,7 @@ import logging
 log = logging.getLogger("mkdocs.hooks.llms_txt")
 
 SECTIONS = [
+    ("academy", "SRv6.md Academy (free SRv6 course)"),
     ("ai", "SRv6 for AI networking"),
     ("topics", "Topics"),
     ("use-cases", "Use Cases"),

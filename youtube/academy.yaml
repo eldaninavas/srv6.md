@@ -1,0 +1,115 @@
+# SRv6.md Academy: the single source of truth for the free course.
+# Each track is a YouTube playlist and a section of srv6.md/academy/.
+# Each lesson: id (also the script file youtube/scripts/<id>.yaml and the
+# video output folder), title (the YouTube title), page (the srv6.md lesson
+# the video teaches from, relative to docs/), keyword (the search it targets),
+# minutes (target length) and, once published, youtube (the video id).
+
+name: SRv6.md Academy
+tagline: The free SRv6 course. From your first SID to AI fabrics.
+channel_handle: "@srv6md"   # desired handle; claim it when creating the channel
+# channel_url: https://www.youtube.com/@srv6md   # set once the channel exists; the site links it only then
+
+tracks:
+  - id: start
+    title: Start Here
+    level: All levels
+    summary: What SRv6 is, why it matters, and how this course works.
+    lessons:
+      - {id: s01, title: "SRv6 in 100 Seconds", page: topics/what-is-srv6.md, keyword: srv6, minutes: 2, format: short}
+      - {id: s02, title: "Learn SRv6 for Free: How the SRv6.md Academy Works", page: academy/index.md, keyword: learn srv6, minutes: 3}
+
+  - id: foundations
+    title: "Track 1: SRv6 Foundations"
+    level: Beginner
+    summary: The data plane. SIDs, the SRH, behaviors and uSID, with a packet walk you can follow hop by hop.
+    lessons:
+      - {id: f01, title: "What is SRv6? Segment Routing over IPv6 Explained", page: topics/what-is-srv6.md, keyword: what is srv6, minutes: 8}
+      - {id: f02, title: "SRv6 SID Structure: Locator, Function and Argument", page: topics/sid-structure.md, keyword: srv6 sid, minutes: 7}
+      - {id: f03, title: "The SRv6 Header (SRH): Packet Walk, Step by Step", page: topics/srh-packet-walk.md, keyword: srv6 header, minutes: 9}
+      - {id: f04, title: "SRv6 Network Programming: End, End.X, End.DT4 and More", page: topics/network-programming.md, keyword: srv6 network programming, minutes: 9}
+      - {id: f05, title: "SRv6 uSID (Micro-SID) Explained: Six Hops in One Address", page: topics/usid-compression.md, keyword: srv6 usid, minutes: 8}
+      - {id: f06, title: "SRv6 vs MPLS: Differences, Overhead and When to Use Each", page: topics/srv6-vs-sr-mpls.md, keyword: srv6 vs mpls, minutes: 9}
+
+  - id: control-plane
+    title: "Track 2: Control Plane and Services"
+    level: Intermediate
+    summary: How the network learns SIDs and turns them into paths and services.
+    lessons:
+      - {id: c01, title: "IS-IS for SRv6: Locators and SIDs in the IGP", page: rfcs/rfc9352.md, keyword: isis srv6, minutes: 8}
+      - {id: c02, title: "Flex-Algo with SRv6: Network Slicing Without RSVP-TE", page: topics/flex-algorithm.md, keyword: flex-algo, minutes: 9}
+      - {id: c03, title: "TI-LFA Explained: 50 ms Fast Reroute with SRv6", page: topics/ti-lfa.md, keyword: ti-lfa, minutes: 10}
+      - {id: c04, title: "SR Policy Explained: Color, ODN and Binding SID", page: topics/sr-policy.md, keyword: sr policy, minutes: 10}
+      - {id: c05, title: "SRv6 L3VPN with BGP (RFC 9252), Step by Step", page: topics/bgp-overlay-services.md, keyword: srv6 l3vpn, minutes: 9}
+      - {id: c06, title: "EVPN over SRv6 and EVPN Multihoming", page: topics/evpn-multihoming.md, keyword: srv6 evpn, minutes: 10}
+
+  - id: operations
+    title: "Track 3: Operating SRv6"
+    level: Intermediate
+    summary: Troubleshooting, measuring, securing and migrating a real network.
+    lessons:
+      - {id: o01, title: "SRv6 Troubleshooting: Ping, Traceroute and OAM", page: topics/oam-troubleshooting.md, keyword: srv6 troubleshooting, minutes: 8}
+      - {id: o02, title: "SRv6 Performance Measurement and Telemetry", page: topics/srpm.md, keyword: srv6 telemetry, minutes: 8}
+      - {id: o03, title: "SRv6 Security: Filtering 5f00::/16 and the SRH", page: topics/security.md, keyword: srv6 security, minutes: 8}
+      - {id: o04, title: "MPLS to SRv6 Migration: Four Real Strategies", page: topics/interworking-migration.md, keyword: mpls to srv6 migration, minutes: 10}
+
+  - id: labs
+    title: "Track 4: Hands-on Labs"
+    level: Beginner to Intermediate
+    summary: Build SRv6 on your laptop with free tools, and read every packet in Wireshark.
+    lessons:
+      - {id: l01, title: "Build a Free SRv6 Lab with Containerlab and FRRouting", page: labs/containerlab.md, keyword: srv6 lab, minutes: 15}
+      - {id: l02, title: "SRv6 Labs in Minutes with netlab", page: labs/netlab.md, keyword: netlab srv6, minutes: 12}
+      - {id: l03, title: "SRv6 on Linux: seg6 and iproute2 from Scratch", page: implementations/linux-kernel.md, keyword: linux srv6, minutes: 12}
+      - {id: l04, title: "Reading SRv6 in Wireshark: SRH Filters and Captures", page: labs/pcaps.md, keyword: srv6 wireshark, minutes: 8}
+      - {id: l05, title: "Decode Any SRv6 SID or uSID in Your Browser", page: tools/sid-decoder.md, keyword: srv6 sid decoder, minutes: 5}
+
+  - id: ai
+    title: "Track 5: SRv6 for AI Networks"
+    level: Advanced
+    summary: How OpenAI, Microsoft, Meta and Alibaba use SRv6 in GPU fabrics and between AI data centers.
+    lessons:
+      - {id: a01, title: "MRC and SRv6: How OpenAI Networks 100,000 GPUs", page: ai/mrc.md, keyword: mrc srv6, minutes: 10}
+      - {id: a02, title: "Designing an AI Fabric with SRv6", page: ai/ai-fabric-design.md, keyword: srv6 ai fabric, minutes: 10}
+      - {id: a03, title: "SRv6 vs ECMP, Adaptive Routing and Ultra Ethernet", page: ai/srv6-vs-ai-fabric-alternatives.md, keyword: srv6 vs ultra ethernet, minutes: 9}
+      - {id: a04, title: "SRv6 Between AI Data Centers (Scale-Across)", page: ai/scale-across.md, keyword: srv6 scale across, minutes: 8}
+      - {id: a05, title: "SRv6 for AI Inference over the WAN", page: ai/inference-wan.md, keyword: srv6 ai inference, minutes: 9}
+
+  - id: vendors
+    title: "Track 6: SRv6 Configuration by Vendor"
+    level: Intermediate
+    summary: The same SRv6 L3VPN, configured and verified on each major platform.
+    lessons:
+      - {id: v01, title: "SRv6 on Cisco IOS XR: uSID Locators and L3VPN", page: implementations/cisco-ios-xr.md, keyword: cisco srv6 configuration, minutes: 12}
+      - {id: v02, title: "SRv6 on Juniper Junos", page: implementations/juniper.md, keyword: juniper srv6, minutes: 12}
+      - {id: v03, title: "SRv6 on Nokia SR OS", page: implementations/nokia-sros.md, keyword: nokia srv6, minutes: 10}
+      - {id: v04, title: "SRv6 on Arista EOS", page: implementations/arista-eos.md, keyword: arista srv6, minutes: 10}
+      - {id: v05, title: "SRv6 with FRRouting", page: implementations/frrouting.md, keyword: frr srv6, minutes: 10}
+      - {id: v06, title: "SRv6 on SONiC", page: implementations/sonic.md, keyword: sonic srv6, minutes: 10}
+
+  - id: rfcs
+    title: "RFCs Explained (Shorts)"
+    level: All levels
+    summary: One SRv6 RFC per minute, in plain language.
+    lessons:
+      - {id: r01, title: "RFC 8754 in 60 Seconds: The SRv6 Header", page: rfcs/rfc8754.md, keyword: rfc 8754, minutes: 1, format: short}
+      - {id: r02, title: "RFC 8986 in 60 Seconds: SRv6 Network Programming", page: rfcs/rfc8986.md, keyword: rfc 8986, minutes: 1, format: short}
+      - {id: r03, title: "RFC 9800 in 60 Seconds: uSID Compression", page: rfcs/rfc9800.md, keyword: rfc 9800, minutes: 1, format: short}
+      - {id: r04, title: "RFC 9252 in 60 Seconds: BGP Services over SRv6", page: rfcs/rfc9252.md, keyword: rfc 9252, minutes: 1, format: short}
+      - {id: r05, title: "RFC 9350 in 60 Seconds: Flex-Algo", page: rfcs/rfc9350.md, keyword: rfc 9350, minutes: 1, format: short}
+      - {id: r06, title: "RFC 9256 in 60 Seconds: SR Policy", page: rfcs/rfc9256.md, keyword: rfc 9256, minutes: 1, format: short}
+      - {id: r07, title: "RFC 9855 in 60 Seconds: TI-LFA", page: rfcs/rfc9855.md, keyword: rfc 9855, minutes: 1, format: short}
+      - {id: r08, title: "RFC 9602 in 60 Seconds: The 5f00::/16 Block", page: rfcs/rfc9602.md, keyword: rfc 9602, minutes: 1, format: short}
+
+  - id: es
+    title: "SRv6 en español"
+    level: Principiante
+    summary: Las lecciones esenciales de la academia, en español.
+    lang: es
+    lessons:
+      - {id: e01, title: "¿Qué es SRv6? Segment Routing sobre IPv6 explicado", page: es/que-es-srv6.md, keyword: que es srv6, minutes: 8}
+      - {id: e02, title: "Estructura del SID en SRv6: localizador, función y argumento", page: es/estructura-del-sid.md, keyword: sid srv6, minutes: 7}
+      - {id: e03, title: "La cabecera SRH de SRv6, paso a paso", page: es/cabecera-srh.md, keyword: srh srv6, minutes: 9}
+      - {id: e04, title: "uSID en SRv6: seis saltos en una dirección", page: es/usid.md, keyword: usid srv6, minutes: 8}
+      - {id: e05, title: "SRv6 vs MPLS: diferencias y cuándo usar cada uno", page: es/srv6-vs-sr-mpls.md, keyword: srv6 vs mpls, minutes: 9}
+      - {id: e06, title: "SRv6 en redes de IA", page: es/ia.md, keyword: srv6 ia, minutes: 9}
