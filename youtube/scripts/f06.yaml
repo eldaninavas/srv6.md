@@ -1,0 +1,151 @@
+id: f06
+lang: en
+title: "SRv6 vs MPLS: Differences, Overhead and When to Use Each"
+playlist: "Track 1: SRv6 Foundations"
+description: |
+  SRv6 vs MPLS, explained with real numbers. We compare classic MPLS (LDP and RSVP-TE), SR-MPLS and SRv6: how each one carries a VPN packet, how much header overhead they add, how the control plane changes, where each one can reach, and when you should choose one or the other.
+
+  This is lesson 6 of Track 1 (SRv6 Foundations) in the free SRv6.md Academy.
+links:
+  "Written lesson (with all the numbers)": https://srv6.md/topics/srv6-vs-sr-mpls/
+  "SRv6.md Academy, the free SRv6 course": https://srv6.md/academy/
+  "Previous lesson, uSID explained": https://srv6.md/topics/usid-compression/
+  "MPLS to SRv6 migration": https://srv6.md/topics/interworking-migration/
+hashtags: ["#SRv6", "#MPLS", "#SegmentRouting", "#NetworkEngineering"]
+tags: [srv6 vs mpls, srv6, mpls, sr-mpls, segment routing, segment routing over ipv6, ldp, rsvp-te, network engineering, ccie service provider]
+thumbnail:
+  kicker: "SRv6 vs MPLS"
+  text: "8 bytes or 40?"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md Academy · Track 1 · Lesson 6"
+    title: "SRv6 vs MPLS"
+    subtitle: "Differences, overhead, and when to use each"
+    chapter: "Intro"
+    say: >
+      SRv6 versus MPLS. It's one of the most common questions in service provider networking,
+      and the answers you find online are usually either marketing or out of date.
+      In this lesson we'll compare classic MPLS, SR-MPLS and SRv6 with real numbers,
+      so you can decide for your own network.
+
+  - type: bullets
+    heading: "Three generations, one problem"
+    chapter: "Three generations"
+    bullets:
+      - "**Classic MPLS:** labels, plus LDP and RSVP-TE"
+      - "**SR-MPLS:** labels, but segments come from the IGP"
+      - "**SRv6:** no labels at all, segments are IPv6 addresses"
+    say: >
+      All three solve the same problem: steering traffic and carrying VPNs across a provider core.
+      Classic MPLS forwards on labels, and needs LDP to distribute them and RSVP-TE for traffic engineering.
+      SR-MPLS keeps the MPLS labels, but drops LDP and RSVP-TE: the IGP advertises the segments.
+      SRv6 goes one step further and drops the labels too. Every segment is simply an IPv6 address.
+
+  - type: image
+    heading: "What each one adds to a VPN packet"
+    image: docs/assets/images/srv6-vs-mpls-overhead.png
+    chapter: "Header overhead"
+    say: >
+      Let's look at the packet. A layer three VPN packet over MPLS or SR-MPLS carries two labels:
+      a transport label and a VPN label. That's eight bytes.
+      SRv6 with micro-SIDs puts an outer IPv6 header in front of the customer packet, with the node
+      and VPN instructions packed into the destination address. That's forty bytes.
+      Only long traffic-engineered paths need a Segment Routing Header on top.
+
+  - type: big
+    value: "0.5% vs 2.7%"
+    caption: "Overhead on a 1500-byte packet: MPLS VPN vs SRv6 uSID"
+    say: >
+      In percentages, on a fifteen hundred byte packet, MPLS adds about half a percent and SRv6 about
+      two point seven percent. Most cores already run a nine thousand byte MTU, so in practice the cost
+      shows up mainly on small packets, like voice.
+
+  - type: bullets
+    heading: "With traffic engineering, the gap narrows"
+    bullets:
+      - "SR-MPLS: **4 more bytes** for every extra segment"
+      - "SRv6 uSID: up to **6 instructions** in one 128-bit address"
+      - "VPN + 4 waypoints: **24 B** (SR-MPLS) vs **40 B** (SRv6)"
+      - "Longer paths: SRv6 adds an SRH, **8 + 16 bytes** per six more instructions"
+    say: >
+      Add traffic engineering and the picture changes. Every extra SR-MPLS segment is another four-byte label.
+      With SRv6 micro-SIDs, up to six instructions fit in the same destination address. The egress router uses two of them,
+      so a VPN path with four waypoints is still forty bytes, against twenty-four for SR-MPLS.
+      Only longer paths need a Segment Routing Header.
+
+  - type: compare
+    heading: "The control plane"
+    chapter: "Control plane"
+    columns:
+      - title: "Classic MPLS"
+        items: ["IGP + LDP + RSVP-TE", "Per-tunnel state on every transit router", "FRR with bypass tunnels"]
+      - title: "SR-MPLS and SRv6"
+        items: ["IGP + BGP only", "Path state only at the headend", "TI-LFA with full coverage"]
+    say: >
+      The bigger difference is the control plane. Classic MPLS needs two or three protocols on top of the IGP,
+      and RSVP-TE keeps state for every tunnel on every router along the path.
+      Both SR-MPLS and SRv6 drop all of that. The IGP advertises the segments, BGP signals the services,
+      and the path lives only in the packet. Fast reroute comes from TI-LFA, with full topology coverage.
+
+  - type: record
+    url: https://srv6.md/topics/ti-lfa/
+    click: "Fail"
+    click_at: 4
+    seconds: 16
+    say: >
+      Here's TI-LFA in action. Packets flow from S to D through N. Now we fail the link from S to N.
+      S immediately repairs onto the post-convergence path, through A, B and C, by adding a short
+      repair segment list. No signaling, no waiting for the IGP to converge.
+
+  - type: bullets
+    heading: "Where SRv6 really pulls ahead"
+    chapter: "Reach beyond the core"
+    bullets:
+      - "Works over **any IPv6 network**, not only MPLS hops"
+      - "Reaches **data centers, clouds and hosts** without gateways"
+      - "**No label block** to coordinate: locators are IPv6 prefixes"
+      - "Load balancing on the **IPv6 flow label**, no entropy label"
+    say: >
+      For many networks, the deciding factor is reach. MPLS only works where every hop forwards MPLS,
+      and public clouds and most data center fabrics don't. SRv6 works over any IPv6 network,
+      because transit routers just forward on the destination address. That's how SRv6 reaches into
+      cloud backbones, Kubernetes hosts and AI GPU fabrics, where MPLS never went.
+
+  - type: bullets
+    heading: "What you must plan for with SRv6"
+    chapter: "Trade-offs"
+    bullets:
+      - "**Security:** filter the SID block (5f00::/16) at every edge"
+      - "**Hardware:** uSID needs current silicon; check the push depth"
+      - "**MTU:** raise the core MTU before the first service"
+      - "**Skills:** IPv6-fluent teams adapt faster than MPLS-only teams"
+    say: >
+      SRv6 isn't free. An MPLS core is isolated by design, because labels aren't routable from outside.
+      With SRv6 you build that isolation yourself, by filtering the SID block at every edge.
+      Micro-SIDs need current silicon, so check each platform. Raise the core MTU early.
+      And teams already fluent in IPv6 adapt much faster.
+
+  - type: compare
+    heading: "When to choose each"
+    chapter: "When to choose each"
+    columns:
+      - title: "Choose SR-MPLS when"
+        items: ["Routers forward MPLS but not SRv6 at line rate", "You want TI-LFA and SR Policy now", "Per-packet overhead matters most"]
+      - title: "Choose SRv6 when"
+        items: ["New network or hardware refresh", "Services must reach DCs, clouds, hosts", "One encapsulation from access to AI fabric"]
+    say: >
+      So when should you choose each? Choose SR-MPLS when your routers forward MPLS but can't do SRv6 at line rate,
+      or when per-packet overhead matters most. Choose SRv6 when you're building a new network or refreshing hardware,
+      when services must reach data centers, clouds and hosts, or when you want one encapsulation everywhere.
+      Many operators run both during the transition, with interworking at the boundary.
+
+  - type: end
+    heading: "Read the full comparison"
+    subtitle: "All the numbers, the migration guide and the next lesson"
+    url: "srv6.md/topics/srv6-vs-sr-mpls"
+    chapter: "Next steps"
+    say: >
+      The full comparison, with every number from this video, is on srv6 dot md, linked below,
+      together with the migration guide from MPLS to SRv6. This lesson is part of the free SRv6 dot md Academy.
+      Subscribe, and I'll see you in the next lesson.

@@ -69,18 +69,18 @@ def page(body, w, h, extra_css=""):
 {FONT_CSS}
 *{{box-sizing:border-box;margin:0;padding:0}}
 html,body{{width:{w}px;height:{h}px;overflow:hidden}}
-body{{font-family:Inter,'Hiragino Sans','Helvetica Neue',Arial,sans-serif;color:#f5eefa;
+body{{display:flex;flex-direction:column;justify-content:center;font-family:Inter,'Hiragino Sans','Helvetica Neue',Arial,sans-serif;color:#f5eefa;
  background:radial-gradient(ellipse at 20% 0%,#4a148c 0%,#1d0f2b 55%,#120a1c 100%);
- padding:{'110px 80px' if vertical else '90px 120px'};position:relative}}
+ padding:{'160px 80px 200px' if vertical else '90px 140px 130px'};position:relative}}
 .brand{{position:absolute;{'top:60px;left:80px' if vertical else 'bottom:46px;left:120px'};display:flex;align-items:center;gap:14px;
  font-weight:700;font-size:{34 if vertical else 30}px;color:#e1bee7;opacity:.95}}
 .brand img{{width:{48 if vertical else 44}px;height:{48 if vertical else 44}px}}
 .kicker{{font-size:{34 if vertical else 30}px;font-weight:700;color:#ce93d8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:22px}}
 h1{{font-size:{92 if vertical else 96}px;line-height:1.05;font-weight:800;letter-spacing:-.02em}}
-h2{{font-size:{68 if vertical else 64}px;line-height:1.1;font-weight:800;letter-spacing:-.01em;margin-bottom:{50 if vertical else 44}px}}
+h2{{font-size:{72 if vertical else 76}px;line-height:1.1;font-weight:800;letter-spacing:-.01em;margin-bottom:{50 if vertical else 44}px}}
 .sub{{font-size:{44 if vertical else 40}px;line-height:1.35;color:#e1bee7;margin-top:34px;font-weight:400}}
 ul{{list-style:none}}
-li{{font-size:{48 if vertical else 44}px;line-height:1.3;margin:0 0 {34 if vertical else 28}px 0;padding-left:56px;position:relative}}
+li{{font-size:{52 if vertical else 54}px;line-height:1.3;margin:0 0 {34 if vertical else 28}px 0;padding-left:56px;position:relative}}
 li:before{{content:'';position:absolute;left:0;top:.42em;width:26px;height:26px;border-radius:50%;
  background:linear-gradient(135deg,#ce93d8,#7b1fa2)}}
 li b{{color:#f3c7ff}}
@@ -93,8 +93,8 @@ pre{{font-family:'JetBrains Mono',Menlo,monospace;font-size:{34 if vertical else
 .cols{{display:grid;grid-template-columns:{'1fr' if vertical else '1fr 1fr'};gap:40px}}
 .col{{background:rgba(255,255,255,.06);border:1px solid rgba(206,147,216,.3);border-radius:24px;padding:40px 44px}}
 .col h3{{font-size:46px;font-weight:800;margin-bottom:26px;color:#f3c7ff}}
-.col li{{font-size:{40 if vertical else 36}px}}
-.center{{height:100%;display:flex;flex-direction:column;justify-content:center}}
+.col li{{font-size:{42 if vertical else 42}px}}
+.center{{display:flex;flex-direction:column;justify-content:center}}
 .url{{display:inline-block;margin-top:40px;font-size:{52 if vertical else 50}px;font-weight:800;color:#120a1c;
  background:linear-gradient(135deg,#f3c7ff,#ce93d8);padding:18px 34px;border-radius:18px}}
 {extra_css}
@@ -232,7 +232,7 @@ def main():
     thumb_html = os.path.join(work, "thumb.html")
     with open(thumb_html, "w", encoding="utf-8") as f:
         f.write(page(f'<div class="center"><div class="kicker" style="font-size:44px">{esc(th.get("kicker", "SRv6.md"))}</div>'
-                     f'<h1 style="font-size:150px">{esc(th.get("text", sc["title"]))}</h1></div>', 1280, 720,
+                     f'<h1 style="font-size:{130 if len(th.get("text", "")) > 14 else 170}px">{esc(th.get("text", sc["title"]))}</h1></div>', 1280, 720,
                      ".brand{bottom:34px;left:120px;font-size:34px}"))
     jobs.append({"html": thumb_html, "out": os.path.join(out, "thumbnail.png"), "width": 1280, "height": 720})
     jobs_path = os.path.join(work, "jobs.json")
@@ -256,7 +256,12 @@ def main():
         clip = os.path.join(work, f"{i:02}.mp4")
         vf = f"scale={W}:{H},fps=30,format=yuv420p,fade=t=in:st=0:d=0.25,fade=t=out:st={d - 0.3:.2f}:d=0.3"
         if s["type"] == "record":
-            src = ["-stream_loop", "-1", "-i", os.path.join(work, f"{i:02}.webm")]
+            webm = os.path.join(work, f"{i:02}.webm")
+            with open(webm + ".json") as f:
+                skip = json.load(f)["skip"]
+            # trim the page load, then hold the last frame if the narration runs longer
+            src = ["-ss", f"{skip:.2f}", "-i", webm]
+            vf = "tpad=stop_mode=clone:stop_duration=60," + vf
         else:
             src = ["-loop", "1", "-i", os.path.join(work, f"{i:02}.png")]
         run(["ffmpeg", "-y", *src, "-i", audio, "-t", f"{d:.2f}", "-vf", vf,
