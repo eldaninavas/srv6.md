@@ -36,6 +36,12 @@ Summary: The definitive open-source guide to SRv6 (Segment Routing over IPv6). L
 
   + Become a contributor
 
+## SRv6.md Academy: a free SRv6 course
+
+Learn SRv6 in order, from your first SID to TI-LFA, L3VPN, migration from MPLS, vendor configuration and AI fabrics. The [SRv6.md Academy](https://srv6.md/academy/) organizes every guide on this site into tracks, with hands-on labs, and video lessons coming to YouTube.
+
+[Start the free SRv6 course](https://srv6.md/academy/)
+
 ## SRv6 for AI
 
 SRv6 now runs inside some of the largest AI training networks in the world. OpenAI, Microsoft and Oracle use static SRv6 uSID source routing in their GPU fabrics through [MRC](https://srv6.md/ai/mrc/), with no BGP in the backend. Meta and Alibaba use SRv6 traffic engineering to connect AI clusters across sites. The [SRv6 for AI](https://srv6.md/ai/) section covers who runs it, how it works, how to design a fabric, and the standards behind it.
@@ -811,6 +817,152 @@ The text is MIT licensed: reuse it, translate it or adapt it for internal traini
 - [SRv6 documentation index](https://srv6.md/docs/) - Official documentation for every vendor and open-source project
 - [What is SRv6?](https://srv6.md/topics/what-is-srv6/) - The complete tutorial
 - [State of SRv6 2026](https://srv6.md/reports/state-of-srv6-2026/) - Data report on standards, deployments and vendors
+
+
+---
+
+# SRv6.md Academy: Free SRv6 Course with Videos and Labs
+
+URL: https://srv6.md/academy/
+Path: academy/index.md
+Summary: Learn SRv6 for free: a structured course from SIDs and the SRH to TI-LFA, L3VPN, migration, vendor configs and AI fabrics, with written lessons, videos and hands-on labs.
+
+# SRv6.md Academy
+
+**The free SRv6 course. From your first SID to AI fabrics.** A structured, vendor-neutral SRv6 course with 39 lessons in 8 tracks. Every lesson is a written guide on srv6.md, a video on the SRv6.md YouTube channel (launching soon) and, where it applies, a lab you can run on your laptop. No sign-up, no paywall, MIT licensed.
+
+!!! tip "How to use the academy"
+    1. **Read** the lesson on srv6.md: every page cites the RFCs behind it.
+    2. **Watch** the video when you prefer to see it animated.
+    3. **Build it**: the [labs](https://srv6.md/labs/) reproduce each concept with free tools.
+    4. **Check yourself** with the FAQ at the end of each lesson.
+
+Video lessons are in production and will be published here track by track. Every lesson already has its written guide.
+
+## Start Here
+
+**Level:** All levels. What SRv6 is, why it matters, and how this course works.
+
+| # | Lesson |
+|:-:|--------|
+| 1 | [Learn SRv6 for Free: How the SRv6.md Academy Works](https://srv6.md/academy/) |
+
+## Track 1: SRv6 Foundations
+
+**Level:** Beginner. The data plane. SIDs, the SRH, behaviors and uSID, with a packet walk you can follow hop by hop.
+
+| # | Lesson |
+|:-:|--------|
+| 1 | [What is SRv6? Segment Routing over IPv6 Explained](https://srv6.md/topics/what-is-srv6/) |
+| 2 | [SRv6 SID Structure: Locator, Function and Argument](https://srv6.md/topics/sid-structure/) |
+| 3 | [The SRv6 Header (SRH): Packet Walk, Step by Step](https://srv6.md/topics/srh-packet-walk/) |
+| 4 | [SRv6 Network Programming: End, End.X, End.DT4 and More](https://srv6.md/topics/network-programming/) |
+| 5 | [SRv6 uSID (Micro-SID) Explained: Six Hops in One Address](https://srv6.md/topics/usid-compression/) |
+| 6 | [SRv6 vs MPLS: Differences, Overhead and When to Use Each](https://srv6.md/topics/srv6-vs-sr-mpls/) |
+
+## Track 2: Control Plane and Services
+
+**Level:** Intermediate. How the network learns SIDs and turns them into paths and services.
+
+| # | Lesson |
+|:-:|--------|
+| 1 | [IS-IS for SRv6: Locators and SIDs in the IGP](https://srv6.md/rfcs/rfc9352/) |
+| 2 | [Flex-Algo with SRv6: Network Slicing Without RSVP-TE](https://srv6.md/topics/flex-algorithm/) |
+| 3 | [TI-LFA Explained: 50 ms Fast Reroute with SRv6](https://srv6.md/topics/ti-lfa/) |
+| 4 | [SR Policy Explained: Color, ODN and Binding SID](https://srv6.md/topics/sr-policy/) |
+| 5 | [SRv6 L3VPN with BGP (RFC 9252), Step by Step](https://srv6.md/topics/bgp-overlay-services/) |
+| 6 | [EVPN over SRv6 and EVPN Multihoming](https://srv6.md/topics/evpn-multihoming/) |
+
+## Track 3: Operating SRv6
+
+**Level:** Intermediate. Troubleshooting, measuring, securing and migrating a real network.
+
+| # | Lesson |
+|:-:|--------|
+| 1 | [SRv6 Troubleshooting: Ping, Traceroute and OAM](https://srv6.md/topics/oam-troubleshooting/) |
+| 2 | [SRv6 Performance Measurement and Telemetry](https://srv6.md/topics/srpm/) |
+| 3 | [SRv6 Security: Filtering 5f00::/16 and the SRH](https://srv6.md/topics/security/) |
+| 4 | [MPLS to SRv6 Migration: Four Real Strategies](https://srv6.md/topics/interworking-migration/) |
+
+## Track 4: Hands-on Labs
+
+**Level:** Beginner to Intermediate. Build SRv6 on your laptop with free tools, and read every packet in Wireshark.
+
+| # | Lesson |
+|:-:|--------|
+| 1 | [Build a Free SRv6 Lab with Containerlab and FRRouting](https://srv6.md/labs/containerlab/) |
+| 2 | [SRv6 Labs in Minutes with netlab](https://srv6.md/labs/netlab/) |
+| 3 | [SRv6 on Linux: seg6 and iproute2 from Scratch](https://srv6.md/implementations/linux-kernel/) |
+| 4 | [Reading SRv6 in Wireshark: SRH Filters and Captures](https://srv6.md/labs/pcaps/) |
+| 5 | [Decode Any SRv6 SID or uSID in Your Browser](https://srv6.md/tools/sid-decoder/) |
+
+## Track 5: SRv6 for AI Networks
+
+**Level:** Advanced. How OpenAI, Microsoft, Meta and Alibaba use SRv6 in GPU fabrics and between AI data centers.
+
+| # | Lesson |
+|:-:|--------|
+| 1 | [MRC and SRv6: How OpenAI Networks 100,000 GPUs](https://srv6.md/ai/mrc/) |
+| 2 | [Designing an AI Fabric with SRv6](https://srv6.md/ai/ai-fabric-design/) |
+| 3 | [SRv6 vs ECMP, Adaptive Routing and Ultra Ethernet](https://srv6.md/ai/srv6-vs-ai-fabric-alternatives/) |
+| 4 | [SRv6 Between AI Data Centers (Scale-Across)](https://srv6.md/ai/scale-across/) |
+| 5 | [SRv6 for AI Inference over the WAN](https://srv6.md/ai/inference-wan/) |
+
+## Track 6: SRv6 Configuration by Vendor
+
+**Level:** Intermediate. The same SRv6 L3VPN, configured and verified on each major platform.
+
+| # | Lesson |
+|:-:|--------|
+| 1 | [SRv6 on Cisco IOS XR: uSID Locators and L3VPN](https://srv6.md/implementations/cisco-ios-xr/) |
+| 2 | [SRv6 on Juniper Junos](https://srv6.md/implementations/juniper/) |
+| 3 | [SRv6 on Nokia SR OS](https://srv6.md/implementations/nokia-sros/) |
+| 4 | [SRv6 on Arista EOS](https://srv6.md/implementations/arista-eos/) |
+| 5 | [SRv6 with FRRouting](https://srv6.md/implementations/frrouting/) |
+| 6 | [SRv6 on SONiC](https://srv6.md/implementations/sonic/) |
+
+## SRv6 en español
+
+**Level:** Principiante. Las lecciones esenciales de la academia, en español.
+
+| # | Lesson |
+|:-:|--------|
+| 1 | [¿Qué es SRv6? Segment Routing sobre IPv6 explicado](https://srv6.md/es/que-es-srv6/) |
+| 2 | [Estructura del SID en SRv6: localizador, función y argumento](https://srv6.md/es/estructura-del-sid/) |
+| 3 | [La cabecera SRH de SRv6, paso a paso](https://srv6.md/es/cabecera-srh/) |
+| 4 | [uSID en SRv6: seis saltos en una dirección](https://srv6.md/es/usid/) |
+| 5 | [SRv6 vs MPLS: diferencias y cuándo usar cada uno](https://srv6.md/es/srv6-vs-sr-mpls/) |
+| 6 | [SRv6 en redes de IA](https://srv6.md/es/ia/) |
+
+## Frequently Asked Questions
+
+### Is the SRv6.md Academy free?
+
+Yes. Every lesson, video and lab is free, with no sign-up. The written lessons are MIT licensed.
+
+### Where should I start learning SRv6?
+
+Start with Track 1, SRv6 Foundations, which begins with What is SRv6? and ends with SRv6 vs MPLS. If you already know Segment Routing with MPLS, you can jump to the uSID lesson.
+
+### Do I need real routers to follow the course?
+
+No. The labs run on a laptop with free tools such as Containerlab, netlab and FRRouting, and the packet captures open in Wireshark.
+
+### Is there a certificate?
+
+Not today. The academy is a free learning path, not a vendor certification. It covers the vendor-neutral SRv6 knowledge that certifications such as Cisco CCIE Service Provider or Juniper JNCIE-SP also test.
+
+### Is the course available in Spanish?
+
+Yes. The SRv6 en español track covers the essential lessons in Spanish, and the written guides have Spanish and Japanese versions.
+
+## Further Reading
+
+- [SRv6 Fundamentals and Key Concepts](https://srv6.md/topics/) - Every topic page
+- [SRv6 documentation index](https://srv6.md/docs/) - Official docs for every vendor
+- [SRv6 White Paper 2026](https://srv6.md/white-papers/srv6-white-paper-2026/) - Design and migration for architects
+
+{"@context": "https://schema.org", "@type": "Course", "name": "SRv6.md Academy: Free SRv6 Course", "description": "A free, vendor-neutral course on Segment Routing over IPv6 (SRv6): SIDs, the SRH, uSID, TI-LFA, SR Policy, BGP services, operations, migration from MPLS, vendor configuration and SRv6 for AI networks.", "url": "https://srv6.md/academy/", "provider": {"@type": "Organization", "name": "SRv6.md", "sameAs": "https://srv6.md"}, "isAccessibleForFree": true, "inLanguage": ["en", "es"], "educationalLevel": "Beginner to Advanced", "teaches": "Segment Routing over IPv6 (SRv6)", "numberOfCredits": 0, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "category": "Free"}, "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "Online", "courseWorkload": "PT10H"}}
 
 
 ---
