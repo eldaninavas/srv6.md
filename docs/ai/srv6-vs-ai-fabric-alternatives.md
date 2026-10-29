@@ -74,7 +74,7 @@ From the MRC paper's small-cluster comparison on identical hardware (64 GPUs):
 - In a 7:1 incast, a RoCEv2 + DCQCN victim flow lost about 25% of its throughput, while an MRC victim flow saw no impact.
 - With 1% injected loss on every plane, RoCEv2 became "pretty much unusable" and MRC kept about a third of its throughput.
 
-From Microsoft Research's position paper (simulation): with one link degraded to half capacity, SRv6-based re-routing finished an all-to-all 21.6–37.1% faster than packet spraying, depending on message size. Deterministic SRv6 probing covered N paths with N probes, about 5× faster failure detection for the same probe budget.
+From a Microsoft Research technical report (simulation): with one link degraded to half capacity, SRv6-based re-routing finished an all-to-all 21.6–37.1% faster than packet spraying, depending on message size. Deterministic SRv6 probing covered N paths with N probes, about 5× faster failure detection for the same probe budget.
 
 No primary source benchmarks SRv6/MRC directly against InfiniBand.
 

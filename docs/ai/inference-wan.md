@@ -52,7 +52,7 @@ The blueprint places inference in four tiers, all reached through the same WAN:
 | Assurance | SR Performance Measurement (TWAMP Light), PTP timing | [SRPM](../topics/srpm.md) |
 | Transport security | MACsec or IPsec, post-quantum ready | [Security](../topics/security.md) |
 
-Nothing in this list is Cisco-specific. Every building block is an IETF standard that other SRv6 implementations also ship; see the [support matrix](../implementations/support-matrix.md).
+Nothing in this list is Cisco-specific. Every building block is an open standard (IETF RFCs, plus IEEE 802.1AE for MACsec and IEEE 1588 for PTP) that other SRv6 implementations also ship; see the [support matrix](../implementations/support-matrix.md).
 
 ## SLA planes with Flex-Algo
 

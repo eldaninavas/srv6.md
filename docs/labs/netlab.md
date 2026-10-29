@@ -80,7 +80,7 @@ addressing:                     # Define IPv6 address pools
 defaults.device: frr            # We'll use FRRouting ...
 provider: clab                  # ... containers orchestrated with containerlab
 
-module: [ isis ]                # All devices are running IS-IS and SRv6
+module: [ isis ]                # All devices are running IS-IS
 nodes: [ pe1, p, pe2 ]          # The lab topology has three nodes
 links: [ pe1-p, p-pe2 ]         # And two links between them
 ```

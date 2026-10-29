@@ -54,7 +54,7 @@ Para despliegues de SRv6 fuera de la IA, ver [Real-World Deployments](../use-cas
 | Abr. 2025 | Primer draft del IETF sobre SRv6 para backends de IA (Cisco) |
 | 2025 | SONiC 202505 incorpora configuración SRv6 estática para backends de IA con enrutamiento de origen |
 | Jun. 2025 | Se publica Ultra Ethernet 1.0 (spraying basado en entropía; sin SRv6) |
-| Ene. 2026 | Position paper de Microsoft Research sobre direccionamiento de paquetes con SRv6 en backends de IA |
+| Ene. 2026 | Reporte técnico de Microsoft Research sobre direccionamiento de paquetes con SRv6 en backends de IA |
 | Feb. 2026 | NANOG 96: Cisco y Microsoft sobre el despliegue de SRv6 uSID y SONiC en backends de IA |
 | Mar. 2026 | IETF 125: Alibaba informa que su cómputo de IA se basa íntegramente en IPv6/SRv6 |
 | **5 may. 2026** | **OpenAI y sus socios publican MRC y su diseño de SRv6 estático; se lanza OCP MRC 1.0** |

@@ -53,7 +53,7 @@ For SRv6 deployments outside AI, see [Real-World Deployments](../use-cases/deplo
 | Apr 2025 | First IETF draft on SRv6 for AI backends (Cisco) |
 | 2025 | SONiC 202505 ships static SRv6 configuration for source-routed AI backends |
 | Jun 2025 | Ultra Ethernet 1.0 published (entropy-based spraying; no SRv6) |
-| Jan 2026 | Microsoft Research position paper on SRv6 packet steering for AI backends |
+| Jan 2026 | Microsoft Research technical report on SRv6 packet steering for AI backends |
 | Feb 2026 | NANOG 96: Cisco and Microsoft on deploying SRv6 uSID and SONiC in AI backends |
 | Mar 2026 | IETF 125: Alibaba reports its AI computing is fully based on IPv6/SRv6 |
 | **5 May 2026** | **OpenAI and partners publish MRC and its static SRv6 design; OCP MRC 1.0 released** |

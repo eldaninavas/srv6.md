@@ -54,7 +54,7 @@ AI以外でのSRv6の導入事例は、[Real-World Deployments](../use-cases/dep
 | 2025年4月 | AIバックエンド向けSRv6に関する最初のIETFドラフト（Cisco） |
 | 2025年 | SONiC 202505が、ソースルーティング型AIバックエンド向けのスタティックSRv6設定を提供 |
 | 2025年6月 | Ultra Ethernet 1.0が公開（エントロピーベースのスプレー、SRv6は使わない） |
-| 2026年1月 | Microsoft Researchが、AIバックエンドにおけるSRv6のパケットステアリングに関するポジションペーパーを発表 |
+| 2026年1月 | Microsoft Researchが、AIバックエンドにおけるSRv6のパケットステアリングに関するテクニカルレポートを発表 |
 | 2026年2月 | NANOG 96：CiscoとMicrosoftが、AIバックエンドへのSRv6 uSIDとSONiCの導入について講演 |
 | 2026年3月 | IETF 125：Alibabaが、同社のAIコンピューティングは全面的にIPv6/SRv6を基盤としていると報告 |
 | **2026年5月5日** | **OpenAIとパートナー各社がMRCとそのスタティックSRv6設計を公表、OCP MRC 1.0をリリース** |
