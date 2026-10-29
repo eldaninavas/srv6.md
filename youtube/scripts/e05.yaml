@@ -1,0 +1,210 @@
+id: e05
+lang: es
+title: "SRv6 vs MPLS: diferencias y cuándo usar cada uno"
+playlist: "SRv6 en español"
+description: |
+  SRv6 vs MPLS, explicado en español y con números reales. Comparamos MPLS clásico (LDP y RSVP-TE), SR-MPLS y SRv6: cómo transporta cada uno un paquete de VPN, cuánto overhead agrega, cómo cambia el plano de control, hasta dónde llega cada uno, lo que cuesta SRv6 en seguridad, operación y hardware, y cuándo conviene elegir uno u otro.
+
+  Esta es la lección 5 de la ruta SRv6 en español del curso gratuito de SRv6.md.
+links:
+  "Lección escrita: SRv6 vs MPLS y SR-MPLS": https://srv6.md/es/srv6-vs-sr-mpls/
+  "Curso gratuito de SRv6": https://srv6.md/learn/
+  "Lección anterior, uSID": https://srv6.md/es/usid/
+  "Siguiente lección, SRv6 para IA": https://srv6.md/es/ia/
+hashtags: ["#SRv6", "#MPLS", "#SegmentRouting", "#Redes"]
+tags: [srv6 vs mpls, srv6, mpls, sr-mpls, segment routing, ldp, rsvp-te, migración mpls srv6, srv6 en español, ingeniería de redes]
+thumbnail:
+  kicker: "SRv6 vs MPLS"
+  text: "¿8 bytes o 40?"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Español · Lección 5"
+    title: "SRv6 vs MPLS"
+    subtitle: "Diferencias, overhead y cuándo usar cada uno"
+    chapter: "Introducción"
+    say: >
+      SRv6 o MPLS. Es una de las preguntas más comunes en las redes de proveedores de servicios.
+      En esta lección comparamos MPLS clásico, SR-MPLS y SRv6, con los números reales detrás de los argumentos de siempre.
+      Al terminar, vas a poder explicar en qué se diferencian, cuánto overhead agrega cada uno
+      y cuándo conviene elegir uno u otro en tu red.
+
+  - type: bullets
+    heading: "Tres generaciones, un mismo problema"
+    chapter: "Tres generaciones"
+    bullets:
+      - "**MPLS clásico:** etiquetas, con LDP y RSVP-TE"
+      - "**SR-MPLS:** etiquetas, pero los segmentos vienen del IGP"
+      - "**SRv6:** sin etiquetas; cada segmento es una dirección IPv6"
+    say: >
+      Los tres resuelven el mismo problema: dirigir el tráfico y transportar VPN a través de la red de un proveedor.
+      Lo que cambia es el plano de datos. MPLS clásico reenvía según etiquetas,
+      y necesita LDP para distribuirlas y RSVP-TE para la ingeniería de tráfico.
+      SR-MPLS mantiene las etiquetas, pero elimina LDP y RSVP-TE: el IGP anuncia los segmentos.
+      Y SRv6 elimina también el plano de datos MPLS. Cada segmento es una dirección IPv6 de 128 bits,
+      con localizador, función y argumento.
+
+  - type: bullets
+    heading: "Una arquitectura, dos planos de datos"
+    bullets:
+      - "Segment Routing: **RFC 8402**"
+      - "En común: enrutamiento en origen, TI-LFA, SR Policy, Flex-Algo"
+      - "SR-MPLS: etiqueta de **20 bits**"
+      - "SRv6: dirección IPv6 de **128 bits**"
+    say: >
+      Un punto importante: SR-MPLS y SRv6 comparten arquitectura. Segment Routing, definido en el RFC 8402,
+      es una sola arquitectura con dos planos de datos. Los dos usan las mismas ideas:
+      enrutamiento en origen, segmentos de prefijo y de adyacencia, T I L F A, SR Policy y Flex-Algo.
+      Lo único que cambia es cómo se codifica un segmento en el paquete. En SR-MPLS es una etiqueta de veinte bits.
+      En SRv6 es una dirección IPv6 de 128 bits, que además puede llevar una función y argumentos.
+
+  - type: image
+    heading: "Lo que cada uno agrega a un paquete VPN"
+    image: docs/assets/images/srv6-vs-mpls-overhead.png
+    chapter: "Overhead"
+    say: >
+      Veamos el paquete: una VPN de capa tres que cruza el núcleo, sin ingeniería de tráfico.
+      Con MPLS o SR-MPLS lleva dos etiquetas de cuatro bytes, una de transporte y una de VPN: ocho bytes en total.
+      SRv6 con micro-SID agrega una cabecera IPv6 exterior, con el micro-SID del nodo y el de la VPN
+      en la misma dirección de destino: cuarenta bytes, y el tránsito es IPv6 normal.
+      Solo las rutas largas necesitan una Segment Routing Header: cuarenta, más ocho, más dieciséis bytes por cada SID adicional.
+
+  - type: big
+    value: "0.5% vs 2.7%"
+    caption: "Overhead en un paquete de 1500 bytes: VPN MPLS vs SRv6 uSID"
+    say: >
+      En porcentaje, sobre un paquete de mil quinientos bytes, una VPN sobre SR-MPLS agrega cerca de medio por ciento,
+      y una VPN SRv6 con micro-SID, cerca de dos coma siete por ciento. Es el principal punto en contra de SRv6.
+      En la práctica, si subes la MTU del núcleo, y la mayoría ya trabaja con nueve mil bytes o más,
+      el overhead desaparece para los tamaños de paquete que realmente reenvías.
+      Las cargas con paquetes pequeños, como voz o juegos en línea, son las que más sienten la diferencia.
+
+  - type: bullets
+    heading: "Con ingeniería de tráfico, la brecha se achica"
+    bullets:
+      - "SR-MPLS: **4 bytes más** por cada segmento"
+      - "SRv6 uSID: hasta **6 instrucciones** en una dirección"
+      - "VPN + 4 waypoints: **24 B** (SR-MPLS) vs **40 B** (SRv6)"
+      - "VPN + 10 waypoints: **48 B** vs **64 B**"
+    say: >
+      Con ingeniería de tráfico, el panorama cambia. Cada segmento adicional de SR-MPLS es otra etiqueta de cuatro bytes.
+      Con micro-SID, hasta seis instrucciones caben en la misma dirección de destino.
+      El PE de salida usa dos, su micro-SID de nodo y el de la VPN, así que una ruta con cuatro puntos de paso
+      sigue costando cuarenta bytes, contra veinticuatro de SR-MPLS.
+      Con cinco puntos de paso ya hace falta una S R H con un contenedor: sesenta y cuatro bytes.
+      Y con diez, SR-MPLS llega a cuarenta y ocho, mientras SRv6 sigue en sesenta y cuatro.
+
+  - type: compare
+    heading: "El plano de control"
+    chapter: "Plano de control"
+    columns:
+      - title: "MPLS clásico"
+        items: ["IGP + LDP + RSVP-TE", "LDP-IGP sync y refresco de RSVP-TE", "Túneles de bypass para FRR"]
+      - title: "SR-MPLS y SRv6"
+        items: ["El IGP anuncia los segmentos", "BGP señaliza los servicios", "PCE opcional para rutas explícitas"]
+    say: >
+      La diferencia más grande está en el plano de control. MPLS clásico necesita dos o tres protocolos además del IGP:
+      LDP para las etiquetas, RSVP-TE para la ingeniería de tráfico, y la sincronización entre ellos,
+      con LDP IGP sync, el refresco de RSVP-TE y túneles de bypass para la protección rápida.
+      SR-MPLS y SRv6 eliminan todo eso. El IGP anuncia los segmentos, BGP señaliza los servicios
+      y, de forma opcional, un PCE calcula las rutas explícitas.
+
+  - type: bullets
+    heading: "Etiquetas o direcciones"
+    bullets:
+      - "SR-MPLS conserva el **SRGB**, un bloque de etiquetas común al dominio"
+      - "SRv6: cada nodo es dueño de un **prefijo locator**"
+      - "**Sin bloque de etiquetas** que coordinar"
+      - "El núcleo puede **sumarizar** los locators"
+    say: >
+      Pero hay un matiz. SR-MPLS conserva una pieza de estado MPLS: un bloque de etiquetas, el SRGB,
+      que debe ser consistente en todo el dominio, más la asignación de etiquetas para adyacencias y servicios.
+      SRv6 reemplaza las etiquetas por direcciones. Cada nodo es dueño de un prefijo localizador,
+      y los SID son enrutables dentro de él. No hay un bloque de etiquetas que coordinar,
+      y el núcleo puede sumarizar los localizadores como cualquier otro prefijo IPv6.
+
+  - type: bullets
+    heading: "Alcance más allá del núcleo"
+    chapter: "Alcance"
+    bullets:
+      - "MPLS solo funciona donde **cada salto reenvía MPLS**"
+      - "Nubes públicas, fabrics de DC e Internet **no lo hacen**"
+      - "SRv6 funciona sobre **cualquier red IPv6**"
+      - "Llega a **nubes, hosts de Kubernetes y fabrics de GPU**"
+    say: >
+      Para muchas redes, este es el factor decisivo. MPLS solo funciona donde cada salto reenvía MPLS.
+      Las nubes públicas, la mayoría de los fabrics de centros de datos e Internet no lo hacen,
+      así que los servicios MPLS terminan en el borde y necesitan gateways o costuras con GRE o VXLAN para ir más lejos.
+      SRv6 funciona sobre cualquier red IPv6, porque los routers de tránsito solo reenvían según la dirección de destino.
+      Así llega a backbones de nube, hosts de Kubernetes y fabrics de GPU para IA, adonde MPLS nunca llegó.
+
+  - type: bullets
+    heading: "Programación, balanceo e interdominio"
+    bullets:
+      - "**Programación:** un SID lleva función y argumentos"
+      - "**Balanceo:** flow label IPv6, sin etiqueta de entropía"
+      - "**Interdominio:** se anuncia el locator, sin opciones inter-AS"
+    say: >
+      Hay tres diferencias más. Programación de red: una etiqueta MPLS significa reenvía hacia aquí, o esta es la VPN X.
+      Un SID SRv6 además puede llevar una función y argumentos, aunque en la práctica la mayoría de las redes
+      usan el mismo puñado de comportamientos en ambos mundos.
+      Balanceo de carga: MPLS necesita una etiqueta de entropía o inspección profunda del paquete.
+      En SRv6, el headend fija el flow label de IPv6 y cada router calcula el hash sobre la cabecera exterior.
+      E interdominio: en lugar de las opciones inter-AS A, B o C, se anuncia o se sumariza el localizador hacia el otro dominio.
+
+  - type: bullets
+    heading: "Lo que cuesta SRv6"
+    chapter: "Lo que cuesta"
+    bullets:
+      - "**Seguridad:** filtrar 5f00::/16 y la SRH en cada borde"
+      - "**Operación:** los equipos con runbooks MPLS deben reentrenarse"
+      - "**Hardware:** uSID necesita silicio nuevo; revisa la profundidad de push"
+      - "**Madurez:** SR-MPLS sigue siendo la variante más desplegada"
+    say: >
+      SRv6 también tiene costos. Un núcleo MPLS está aislado por construcción, porque las etiquetas no son enrutables desde afuera.
+      Con SRv6, ese aislamiento hay que construirlo: filtrar el bloque de SID, idealmente cinco F cero cero, barra dieciséis,
+      y los paquetes con S R H en cada interfaz externa. Es un único filtro, pero no es opcional.
+      MPLS tiene décadas de herramientas, y los equipos con runbooks MPLS muy elaborados tienen que reentrenarse.
+      Micro-SID necesita silicio más nuevo, así que revisa la profundidad de push de cada plataforma.
+      Y SR-MPLS sigue siendo la variante más desplegada; SRv6 es la que crece más rápido,
+      con diecinueve organizaciones que documentan su uso en producción.
+
+  - type: compare
+    heading: "Cuándo elegir cada uno"
+    chapter: "Cuándo elegir"
+    columns:
+      - title: "Elige SR-MPLS cuando"
+        items: ["Tus routers reenvían MPLS, pero no SRv6 a velocidad de línea", "Quieres TI-LFA y SR Policy ya", "El overhead pesa más que el alcance"]
+      - title: "Elige SRv6 cuando"
+        items: ["Red nueva o renovación de hardware", "Hay que llegar a DC, nubes u hosts", "Una sola encapsulación hasta el fabric de IA"]
+    say: >
+      Entonces, ¿cuándo elegir cada uno? Quédate en MPLS clásico, por ahora, si la red es estable y RSVP-TE hace lo que necesitas,
+      pero planifica el paso a Segment Routing.
+      Elige SR-MPLS cuando tus routers reenvían MPLS pero no pueden hacer SRv6 a velocidad de línea,
+      cuando quieres T I L F A y SR Policy sin cambiar el plano de datos,
+      o cuando el overhead por paquete importa más que el alcance.
+      Elige SRv6 si estás construyendo una red nueva o renovando hardware, si los servicios tienen que llegar
+      a centros de datos, nubes u hosts, o si quieres una sola encapsulación desde el acceso hasta el fabric de IA.
+
+  - type: bullets
+    heading: "¿Pueden convivir?"
+    bullets:
+      - "**Sí:** SR-MPLS donde no hay SRv6, SRv6 en el resto"
+      - "Gateways de interworking o **binding SID** entre ellos"
+      - "Ship-in-the-night: migrar las VRF **de a una**"
+    say: >
+      Y no tienes que elegir uno solo para siempre. Muchos operadores corren ambos durante la transición:
+      SR-MPLS en las partes de la red que todavía no pueden hacer SRv6, y SRv6 en todas las demás,
+      con gateways de interworking o binding SID entre ellas.
+      Los despliegues ship in the night corren servicios SRv6 en paralelo con MPLS y migran las V R F de a una.
+      La guía de migración de srv6 punto md cubre estas estrategias con ejemplos reales.
+
+  - type: end
+    heading: "Lee la comparación completa"
+    subtitle: "Todos los números, las preguntas frecuentes y la próxima lección: SRv6 en redes de IA"
+    url: "srv6.md/es/srv6-vs-sr-mpls"
+    chapter: "Siguientes pasos"
+    say: >
+      La comparación completa, con todos los números de este video y las preguntas frecuentes,
+      está en srv6 punto md, en el enlace de abajo. Esta lección es parte del curso gratuito de srv6 punto md.
+      En la próxima vemos cómo se usa SRv6 en las redes de IA. Suscríbete y nos vemos ahí.

@@ -1,0 +1,290 @@
+id: l03
+lang: en
+title: "SRv6 on Linux: seg6 and iproute2 from Scratch"
+playlist: "Track 4: Hands-on Labs"
+description: |
+  Linux SRv6 from scratch with iproute2: which seg6 and seg6local behaviors landed in which kernel, what the kernel does not implement, tested recipes for H.Encaps, H.Encaps.Red, End, End.X, End.DT4/DT6/DT46 and uSID (NEXT-C-SID), a self-contained L3VPN over SRv6 between two network namespaces, the tcpdump view with and without an SRH, and the troubleshooting table for the failures you will actually hit.
+
+  This is lesson 3 of Track 4 (Hands-on Labs) in the free SRv6.md course.
+links:
+  "Written lesson (every command)": https://srv6.md/implementations/linux-kernel/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 labs with netlab": https://srv6.md/labs/netlab/
+  "Next lesson, SRv6 in Wireshark": https://srv6.md/labs/pcaps/
+hashtags: ["#SRv6", "#Linux", "#iproute2", "#NetworkEngineering"]
+tags: [linux srv6, srv6, iproute2, seg6, seg6local, linux kernel, network namespaces, l3vpn, usid, segment routing, tcpdump]
+thumbnail:
+  kicker: "SRv6 on Linux"
+  text: "ip route add"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 4 · Lesson 3"
+    title: "SRv6 on Linux"
+    subtitle: "seg6 and iproute2, from scratch"
+    chapter: "Intro"
+    say: >
+      Every lab in this track runs on the same engine: the SRv6 data plane in the Linux kernel.
+      In this lesson you'll learn to drive it directly, with nothing but I P route 2.
+      By the end you'll know which SRv6 behaviors your kernel supports, and which ones Linux doesn't implement at all.
+      You'll be able to write headend and endpoint routes by hand, build an L3VPN over SRv6
+      between two network namespaces on one machine, read it in T C P dump,
+      and fix the handful of problems that break most Linux SRv6 labs.
+
+  - type: bullets
+    heading: "Two kinds of SRv6 routes"
+    chapter: "seg6 and seg6local"
+    bullets:
+      - "Native SRv6 since **4.10** (February 2017)"
+      - "**seg6** routes: headends (H.Encaps and friends)"
+      - "**seg6local** routes: SIDs bound to behaviors (since **4.14**)"
+      - "FRR programs the **same kernel objects**"
+    say: >
+      Linux has had native SRv6 since kernel 4.10, in February 2017,
+      and it's one of the most complete open-source SRv6 data planes.
+      Everything is configured with I P route 2, using two kinds of routes.
+      A seg six route is a headend: traffic that matches the route gets encapsulated with a segment list.
+      That's H Encaps and its variants.
+      A seg six local route binds a local SID to an endpoint behavior, such as End, End X or End D T 4.
+      Those arrived in kernel 4.14.
+      Routing daemons like FRRouting program exactly the same kernel objects.
+      So what you learn here applies to F R R, to SONiC hosts and to container labs alike.
+
+  - type: compare
+    heading: "Which kernel added what"
+    chapter: "Kernel versions"
+    columns:
+      - title: "Headend (seg6 mode)"
+        items: ["encap, inline: 4.10", "l2encap: 4.14", "encap.red, l2encap.red: 6.0", "Per-route tunsrc: 7.1"]
+      - title: "Endpoint (seg6local)"
+        items: ["End, End.X, End.T, End.DX*, End.B6: 4.14", "End.DT4 5.11, End.DT46 5.14", "NEXT-C-SID: 6.1 End, 6.6 End.X", "PSP flavor: 6.3"]
+    say: >
+      Kernel versions matter, because each behavior arrived at a different time,
+      and each one also needs a matching I P route 2.
+      On the headend side, plain encapsulation and SRH insertion came first, in 4.10.
+      Layer two encapsulation came in 4.14. The reduced variants, encap dot red, came in 6.0.
+      And a per-route outer source address arrived in 7.1.
+      On the endpoint side, 4.14 brought End, End X, End T, the D X cross-connects and the binding SIDs.
+      End D T 6 into a VRF, and End D T 4, came in 5.11, and End D T 46 in 5.14.
+      Micro-SID support, the next C SID flavor, came in 6.1 for End and 6.6 for End X.
+      The latest release is 7.3, from October 2026.
+
+  - type: bullets
+    heading: "Not implemented in the kernel"
+    bullets:
+      - "**End.DX2V, End.DT2U, End.DT2M** (no EVPN)"
+      - "**End.B6.Encaps.Red**, USP and USD flavors"
+      - "**REPLACE-C-SID** and all **RFC 9433** mobile behaviors"
+      - "End.BM, End.S, End.AS, End.AM: **names only**"
+    say: >
+      Just as important is what Linux doesn't do.
+      There's no End D X 2 V, and no End D T 2 U or D T 2 M, so no EVPN bridging in the kernel.
+      No End B6 Encaps Red, no U S P or U S D flavors, no replace C SID compression,
+      and none of the mobile user plane behaviors from RFC 9433.
+      Watch out for four behaviors: End B M, End S, End A S and End A M exist as names in the kernel's API and in I P route 2,
+      but the kernel has no implementation behind them.
+      For EVPN, use FRRouting with a VXLAN data plane, or a vendor router.
+      For the mobile behaviors, use an e B P F data plane such as Vinbero.
+
+  - type: code
+    heading: "Headend: steering into SRv6"
+    chapter: "iproute2 recipes"
+    code: |
+      # H.Encaps: IPv4 prefix into an outer IPv6 header + SRH with two segments
+      ip route add 198.51.100.0/24 encap seg6 mode encap \
+          segs fc00:0:3::1,fc00:0:4::a4 dev eth0
+      # H.Encaps.Red: same, but the first SID is only in the DA (SRH one entry shorter;
+      # with a single SID there is no SRH at all)
+      ip route add 198.51.101.0/24 encap seg6 mode encap.red \
+          segs fc00:0:3::1,fc00:0:4::a4 dev eth0
+      # uSID: one container carrying uN(3) uN(4) uDT4 — no SRH needed
+      ip route add 198.51.102.0/24 encap seg6 mode encap \
+          segs fcbb:bb00:300:400:e004:: dev eth0
+    say: >
+      Now the recipes. Every command on the page was tested on kernel 6.12 with I P route 2 6.9.
+      A headend is just a route with encap seg six.
+      The first one is H Encaps: an IPv4 prefix goes into a new outer IPv6 header,
+      plus an S R H with two segments.
+      The second uses mode encap dot red, H Encaps Red. Same two SIDs, but the first one lives only in the destination address,
+      so the S R H is one entry shorter. With a single SID, there's no S R H at all.
+      The third shows micro-SIDs. One container, f c b b, b b zero zero, followed by node three, node four and a micro D T 4,
+      carries three instructions in one address. No S R H needed.
+      The outer source address comes from ip sr tunsrc set, one per network namespace.
+
+  - type: code
+    heading: "Endpoints: seg6local"
+    code: |
+      # End (node SID), optionally with the PSP flavor (6.3+)
+      ip -6 route add fc00:0:1::1/128 encap seg6local action End dev eth0
+
+      # End.X (adjacency SID) toward a specific IPv6 next hop
+      ip -6 route add fc00:0:1:e001::/64 encap seg6local action End.X nh6 2001:db8:1::2 dev eth0
+
+      # End.DX4 / End.DX6: decapsulate and cross-connect to a next hop (per-CE VPN)
+      ip -6 route add fc00:0:1::d4/128 encap seg6local action End.DX4 nh4 192.0.2.2 dev eth1
+    say: >
+      Endpoint behaviors are routes with encap seg six local, and the behavior name is the action keyword.
+      End is a node SID: advance to the next segment. You can add the P S P flavor on kernel 6.3 and later.
+      End X is an adjacency SID: same S R H processing, but the packet goes to a specific IPv6 next hop
+      instead of following the routing table.
+      End D X 4 decapsulates and cross-connects the inner IPv4 packet to a given next hop,
+      the page's example of a per-C E VPN.
+      The page has more of these: End T for a lookup in another table, End D X 2 for Ethernet frames,
+      End B6 binding SIDs, and the count keyword, which adds per-SID counters
+      you read with ip dash s route show.
+
+  - type: code
+    heading: "VRF decap: End.DT4/DT6/DT46"
+    code: |
+      ip link add vrf-red type vrf table 10
+      ip link set vrf-red up
+      sysctl -w net.vrf.strict_mode=1      # the sysctl appears once the vrf module is loaded
+
+      ip -6 route add fc00:0:1::a4/128  encap seg6local action End.DT4  vrftable 10 dev vrf-red
+      ip -6 route add fc00:0:1::a6/128  encap seg6local action End.DT6  vrftable 10 dev vrf-red
+      ip -6 route add fc00:0:1::a46/128 encap seg6local action End.DT46 vrftable 10 dev vrf-red
+    say: >
+      The table-lookup behaviors are the ones you'll use for VPNs. They decapsulate and deliver the inner packet into a VRF.
+      So create the VRF first: a VRF device bound to table ten, and bring it up.
+      Then turn on VRF strict mode. This is the step people miss.
+      Without strict mode, the kernel rejects every vrftable SID with the error, strict mode for VRF is disabled.
+      And the setting only appears once the VRF module is loaded, which is why the VRF comes first.
+      Then one SID per behavior: End D T 4 for IPv4, End D T 6 for IPv6,
+      and End D T 46, which takes both families with a single SID.
+
+  - type: code
+    heading: "uSID: the NEXT-C-SID flavor"
+    code: |
+      # uN: End with the NEXT-C-SID flavor (6.1+), 32-bit block + 16-bit node uSID
+      ip -6 route add fcbb:bb00:100::/48 encap seg6local action End \
+          flavors next-csid lblen 32 nflen 16 dev eth0
+
+      # uA: End.X with NEXT-C-SID (6.6+)
+      ip -6 route add fcbb:bb00:100:e001::/64 encap seg6local action End.X nh6 2001:db8:1::2 \
+          flavors next-csid lblen 32 nflen 16 dev eth0
+    say: >
+      Micro-SIDs on Linux are End and End X with the next C SID flavor.
+      A micro N is End with that flavor, installed on the node's whole slash forty-eight:
+      a thirty-two bit block plus a sixteen bit node micro-SID. That needs kernel 6.1.
+      A micro A is End X with the same flavor, and needs 6.6.
+      L B len is the locator block length, and N F len the node plus function length,
+      both in bits and both multiples of eight. The defaults are thirty-two and sixteen.
+      When a packet arrives, the kernel shifts the destination address at each hop,
+      exactly as the micro-SID lesson in Track 1 described.
+
+  - type: code
+    heading: "srv6-lab.sh: two namespaces"
+    chapter: "The two-namespace lab"
+    code: |
+      ip netns add r1
+      ip netns add r2
+      ip link add veth1 netns r1 type veth peer name veth2 netns r2
+
+      for r in r1 r2; do
+        ip -n $r link add vrf-cust type vrf table 100
+        ip -n $r link add cust0 type dummy
+        ip -n $r link set cust0 master vrf-cust up
+        ip netns exec $r sysctl -qw net.ipv6.conf.all.seg6_enabled=1
+        ip netns exec $r sysctl -qw net.vrf.strict_mode=1
+        ip netns exec $r sysctl -qw net.ipv4.conf.vrf-cust.rp_filter=0
+      done
+    say: >
+      Now a complete lab, on one Linux machine, run as root. It's a self-contained L3VPN over SRv6
+      between two network namespaces, R1 and R2, joined by a virtual Ethernet pair.
+      In each namespace the script creates a customer VRF on table one hundred,
+      and a dummy interface inside it that plays the customer LAN.
+      Then the kernel settings: IPv6 and IPv4 forwarding, seg six enabled, VRF strict mode,
+      and reverse path filtering turned off. This is trimmed;
+      the full script on the page also enables seg six on the veth interfaces, brings the loopback and the VRF up,
+      and assigns the addresses: IPv6 on the veth link, and ten dot one dot one dot one and ten dot two dot two dot two on the customer LANs.
+
+  - type: code
+    heading: "Locators, service SIDs, headends"
+    code: |
+      # Locators: r1 = fc00:0:1::/48, r2 = fc00:0:2::/48
+      ip -n r1 -6 route add fc00:0:2::/48 via 2001:db8:12::2
+      ip -n r2 -6 route add fc00:0:1::/48 via 2001:db8:12::1
+      # Service SIDs: End.DT46 into the customer VRF
+      ip -n r1 -6 route add fc00:0:1::d46/128 encap seg6local action End.DT46 vrftable 100 dev vrf-cust
+      # Headend: H.Encaps.Red from the VRF toward the remote End.DT46 SID
+      ip -n r1 route add 10.2.2.0/24 vrf vrf-cust encap seg6 mode encap.red segs fc00:0:2::d46 dev veth1
+      ip netns exec r1 ping -c 3 -I vrf-cust 10.2.2.2
+    say: >
+      The second half of the script is the SRv6 part, in three steps.
+      First the locators. Each router has a slash forty-eight, and a static route to the other one's locator
+      stands in for IS-IS.
+      Second, the service SIDs: an End D T 46 SID on each router that delivers into the customer VRF, table one hundred.
+      Third, the headend: in the VRF, a route to the remote customer prefix that encapsulates with H Encaps Red
+      toward the remote End D T 46 SID.
+      The screen shows R1's side; the script does the mirror image on R2.
+      Then ping from R1's VRF to ten dot two dot two dot two. The replies come back the same way, in reverse.
+
+  - type: code
+    heading: "On the wire: no SRH, then an SRH"
+    code: |
+      # ip netns exec r2 tcpdump -nvi veth2 'ip6[6] == 4'
+      IP6 (hlim 64, next-header IPIP (4) payload length: 84) 2001:db8:12::1 > fc00:0:2::d46:
+          IP (tos 0x0, ttl 64, id 60488, offset 0, flags [DF], proto ICMP (1), length 84)
+
+      # ip netns exec r2 tcpdump -nvi veth2 'ip6[6] == 43'
+      IP6 (hlim 64, next-header Routing (43) payload length: 108) 2001:db8:12::1 > fc00:0:2::d46:
+          RT6 (len=2, type=4, segleft=0, last-entry=0, flags=0x0, tag=0, [0]fc00:0:2::d46)
+    say: >
+      Watch the traffic on R2 while you ping. With a single SID and encap dot red, there's no S R H at all.
+      The outer IPv6 header goes straight to the IPv4 packet: next header four, IPv4 in IPv6.
+      That's why the filter here matches next header four, not forty-three.
+      Now switch R1 to mode encap with route replace, and the S R H appears:
+      next header forty-three, a routing header of type four with one segment and segments left zero.
+      Compare the payload lengths: eighty-four bytes without the S R H, one hundred and eight with it.
+      Those twenty-four bytes are the eight-byte S R H header plus one sixteen-byte segment.
+      Clean up with ip netns del for both namespaces.
+
+  - type: bullets
+    heading: "When it doesn't work"
+    chapter: "Troubleshooting"
+    bullets:
+      - "**seg6_enabled:** the lower of all and the interface wins"
+      - "**rp_filter** on the VRF device: End.DT4 silently fails"
+      - "**strict_mode** off: vrftable SIDs rejected"
+      - "**No tunsrc:** unexpected outer source"
+      - "**MTU:** +40 bytes, plus 8 + 16 × n with an SRH"
+    say: >
+      Five problems cause most failures. If S R H packets are dropped on arrival, check seg six enabled.
+      The kernel uses the lower of the all value and the receiving interface's value, so both must be one.
+      If End D T 4 or End D T 46 decapsulates but nothing reaches the VRF, and no counter moves,
+      it's reverse path filtering on the VRF device. Distributions often turn it on by default,
+      and it was the one failure hit while building this lab.
+      Strict mode off gives you the error you saw earlier.
+      A missing tunsrc gives you an unexpected outer source address.
+      And if large packets disappear, remember the encapsulation adds forty bytes,
+      plus eight and sixteen per segment when there's an S R H. Raise the underlay MTU, or lower the customer's.
+
+  - type: code
+    heading: "Useful commands"
+    code: |
+      ip -6 route show | grep seg6local           # local SIDs
+      ip route show vrf vrf-cust                  # encap routes in a VRF
+      ip -s -6 route show fc00:0:1::c             # per-SID counters (routes added with "count")
+      ip -6 route get fc00:0:2::d46               # which route/SID a destination hits
+      tcpdump -nvi eth0 'ip6 proto 43'            # packets whose first extension header is the SRH
+      nstat -az | grep -i -E 'Ip6InNoRoutes|Ip6InDiscards|Ip6InHdrErrors'
+    say: >
+      Keep these commands at hand. Grep the IPv6 routes for seg six local to list your local SIDs.
+      Show the routes in a VRF to see its encap routes. ip dash s shows per-SID counters, for routes added with count.
+      ip route get tells you which route or SID a destination hits.
+      And nstat shows the drop counters, such as Ip6InNoRoutes.
+      On the page you'll also find a sysctl one-liner that lists seg six enabled and the H MAC setting for every interface.
+      One warning about T C P dump: ip6 proto forty-three only matches when the S R H directly follows the IPv6 header.
+      Reduced encapsulation with one SID has no S R H at all,
+      so match the payload type, four or forty-one, or the destination prefix instead.
+
+  - type: end
+    heading: "Every command, tested"
+    subtitle: "Kernel tables, the full lab script and the troubleshooting guide"
+    url: "srv6.md/implementations/linux-kernel"
+    chapter: "Next steps"
+    say: >
+      The full lab script, every recipe and the complete kernel version tables are on srv6 dot md, linked below.
+      A six-namespace version of this same lab produced the packet capture library,
+      and that's the next lesson: reading SRv6 in Wireshark, frame by frame.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

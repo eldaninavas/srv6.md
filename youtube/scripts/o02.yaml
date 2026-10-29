@@ -1,0 +1,213 @@
+id: o02
+lang: en
+title: "SRv6 Performance Measurement and Telemetry"
+playlist: "Track 3: Operating SRv6"
+description: |
+  SRv6 performance measurement and telemetry, explained. How Segment Routing Performance Measurement (SRPM) measures delay, loss and jitter with STAMP (RFC 8762) and alternate marking (RFC 9341), how color-aware PM checks each SLA class, how PM attaches to SR Policies with liveness detection, and how anomaly thresholds with a hysteresis band raise the IS-IS metric to steer traffic away from a degraded link.
+
+  This is lesson 2 of Track 3 (Operating SRv6) in the free SRv6.md course.
+links:
+  "Written lesson, SRv6 performance measurement": https://srv6.md/topics/srpm/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 troubleshooting": https://srv6.md/topics/oam-troubleshooting/
+  "Next lesson, SRv6 security": https://srv6.md/topics/security/
+hashtags: ["#SRv6", "#Telemetry", "#NetworkMonitoring", "#SegmentRouting"]
+tags: [srv6 telemetry, srv6, performance measurement, srpm, stamp, rfc 8762, alternate marking, delay measurement, packet loss, sr policy]
+thumbnail:
+  kicker: "SRv6 Telemetry"
+  text: "How fast? How lossy?"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 3 · Lesson 2"
+    title: "SRv6 Performance Measurement"
+    subtitle: "Delay, loss and jitter, measured and acted on"
+    chapter: "Intro"
+    say: >
+      In the last lesson we asked whether a path works. Now we ask how well it works.
+      In this lesson you'll learn how SRv6 networks measure delay, loss and jitter, with active probes and with the real traffic,
+      how to measure each service class separately, and how the network can react on its own when a link degrades.
+
+  - type: bullets
+    heading: "Why measure every path"
+    chapter: "Why measure"
+    bullets:
+      - "**SLA assurance:** prove delay and loss targets are met"
+      - "**TE optimization:** feed real metrics into path selection"
+      - "**Fault detection:** catch degraded links before outages"
+      - "**Capacity planning:** utilization per path"
+    say: >
+      In SRv6, traffic follows explicit segment lists. So knowing how well each path performs matters for four reasons.
+      To prove your contracted delay and loss targets are being met. To feed real measurements into SR Policy path selection,
+      so a latency-optimized path is computed from measured latency. To spot a degraded link before it becomes an outage.
+      And to understand utilization per path, for capacity planning. Segment Routing Performance Measurement, S R P M, covers all four.
+
+  - type: bullets
+    heading: "What gets measured"
+    bullets:
+      - "**One-way delay:** ingress to egress, per path or color"
+      - "**Round-trip delay:** probe and reply"
+      - "**Packet loss:** per interval, for example 10 s"
+      - "**Jitter:** variation in delay"
+      - "**Throughput:** per interface or per policy"
+    say: >
+      Five metrics. One-way delay, from ingress to egress, tracked per path or per color. Round-trip delay, for a probe and its reply.
+      Packet loss, the percentage dropped along a path, measured per interval, for example every ten seconds.
+      Jitter, the variation in delay between consecutive packets. And throughput, per interface or per policy.
+      There are two ways to get them: send probes, or mark the traffic you already carry.
+      Each one has a cost, and each one answers a slightly different question, as we'll see.
+
+  - type: record
+    url: https://srv6.md/topics/srpm/
+    index: 0
+    seconds: 12
+    chapter: "STAMP"
+    say: >
+      The first way is active probing with STAMP, the Simple Two-Way Active Measurement Protocol, RFC 8762.
+      A sender P E sends U D P probes to a reflector P E. The reflector answers with its own timestamps.
+      A performance measurement engine turns the timestamps into delay, loss and jitter, and streams them to a telemetry collector.
+
+  - type: bullets
+    heading: "STAMP, step by step"
+    bullets:
+      - "Sender: **UDP probes with timestamps**, on the SRv6 path"
+      - "Reflector: **adds its timestamps** and replies"
+      - "PM engine: **one-way delay, round trip, loss**"
+      - "**No control channel**, unlike TWAMP"
+    say: >
+      The sender generates U D P probes with timestamps, carried along the SRv6 path you want to measure.
+      The reflector adds its own timestamps and returns the reply. From the differences, the engine computes one-way delay,
+      round-trip delay and loss. Results go out as streaming telemetry, for dashboards and alerts.
+      STAMP replaces the older T WAMP with a simpler design: it drops the separate control channel that T WAMP needs,
+      which makes it easier to deploy at scale. The cost is the probe traffic itself, which is low but not zero.
+
+  - type: compare
+    heading: "Alternate marking (RFC 9341)"
+    chapter: "Alternate marking"
+    columns:
+      - title: "Block A, e.g. 10 s"
+        items: ["Ingress marks packets color 0", "Egress counts color 0"]
+      - title: "Block B, next 10 s"
+        items: ["Ingress marks packets color 1", "Egress counts color 1"]
+    say: >
+      The second way is passive. Alternate marking, RFC 9341, injects no probes at all. The ingress marks production packets with a color bit
+      that alternates between blocks, say every ten seconds. Ingress and egress count the packets of each color.
+      When a block ends, its counters are stable, so comparing ingress and egress gives the exact loss for that block, on the real traffic.
+      It's the tool for loss on high-throughput paths, where probes would consume bandwidth.
+      The marking can also support delay measurement, but where it shines is loss: no estimate, no sampling, an exact count.
+
+  - type: bullets
+    heading: "Which tool for which job"
+    bullets:
+      - "**STAMP:** active probes, delay, loss and jitter, low overhead"
+      - "**Alternate marking:** production traffic, exact loss"
+      - "**IOAM:** in-band, hop-by-hop delay and path, per-packet headers"
+      - "**TWAMP:** legacy, stateful sessions"
+    say: >
+      To compare. STAMP is active probing, measures delay, loss and jitter, with low overhead and high accuracy.
+      Alternate marking uses production traffic, adds no bandwidth, and is exact for loss.
+      I O A M, from the last lesson, gives hop-by-hop delay and the path itself, at the cost of extra header bytes in every instrumented packet.
+      And T WAMP is the legacy option, with stateful sessions and medium overhead.
+
+  - type: bullets
+    heading: "Color-aware PM"
+    chapter: "Color-aware PM"
+    bullets:
+      - "**Color 10:** low-latency path, delay under 5 ms"
+      - "**Color 20:** best effort"
+      - "**Color 30:** high bandwidth"
+      - "Each SLA class **measured on its own**"
+    say: >
+      SR Policies carry a color that maps to a service class, as we saw in Track 2. Performance measurement sessions can be bound to colors too.
+      In the written lesson's example, color ten is the low-latency class with a target under five milliseconds, color twenty is best effort,
+      and color thirty is high bandwidth. Measuring per color tells you whether each S L A class meets its own target,
+      instead of one average that hides the class that's failing.
+
+  - type: code
+    heading: "PM on an SR Policy"
+    chapter: "PM and SR Policies"
+    code: |2
+        policy POLICY-1
+         color 10 end-point fc00:0:2::1
+         candidate-paths
+          preference 100
+           explicit segment-list SL-LOW-LATENCY
+          !
+         performance-measurement
+          liveness-detection
+          delay-measurement
+          loss-measurement
+         !
+    say: >
+      Performance measurement attaches directly to the policy. This one, color ten, has an explicit low-latency segment list.
+      Under performance-measurement, three lines switch on liveness detection, delay measurement and loss measurement for its candidate path.
+      Liveness matters most: if the liveness probes fail, the policy switches to another candidate path within milliseconds.
+      That complements T I L F A: T I L F A repairs locally at the failure, liveness protects the policy end to end.
+
+  - type: record
+    url: https://srv6.md/topics/srpm/
+    index: 1
+    seconds: 14
+    chapter: "Anomaly and metric fallback"
+    say: >
+      PM can also make the network react. When a session sees loss above an upper bound, here thirty percent, the router declares an anomaly
+      and raises the I S I S metric of that interface, here by five hundred, so traffic moves away.
+      The anomaly clears only when loss drops below the lower bound, twenty percent, and then the metric is restored.
+      Loss bouncing between twenty and thirty changes nothing. That gap is the hysteresis band, and it's what prevents metric flapping.
+
+  - type: code
+    heading: "The IS-IS side: metric fallback"
+    code: |
+      router isis 1
+       interface GigabitEthernet0/2/0/1
+        point-to-point
+        address-family ipv4 unicast
+         metric fallback anomaly loss increment 500
+        !
+        address-family ipv6 unicast
+         metric fallback anomaly loss increment 500
+        !
+       !
+    say: >
+      In Cisco's S R P M anomaly feature, the performance-measurement block sets the thresholds, and I S I S sets the reaction.
+      On the interface, metric fallback anomaly loss increment five hundred, for each address family.
+      Together they close the loop: performance measurement detects the problem, and I S I S routes around it.
+      Remember that the increment applies to the whole interface, so every flow that crossed this link, not only the measured one, moves away with it.
+
+  - type: bullets
+    heading: "Streaming the results"
+    chapter: "Telemetry"
+    bullets:
+      - "PM results leave the router as **streaming telemetry**"
+      - "IOS-XR: **Cisco-IOS-XR-perf-meas-oper**"
+      - "Junos: **junos-rpc-performance-monitoring**"
+      - "Dashboards and alerts **per path and per class**"
+    say: >
+      None of this is useful if the numbers stay on the router. P M results are exported as streaming telemetry, for real-time dashboards
+      and alerting. On I O S X R, the data lives under the performance measurement operational YANG model. On Junos, under the performance
+      monitoring R P C model. Point your collector at them, and you can graph delay and loss per path and per color, set alerts on S L A breaches,
+      and keep the history for capacity planning. The written lesson on telemetry covers the collector side.
+
+  - type: bullets
+    heading: "Tuning the band"
+    chapter: "Tuning"
+    bullets:
+      - "**Upper bound:** above your worst acceptable loss"
+      - "**Lower bound:** far enough below to absorb noise"
+      - "**Increment:** larger than the metric gap between paths"
+      - "Start with a **10-point spread**, then adjust"
+    say: >
+      Three knobs. Set the upper bound above the worst loss your S L A class can accept. Set the lower bound far enough below it to absorb normal
+      measurement variance. And make the increment bigger than the existing metric differences between paths, or nothing reroutes.
+      A wider band, say twenty to forty, means fewer false positives but slower recovery. A narrower one, twenty-five to thirty, reacts faster
+      but risks flapping on lossy links. Start with a ten-point spread and adjust to the jitter you observe.
+
+  - type: end
+    heading: "Read the performance measurement lesson"
+    subtitle: "Thresholds, telemetry paths and vendor support, and the next lesson: security"
+    url: "srv6.md/topics/srpm"
+    chapter: "Next steps"
+    say: >
+      The written lesson, with the anomaly configuration, the telemetry paths and the vendor support table, is on srv6 dot md, linked below.
+      Next: how to keep outsiders out of your SRv6 network. SRv6 security, and filtering the SID block.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

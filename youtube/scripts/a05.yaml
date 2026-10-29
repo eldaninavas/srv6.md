@@ -1,0 +1,209 @@
+id: a05
+lang: en
+title: "SRv6 for AI Inference over the WAN"
+playlist: "Track 5: SRv6 for AI Networks"
+description: |
+  SRv6 for AI inference across a provider WAN, explained through Cisco's October 2026 AI inference WAN white paper, a high-level design for service providers and neoclouds. We cover why inference is a WAN problem, Flex-Algo SLA planes with one locator block per plane inside 5f00::/16, BGP color steering, TI-LFA inside each plane, the six connectivity models, the DCI's three jobs, and how an inference WAN differs from an MRC training fabric. Every building block maps to an open standard.
+
+  This is lesson 5 of Track 5 (SRv6 for AI Networks) in the free SRv6.md course.
+links:
+  "Written lesson": https://srv6.md/ai/inference-wan/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 between AI data centers": https://srv6.md/ai/scale-across/
+  "Next lesson, SRv6 on Cisco IOS XR": https://srv6.md/implementations/cisco-ios-xr/
+hashtags: ["#SRv6", "#AIInference", "#FlexAlgo", "#NetworkEngineering"]
+tags: [srv6 ai inference, srv6, ai inference, inference wan, flex-algo, bgp color, usid, ti-lfa, dci, service provider, ai networking]
+thumbnail:
+  kicker: "AI Inference"
+  text: "A plane per SLA"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 5 · Lesson 5"
+    title: "SRv6 for AI Inference over the WAN"
+    subtitle: "Flex-Algo planes, BGP color and the DCI"
+    chapter: "Intro"
+    say: >
+      Training happens in a few giant GPU clusters. Inference happens everywhere.
+      Prompts come from offices, homes and phones, and the models that answer them run in edge cabinets,
+      metro sites, regional data centers and other clouds.
+      The network in between decides the time to first token, whether regulated data stays in the country,
+      and whether a voice agent feels instant or broken.
+      In this lesson you'll learn how an SRv6 micro-SID WAN can carry inference with a separate plane per SLA,
+      based on a design Cisco published in October 2026, explained in vendor-neutral terms.
+
+  - type: bullets
+    heading: "Why inference is a WAN problem"
+    chapter: "Why the WAN"
+    bullets:
+      - "**Latency:** voice and robotics can't cross a continent"
+      - "**Sovereignty:** paths must be constrained, not just short"
+      - "**Economics:** pool many small GPU sites as one"
+      - "**Data gravity:** process video where it's produced"
+    say: >
+      Four forces push inference into the WAN. Latency: voice agents, robotics and industrial vision can't absorb a cross-continent round trip,
+      so inference moves toward users. Sovereignty: prompts and responses carry regulated data that must stay in a country or a facility,
+      so paths must be constrained, not just short.
+      Economics: many smaller GPU sites pooled as one capacity reduce peak contention and token cost, which needs any-to-any connectivity between sites.
+      And data gravity: video and sensor data is cheaper to process where it's produced, so only the result crosses the backbone.
+
+  - type: bullets
+    heading: "Cisco's blueprint, in one paragraph"
+    chapter: "The design"
+    bullets:
+      - "Every inference location is **a data center**"
+      - "One **SRv6 uSID backbone**: DCI and access"
+      - "**Flex-Algo planes:** best effort + inference planes"
+      - "**BGP color** puts each service on its plane"
+    say: >
+      In October 2026, Cisco published an AI inference white paper for wide area networks:
+      a high-level design for service providers and neoclouds. It's a design, not a report of a deployment.
+      In it, every inference location, from a far-edge cabinet to a regional facility, is treated as a data center.
+      One SRv6 micro-SID backbone connects them to each other and to enterprise and consumer access.
+      It places inference in four tiers: far edge, metro edge, central edge and peering.
+      The IGP computes several planes with Flex-Algo: best effort, plus one or more inference planes,
+      such as low latency, sovereign, or secure links only.
+      And the router in front of an inference service advertises its prefix in BGP with a color that names the plane.
+
+  - type: bullets
+    heading: "Every layer is a standard"
+    bullets:
+      - "**SRv6 uSID** (RFC 8986, RFC 9800), **IS-IS** (RFC 9352)"
+      - "**Flex-Algo** (RFC 9350), **BGP color** (RFC 9256)"
+      - "**L3VPN, EVPN** (RFC 9252), **TI-LFA** (RFC 9855)"
+      - "**SRPM** with TWAMP Light, **MACsec or IPsec**"
+    say: >
+      Layer by layer, the blueprint picks SRv6 with micro-SIDs for the data plane, the IANA SRv6 block for addressing,
+      IS-IS with multiple domains and summarization at the borders, and a Flex-Algo topology per SLA plane.
+      Steering uses BGP color on the service routes, with on-demand SR-TE for tactical cases and a PCE between domains.
+      Services are L3VPN, EVPN and multicast VPN. TI-LFA protects each plane, SR Performance Measurement checks it,
+      and MACsec or IPsec secures the links.
+      The important point: nothing in that list is Cisco-specific. These are open standards, mostly IETF RFCs,
+      that other SRv6 implementations also ship.
+
+  - type: compare
+    heading: "One locator block per plane"
+    chapter: "SLA planes"
+    columns:
+      - title: "Best effort"
+        items: ["Algorithm 0", "5f00:bb00::/32", "Everything else"]
+      - title: "Inference plane"
+        items: ["Flex-Algo 128", "5f00:bb01::/32", "Low-delay path"]
+    say: >
+      Each plane is a Flex-Algo topology with its own constraint: lowest delay, links with a given affinity such as only encrypted links,
+      links inside one jurisdiction, or disjointness from another plane.
+      The IGP computes every plane on every router ahead of time, so a new inference session finds its path already programmed.
+      And each plane gets its own locator block. In the blueprint's example, best effort, algorithm zero,
+      uses five F zero zero, colon b b zero zero, slash thirty-two, and the inference plane, Flex-Algo one twenty-eight,
+      uses five F zero zero, colon b b zero one.
+      Nodes keep the same low-order bits in every plane, so a border can advertise one summary per plane,
+      instead of every node locator. That's what lets the design grow to many sites without a routing table explosion.
+
+  - type: record
+    url: https://srv6.md/ai/inference-wan/
+    index: 0
+    click: "Fail Metro P1"
+    click_at: 5
+    seconds: 18
+    say: >
+      Here are the two planes. Inference traffic leaves the access P E on Flex-Algo one twenty-eight,
+      through metro P one and core P one to the D C I, and on to the AI front-end and the model.
+      Best effort takes the dashed path through metro P two and core P two.
+      Now we fail the link between metro P one and core P one.
+      TI-LFA repairs inside the Flex-Algo one twenty-eight topology, through core P three.
+      So inference traffic keeps a low-delay path, instead of falling back to best effort.
+
+  - type: bullets
+    heading: "SLA signaling with BGP color"
+    chapter: "BGP color"
+    bullets:
+      - "Service prefix in **VPNv4/VPNv6** (or global IPv4/IPv6)"
+      - "**Color** community names the SLA plane"
+      - "**Service SID** from that plane's locator"
+      - "No colors in the front-end? **Community → color** at the DCI"
+    say: >
+      How does traffic find its plane? The router in front of an inference service, usually the D C I,
+      advertises the service prefix in BGP, VPN v4 or v6, or plain IPv4 and IPv6 for the global table.
+      It attaches a color extended community whose value names the SLA plane,
+      and the SRv6 service SID for that VRF, allocated from the locator of that plane.
+      Every access router that imports the route encapsulates matching traffic with that SID,
+      so packets follow the inference plane end to end.
+      If a device in the AI front-end can't set colors, it tags routes with a standard BGP community, and the D C I translates it into a color.
+      It's the same color-based steering defined for SR Policy, in RFC 9256. With Flex-Algo, the color simply resolves to the plane's locator,
+      not to an explicit path.
+
+  - type: compare
+    heading: "Six ways to attach inference"
+    columns:
+      - title: "Inside or beside the site"
+        items: ["Local: same router", "Direct IP handoff with a color", "Unified: leaf joins the IGP"]
+      - title: "Through a boundary"
+        items: ["AI front-end overlay: VXLAN to SRv6", "External peering: cloud models", "Shared IP endpoint: two SLAs"]
+    say: >
+      The blueprint describes six ways to attach an inference component, and a real application path mixes them.
+      Local: both components hang off the same router. Direct IP handoff: compute connects to a routed interface,
+      which advertises the prefix with its color. Unified: the front-end leaf joins the backbone IGP and does the SRv6 encapsulation itself,
+      for small and medium sites.
+      AI front-end overlay: the fabric runs EVPN over VXLAN, and the D C I re-encapsulates into SRv6, for large multi-tenant data centers.
+      External peering: the model sits in another network, and the peering router colors the prefix.
+      And shared IP endpoint: one user address advertised from two VRFs, with two colors and two SIDs, for two SLAs.
+
+  - type: bullets
+    heading: "The DCI's three jobs"
+    chapter: "The DCI"
+    bullets:
+      - "**Data plane:** terminate VXLAN, VRF lookup, SRv6 out"
+      - "**Control plane:** EVPN Type 5 ↔ VPNv4/VPNv6, keep the color"
+      - "**Summarization:** host routes stay local, aggregates out"
+      - "Option: **SRv6 uSID inside the front-end** fabric too"
+    say: >
+      The D C I is where the data center meets the WAN, and it does three jobs.
+      In the data plane, it terminates VXLAN, does a layer three lookup in the right VRF, and re-encapsulates in SRv6 for the backbone.
+      In the control plane, it translates EVPN route type five routes from the fabric into VPN v4 and v6 routes for the backbone,
+      keeping or adding the SLA color, and the reverse.
+      And it summarizes: the fabric carries a host route per compute node, and the D C I keeps those locally and advertises only aggregates.
+      A lighter variant splits the job between a border leaf and a P E.
+      The blueprint also notes that SRv6 micro-SID is an option inside the front-end fabric itself, which would remove the translation entirely.
+
+  - type: compare
+    heading: "Inference WAN vs training fabric"
+    chapter: "Inference vs training"
+    columns:
+      - title: "Training back-end (MRC)"
+        items: ["One DC, GPU to GPU", "NIC picks the path per packet", "No control plane in switches", "NIC retires failed paths"]
+      - title: "Inference WAN"
+        items: ["User to model, site to site", "Flex-Algo + BGP color per service", "IS-IS, BGP, optional PCE", "TI-LFA in the plane"]
+    say: >
+      SRv6 shows up at both ends of AI networking, for opposite reasons.
+      In a training back-end like MRC, the scope is one data center, the sending NIC picks the path for every packet,
+      the switches run static micro-SID routes with no control plane, and the NIC retires a failed path in tens of microseconds.
+      In the inference WAN, the scope is a provider network, from users to models and between sites.
+      The IGP's Flex-Algo planes and BGP color pick the path, per service. IS-IS and BGP run as usual,
+      and failures are handled by TI-LFA within the plane, then IGP convergence.
+      The goal isn't spraying, it's meeting a per-service SLA end to end: delay, sovereignty and isolation.
+
+  - type: bullets
+    heading: "What to take from it"
+    bullets:
+      - "SRv6 uSID is now in a vendor's **provider-WAN** design"
+      - "**Flex-Algo** is the SLA tool: no per-request computation"
+      - "**One /32 per plane** keeps summarization simple"
+      - "Measure **time to first token**, not just the link"
+    say: >
+      Four takeaways. SRv6 micro-SID has moved from hyperscaler back-ends into a vendor's provider-WAN reference design,
+      which makes it the primary transport and lists SR-MPLS only as an alternative.
+      Flex-Algo is the SLA tool. Planes computed in advance avoid any per-request path computation.
+      Address planning matters more than ever: one slash thirty-two per plane inside five F zero zero, slash sixteen,
+      with consistent node bits, keeps summarization and filtering simple.
+      And measure the user experience, not just the link. The blueprint ties network telemetry to inference metrics,
+      like time to first token and inter-token latency, so you can tell whether a slow answer came from the network or from the model.
+
+  - type: end
+    heading: "Read the full lesson"
+    subtitle: "The blueprint mapped to every standard"
+    url: "srv6.md/ai/inference-wan"
+    chapter: "Next steps"
+    say: >
+      The full lesson, with every building block mapped to its standard, is on srv6 dot md, linked below.
+      That completes the AI track. Next, we start configuring SRv6 vendor by vendor, beginning with Cisco I O S X R.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

@@ -40,7 +40,7 @@ MPLS) is the reference script: read it before writing a new one.
 | `big` | `value`, `caption` | One number or phrase that matters |
 | `code` | `heading`, `code` | Config or CLI copied from the page |
 | `image` | `heading`, `image` (path from the repo root) | Existing figures only: `docs/assets/images/srv6-packet-format.png`, `docs/assets/images/srv6-vs-mpls-overhead.png`, `docs/assets/images/state-of-srv6-2026.png` |
-| `record` | `url` (an srv6.md page), `index` (which diagram on the page, from 0), `click`, `click_at`, `seconds` | Records the page's animated diagram. Check the page has a ```` ```mermaid ```` flowchart; `index` counts the page's flowcharts in order. `click` is text from a scenario button (labels are in `tools/diagrams/diagrams.json`, e.g. "Fail") |
+| `record` | `url` (an srv6.md page), `selector` (default `.srv6-flow`; use `.srv6-seq` for an animated sequence diagram), `index` (which matching diagram on the page, from 0), `click`, `click_at`, `seconds` | Records the page's animated diagram. Check the page has a ```` ```mermaid ```` flowchart; `index` counts the page's flowcharts in order. `click` is text from a scenario button (labels are in `tools/diagrams/diagrams.json`, e.g. "Fail") |
 | `end` | `heading`, `subtitle`, `url` | Call to action |
 
 Every scene has `say:`, the narration for that scene.

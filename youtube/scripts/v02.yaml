@@ -1,0 +1,237 @@
+id: v02
+lang: en
+title: "SRv6 on Juniper Junos"
+playlist: "Track 6: SRv6 Configuration by Vendor"
+description: |
+  Juniper SRv6 on Junos and Junos Evolved, step by step: platforms and releases, a uSID block and locator, IS-IS, an SRv6 L3VPN with a uDT46 SID, Flex-Algo, TI-LFA with microloop avoidance, the verification commands and the gotchas, following the structure of Juniper's validated design for SRv6 core and edge.
+
+  This is lesson 2 of Track 6 (SRv6 Configuration by Vendor) in the free SRv6.md course.
+links:
+  "Written lesson (full Junos config)": https://srv6.md/implementations/juniper/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 on Cisco IOS XR": https://srv6.md/implementations/cisco-ios-xr/
+  "Next lesson, SRv6 on Nokia SR OS": https://srv6.md/implementations/nokia-sros/
+hashtags: ["#SRv6", "#Juniper", "#Junos", "#NetworkEngineering"]
+tags: [juniper srv6, srv6, junos srv6, junos evolved, srv6 usid, srv6 l3vpn, flex-algo, ti-lfa, segment routing, juniper mx, juniper ptx, juniper acx]
+thumbnail:
+  kicker: "Juniper Junos"
+  text: "uSID, step by step"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 6 · Lesson 2"
+    title: "SRv6 on Juniper Junos"
+    subtitle: "uSID, IS-IS, L3VPN, Flex-Algo and TI-LFA"
+    chapter: "Intro"
+    say: >
+      Juniper implements SRv6 in Junos, on the MX Series, and in Junos Evolved, on the PTX and ACX seven thousand Series.
+      In this lesson we walk through a complete micro-SID deployment the way the written lesson does,
+      following the structure of Juniper's validated design for SRv6 core and edge.
+      By the end, you'll be able to configure a micro-SID block and locator, I S I S, a layer three VPN,
+      Flex-Algo and T I L F A on Junos, and you'll know which command proves each step worked.
+
+  - type: bullets
+    heading: "Platforms and first releases"
+    chapter: "Platforms and releases"
+    bullets:
+      - "**MX 20.3R1:** SRv6 in IS-IS, classic SIDs"
+      - "**MX 20.4R1:** L3 services over SRv6 in BGP"
+      - "**ACX7000 23.2R1 / MX 23.4R1:** uSID"
+      - "**PTX10008 24.4R1-S2:** IS-IS, L3 services, uSID"
+      - "**JVD:** Junos and Junos Evolved 24.4R2, uSID only"
+    say: >
+      Junos supports both full-length, or classic, SIDs and micro-SIDs.
+      On the MX, SRv6 in I S I S with classic SIDs arrived in 20.3 R1, and layer three services over SRv6 in BGP in 20.4 R1.
+      Micro-SIDs came to the ACX seven thousand in 23.2 R1 and to the MX in 23.4 R1, and the PTX ten thousand eight got I S I S, layer three services and micro-SIDs in 24.4 R1 S2.
+      Juniper's validated design, or J V D, was qualified on Junos and Junos Evolved 24.4 R2, and it uses micro-SIDs only.
+      These are the introduced releases from Juniper's Feature Explorer. Check it for your exact platform and line card.
+
+  - type: bullets
+    heading: "The Junos building blocks"
+    chapter: "Building blocks"
+    bullets:
+      - "**Block:** the uSID block, 32 bits by default"
+      - "**Locator:** the node's /48, with micro-sid"
+      - "**uN:** advertised by IS-IS with micro-node-sid"
+      - "**uA:** per-adjacency SID, protected or unprotected"
+      - "**Service SID:** uDT4, uDT6 or uDT46 per VRF"
+    say: >
+      Five Junos objects make up an SRv6 network. The block is the micro-SID block, 32 bits by default, and the only length on ACX.
+      Inside each block, the global range, the G I B, defaults to static values, and the local range, the L I B, to dynamic ones.
+      The locator is the node's slash forty-eight. The micro-N SID is advertised by I S I S,
+      and without it, the local locator isn't even installed. The micro-A SID is a per-adjacency SID,
+      protected or unprotected. And the service SID, a micro D T 4, D T 6 or D T 46, belongs to each V R F.
+      With no flavor configured, micro-SIDs use P S P and U S D.
+
+  - type: code
+    heading: "Step 1: platform prerequisites (MX)"
+    chapter: "Configuration"
+    code: |
+      set chassis network-services enhanced-ip
+      set routing-options resolution preserve-nexthop-hierarchy
+      set routing-options forwarding-table srv6-chain-merge
+    say: >
+      Step one: platform prerequisites. Enhanced I P is needed on the MX only.
+      The other two lines enable the chained, hierarchical next-hop structures that SRv6 services resolve through.
+      The validated design sets them on every router, so do the same, and do it before you configure any service.
+
+  - type: code
+    heading: "Step 2: uSID block and locator"
+    code: |
+      set routing-options source-packet-routing srv6 block BLK0 5f00::/32
+      set routing-options source-packet-routing srv6 block BLK0 local-micro-sid maximum-static-sids 2000
+      set routing-options source-packet-routing srv6 locator LOC0 5f00:0:1::/48
+      set routing-options source-packet-routing srv6 locator LOC0 micro-sid block-name BLK0
+    say: >
+      Step two: the block and the locator. The example takes its addresses from five F zero zero, slash sixteen,
+      the block IANA reserved for SRv6 SIDs in RFC 9602. The micro-SID block is a slash thirty-two inside it,
+      and node one gets its locator, a slash forty-eight: 32 bits of block, a 16-bit node micro-SID, and 16 bits for functions.
+      Maximum static SIDs reserves part of the local range for static service SIDs. By default that range is empty,
+      so a static micro D T 46 value would fail to commit. Size it up front: changing it later means restarting routing.
+      And use the same block on every router, because micro-SID compression only works between nodes that share a block.
+
+  - type: code
+    heading: "Step 3: IS-IS"
+    code: |
+      set protocols isis interface et-0/0/0.0 point-to-point
+      set protocols isis interface et-0/0/0.0 level 2 srv6-adjacency-segment unprotected locator LOC0 micro-adjacency-sid
+      set protocols isis interface lo0.0 passive
+      set protocols isis source-packet-routing srv6 locator LOC0 micro-node-sid
+      set protocols isis level 1 disable
+      set protocols isis level 2 wide-metrics-only
+    say: >
+      Step three: I S I S. Micro-node-sid advertises the locator and the micro-N SID, in the SRv6 Locator T L V of RFC 9352.
+      The locator must be configured under I S I S, even if you only want SRv6 for layer three VPN.
+      On each core interface, micro-adjacency-sid with no value allocates a dynamic micro-A from the local range.
+      The validated design uses unprotected micro-A SIDs, and relies on T I L F A to protect the micro-N SIDs and prefixes.
+      One thing you don't need: I S I S multi-topology. The validated design only uses it during migration.
+
+  - type: code
+    heading: "Step 4: a VRF with a uDT46 SID"
+    chapter: "L3VPN over SRv6"
+    code: |
+      # VRF with a dynamic uDT46 SID (End.DT46 with NEXT-CSID)
+      set routing-instances CUST-A instance-type vrf
+      set routing-instances CUST-A interface ge-0/0/2.0
+      set routing-instances CUST-A route-distinguisher 192.0.2.1:100
+      set routing-instances CUST-A vrf-target target:65000:100
+      set routing-instances CUST-A protocols bgp source-packet-routing srv6 locator LOC0 micro-dt46-sid
+    say: >
+      Step four: the layer three VPN. The first four lines are an ordinary Junos V R F: instance type, interface,
+      route distinguisher and route target. The last line is the SRv6 part. It allocates a dynamic micro D T 46 SID for the V R F,
+      which is End D T 46 with the NEXT C-SID flavor: one SID that decapsulates and looks up both IPv4 and IPv6 in this V R F.
+      You can also pick a static value from the local static range, use separate micro D T 4 and D T 6 SIDs,
+      or use classic End D T SIDs instead.
+
+  - type: code
+    heading: "Step 4: BGP to the route reflectors (excerpt)"
+    code: |
+      set protocols bgp group RR type internal
+      set protocols bgp group RR local-address 2001:db8:ff::11
+      set protocols bgp group RR family inet-vpn unicast extended-nexthop
+      set protocols bgp group RR family inet-vpn unicast advertise-srv6-service
+      set protocols bgp group RR family inet-vpn unicast accept-srv6-service
+      set protocols bgp group RR family route-target nexthop-resolution no-resolution
+      set protocols bgp rfc8950-compliant
+    say: >
+      Then BGP, to the route reflectors over IPv6. Advertise-srv6-service and accept-srv6-service turn on SRv6 service signaling
+      for VPN IPv4. The full block on srv6 dot md adds the same two lines for VPN IPv6, plus the neighbor and multipath.
+      Extended-nexthop and rfc8950-compliant make VPN IPv4 routes carry IPv6 next hops in the standard RFC 8950 encoding,
+      which matters when you interoperate with other vendors.
+      And nexthop-resolution no-resolution fixes a quiet problem: without it, route-target routes stay hidden,
+      because the PE loopbacks only exist in the IPv6 table.
+
+  - type: bullets
+    heading: "How a VPN route resolves"
+    bullets:
+      - "BGP NEXT_HOP is **ignored** for resolution"
+      - "Resolves on the **locator** inside the SID, in **inet6.3**"
+      - "SID in the **Prefix-SID attribute**, RFC 9252"
+      - "Inter-AS **Option C** works; **Option B** does not"
+    say: >
+      Here's what happens next. With SRv6 services enabled, Junos ignores the BGP next hop for resolution.
+      It resolves the route on the locator inside the SRv6 SID, which I S I S has installed in inet6 dot 3 as an SRV6 I S I S route.
+      No resolution rib tweaks are needed. The per-VRF SID travels in the BGP Prefix-SID attribute, with the function bits
+      transposed into the label field, as RFC 9252 describes. Inter-AS option C works over SRv6; option B is not supported.
+      The same pattern carries Internet routes in the global table. And if you do that, filter five F zero zero, slash sixteen
+      on your eBGP sessions, as the validated design does: an AS that injects routes covering your SID space can attract your VPN traffic.
+
+  - type: code
+    heading: "Step 5: Flex-Algo 128 (excerpt)"
+    chapter: "Flex-Algo and TI-LFA"
+    code: |
+      set routing-options flex-algorithm 128 definition metric-type delay-metric
+      set protocols isis source-packet-routing flex-algorithm 128
+      set routing-options source-packet-routing srv6 locator LOC128 5f00:a1:1::/48
+      set routing-options source-packet-routing srv6 locator LOC128 algorithm 128
+      set routing-instances CUST-LL protocols bgp source-packet-routing srv6 locator LOC128 micro-dt46-sid
+    say: >
+      Step five: Flex-Algo. An algorithm needs three things: a definition, I S I S participation, and its own locator.
+      Here algorithm 128 is low latency, using the delay metric. Its locator, LOC 128, sits in its own slash thirty-two block,
+      and is bound to algorithm 128. Services pick the algorithm through the locator their SID comes from:
+      the V R F CUST L L takes its micro D T 46 from LOC 128, so all its traffic follows the low-latency topology.
+      You can also allocate a second SID in a V R F, and swap it in per prefix with an export policy.
+      Delay-based algorithms need measured link delay, and on Junos, Flex-Algo applies to SR-MPLS and SRv6 together.
+
+  - type: code
+    heading: "Step 6: TI-LFA and microloop avoidance"
+    code: |
+      set protocols isis backup-spf-options use-post-convergence-lfa
+      set protocols isis backup-spf-options use-source-packet-routing
+      set protocols isis interface et-0/0/0.0 level 2 post-convergence-lfa
+      set protocols isis interface et-0/0/0.0 level 2 post-convergence-lfa node-protection cost 16777214
+      set protocols isis spf-options microloop-avoidance post-convergence-path delay 5000
+    say: >
+      Step six: protection. Link protection is the default once post-convergence L F A is on an interface.
+      The validated design adds node protection with a very high cost, so a node-protecting path is preferred,
+      but a link-protecting backup is still used when no node-protecting path exists. The last line adds microloop avoidance.
+      Micro-SID T I L F A, microloop avoidance and Flex-Algo protection arrived in Junos 23.4 R1.
+      One caveat: before Junos 26.2 R1, SRLG isn't considered for SRv6 T I L F A.
+      The validated design measured worst-case link-failure convergence of around five milliseconds.
+
+  - type: code
+    heading: "Verify it"
+    chapter: "Verification"
+    code: |
+      show isis overview
+      show isis adjacency extensive
+      show srv6 block BLK0
+      show route table inet6.3 protocol isis
+      show route table inet6.0 protocol srv6
+      show isis backup coverage
+      ping srv6 isis <sid>
+    say: >
+      To verify, start with show isis overview: look for SRv6 enabled, your locator, and the micro-node SID with P S P and U S D flavors.
+      Show isis adjacency extensive shows the End X SID on each adjacency. Show srv6 block gives the global and local ranges
+      and how many SIDs are in use. In inet6 dot 3, remote locators appear as SRV6 I S I S routes with SRV6 tunnel next hops,
+      and in inet6 dot 0, protocol srv6 lists your local service SIDs, such as a micro D T 46 pointing to the V R F table.
+      Show isis backup coverage gives the share of nodes and prefixes protected, and ping srv6 checks that a micro-N or End SID is reachable.
+
+  - type: bullets
+    heading: "Limits and gotchas"
+    chapter: "Gotchas"
+    bullets:
+      - "**SID depth:** MX encaps 6, ACX7000 12, PTX 7"
+      - "Ingress PEs encapsulate: egress SIDs need **USD**"
+      - "Same static uA in two places **fails commit**"
+      - "No **next-hop-self** knob: use an export policy"
+    say: >
+      Finally, the gotchas from the written lesson. SID depth: the MX encapsulates up to six SIDs and inserts up to five,
+      the ACX seven thousand encapsulates twelve and inserts ten, and the PTX models listed support seven.
+      Since one container holds up to six micro-SIDs, that leaves plenty of headroom.
+      Ingress PEs always encapsulate, so egress SIDs must support U S D.
+      Configuring the same static micro-A under both the SRv6 manager and I S I S fails the commit.
+      And there's no next-hop-self knob: Junos needs an export policy with then next-hop self.
+      Also note that show spring-traffic-engineering is for SR-TE policies, not for SRv6 locators.
+
+  - type: end
+    heading: "Read the written lesson"
+    subtitle: "Every step, the classic-SID variant and the JVD"
+    url: "srv6.md/implementations/juniper"
+    chapter: "Next steps"
+    say: >
+      The written lesson on srv6 dot md has every block from this video in full, the classic-SID variant,
+      the Internet service configuration, and the complete verification table. It also links Juniper's validated design,
+      with full test-bed configurations and convergence results, and netlab topologies to try it yourself.
+      Next, we look at Nokia S R O S. This lesson is part of the free SRv6 dot md course.
+      Subscribe, and I'll see you in the next lesson.

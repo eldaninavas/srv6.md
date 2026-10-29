@@ -1,0 +1,62 @@
+id: r01
+lang: en
+format: short
+title: "RFC 8754 in 60 Seconds: The SRv6 Header"
+playlist: "RFCs Explained (Shorts)"
+description: |
+  RFC 8754 in 60 seconds: the IPv6 Segment Routing Header (SRH), Routing Type 4. What problem it solves, the segment list and Segments Left, why transit routers never read it, and what the HMAC TLV does and does not protect.
+
+  Part of the free SRv6.md course.
+links:
+  "Written lesson, RFC 8754 explained": https://srv6.md/rfcs/rfc8754/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Next Short, RFC 8986": https://srv6.md/rfcs/rfc8986/
+hashtags: ["#SRv6", "#RFC8754", "#IPv6", "#Shorts"]
+tags: [rfc 8754, srv6, segment routing header, srh, ipv6 routing header, segments left, srv6 rfc, segment routing, ipv6, network engineering]
+thumbnail:
+  kicker: "RFC 8754"
+  text: "The SRv6 header"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · RFCs Explained"
+    title: "RFC 8754"
+    subtitle: "The SRv6 header, in 60 seconds"
+    say: >
+      RFC 8754, in sixty seconds. SRv6 needs to carry an ordered list of instructions inside an IPv6 packet.
+      This RFC defines how: the Segment Routing Header, or S R H.
+
+  - type: bullets
+    heading: "What it defines"
+    bullets:
+      - "An IPv6 Routing Header of **type 4**"
+      - "A **segment list** of 128-bit SIDs, in reverse order"
+      - "**Segments Left:** points to the active segment"
+    say: >
+      The S R H is an IPv6 routing header of type 4. It carries the segment list, 128-bit SIDs stored in reverse order,
+      and a field called Segments Left that points at the active one.
+
+  - type: bullets
+    heading: "How it works"
+    bullets:
+      - "Each endpoint: **SL minus one**, next SID into the DA"
+      - "**Transit routers** never read the SRH"
+    say: >
+      At each endpoint, Segments Left goes down by one, and the next SID is copied into the destination address.
+      Routers in between don't read the S R H at all.
+
+  - type: bullets
+    heading: "Why you should care"
+    bullets:
+      - "Transit nodes only need **plain IPv6**"
+      - "The **HMAC TLV** authenticates, it doesn't encrypt"
+    say: >
+      Why care? Only the routers named in the list need to understand SRv6.
+      And an H MAC T L V can prove who built the S R H, but it encrypts nothing.
+
+  - type: end
+    heading: "RFC 8754, explained"
+    subtitle: "Field by field, with the common pitfalls"
+    url: "srv6.md/rfcs/rfc8754"
+    say: >
+      The full lesson is on srv6 dot md.

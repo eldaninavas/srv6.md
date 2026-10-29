@@ -1,0 +1,238 @@
+id: a01
+lang: en
+title: "MRC and SRv6: How OpenAI Networks 100,000 GPUs"
+playlist: "Track 5: SRv6 for AI Networks"
+description: |
+  MRC and SRv6, explained from the published paper and the OCP specification. MRC (Multipath Reliable Connection) is an RDMA transport that sprays every connection across hundreds of paths, and in OpenAI's and Microsoft's largest GPU training clusters it rides on static SRv6 uSID source routing: the NIC writes the path into the IPv6 destination address and the switches run no BGP and no IGP. We cover the multi-plane two-tier Clos, the packet, entropy values mapped to explicit paths, how the transport handles failures, the published results and the limits the authors acknowledge.
+
+  This is lesson 1 of Track 5 (SRv6 for AI Networks) in the free SRv6.md course.
+links:
+  "Written lesson": https://srv6.md/ai/mrc/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 SID decoder": https://srv6.md/tools/sid-decoder/
+  "Next lesson, designing an AI fabric with SRv6": https://srv6.md/ai/ai-fabric-design/
+hashtags: ["#SRv6", "#AINetworking", "#MRC", "#NetworkEngineering"]
+tags: [mrc srv6, mrc, multipath reliable connection, srv6, ai networking, openai, gpu cluster, usid, rdma, rocev2, ocp]
+thumbnail:
+  kicker: "MRC + SRv6"
+  text: "No BGP?"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 5 · Lesson 1"
+    title: "MRC and SRv6"
+    subtitle: "How OpenAI's AI supercomputer network works"
+    chapter: "Intro"
+    say: >
+      The largest AI training networks in production run SRv6, and they use it in a way you might not expect:
+      no BGP, no IGP, and switches whose tables never change after installation.
+      In this lesson you'll learn what MRC is, why its designers turned dynamic routing off,
+      how the NIC writes an entire path into one IPv6 destination address,
+      and what the published results and limits really say.
+
+  - type: bullets
+    heading: "MRC in 60 seconds"
+    chapter: "What MRC is"
+    bullets:
+      - "Multipath extension of **RoCEv2** Reliable Connection"
+      - "AMD, Broadcom, Intel, Microsoft, NVIDIA, OpenAI: **OCP MRC 1.0**"
+      - "Production: **OpenAI** GB200 clusters, **Microsoft** Fairwater"
+      - "Paired with **static SRv6 uSID** source routing"
+    say: >
+      MRC stands for Multipath Reliable Connection. It's an RDMA transport for AI training clusters,
+      a multipath extension of the RoCE version two Reliable Connection,
+      and it sprays every connection across hundreds of network paths.
+      It was specified by AMD, Broadcom, Intel, Microsoft, NVIDIA and OpenAI,
+      and released as an open Open Compute Project specification on the fifth of May, 2026.
+      It runs in production in OpenAI's largest NVIDIA GB200 training clusters, including the Oracle Cloud site in Abilene, Texas,
+      and in Microsoft's Fairwater AI supercomputers. It has trained frontier models used in ChatGPT and Codex.
+      And it pairs with static SRv6 source routing, which makes it the strongest production validation of SRv6 for AI to date.
+
+  - type: bullets
+    heading: "Three problems at 100K GPUs"
+    chapter: "Why MRC exists"
+    bullets:
+      - "**ECMP collisions:** each QP rides one hashed path"
+      - "**Slow, opaque failures:** convergence takes seconds"
+      - "**Two adaptive systems** fighting each other"
+    say: >
+      Large training jobs synchronize thousands of GPUs at every step, so the slowest flow sets the pace for the whole job.
+      The conventional backend, RoCE version two on a lossless fabric with per-flow ECMP and BGP, has three problems at this scale.
+      First, collisions. Each RDMA queue pair follows one hashed path. In the MRC paper's comparison,
+      a single RoCE queue pair reached about half the achievable all-reduce throughput because of collisions.
+      Second, failures. Dynamic routing repairs a failed link by protocol convergence,
+      which takes seconds to tens of seconds, and the transport can't tell which path each packet took.
+      Third, a multipath transport reacting to loss and a routing protocol reacting to the same failures are hard to reason about together.
+      So the authors made the transport responsible for load balancing and recovery,
+      and took what they call the unusual position of disabling dynamic routing in the switches.
+
+  - type: compare
+    heading: "Multi-plane, two-tier Clos"
+    chapter: "The topology"
+    columns:
+      - title: "Conventional 800G Clos"
+        items: ["3 or more tiers", "64 × 800G switches", "Longest path: 5 switches", "≈3% lost per T0–T1 failure"]
+      - title: "MRC multi-plane (8×100G)"
+        items: ["2 tiers for ~131K GPUs", "512 × 100G switches", "Longest path: 3 switches", "≈0.4% lost per T0–T1 failure"]
+    say: >
+      The topology is the first trick. A fifty-one point two terabit switch has sixty-four ports of eight hundred gig.
+      A conventional three-tier Clos built from it tops out at sixty-five thousand five hundred thirty-six NICs.
+      MRC clusters instead break each eight hundred gig NIC out by lane into eight ports of one hundred gig,
+      and build eight parallel planes from the same switches, which now have five hundred twelve ports each.
+      Each T zero connects two hundred fifty-six NICs down and two hundred fifty-six T ones up,
+      and each T one connects five hundred twelve T zeros. That's one hundred thirty-one thousand and seventy-two NICs in just two tiers,
+      with the longest path three switches instead of five,
+      and about two thirds of the optics and three fifths of the switches at full bisection.
+
+  - type: record
+    url: https://srv6.md/ai/mrc/
+    index: 0
+    click: "Fail NIC port 8"
+    click_at: 5
+    seconds: 16
+    say: >
+      Here are three of the eight planes. One NIC sends through plane one, plane two and plane eight in parallel,
+      each through its own T zero, T one and T zero to the destination NIC.
+      Now we fail NIC port eight. Plane eight goes dark, and packets keep spraying over the other planes.
+      The node loses one port's bandwidth, about twelve percent, and the job keeps running.
+      Compare that with a single T zero to T one link failing, which costs a node only about zero point four percent.
+      Production clusters use both four-plane and eight-plane variants.
+
+  - type: code
+    heading: "The MRC packet"
+    chapter: "How SRv6 is used"
+    code: |
+      ┌──────────────────────────────────────────────────────────────┐
+      │ Outer IPv6 header                                             │
+      │   DA = SRv6 path: 32-bit block | uSID | uSID | uSID | uSID |0│
+      │   Flow label = part of the 32-bit entropy value (EV)          │
+      ├──────────────────────────────────────────────────────────────┤
+      │ Inner IPv6 header                                             │
+      │   DA = destination NIC address (used to decapsulate)          │
+      ├──────────────────────────────────────────────────────────────┤
+      │ UDP  (source port = rest of the EV)                           │
+      ├──────────────────────────────────────────────────────────────┤
+      │ RDMA transport headers + payload (MRC)                        │
+      └──────────────────────────────────────────────────────────────┘
+    say: >
+      Now the packet. MRC packets are IPv6 in IPv6, and the NIC does all the SRv6 encapsulation and decapsulation.
+      Every switch is a plain SRv6 transit node.
+      The outer destination address is the path: a thirty-two bit block followed by sixteen-bit micro-SIDs, one per hop.
+      The inner IPv6 header carries the destination NIC's own address, which it uses to decapsulate.
+      The deployment in the paper never mentions a Segment Routing Header.
+      A whole cross-fabric path fits in the destination address, so the overhead is a single forty-byte IPv6 header,
+      and that's what keeps SRv6 on the fast path of every switch ASIC.
+
+  - type: code
+    heading: "One path, four uSIDs (made up)"
+    code: |
+      DA = fcbb:bb00:0103:0b07:0141:0012::
+           └─block─┘ └T0┘ └T1┘ └T0┘ └port┘
+      At source T0 (0103):      shift → fcbb:bb00:0b07:0141:0012::
+      At T1 (0b07):             shift → fcbb:bb00:0141:0012::
+      At destination T0 (0141): shift → fcbb:bb00:0012::  → static route to port 0x12
+    say: >
+      Each switch does three things at line rate. Compare the first forty-eight bits of the destination with its own block and micro-SID.
+      On a match, shift the remaining micro-SIDs left by sixteen bits, the micro N shift.
+      And look up the new destination in a static slash forty-eight route that names the egress port.
+      A path that crosses a T one carries four micro-SIDs: source T zero, T one, destination T zero,
+      and a last one that isn't a switch at all. It names the destination T zero's downlink port to the receiving NIC.
+      The values on screen are illustrative. The paper defines this layout but doesn't publish its numbering plan.
+
+  - type: bullets
+    heading: "Entropy values are paths"
+    bullets:
+      - "Per QP: an **EV set**, typically **128–256** values"
+      - "Each EV = **one explicit path** on one plane"
+      - "Per packet: plane into **every uSID**, uplink into the **T1 uSID**"
+      - "EV also in the **UDP port and flow label**, for ACKs"
+    say: >
+      This is the idea that ties the transport to SRv6.
+      When a queue pair starts, the NIC generates a set of entropy values, typically one hundred twenty-eight to two hundred fifty-six,
+      split equally across planes. Each entropy value corresponds to one explicit path on one plane.
+      For every packet, the NIC picks the next value and fills in an address template:
+      the plane number goes into every micro-SID, and the T zero uplink number goes into the T one micro-SID.
+      The mapping is algorithmic, so there's no table of two hundred fifty-six addresses per queue pair.
+      The value is also written into the UDP source port and the flow label, not for hashing,
+      but so the receiver can echo it back, because the shifts have consumed the destination address by the time the packet arrives.
+      So "this entropy value saw loss" means "this physical path saw loss". Per-flow ECMP can never tell a transport that.
+
+  - type: bullets
+    heading: "A static control plane"
+    bullets:
+      - "Switch tables set **at install time**, never changed"
+      - "**No BGP, no IGP**, no controller on the switches"
+      - "A **host agent** configures only the NICs"
+      - "Static ECMP + MRC rejected: no **EV-to-path** mapping"
+    say: >
+      On the switches, forwarding tables are configured when the switch is installed and aren't changed afterwards.
+      No BGP, no IGP, and no controller programming the switches.
+      A host agent on each node configures only the NICs: their entropy profiles and their path denylists.
+      The authors also rejected the middle ground of static ECMP with MRC on top,
+      because it still gives no simple mapping from entropy value to physical path for failure reporting.
+      Part of their motivation is switch software itself. They cite a study where seventeen percent of switch failures were software bugs,
+      and they saw switches whose control plane and links were up while they weren't forwarding.
+
+  - type: bullets
+    heading: "How the transport uses the paths"
+    chapter: "The transport"
+    bullets:
+      - "**Spraying** per packet, written to GPU memory in any order"
+      - "**No PFC:** lossy, best-effort Ethernet"
+      - "**Trimming:** trimmed loss = congestion, untrimmed = failure"
+      - "Failed paths bypassed in **tens of microseconds**"
+      - "NIC port failure: the **slow case**, up to seconds"
+    say: >
+      The transport does the rest. Every packet gets a different entropy value, rotating across all planes,
+      and since every packet carries its RDMA address, the receiver writes it to GPU memory in any order.
+      The fabric runs lossy, with no P F C, because hundreds of paths converging on the last hop would cause head-of-line blocking.
+      ECN marks make the sender avoid a path for a while.
+      A congested switch trims the payload instead of dropping the packet, so trimmed loss means congestion,
+      and untrimmed loss means a failed path. That retires the entropy value at once, replaced by a backup on the same plane,
+      within a few tens of microseconds. Background probes bring paths back once they work again.
+      The slow case is a NIC port failure: under a second in the testbed, a few seconds in production.
+
+  - type: bullets
+    heading: "Published results"
+    chapter: "Results"
+    bullets:
+      - "Testbed: **≈770 Gb/s** per 800G NIC (≈96% of peak)"
+      - "NCCL at **42,020 GPUs:** up to 92 GB/s per NIC"
+      - "Silent T1 failure: rebooted, **largely unaffected**"
+      - "1% injected loss: RoCE **unusable**, MRC kept **~1/3**"
+    say: >
+      The results come from the paper. In the testbed, point-to-point writes reached about seven hundred seventy gigabits per second,
+      about ninety-six percent of the eight hundred gig peak. An NCCL benchmark ran at forty-two thousand and twenty GPUs.
+      In production, a seventy-five thousand GPU job started with losses well below one packet per second per NIC within a couple of minutes.
+      Constant T zero to T one link flaps had almost no impact, and flapping links are left in service.
+      A T one switch that silently stopped forwarding during a seventy-five thousand GPU job was detected and rebooted automatically,
+      with throughput largely unaffected. Against RoCE on identical small testbeds, one MRC queue pair beat sixteen RoCE queue pairs on ring all-reduce,
+      and with one percent injected loss, RoCE was, in the authors' words, pretty much unusable, while MRC kept about a third of its throughput.
+
+  - type: bullets
+    heading: "Limits the authors acknowledge"
+    chapter: "Limits"
+    bullets:
+      - "The **NIC transceiver** is a single point of failure"
+      - "**NIC-side failures** are slower than fabric failures"
+      - "**Sustained 1% loss** cuts throughput to about a third"
+      - "Reverse paths, **SRH qualification**, parallel-link choice"
+    say: >
+      Now the costs, as the authors list them. In the four by two hundred gig design, one optic carries all four ports,
+      so if it flaps, queue pairs fail. NIC-side failures are slower to handle than fabric failures,
+      because remapping entropy values across many queue pairs isn't instantaneous on current NICs.
+      Sustained one percent loss still cuts MRC to about a third of its throughput: enough to ride out transients, not to keep training.
+      Simply reversing the forward path doesn't always work, so receivers keep a separate set of reverse paths.
+      And two SRv6 gaps were called out at OCP 2026: switch vendors still need to qualify longer paths that use an S R H, and to provide a supported way to pick one link among parallel links.
+      And large-scale comparisons against RoCE weren't published. The head-to-head tests used small testbeds.
+
+  - type: end
+    heading: "Read the full MRC lesson"
+    subtitle: "Every number, the OCP spec modes and the telemetry"
+    url: "srv6.md/ai/mrc"
+    chapter: "Next steps"
+    say: >
+      The full lesson on srv6 dot md, linked below, has every number from this video,
+      the three forwarding models in the OCP specification, and how OpenAI's Clustermapper probes every link every millisecond.
+      Next, we'll turn this into a design you can build: an SRv6 AI fabric, from the micro-SID plan to the switch tables.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

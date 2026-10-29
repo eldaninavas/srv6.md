@@ -1,0 +1,199 @@
+id: f01
+lang: en
+title: "What is SRv6? Segment Routing over IPv6 Explained"
+playlist: "Track 1: SRv6 Foundations"
+description: |
+  What is SRv6? Segment Routing over IPv6 explained from first principles: why it exists, how a SID works as an instruction, what the Segment Routing Header carries, the three roles of source, transit and endpoint, a complete L3VPN packet walk hop by hop, and the trade-offs you have to plan for.
+
+  This is lesson 1 of Track 1 (SRv6 Foundations) in the free SRv6.md course.
+links:
+  "Written lesson, What is SRv6?": https://srv6.md/topics/what-is-srv6/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Next lesson, SRv6 SID structure": https://srv6.md/topics/sid-structure/
+  "SRv6 glossary": https://srv6.md/topics/glossary/
+hashtags: ["#SRv6", "#SegmentRouting", "#IPv6", "#NetworkEngineering"]
+tags: [what is srv6, srv6, segment routing over ipv6, srv6 explained, segment routing, ipv6 segment routing, srv6 tutorial, srh, srv6 sid, network engineering, ccie service provider]
+thumbnail:
+  kicker: "What is SRv6?"
+  text: "Path in packet"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 1 · Lesson 1"
+    title: "What is SRv6?"
+    subtitle: "Segment Routing over IPv6, explained"
+    chapter: "Intro"
+    say: >
+      What is SRv6? By the end of this lesson you'll be able to explain it in one sentence,
+      read an SRv6 SID, follow a VPN packet hop by hop through an SRv6 network,
+      and name the trade-offs you have to plan for before you deploy it.
+
+  - type: image
+    heading: "The idea in one picture"
+    image: docs/assets/images/srv6-packet-format.png
+    chapter: "The core idea"
+    say: >
+      Here's the one sentence. SRv6 steers and programs traffic by writing an ordered list of instructions,
+      called segments, into the IPv6 packet itself. Each instruction is a SID, a hundred and twenty-eight bit IPv6 address.
+      A router acts on the instruction in the packet's destination address, and then the next one takes its place.
+      When there's more than one instruction, the rest travel in an extension header, the Segment Routing Header.
+      Inside, the customer packet is untouched.
+
+  - type: bullets
+    heading: "One technology, many names"
+    bullets:
+      - "SRv6 = IPv6 Segment Routing = Segment Routing v6"
+      - "**\"v6\"** is the IP version, not a sixth release"
+      - "Two data planes: **SRv6** (IPv6) and **SR-MPLS** (labels)"
+      - "SRv6 is not a new IP version: it's a way of using IPv6"
+    say: >
+      You'll also see it called IPv6 Segment Routing, or Segment Routing v6. It's all the same IETF technology.
+      The v6 is the IP version of the data plane, not a sixth release.
+      Segment Routing has two data planes: SRv6, where segments are IPv6 addresses, and SR-MPLS, where they're MPLS labels.
+      And SRv6 is not a replacement for IPv6. Every SRv6 packet is a valid IPv6 packet.
+
+  - type: compare
+    heading: "Why SRv6 exists"
+    chapter: "Why SRv6 exists"
+    columns:
+      - title: "Classic MPLS network"
+        items: ["IGP + LDP + RSVP-TE + BGP VPN labels", "Tunnel state on every midpoint", "MPLS enabled hop by hop"]
+      - title: "SRv6 network"
+        items: ["IGP + BGP, no LDP or RSVP-TE", "Path state only on the headend", "Transit routers only forward IPv6"]
+    say: >
+      Why does it exist? A classic MPLS provider network runs four or five protocols for what is really one job:
+      moving packets along a chosen path and into the right VPN.
+      RSVP-TE is the worst case. A full mesh between N edge routers means on the order of N squared tunnels,
+      and every midpoint keeps state for each tunnel that crosses it.
+      MPLS also stops at domain edges, because data centers and hosts run plain IP.
+      SRv6 uses source routing instead. The headend writes the path into the packet, and the core keeps no per-path state.
+
+  - type: bullets
+    heading: "What you get from SIDs that are IPv6 addresses"
+    bullets:
+      - "**One data plane** from WAN to data center to Linux host"
+      - "**The service lives in the address:** no separate VPN label"
+      - "**Locators summarize** like any IPv6 prefix"
+      - "**A programmable network:** chain instructions into a program"
+    say: >
+      Because instructions are IPv6 addresses, four things follow. The same encapsulation runs across the WAN,
+      the metro, the data center and even Linux hosts, with IPv4 carried as a payload.
+      A SID can mean decapsulate and look up in V R F Blue, so a VPN needs no separate label.
+      Locators can be summarized like any IPv6 prefix. And you can chain instructions into a small network program.
+      Think of a sat-nav route with waypoints: between waypoints the IGP picks the road, and at each waypoint something can happen.
+
+  - type: bullets
+    heading: "Reading a SID: 5f00:0:5:100::"
+    bullets:
+      - "**Locator** 5f00:0:5::/48: where (node 5)"
+      - "**Function** 0x100: what (End.DT4, VRF Blue)"
+      - "**Arguments:** zero for most behaviors"
+      - "Only the 128-bit total is fixed"
+    chapter: "Building blocks"
+    say: >
+      Let's read a SID. This one has three parts. The locator, a slash forty-eight, is a block plus a node ID,
+      and it's routed normally, so it says where to go: node five.
+      The function, one hundred, says what to do there: End D T 4, decapsulate and look up in V R F Blue.
+      The arguments are optional, and zero for most behaviors.
+      Field lengths are your choice. Only the total of a hundred and twenty-eight bits is fixed.
+      And RFC 9602 set aside five F zero zero, slash sixteen, so SIDs are easy to spot and filter.
+
+  - type: bullets
+    heading: "Three roles"
+    bullets:
+      - "**Headend:** picks the SID list, adds IPv6 + SRH"
+      - "**Transit:** plain IPv6 lookup, ignores the SRH"
+      - "**Endpoint:** owns the SID, runs its behavior"
+      - "Only headends and endpoints need SRv6"
+    say: >
+      This is the key idea of SRv6: the destination address always holds the active SID.
+      The headend classifies the packet, picks the SID list, and adds the outer IPv6 header.
+      Transit routers don't own that SID, so they do a normal longest-prefix match. They don't even inspect the S R H.
+      The endpoint that owns the SID executes it, writes the next SID into the destination address, and forwards again.
+      Because transit needs only IPv6, SRv6 can cross parts of the network that have never heard of it.
+      That's a major practical difference from MPLS.
+
+  - type: bullets
+    heading: "The Segment Routing Header (SRH)"
+    bullets:
+      - "IPv6 routing header: Next Header 43, Routing Type 4"
+      - "**Segments Left:** index of the active SID"
+      - "Segment list stored in **reverse order**"
+      - "Cost: 40 B IPv6 + 8 B SRH + 16 B per SID"
+    say: >
+      When a path needs more than one SID, the rest travel in the Segment Routing Header, defined in RFC 8754.
+      Segments Left is the index of the active SID, and each endpoint decrements it by one.
+      The list is stored in reverse order: entry zero is the last SID of the path.
+      The cost is forty bytes of outer IPv6 header, eight bytes of fixed S R H, and sixteen bytes per SID.
+      Often it's less: a single-SID program needs no S R H at all.
+
+  - type: compare
+    heading: "Behaviors and control plane"
+    columns:
+      - title: "What a SID can do (RFC 8986)"
+        items: ["End: go to the next SID", "End.X: out a specific link", "End.DT4/DT6: decap into a VRF", "H.Encaps: headend wraps the packet"]
+      - title: "Who tells the headend"
+        items: ["IS-IS / OSPFv3: locators", "BGP: VPN service SIDs", "SR Policy: explicit SID lists"]
+    say: >
+      RFC 8986 defines what a SID can do. End moves to the next SID. End X does the same out a specific link.
+      End D T 4 and D T 6 decapsulate into a V R F, and H Encaps is the headend wrapping the packet.
+      SRv6 has no signaling protocol of its own. I S I S and O S P F v 3 advertise locators,
+      BGP advertises the VPN service SIDs, and an SR Policy defines an explicit SID list for traffic engineering.
+
+  - type: code
+    heading: "The packet PE1 builds"
+    chapter: "Packet walk"
+    code: |
+      Outer IPv6   SA = 2001:db8::1 (PE1)   DA = 5f00:0:3:1::   Next Header = 43
+      SRH          Routing Type = 4   Segments Left = 1   Last Entry = 1
+                   Segment List[0] = 5f00:0:5:100::   (PE5: End.DT4, VRF Blue)
+                   Segment List[1] = 5f00:0:3:1::     (P3: End)
+      Inner IPv4   10.1.1.1 → 10.2.2.2
+      Payload
+    say: >
+      Now a complete walk. A layer three VPN packet must reach P E 5 through P 3, the low-latency route.
+      P E 1 learned from BGP that the destination sits behind P E 5, with an End D T 4 service SID.
+      It wraps the IPv4 packet: P 3's End SID goes in the destination address, and the S R H holds both SIDs.
+      P 2 doesn't own that address, so it just routes on P 3's locator.
+      P 3 matches its End SID, drops Segments Left to zero, and copies P E 5's SID into the destination.
+      P 4 routes again, and P E 5 removes the outer header and looks up the IPv4 packet in V R F Blue.
+
+  - type: bullets
+    heading: "What that packet costs"
+    bullets:
+      - "Full SRH: 40 + 8 + 2 × 16 = **80 bytes**"
+      - "H.Encaps.Red: **64 bytes**"
+      - "uSID: both instructions in the DA, **40 bytes**, no SRH"
+      - "Without TE: one SID in the DA, no SRH"
+    say: >
+      That example costs eighty bytes. With reduced encapsulation, which leaves the first SID out of the S R H, it's sixty-four.
+      With micro-SIDs, both instructions fit in the destination address, so it's forty bytes and no S R H at all.
+      Micro-SIDs pack up to six sixteen-bit instructions into one address.
+      And without traffic engineering, P E 1 would simply put P E 5's service SID in the destination address,
+      and let the IGP shortest path do the rest.
+
+  - type: bullets
+    heading: "Trade-offs to know"
+    chapter: "Trade-offs"
+    bullets:
+      - "**MTU:** at least 40 more bytes in the core"
+      - "**SID depth:** check what your hardware can push"
+      - "**Load balancing:** headend must set the flow label"
+      - "**Security:** edge filtering is mandatory"
+      - "**Tooling:** some still assumes MPLS"
+    say: >
+      SRv6 isn't free. Encapsulation adds at least forty bytes, so core links need a larger MTU than the edge.
+      Each chip can push only a limited number of SIDs; micro-SIDs largely remove that limit, but check your platforms.
+      Core routers hash on the outer header, so the headend must set the IPv6 flow label to keep E C M P working.
+      Like MPLS, SRv6 trusts its own domain, so edge filtering is mandatory.
+      And some monitoring tools still assume MPLS.
+
+  - type: end
+    heading: "Read the full lesson"
+    subtitle: "Next: SRv6 SID structure"
+    url: "srv6.md/topics/what-is-srv6"
+    chapter: "Next steps"
+    say: >
+      The full lesson is on srv6 dot md, linked below, with the history, who runs SRv6 today,
+      and three Linux commands to try it on a laptop. It's part of the free SRv6 dot md course.
+      Next, we'll take the SID apart: locator, function and argument. Subscribe, and I'll see you there.

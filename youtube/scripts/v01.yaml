@@ -1,0 +1,238 @@
+id: v01
+lang: en
+title: "SRv6 on Cisco IOS XR: uSID Locators and L3VPN"
+playlist: "Track 6: SRv6 Configuration by Vendor"
+description: |
+  Cisco SRv6 configuration on IOS XR, line by line: platforms and releases, a micro-SID (uSID F3216) locator, SRv6 in IS-IS, an SRv6 L3VPN with a per-VRF SID in BGP, the documented gaps to check before a design review, and the show commands that verify each step.
+
+  This is lesson 1 of Track 6 (SRv6 Configuration by Vendor) in the free SRv6.md course.
+links:
+  "Written lesson (config and platforms)": https://srv6.md/implementations/cisco-ios-xr/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Next lesson, SRv6 on Juniper Junos": https://srv6.md/implementations/juniper/
+  "SRv6 support matrix": https://srv6.md/implementations/support-matrix/
+hashtags: ["#SRv6", "#Cisco", "#IOSXR", "#NetworkEngineering"]
+tags: [cisco srv6 configuration, srv6, cisco ios xr, ios xr srv6, srv6 usid, srv6 l3vpn, segment routing, ncs 5500, asr 9000, cisco 8000, isis srv6]
+thumbnail:
+  kicker: "Cisco IOS XR"
+  text: "SRv6 in 3 steps"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 6 · Lesson 1"
+    title: "SRv6 on Cisco IOS XR"
+    subtitle: "uSID locators, IS-IS and L3VPN"
+    chapter: "Intro"
+    say: >
+      Welcome to Track 6, where we configure SRv6 platform by platform. We start with Cisco I O S X R.
+      By the end of this lesson, you'll be able to read an I O S X R micro-SID configuration line by line:
+      the locator, the I S I S part, and a layer three VPN in BGP.
+      You'll also know which platforms and releases support SRv6, the documented gaps to check before a design review,
+      and the five show commands that tell you whether it all works.
+      Every line of configuration on screen is copied from the written lesson on srv6 dot md.
+
+  - type: bullets
+    heading: "SRv6 on IOS XR, release by release"
+    chapter: "Releases"
+    bullets:
+      - "**6.6.1:** full-length SIDs, IS-IS, TI-LFA, L3VPN, OAM"
+      - "**7.3.1:** uSID (F3216, the NEXT-C-SID flavor)"
+      - "**7.3.2:** EVPN-VPWS · **7.5.2:** EVPN E-LAN"
+      - "**7.8.1:** End.DT46"
+    say: >
+      I O S X R has supported SRv6 since release 6.6.1. That first release had full-length SIDs, I S I S, T I L F A,
+      layer three VPN and OAM, on the N C S fifty-five hundred and the A S R nine thousand.
+      Micro-SIDs arrived in 7.3.1, in the F3216 format, which is the NEXT C-SID flavor of RFC 9800.
+      Micro-SIDs are what Cisco built most later features on: EVPN V P W S in 7.3.2, EVPN E-LAN in 7.5.2,
+      and End D T 46 in 7.8.1, plus path MTU discovery and traffic accounting.
+      For every other feature, the SRv6 support matrix on srv6 dot md lists the first release that Cisco documents.
+      Release numbers can differ between platforms, so always check the exact release for your hardware before you plan an upgrade.
+
+  - type: big
+    value: "1 format"
+    caption: "Full-length SIDs or uSID: one SID format per network"
+    say: >
+      One rule shapes every I O S X R design. Full-length SIDs are still documented in Cisco's current guides,
+      but only one SID format can be used per network. So you decide early, and you decide once: full-length or micro-SID, everywhere.
+      Since Cisco has built most of its newer SRv6 features on micro-SIDs, that's the format this lesson configures.
+      In F3216, the block is 32 bits and each micro-SID is 16 bits, so one 128-bit address can carry up to six micro-SIDs,
+      as RFC 9800 describes.
+
+  - type: bullets
+    heading: "Supported platforms"
+    chapter: "Platforms and gaps"
+    bullets:
+      - "**NCS 5500 / 5700:** uSID; first-gen Jericho needs a profile"
+      - "**NCS 540:** uSID L3VPN and transport"
+      - "**ASR 9000:** 3rd- to 5th-gen line cards, IOS XRv 9000"
+      - "**Cisco 8000:** Q200-based systems and later only"
+    say: >
+      Four platform families run SRv6 on I O S X R.
+      The N C S fifty-five hundred and fifty-seven hundred.
+      The N C S five forty, with micro-SID layer three VPN and transport, as in the X R docs tutorial series.
+      The A S R nine thousand, with third, fourth and fifth generation line cards, and the virtual I O S X R v nine thousand.
+      And the Cisco eight thousand, built on Silicon One. On the eight thousand, check the chip:
+      SRv6 needs Q200-based systems or later. Cisco states that SRv6 is not supported on Q100-based line cards
+      and fixed-port routers.
+
+  - type: code
+    heading: "First-generation NCS 5500 (Jericho) only"
+    code: |
+      hw-module profile segment-routing srv6 mode micro-segment format f3216
+    say: >
+      One platform detail catches people out. A first-generation N C S fifty-five hundred, based on Jericho,
+      needs this hardware module profile, and a reload, before micro-SIDs work. Put that reload in your maintenance plan.
+      The N C S fifty-seven hundred doesn't use this profile: it sets the format under segment routing, S R v 6, instead.
+      So before you touch the SRv6 configuration, know which generation each of your routers is.
+
+  - type: bullets
+    heading: "Documented gaps to check first"
+    bullets:
+      - "No SRv6 **Tree-SID** or P2MP multicast"
+      - "No per-CE **uDX4 / uDX6** with uSID"
+      - "**PCE-initiated** SRv6 policies: listed as unsupported"
+      - "The BGP **SR Policy SAFI** carries no SRv6 segments"
+    say: >
+      The written lesson lists four documented gaps worth knowing before a design review.
+      First, there's no SRv6 Tree-SID or point-to-multipoint multicast: Tree-SID on I O S X R is SR-MPLS only.
+      Second, per-CE allocation, the micro D X 4 and micro D X 6 behaviors, isn't supported with micro-SIDs.
+      Third, PCE-initiated SRv6 policies are listed as unsupported; PCE-delegated policies are the supported model.
+      And fourth, the BGP SR Policy address family doesn't carry SRv6 segments.
+      If your design depends on any of these, raise it before you buy, not after.
+
+  - type: code
+    heading: "Step 1: the uSID locator"
+    chapter: "Configuration"
+    code: |
+      !! Enable SRv6
+      segment-routing
+       srv6
+        locators
+         locator MAIN
+          micro-segment behavior unode psp-usd
+          prefix fc00:0:1::/48
+         !
+        !
+       !
+      !
+    say: >
+      Now the configuration, in three steps. Step one is the locator.
+      Under segment routing, S R v 6, locators, we create a locator called MAIN. The rest of the configuration refers to it by that name.
+      The micro-segment behavior line makes this a micro-SID locator, and says the node's own micro-SID,
+      the micro-N, uses the P S P and U S D flavors.
+      The prefix is this node's slash forty-eight. In F3216, the first 32 bits are the block, shared by every router,
+      and the next 16 bits identify this node. Give every router its own slash forty-eight from the same block:
+      RFC 9800 requires all nodes in a micro-SID domain to share the same block and micro-SID length.
+
+  - type: bullets
+    heading: "PSP and USD, in one line each"
+    bullets:
+      - "**PSP:** the penultimate segment endpoint pops the SRH"
+      - "**USD:** the ultimate endpoint removes the outer IPv6 header"
+      - "Both are flavors from **RFC 8986**"
+    say: >
+      What do those two flavors mean? Both come from RFC 8986.
+      With P S P, penultimate segment pop, the node that processes the second-to-last segment removes the Segment Routing Header,
+      so the last node receives a clean IPv6 packet, with no S R H to process.
+      With U S D, ultimate segment decapsulation, the node that processes the final segment removes the whole outer IPv6 header,
+      and handles the packet that was inside. On I O S X R, a single keyword, psp dash usd, turns on both for the micro-N SID.
+
+  - type: code
+    heading: "Step 2: advertise the locator in IS-IS"
+    code: |
+      !! Enable SRv6 in IS-IS
+      router isis CORE
+       address-family ipv6 unicast
+        segment-routing srv6
+         locator MAIN
+        !
+       !
+      !
+    say: >
+      Step two: tell I S I S about the locator. Under the I S I S instance, here called CORE,
+      in the IPv6 unicast address family, enable segment routing S R v 6 and reference locator MAIN. That's the whole step.
+      I S I S now advertises the locator, so every other router in the domain learns how to reach this node's micro-SIDs.
+      Routers in the middle of the path don't need to understand micro-SIDs at all: as RFC 9800 points out,
+      transit nodes only see a normal IPv6 destination address. Repeat this on every router, each with its own locator.
+
+  - type: code
+    heading: "Step 3a: the VRF"
+    code: |
+      !! SRv6-based L3VPN
+      vrf CUSTOMER-A
+       address-family ipv4 unicast
+        import route-target 100:1
+        export route-target 100:1
+       !
+      !
+    say: >
+      Step three is the service: a layer three VPN. First, the V R F.
+      If you've built MPLS VPNs, nothing here is new: a V R F called CUSTOMER-A, with an IPv4 unicast address family,
+      importing and exporting route target 100 colon 1. Route targets still decide which sites see which routes.
+      What changes is the transport underneath the VPN, and that's configured in BGP.
+
+  - type: code
+    heading: "Step 3b: SRv6 for the VRF in BGP"
+    code: |
+      router bgp 65000
+       vrf CUSTOMER-A
+        rd auto
+        address-family ipv4 unicast
+         segment-routing srv6
+          locator MAIN
+          alloc mode per-vrf
+         !
+        !
+       !
+      !
+    say: >
+      In BGP, autonomous system 65000, under the V R F, rd auto picks the route distinguisher for you.
+      Then, in the IPv4 unicast address family, segment routing S R v 6 points the V R F at locator MAIN,
+      and alloc mode per-vrf allocates one service SID for the whole V R F.
+      With micro-SIDs, that SID is a micro D T 4: decapsulate the packet, then look up the inner IPv4 destination in this V R F's table.
+      BGP advertises the SID together with the VPN routes, so a remote PE knows which IPv6 address to send this customer's traffic to.
+      There are no labels and no LDP anywhere in this configuration.
+
+  - type: compare
+    heading: "Why per-VRF allocation"
+    columns:
+      - title: "Per-VRF (uDT4)"
+        items: ["One SID per VRF", "Lookup in the VRF table", "Supported with uSID"]
+      - title: "Per-CE (uDX4)"
+        items: ["One SID per CE", "Cross-connect, no lookup", "Not supported with uSID"]
+    say: >
+      Why per-VRF? RFC 8986 defines two ways for the egress PE to deliver a VPN packet.
+      A D T SID decapsulates and does a table lookup in the V R F, which is the typical layer three VPN behavior.
+      A D X SID cross-connects the packet straight to one CE, with no lookup.
+      On I O S X R, the per-CE micro D X 4 and micro D X 6 behaviors aren't supported with micro-SIDs,
+      so per-VRF allocation is the model to use. Per-VRF micro D T 4 has been available with micro-SIDs since release 7.3.1.
+
+  - type: code
+    heading: "Verify it"
+    chapter: "Verification"
+    code: |
+      show segment-routing srv6 locator
+      show segment-routing srv6 sid
+      show segment-routing srv6 manager
+      show isis segment-routing srv6 locators
+      show bgp vpnv4 unicast vrf CUSTOMER-A
+    say: >
+      The written lesson gives five commands to verify the setup. Work through them from the bottom of the stack up.
+      Show segment-routing srv6 locator: is locator MAIN there?
+      Show segment-routing srv6 sid: which SIDs has the router allocated?
+      Show segment-routing srv6 manager: the SRv6 manager's view of the router.
+      Show isis segment-routing srv6 locators: is I S I S carrying your locator, and the other routers' locators?
+      And finally, show bgp vpnv4 unicast vrf CUSTOMER-A: are the remote sites' routes arriving in the V R F?
+      If a step fails, the layer below it is where to look.
+
+  - type: end
+    heading: "Read the written lesson"
+    subtitle: "The full config, platforms, Cisco's guides and labs"
+    url: "srv6.md/implementations/cisco-ios-xr"
+    chapter: "Next steps"
+    say: >
+      The written lesson on srv6 dot md has every line of this configuration, the platform table,
+      and links to Cisco's micro-SID configuration guides and the X R docs tutorials on SRv6 transport and layer three VPN.
+      To try it yourself, the G N S 3 and netlab lab pages show how to test with I O S X R images.
+      Next, we build SRv6 on Juniper Junos. This lesson is part of the free SRv6 dot md course.
+      Subscribe, and I'll see you in the next lesson.

@@ -1,0 +1,188 @@
+id: o03
+lang: en
+title: "SRv6 Security: Filtering 5f00::/16 and the SRH"
+playlist: "Track 3: Operating SRv6"
+description: |
+  SRv6 security for operators. Why an SRv6 network needs explicit edge filtering where MPLS was isolated by design, how to drop the SRH and the SID block at every external interface, why locators must never leak into BGP, where the 5f00::/16 block from RFC 9602 fits, what uRPF and rate limiting add, and when the SRH HMAC is worth its cost.
+
+  This is lesson 3 of Track 3 (Operating SRv6) in the free SRv6.md course.
+links:
+  "Written lesson, SRv6 security": https://srv6.md/topics/security/
+  "Free SRv6 course": https://srv6.md/learn/
+  "RFC 9602 and the 5f00::/16 block": https://srv6.md/rfcs/rfc9602/
+  "Previous lesson, SRv6 performance measurement": https://srv6.md/topics/srpm/
+  "Next lesson, MPLS to SRv6 migration": https://srv6.md/topics/interworking-migration/
+hashtags: ["#SRv6", "#NetworkSecurity", "#IPv6", "#SegmentRouting"]
+tags: [srv6 security, srv6, 5f00::/16, rfc 9602, srh, acl, infrastructure acl, hmac, rfc 8754, urpf, network security]
+thumbnail:
+  kicker: "SRv6 Security"
+  text: "Filter the edge"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 3 · Lesson 3"
+    title: "SRv6 Security"
+    subtitle: "Filtering the SID block and the SRH"
+    chapter: "Intro"
+    say: >
+      An MPLS core is isolated by default, because labels aren't routable from outside. An SRv6 core is isolated only if you build it that way.
+      In this lesson you'll learn what can go wrong in an SRv6 network, the edge filters that stop nearly all of it,
+      why your locators must never reach the internet, and when the cryptographic option, the S R H H MAC, is worth what it costs.
+
+  - type: bullets
+    heading: "What could go wrong"
+    chapter: "Threat model"
+    bullets:
+      - "**SRH injection:** forged paths through your network"
+      - "**SRH manipulation:** the segment list changed in transit"
+      - "**SID probing:** mapping your topology"
+      - "**Amplification:** small packet in, long SRH out"
+      - "**Service chain bypass:** skipping the firewall"
+    say: >
+      Five threats. An attacker injects packets with a forged S R H to steer traffic through paths you didn't intend.
+      Or modifies the segment list of packets in transit. Or probes your SID space to map the topology for a later attack.
+      Or uses SRv6 encapsulation to amplify traffic, because a small packet can leave with a long S R H.
+      Or crafts a segment list that simply skips the firewall and intrusion detection functions in a service chain.
+
+  - type: compare
+    heading: "Implicit vs explicit security"
+    chapter: "Why SRv6 is different"
+    columns:
+      - title: "MPLS"
+        items: ["Labels: 20-bit, locally significant", "Not routable from outside", "Boundary filtering is implicit"]
+      - title: "SRv6"
+        items: ["SIDs: routable 128-bit IPv6 addresses", "Reachable if a locator leaks", "Any IPv6 host can build an SRH"]
+    say: >
+      Here's the core difference. Both use a trusted domain model. But MPLS labels are locally significant numbers that aren't routable outside
+      the operator's network, so the boundary is implicit. SRv6 SIDs are IPv6 addresses. They're reachable if a locator prefix leaks,
+      and the S R H is a standard extension header any IPv6 host can generate.
+      Moving from MPLS to SRv6, the implicit security of labels is replaced by explicit security. It requires active configuration.
+
+  - type: big
+    value: "Filter the edge"
+    caption: "Boundary filtering is the first and most important defense"
+    chapter: "Edge filtering"
+    say: >
+      The good news: the common thread across every one of those attacks is that boundary filtering is the primary defense.
+      Infrastructure access lists on every external interface, peering, customers and transit, block S R H injection and make the SID block
+      unreachable from outside. The principle is simple. An S R H should never be accepted from outside your network.
+      Only traffic that originates inside your SRv6 domain should carry one.
+
+  - type: code
+    heading: "Ingress: drop the SRH and the SID block"
+    code: |
+      !! Mandatory: Drop ALL packets with SRH from external sources
+      ipv6 access-list SRV6-EDGE-INGRESS
+       10 deny ipv6 any any routing-type 4
+       20 deny ipv6 any fcbb:bb00::/24       !! Drop traffic destined to SID block
+       30 deny ipv6 fcbb:bb00::/24 any       !! Drop traffic sourced from SID block
+       40 permit ipv6 any any
+    say: >
+      This is the ingress filter from the written lesson, on Cisco I O S X R. Rule ten drops any packet carrying routing header type four,
+      which is the S R H. Rule twenty drops anything addressed to the SID block, here F C B B, B B zero zero, slash twenty-four.
+      Rule thirty drops anything claiming a source inside the SID block. Everything else is permitted.
+      You apply it inbound on every external-facing interface. Missing it on one interface makes that interface an entry point.
+
+  - type: big
+    value: "5f00::/16"
+    caption: "Reserved for SRv6 SIDs by RFC 9602: forwardable, but not globally reachable"
+    say: >
+      Which block goes in those rules? Whatever block your SIDs come from. RFC 9602 reserved five F zero zero, slash sixteen, for SRv6 SIDs,
+      precisely so SIDs can be recognized and filtered easily. The block is forwardable inside an SR domain, but not globally reachable.
+      If your SIDs live in it, that's the prefix your deny lines name, and every SRv6 address stands out in an access list or a capture.
+      Operators may still use their own global prefixes as locators. Then you filter those instead.
+
+  - type: code
+    heading: "Egress: nothing SRv6 leaves"
+    code: |
+      !! Prevent SRv6 internal details from leaking outward
+      ipv6 access-list SRV6-EDGE-EGRESS
+       10 deny ipv6 any any routing-type 4   !! No SRH should leave the domain
+       20 deny ipv6 fcbb:bb00::/24 any       !! No SID-sourced packets leave
+       30 permit ipv6 any any
+    say: >
+      Filter the other direction too. The egress filter stops any S R H from leaving your domain, and any packet sourced from the SID block.
+      That keeps internal details, like your segment lists and the addresses of your SIDs, from leaking to peers.
+      Between two SRv6 domains that do interconnect, the same idea applies: permit only the SIDs both sides explicitly agreed on.
+
+  - type: code
+    heading: "Never advertise the locators"
+    chapter: "Keep locators out of BGP"
+    code: |
+      !! BGP policy to suppress SRv6 locator prefixes
+      route-policy DENY-SRV6-LOCATORS
+        if destination in (fcbb:bb00::/24 le 128) then
+          drop
+        endif
+        pass
+      end-policy
+    say: >
+      Filters stop packets. B G P policy stops the routes. The SRv6 locator prefixes must never be advertised to external B G P peers,
+      so this route policy drops anything inside the SID block, and you apply it outbound to every external neighbor.
+      The written lesson calls a leak the single most dangerous SRv6 misconfiguration: if your locators reach the global routing table,
+      any host on the internet can send packets straight to your SIDs.
+
+  - type: bullets
+    heading: "uRPF and rate limiting"
+    chapter: "uRPF and rate limiting"
+    bullets:
+      - "**Strict uRPF** on edge interfaces with symmetric routing"
+      - "**Loose** or **feasible-path** uRPF in the core"
+      - "Rate-limit **ICMPv6 to SIDs**: slows topology discovery"
+      - "Rate-limit **SRH punts**: protects the CPU"
+    say: >
+      Two supporting controls. Unicast R P F rejects spoofed source addresses, which matters because a spoofed source inside your domain could slip
+      past filters that match on source. Use strict mode on edge interfaces where routing is symmetric, and loose or feasible-path mode in the core.
+      Then rate-limit I C M P v6 aimed at your SID prefixes, which slows down anyone mapping your topology with traceroute,
+      and rate-limit S R H packets punted to the control plane, so they can't exhaust the C P U.
+
+  - type: bullets
+    heading: "The SRH HMAC (RFC 8754)"
+    chapter: "SRH HMAC"
+    bullets:
+      - "Ingress computes an **HMAC over the segment list**"
+      - "Carried as a **TLV in the SRH**, with a key ID"
+      - "SRv6 nodes **optionally verify** it"
+      - "Invalid HMAC: the packet is **dropped**"
+    say: >
+      RFC 8754 also offers a cryptographic option. The ingress node computes an H MAC over the segment list, the source address and a few other fields,
+      using a pre-shared key, and carries it as a T L V in the S R H. Nodes along the path can verify it, and drop the packet if it doesn't match.
+      Without the key, an attacker can't build a valid S R H, and any change to the segment list breaks the H MAC.
+      Note what it doesn't cover: the payload, and the destination address, which changes at every hop.
+
+  - type: compare
+    heading: "Why HMAC is rarely deployed"
+    columns:
+      - title: "What it costs"
+        items: ["Extra bytes in every packet", "Keys on every verifying node, and rotation", "Recirculation or no ASIC support"]
+      - title: "What most networks do"
+        items: ["Model 1: trusted domain + filtering", "HMAC only across trust boundaries", "Model 3: filtering + selective HMAC"]
+    say: >
+      In practice, H MAC is rarely deployed. It adds bytes to every packet. Every verifying node needs the keys, rotation needs two keys alive at once,
+      and no standard protocol distributes them. And not every forwarding A S I C can compute it; some need to recirculate packets, which can halve throughput.
+      So almost all production networks use the trusted domain model with boundary filtering. H MAC is for traffic crossing trust boundaries,
+      such as inter-provider links or untrusted fiber, combined with filtering everywhere else.
+
+  - type: bullets
+    heading: "What filtering doesn't fix"
+    chapter: "Residual risk"
+    bullets:
+      - "One **unfiltered interface** is an entry point"
+      - "A **compromised internal node** can use any valid SID"
+      - "A compromised **headend** can bypass a service chain"
+      - "**Patch the parsers:** CVE-2026-23442 in the Linux SRH code"
+    say: >
+      Be honest about what's left. A new or misconfigured external interface without the filter is an entry point, so audit A C L deployment automatically.
+      Without H MAC, a compromised internal node can generate packets with any valid SID, and a compromised headend can skip a service chain.
+      And protocol protections don't help if the S R H parser itself crashes. In 2026, a Linux kernel bug, C V E 2026 23442, let S R H processing
+      on an interface without IPv6 configuration crash the kernel. Track kernel updates on every host and appliance that runs SRv6, not only routers.
+
+  - type: end
+    heading: "Read the SRv6 security lesson"
+    subtitle: "Threat models, HMAC in depth, and the next lesson: migration"
+    url: "srv6.md/topics/security"
+    chapter: "Next steps"
+    say: >
+      The written lesson, with the three deployment models, H MAC in depth and the Linux filters, is on srv6 dot md, linked below.
+      Next, the question every MPLS operator eventually asks: how do we get from here to SRv6? Four real migration strategies.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

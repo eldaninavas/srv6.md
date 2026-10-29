@@ -1,0 +1,56 @@
+id: s01
+lang: en
+format: short
+title: "SRv6 in 60 Seconds"
+playlist: "Start Here"
+description: |
+  SRv6 in under a minute: what Segment Routing over IPv6 is, how a SID works as an instruction, why transit routers need nothing but IPv6, and what SRv6 costs you.
+
+  This is the opening Short of Start Here in the free SRv6.md course.
+links:
+  "Written lesson, What is SRv6?": https://srv6.md/topics/what-is-srv6/
+  "Free SRv6 course": https://srv6.md/learn/
+hashtags: ["#SRv6", "#SegmentRouting", "#IPv6", "#Shorts"]
+tags: [srv6, what is srv6, segment routing over ipv6, segment routing, ipv6, srv6 sid, srh, network engineering]
+thumbnail:
+  kicker: "SRv6"
+  text: "In 60 seconds"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Short"
+    title: "SRv6 in 60 Seconds"
+    subtitle: "Segment Routing over IPv6"
+    say: >
+      SRv6 in under a minute. Segment Routing over IPv6 lets the source write the path,
+      and the services, into the packet itself.
+
+  - type: big
+    value: "1 SID"
+    caption: "= 1 instruction, in a 128-bit IPv6 address: locator + function + arguments"
+    say: >
+      Each instruction is a SID, a full IPv6 address.
+      The locator says where to go. The function says what to do there,
+      like decapsulate into a VPN.
+
+  - type: bullets
+    heading: "The destination address is the active SID"
+    bullets:
+      - "**Transit routers:** plain IPv6 forwarding"
+      - "**Endpoints:** run the function, then the next SID"
+      - "**SRH:** carries the rest of the list, when needed"
+    say: >
+      The destination address holds the active SID. Routers in the middle just forward IPv6.
+      The owner of the SID runs it and writes in the next one.
+      Longer lists ride in the Segment Routing Header.
+
+  - type: bullets
+    heading: "What you get, and what it costs"
+    bullets:
+      - "No LDP, no RSVP-TE, no path state in the core"
+      - "One data plane from WAN to data center to host"
+      - "Cost: a bigger header, and edge filtering"
+    say: >
+      No LDP, no R S V P T E, no per-path state in the core.
+      The cost: a bigger header, and SIDs you must filter at the edge.
+      The full lesson is on srv6 dot md.

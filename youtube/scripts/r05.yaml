@@ -1,0 +1,60 @@
+id: r05
+lang: en
+format: short
+title: "RFC 9350 in 60 Seconds: Flex-Algo"
+playlist: "RFCs Explained (Shorts)"
+description: |
+  RFC 9350 in 60 seconds: the IGP Flexible Algorithm, Flex-Algo. How IS-IS and OSPF compute constraint-based paths without RSVP-TE, what a Flex-Algo definition contains, algorithms 128 to 255, and per-algorithm SRv6 locators.
+
+  Part of the free SRv6.md course.
+links:
+  "Written lesson, RFC 9350 explained": https://srv6.md/rfcs/rfc9350/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous Short, RFC 9252": https://srv6.md/rfcs/rfc9252/
+  "Next Short, RFC 9256": https://srv6.md/rfcs/rfc9256/
+hashtags: ["#SRv6", "#RFC9350", "#FlexAlgo", "#Shorts"]
+tags: [rfc 9350, flex-algo, flexible algorithm, srv6 flex-algo, network slicing, isis flex-algo, low latency routing, srv6 rfc, segment routing, network engineering]
+thumbnail:
+  kicker: "RFC 9350"
+  text: "Many topologies"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · RFCs Explained"
+    title: "RFC 9350"
+    subtitle: "Flex-Algo, in 60 seconds"
+    say: >
+      RFC 9350, in sixty seconds. You want some traffic on the lowest-latency path, and some avoiding certain links,
+      without RSVP-TE or a controller. That's Flex-Algo.
+
+  - type: bullets
+    heading: "What it defines"
+    bullets:
+      - "**Algorithms 128 to 255**, defined by you"
+      - "A **definition**: metric type plus constraints"
+      - "Nodes **advertise participation**"
+    say: >
+      It defines flexible algorithms, numbered 128 to 255. Each has a definition: a metric type, such as I G P, TE or delay,
+      and optional constraints, like link affinities. Nodes that participate compute that topology themselves.
+
+  - type: title
+    title: "1 locator"
+    subtitle: "per algorithm, in SRv6"
+    say: >
+      In SRv6, each algorithm gets its own locator. A SID from that locator follows that algorithm's paths.
+
+  - type: bullets
+    heading: "Why you should care"
+    bullets:
+      - "**Network slicing** with just the IGP"
+      - "Delay metric needs **link-delay measurement**"
+    say: >
+      Why care? Several logical topologies over one physical network, computed by the I G P alone.
+      One pitfall: a delay-based algorithm without real delay measurement gives unpredictable paths.
+
+  - type: end
+    heading: "RFC 9350, explained"
+    subtitle: "Definitions, election and pitfalls"
+    url: "srv6.md/rfcs/rfc9350"
+    say: >
+      The full lesson is on srv6 dot md.

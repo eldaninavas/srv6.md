@@ -1,0 +1,208 @@
+id: f03
+lang: en
+title: "The SRv6 Header (SRH): Packet Walk, Step by Step"
+playlist: "Track 1: SRv6 Foundations"
+description: |
+  The SRv6 header, field by field. We read the Segment Routing Header (SRH) from RFC 8754, follow one packet through an SRv6 network step by step as Segments Left and the destination address change at every endpoint, and cover the PSP, USP and USD flavors, SRH TLVs, reduced encapsulation and the Linux commands to verify it all.
+
+  This is lesson 3 of Track 1 (SRv6 Foundations) in the free SRv6.md course.
+links:
+  "Written lesson, SRH packet walk": https://srv6.md/topics/srh-packet-walk/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 SID structure": https://srv6.md/topics/sid-structure/
+  "Next lesson, SRv6 network programming": https://srv6.md/topics/network-programming/
+  "SRv6 packet captures": https://srv6.md/labs/pcaps/
+hashtags: ["#SRv6", "#SRH", "#SegmentRouting", "#NetworkEngineering"]
+tags: [srv6 header, srh, segment routing header, srv6 packet walk, rfc 8754, srv6, segments left, psp, segment routing, network engineering]
+thumbnail:
+  kicker: "SRv6 header"
+  text: "SL = 1 → 0"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 1 · Lesson 3"
+    title: "The SRv6 Header (SRH)"
+    subtitle: "Packet walk, step by step"
+    chapter: "Intro"
+    say: >
+      The Segment Routing Header is where an SRv6 path lives. By the end of this lesson you'll be able to read
+      every field of the S R H, follow a packet hop by hop as its destination address changes,
+      explain the P S P, U S P and U S D flavors, and check it all on a Linux box.
+
+  - type: bullets
+    heading: "What the SRH is"
+    chapter: "SRH format"
+    bullets:
+      - "An IPv6 **routing extension header**"
+      - "**Routing Type = 4**, defined in RFC 8754"
+      - "Carries the segment list when the DA isn't enough"
+    say: >
+      The S R H is an ordinary IPv6 routing extension header, with routing type four, defined in RFC 8754.
+      Its job is to carry the SRv6 segment list when a path needs more SIDs than the destination address can hold.
+      You won't always see one: a path with a single SID can fit in the destination address alone.
+      But understanding it at the packet level is what lets you troubleshoot and design SRv6 networks with confidence.
+
+  - type: bullets
+    heading: "The first eight bytes"
+    bullets:
+      - "**Next Header:** what follows, e.g. 41 = IPv6, 4 = IPv4"
+      - "**Hdr Ext Len:** length in 8-octet units"
+      - "**Routing Type:** always 4"
+      - "**Segments Left (SL):** index of the active segment"
+      - "**Last Entry:** index of the last list element"
+    say: >
+      The header starts with eight fixed bytes. Next Header says what comes after the S R H:
+      forty-one for an inner IPv6 packet, four for IPv4. Header Extension Length is the size of the S R H in eight-octet units,
+      not counting the first eight. Routing Type is always four.
+      Segments Left is the most important field: it's the index of the segment that's active right now.
+      Last Entry is the index of the last element of the list, counting from zero.
+
+  - type: bullets
+    heading: "Then the list"
+    bullets:
+      - "**Flags:** currently unused"
+      - "**Tag:** 16 bits to group or mark packets"
+      - "**Segment List:** 128 bits per SID"
+      - "**Optional TLVs** after the list"
+    say: >
+      Next come eight bits of flags, currently unused, and a sixteen-bit tag for grouping or marking packets.
+      Then the segment list itself, one full hundred and twenty-eight bit IPv6 address per SID.
+      And after the list, optional T L V objects, which we'll come back to.
+      So the S R H costs eight fixed bytes, plus sixteen bytes for every SID in the list.
+
+  - type: big
+    value: "List[0] = last SID"
+    caption: "The segment list is stored in reverse order"
+    say: >
+      Here's the detail that trips everyone up. The segment list is stored in reverse order.
+      Segment List zero is the last SID to be processed, and Segment List n is the first.
+      Segments Left starts at n and counts down toward zero.
+      So each End node along the path does the same simple thing: subtract one from Segments Left, and read the entry it now points to.
+      And the destination address always equals the active SID: the list entry that Segments Left points to.
+
+  - type: code
+    heading: "The example network"
+    chapter: "Packet walk"
+    code: |
+      Source (A) → Node B → Node C → Destination (D)
+
+      SRv6 SIDs:
+        B::100  = End behavior on Node B
+        C::200  = End.DT4 behavior on Node C (decap to IPv4)
+    say: >
+      Let's trace a real packet. Source A receives an IPv4 packet for ten dot zero dot zero dot two,
+      and must steer it through node B, then node C.
+      B owns a SID with the End behavior. C owns a SID with End D T 4, which decapsulates and looks up the IPv4 packet.
+      As we go, keep an eye on just two fields: the destination address, and Segments Left.
+
+  - type: compare
+    heading: "Step 1: A encapsulates"
+    columns:
+      - title: "Outer IPv6 header"
+        items: ["Source: A::1", "Destination: B::100 (active SID)", "Next Header: 43 (Routing)"]
+      - title: "SRH"
+        items: ["Segments Left: 1", "Last Entry: 1", "List[0]: C::200 (last SID)", "List[1]: B::100 (first SID)"]
+    say: >
+      Step one. A wraps the IPv4 packet in an outer IPv6 header. The destination address is B's SID, the active one.
+      Next Header is forty-three, a routing header. The S R H follows, with Segments Left at one, Last Entry at one,
+      and the two SIDs in reverse order: C's SID in entry zero, B's SID in entry one.
+      Notice that Segments Left points at entry one, which is exactly what's in the destination address.
+      Inside, the original IPv4 packet hasn't changed.
+
+  - type: compare
+    heading: "Step 2: B runs End"
+    columns:
+      - title: "Arrives at B"
+        items: ["DA: B::100", "Segments Left: 1"]
+      - title: "Leaves B"
+        items: ["DA: C::200 (updated)", "Segments Left: 0 (decremented)", "Segment list unchanged"]
+    say: >
+      Step two. The destination address matches B's local SID, with the End behavior. B does three things.
+      It decrements Segments Left, from one to zero. It copies Segment List zero, C's SID, into the destination address.
+      And it forwards the packet based on that new address.
+      The source address, the segment list and the inner packet are all untouched.
+      That's the End behavior: the simplest instruction in SRv6, and the one the next lesson starts with.
+
+  - type: bullets
+    heading: "Steps 3 and 4: C runs End.DT4"
+    bullets:
+      - "SL = 0: this is the last segment"
+      - "**Decapsulate:** remove outer IPv6 + SRH"
+      - "**Look up** the inner IPv4 DA in the VRF"
+      - "**Forward** the original packet"
+    say: >
+      Step three. The packet reaches C, and its destination matches C's End D T 4 SID. Segments Left is zero,
+      so this is the last segment. C decapsulates, removing the outer IPv6 header and the S R H,
+      looks up the inner IPv4 destination in the right V R F table, and forwards the original packet.
+      Step four: the IPv4 packet reaches its destination as if SRv6 had never been involved.
+      Notice that C didn't need anything else to pick the table: the function in its own SID told it what to do.
+
+  - type: record
+    url: https://srv6.md/topics/srh-packet-walk/
+    selector: ".srv6-seq"
+    index: 0
+    seconds: 16
+    say: >
+      Here's the whole walk as one sequence. A encapsulates and sends to B, with Segments Left at one.
+      B matches its End SID, drops Segments Left to zero, and rewrites the destination to C.
+      C matches End D T 4, decapsulates, and forwards the original IPv4 packet.
+
+  - type: bullets
+    heading: "PSP, USP and USD flavors"
+    chapter: "Flavors and TLVs"
+    bullets:
+      - "**PSP:** the penultimate node removes the SRH"
+      - "**USP:** the last node removes the SRH itself"
+      - "**USD:** the last node removes outer IPv6 + SRH"
+      - "Optional TLVs: **HMAC**, **Padding**, **NSH Carrier**"
+    say: >
+      Endpoints can also support flavors that change how the S R H is handled at the end of the list.
+      With Penultimate Segment Pop, P S P, the node that takes Segments Left from one to zero removes the S R H before forwarding,
+      so the egress node doesn't have to. P S P is widely deployed for exactly that reason.
+      With Ultimate Segment Pop, the last node removes the S R H itself.
+      With Ultimate Segment Decapsulation, the last node removes the whole outer header and the S R H.
+      After the list, optional T L Vs can carry an H MAC to authenticate the S R H, padding, or service chaining metadata.
+
+  - type: code
+    heading: "Reduced encapsulation (H.Encaps.Red)"
+    chapter: "Reduced encapsulation"
+    code: |
+      Path: SID-1 → SID-2 → SID-3   (segment list is stored in reverse order)
+
+      H.Encaps:      SRH [SID-3, SID-2, SID-1], SL=2, DA = SID-1
+      H.Encaps.Red:  SRH [SID-3, SID-2],        SL=2, DA = SID-1  ← SID-1 only in the DA
+    say: >
+      One more optimization, from RFC 8986. With reduced encapsulation, the headend leaves the first SID of the path
+      out of the segment list, because it's already in the destination address.
+      Compare the two lines. With plain H Encaps, SID one appears twice: in the destination address, and in the list.
+      With the reduced form, Segments Left is still two, but the list is one entry shorter.
+      That saves sixteen bytes on every packet, and with a single-SID path it removes the S R H entirely.
+
+  - type: code
+    heading: "Verify it on Linux"
+    chapter: "Verification"
+    code: |
+      # Capture SRv6 packets (Routing Header type 43)
+      tcpdump -i eth0 -vv 'ip6 proto 43'
+
+      # Show local SID table
+      ip -6 route show | grep seg6local
+
+      # Decode with tshark
+      tshark -i eth0 -O ipv6 -Y 'ipv6.routing.type == 4'
+    say: >
+      To see all of this yourself on Linux, capture packets whose next header is forty-three, a routing header, with tcpdump.
+      List the local SID table by filtering the IPv6 routes for seg6local.
+      And decode the S R H with tshark, filtering on routing type four.
+      On a router the idea is the same: list the local SIDs, then check how a given SID is forwarded.
+      The written lesson also has the I O S X R and Junos show commands, and real packet captures of this walk you can open in Wireshark.
+
+  - type: end
+    heading: "Read the full lesson"
+    subtitle: "Next: SRv6 network programming"
+    url: "srv6.md/topics/srh-packet-walk"
+    chapter: "Next steps"
+    say: >
+      The full lesson, with every field and the packet captures, is on srv6 dot md, linked below.
+      It's part of the free SRv6 dot md course. Next, we'll look at every SRv6 behavior,
+      from End and End X to End D T 4 and beyond. Subscribe, and I'll see you there.

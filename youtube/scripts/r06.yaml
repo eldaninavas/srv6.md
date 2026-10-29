@@ -1,0 +1,63 @@
+id: r06
+lang: en
+format: short
+title: "RFC 9256 in 60 Seconds: SR Policy"
+playlist: "RFCs Explained (Shorts)"
+description: |
+  RFC 9256 in 60 seconds: the Segment Routing Policy architecture. An SR Policy as headend, color and endpoint, candidate paths and preference, the Binding SID, and how BGP routes are steered by color, for SR-MPLS and SRv6.
+
+  Part of the free SRv6.md course.
+links:
+  "Written lesson, RFC 9256 explained": https://srv6.md/rfcs/rfc9256/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous Short, RFC 9350": https://srv6.md/rfcs/rfc9350/
+  "Next Short, RFC 9855": https://srv6.md/rfcs/rfc9855/
+hashtags: ["#SRv6", "#RFC9256", "#TrafficEngineering", "#Shorts"]
+tags: [rfc 9256, sr policy, segment routing policy, binding sid, candidate path, srv6 te, color steering, srv6 rfc, segment routing, network engineering]
+thumbnail:
+  kicker: "RFC 9256"
+  text: "Color = intent"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · RFCs Explained"
+    title: "RFC 9256"
+    subtitle: "SR Policy, in 60 seconds"
+    say: >
+      RFC 9256, in sixty seconds. How do you define a segment routing path, choose between backups,
+      and send the right traffic into it? This RFC is the architecture.
+
+  - type: bullets
+    heading: "What it defines"
+    bullets:
+      - "Policy = **headend, color, endpoint**"
+      - "**Candidate paths**, highest preference wins"
+      - "Each path: one or more **segment lists**"
+    say: >
+      An SR Policy is identified by three things: the headend, a color and an endpoint.
+      It holds candidate paths, and the valid one with the highest preference wins. Each path is one or more segment lists.
+
+  - type: bullets
+    heading: "Getting traffic in"
+    bullets:
+      - "**Binding SID:** one SID for the whole policy"
+      - "**Color** on a BGP route steers it"
+    say: >
+      Two common ways to get traffic in. A Binding SID stands for the whole policy.
+      Or a BGP route carries a color, and the headend steers it into the policy with that color.
+
+  - type: bullets
+    heading: "Why you should care"
+    bullets:
+      - "Works for **SR-MPLS and SRv6**"
+      - "Color is **intent**, not priority"
+    say: >
+      Why care? It's the same model for SR-MPLS and SRv6. And remember: color is an intent, like low latency.
+      A higher color doesn't mean a higher priority.
+
+  - type: end
+    heading: "RFC 9256, explained"
+    subtitle: "Selection rules, BSID and pitfalls"
+    url: "srv6.md/rfcs/rfc9256"
+    say: >
+      The full lesson is on srv6 dot md.

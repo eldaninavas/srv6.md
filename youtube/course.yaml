@@ -16,7 +16,7 @@ tracks:
     level: All levels
     summary: What SRv6 is, why it matters, and how this course works.
     lessons:
-      - {id: s01, title: "SRv6 in 100 Seconds", page: topics/what-is-srv6.md, keyword: srv6, minutes: 2, format: short}
+      - {id: s01, title: "SRv6 in 60 Seconds", page: topics/what-is-srv6.md, keyword: srv6, minutes: 2, format: short}
       - {id: s02, title: "Learn SRv6 for Free: How the SRv6.md Course Works", page: learn/index.md, keyword: learn srv6, minutes: 3}
 
   - id: foundations
@@ -29,7 +29,7 @@ tracks:
       - {id: f03, title: "The SRv6 Header (SRH): Packet Walk, Step by Step", page: topics/srh-packet-walk.md, keyword: srv6 header, minutes: 9}
       - {id: f04, title: "SRv6 Network Programming: End, End.X, End.DT4 and More", page: topics/network-programming.md, keyword: srv6 network programming, minutes: 9}
       - {id: f05, title: "SRv6 uSID (Micro-SID) Explained: Six Hops in One Address", page: topics/usid-compression.md, keyword: srv6 usid, minutes: 8}
-      - {id: f06, title: "SRv6 vs MPLS: Differences, Overhead and When to Use Each", page: topics/srv6-vs-sr-mpls.md, keyword: srv6 vs mpls, minutes: 9}
+      - {id: f06, title: "SRv6 vs MPLS: Differences, Overhead and When to Use Each", page: topics/srv6-vs-sr-mpls.md, keyword: srv6 vs mpls, minutes: 5}
 
   - id: control-plane
     title: "Track 2: Control Plane and Services"
@@ -38,7 +38,7 @@ tracks:
     lessons:
       - {id: c01, title: "IS-IS for SRv6: Locators and SIDs in the IGP", page: rfcs/rfc9352.md, keyword: isis srv6, minutes: 8}
       - {id: c02, title: "Flex-Algo with SRv6: Network Slicing Without RSVP-TE", page: topics/flex-algorithm.md, keyword: flex-algo, minutes: 9}
-      - {id: c03, title: "TI-LFA Explained: 50 ms Fast Reroute with SRv6", page: topics/ti-lfa.md, keyword: ti-lfa, minutes: 10}
+      - {id: c03, title: "TI-LFA Explained: Fast Reroute with Full Coverage", page: topics/ti-lfa.md, keyword: ti-lfa, minutes: 10}
       - {id: c04, title: "SR Policy Explained: Color, ODN and Binding SID", page: topics/sr-policy.md, keyword: sr policy, minutes: 10}
       - {id: c05, title: "SRv6 L3VPN with BGP (RFC 9252), Step by Step", page: topics/bgp-overlay-services.md, keyword: srv6 l3vpn, minutes: 9}
       - {id: c06, title: "EVPN over SRv6 and EVPN Multihoming", page: topics/evpn-multihoming.md, keyword: srv6 evpn, minutes: 10}

@@ -1,0 +1,317 @@
+id: l01
+lang: en
+title: "Build a Free SRv6 Lab with Containerlab and FRRouting"
+playlist: "Track 4: Hands-on Labs"
+description: |
+  Build a free SRv6 lab on your laptop with Containerlab and FRRouting, step by step. Three FRR routers run IS-IS with an SRv6 uSID locator each, an SRv6 encapsulation route on r1 steers traffic for r3 through r2 instead of the IGP shortest path, and tcpdump shows the SRH, Segments Left and the End.DT6 decapsulation hop by hop.
+
+  This is lesson 1 of Track 4 (Hands-on Labs) in the free SRv6.md course.
+links:
+  "Written lab (every file and command)": https://srv6.md/labs/containerlab/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, MPLS to SRv6 migration": https://srv6.md/topics/interworking-migration/
+  "Next lesson, SRv6 labs with netlab": https://srv6.md/labs/netlab/
+hashtags: ["#SRv6", "#Containerlab", "#FRRouting", "#NetworkEngineering"]
+tags: [srv6 lab, containerlab, frrouting, frr srv6, srv6, segment routing, is-is srv6, usid, tcpdump srh, network lab, linux srv6]
+thumbnail:
+  kicker: "SRv6 Lab"
+  text: "3 routers, $0"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 4 · Lesson 1"
+    title: "Build a Free SRv6 Lab"
+    subtitle: "Containerlab, FRRouting, and every packet in tcpdump"
+    chapter: "Intro"
+    say: >
+      In this lesson you'll build a working SRv6 lab on your own laptop, for free.
+      Three FRRouting routers in Containerlab, IS-IS advertising a micro-SID locator on each one,
+      and an SRv6 route that forces traffic through a router the IGP would never pick.
+      By the end you'll be able to write the topology and the router configs, deploy the lab,
+      check the control plane, steer a ping through a transit node with a two-segment list,
+      and read every hop in T C P dump: the segment list, Segments Left counting down,
+      and the decapsulation at the egress router.
+      Everything on screen is copied from the written lab on srv6 dot md,
+      so you can follow along command by command.
+
+  - type: code
+    heading: "The lab: an FRR triangle"
+    chapter: "The topology"
+    code: |2
+               r2  fc00:0:2::/48
+         eth1 /  \ eth2
+             /    \
+       eth1 /      \ eth1
+          r1 ------ r3
+             eth2  eth2
+       fc00:0:1::/48   fc00:0:3::/48
+    say: >
+      Here's the topology. Three routers, R1, R2 and R3, in a triangle.
+      R1 connects to R2 on eth one, R2 connects to R3, and R1 and R3 share a direct link on eth two.
+      Every router has a loopback in two thousand one, d b eight, ending in its router number,
+      and an SRv6 locator: f c zero zero, colon zero, colon the router number, slash forty-eight.
+      R1 is the headend, the router where the steering lives. R2 gets a static End SID,
+      and R3 gets a static End D T 6 SID.
+      The goal is simple to state. Send traffic from R1 to R3 through R2,
+      even though the IGP shortest path is the direct link between R1 and R3.
+      Then prove it, hop by hop, at packet level.
+      Notice that both static SIDs sit inside the locators IS-IS will advertise anyway.
+      That small choice is what makes them reachable from every router without a single extra route.
+
+  - type: bullets
+    heading: "What you need"
+    bullets:
+      - "**Docker** and **Containerlab**"
+      - "A kernel with **CONFIG_IPV6_SEG6_LWTUNNEL**"
+      - "Tested on **kernel 7.2** (OrbStack) with **FRR 10.2.1**"
+      - "**srv6-lab.clab.yml**, plus one folder per router"
+      - "Per router: **daemons**, **frr.conf**, **vtysh.conf**"
+    say: >
+      You need three things. Docker. Containerlab, which installs with a one-line script from containerlab dot dev.
+      And a Linux kernel with SRv6 support, the seg six lightweight tunnel option.
+      Any recent distribution kernel has it. The lab was tested on kernel 7.2 under OrbStack, with F R R 10.2.1.
+      Then create one directory for the lab. Inside it goes the topology file, srv6 lab dot clab dot yml,
+      and one folder per router with three files. Daemons says which F R R daemons run: zebra, mgmtd,
+      the IS-IS daemon and the static daemon, and nothing else. Frr dot conf is the router configuration.
+      And vtysh dot conf is a single line that turns on the integrated configuration.
+      Daemons and vtysh dot conf are identical on all three routers.
+
+  - type: code
+    heading: "srv6-lab.clab.yml: the defaults"
+    chapter: "Lab files"
+    code: |
+      name: srv6-lab
+
+      topology:
+        defaults:
+          kind: linux
+          image: quay.io/frrouting/frr:10.2.1
+          sysctls:
+            net.ipv6.conf.all.disable_ipv6: 0
+            net.ipv6.conf.all.forwarding: 1
+            net.ipv6.conf.all.seg6_enabled: 1
+            net.ipv6.conf.default.seg6_enabled: 1
+    say: >
+      Start with the topology file. The defaults apply to every node:
+      a plain Linux container running the official F R R 10.2.1 image.
+      The kernel settings are the part that matters. IPv6 must be enabled,
+      and IPv6 forwarding turned on, so that the containers actually route.
+      Then seg six enabled, set to one. That setting tells the kernel to process packets that carry
+      a Segment Routing Header. Without it, a router drops S R H packets the moment they arrive,
+      and your lab fails in a way that's hard to spot.
+      Here it's set for all interfaces and for the default template.
+      That isn't enough on its own: the lab interfaces need it too, and they only exist once Containerlab creates them,
+      so their values come next, in the exec block.
+
+  - type: code
+    heading: "Nodes and the exec block"
+    code: |
+        nodes:
+          r1:
+            binds:
+              - r1/daemons:/etc/frr/daemons
+              - r1/frr.conf:/etc/frr/frr.conf
+              - r1/vtysh.conf:/etc/frr/vtysh.conf
+            exec: &exec
+              - ip -6 route del default dev eth0
+              - sysctl -w net.ipv6.conf.eth1.seg6_enabled=1
+              - sysctl -w net.ipv6.conf.eth2.seg6_enabled=1
+    say: >
+      Each node mounts its three F R R files into slash etc slash frr.
+      Then comes the exec block, which runs commands once the container is up.
+      Two of them enable seg six on eth one and eth two, the lab interfaces.
+      The first one deserves your attention: it deletes the IPv6 default route through eth zero.
+      Containerlab gives every node a default route through its management network.
+      If an IS-IS route were missing, a ping to a loopback would silently leave the lab through eth zero,
+      and might even get a reply. Removing that route makes broken forwarding fail visibly.
+      R2 and R3 mount their own files and reuse the same exec block through a YAML anchor.
+      Finally, the links section at the end of the file wires the triangle with three point-to-point links:
+      eth one of R1 to eth one of R2, eth two of R2 to eth one of R3,
+      and the direct link, eth two of R1 to eth two of R3.
+
+  - type: code
+    heading: "r1 frr.conf: locator and IS-IS"
+    code: |
+      segment-routing
+       srv6
+        locators
+         locator MAIN
+          prefix fc00:0:1::/48 block-len 32 node-len 16 func-bits 16
+          behavior usid
+      !
+      router isis CORE
+       is-type level-2-only
+       net 49.0001.0000.0000.0001.00
+       segment-routing srv6
+        locator MAIN
+    say: >
+      Now the F R R configuration. The three routers differ only in hostname, loopback, IS-IS NET and locator.
+      This is R1. The segment routing block defines a locator called MAIN:
+      f c zero zero, colon zero, colon one, slash forty-eight, with a thirty-two bit block,
+      a sixteen bit node part, sixteen function bits, and behavior micro-SID.
+      Below it, the IS-IS instance CORE runs level two only, and segment routing srv6 with locator MAIN
+      tells IS-IS to advertise that locator to the other routers.
+      Not shown here: the loopback and both lab interfaces run IPv6 IS-IS,
+      the lab links are point-to-point, and the loopback is passive.
+      Notice what's missing. The core links have no global addresses at all.
+      IS-IS simply uses IPv6 link-local next hops.
+
+  - type: code
+    heading: "Deploy, then check IS-IS"
+    chapter: "Deploy and verify"
+    code: |
+      sudo containerlab deploy -t srv6-lab.clab.yml
+      sudo containerlab inspect -t srv6-lab.clab.yml
+      # IS-IS adjacencies to r2 and r3
+      docker exec clab-srv6-lab-r1 vtysh -c "show isis neighbor"
+      # Local SRv6 locator
+      docker exec clab-srv6-lab-r1 vtysh -c "show segment-routing srv6 locator"
+      # Remote loopbacks and locators learned via IS-IS
+      docker exec clab-srv6-lab-r1 vtysh -c "show ipv6 route isis"
+    say: >
+      Deploy with containerlab deploy and the topology file, and check that all three nodes are running
+      with containerlab inspect. Then give IS-IS around thirty seconds to converge.
+      Now check R1. Show isis neighbor should list two adjacencies, to R2 and to R3.
+      Show segment routing srv6 locator shows the local locator, MAIN.
+      And show ipv6 route isis is the real test. R1 should have routes to the loopbacks of R2 and R3,
+      and to their locators, slash forty-eight each, all through link-local next hops.
+      Wait until those routes are there before you test anything else.
+      To see the advertisement itself, show isis database detail for R2 displays its SRv6 locator T L V
+      and its End X SIDs. And when you're finished, containerlab destroy with dash dash cleanup removes the whole lab.
+
+  - type: code
+    heading: "End.X SIDs and the IGP path"
+    chapter: "Steering through r2"
+    code: |
+      docker exec clab-srv6-lab-r2 ip -6 route show | grep seg6local
+      fc00:0:2:1::/64 ... encap seg6local action End.X nh6 fe80::... flavors next-csid lblen 32 nflen 16 dev eth1 proto isis
+
+      docker exec clab-srv6-lab-r1 ip -6 route get 2001:db8::3
+      # 2001:db8::3 via fe80::... dev eth2 proto isis src 2001:db8::1 metric 20
+    say: >
+      IS-IS also allocates one End X SID per adjacency, and installs it in the kernel.
+      On R2, filter the IPv6 routes for seg six local and you'll find them:
+      one slash sixty-four per link, with action End X, a link-local next hop, and the next C SID flavor
+      with a thirty-two bit block length and a sixteen bit node and function length.
+      One catch. The function part of these SIDs, colon one and colon two, is allocated dynamically,
+      and it can map to a different adjacency after every deployment.
+      That's why this lab uses static SIDs with predictable values for the explicit path.
+      Now record the baseline. Without any SRv6 route, ip route get for R3's loopback
+      goes out eth two, the direct link, with IS-IS metric twenty. Ping it from R1's loopback to confirm.
+
+  - type: code
+    heading: "Program the SIDs on r2 and r3"
+    code: |
+      # r2: End — advance to the next segment in the SRH
+      docker exec clab-srv6-lab-r2 ip -6 route add fc00:0:2:e000::/128 \
+        encap seg6local action End dev eth1
+
+      # r3: End.DT6 — decapsulate and look up the inner IPv6 destination
+      docker exec clab-srv6-lab-r3 ip -6 route add fc00:0:3:e000::/128 \
+        encap seg6local action End.DT6 table 255 dev eth1
+    say: >
+      Now the steering. First, program two SIDs inside the locators that IS-IS already advertises,
+      so every router can reach them with no extra routing at all.
+      On R2, the address ending in e zero zero zero inside R2's locator is an End SID:
+      advance to the next segment in the S R H.
+      On R3, the same function value inside R3's locator is End D T 6:
+      remove the outer header and look up the inner IPv6 destination.
+      Watch the table number. Table two fifty-five is the kernel's local table, where the router's own addresses live.
+      With table two fifty-four, the main table, R3 decapsulates the packet but can't find
+      its own loopback address there, so it drops it and increments Ip6InNoRoutes.
+      Use table two fifty-four only when the decapsulated traffic is for hosts behind R3.
+
+  - type: code
+    heading: "The headend on r1"
+    code: |
+      docker exec clab-srv6-lab-r1 ip sr tunsrc set 2001:db8::1
+
+      docker exec clab-srv6-lab-r1 ip -6 route add 2001:db8::3/128 metric 1 \
+        encap seg6 mode encap segs fc00:0:2:e000::,fc00:0:3:e000:: dev eth1
+
+      docker exec clab-srv6-lab-r1 ip -6 route get 2001:db8::3
+      # 2001:db8::3 encap seg6 mode encap segs 2 [ fc00:0:2:e000:: fc00:0:3:e000:: ] dev eth1 src 2001:db8::1 metric 1
+    say: >
+      On R1, two commands. ip sr tunsrc set fixes the source address of the outer IPv6 header to R1's loopback.
+      Then add an encapsulation route for R3's loopback: seg six, mode encap, with a segment list of two SIDs,
+      R2's End first, then R3's End D T 6, sent out of eth one toward R2.
+      A metric of one makes it win over the IS-IS route, which has metric twenty.
+      ip route get now shows the encap route, with two segments.
+      Ping R3's loopback from R1's loopback again.
+      The echo requests now travel from R1 to R2 to R3 inside SRv6,
+      while the echo replies come straight back from R3 over the IGP path.
+      The SRv6 route only affects traffic sourced at R1.
+
+  - type: code
+    heading: "Capture with netshoot"
+    chapter: "Packet level"
+    code: |
+      # Ingress of r2, from r1
+      docker run --rm -it --net container:clab-srv6-lab-r2 nicolaka/netshoot \
+        tcpdump -ni eth1 -vv 'ip6[6]==43'
+
+      # Ingress of r3, from r2
+      docker run --rm -it --net container:clab-srv6-lab-r3 nicolaka/netshoot \
+        tcpdump -ni eth1 -vv 'ip6[6]==43'
+    say: >
+      Time to look at the packets. The F R R image has no T C P dump,
+      so you attach a netshoot container to a router's network namespace instead.
+      Run two captures, each in its own terminal, while you ping from R1.
+      The first listens on eth one of R2, where packets arrive from R1.
+      The second listens on eth one of R3, where they arrive from R2.
+      The filter reads byte six of the IPv6 header, the next header field,
+      and matches the value forty-three: a Routing Header.
+      So you see only packets that carry an S R H, and nothing else.
+      That's exactly what you want here: the echo replies return from R3 as plain IPv6 over the direct link,
+      and they never cross these two interfaces with a routing header, so they stay out of your captures.
+      Start both captures first, then run the ping from R1 again.
+
+  - type: code
+    heading: "tcpdump at r2, then at r3"
+    code: |
+      IP6 (hlim 64, next-header Routing (43), payload length 144) 2001:db8::1 > fc00:0:2:e000::: RT6 (len=4, type=4, segleft=1, last-entry=1, ... [0]fc00:0:3:e000::, [1]fc00:0:2:e000::) IP6 (hlim 64, next-header ICMPv6 (58), payload length 64) 2001:db8::1 > 2001:db8::3: ICMP6, echo request
+
+      IP6 (hlim 63, next-header Routing (43), payload length 144) 2001:db8::1 > fc00:0:3:e000::: RT6 (len=4, type=4, segleft=0, last-entry=1, ... [0]fc00:0:3:e000::, [1]fc00:0:2:e000::) IP6 (hlim 64, next-header ICMPv6 (58), payload length 64) 2001:db8::1 > 2001:db8::3: ICMP6, echo request
+    say: >
+      Here's what you should see. The top packet is at R2.
+      The outer header goes from R1's loopback to R2's End SID, with hop limit sixty-four and next header forty-three.
+      Then the routing header: type four, which is the S R H, with segments left one, last entry one,
+      and the segment list. Inside it, untouched, is the original ICMPv6 echo request from R1's loopback to R3's.
+      The bottom packet is at R3. Three things changed in the outer header.
+      The destination is now R3's End D T 6 SID, segments left is zero,
+      and the hop limit dropped from sixty-four to sixty-three.
+      The inner packet is exactly the same.
+      You can also check the sizes. The S R H length field is four, which means forty bytes:
+      eight bytes of header plus two sixteen-byte segments.
+      Add the forty-byte inner IPv6 header and the sixty-four bytes of ICMPv6, and you get the outer payload length of one hundred forty-four.
+
+  - type: bullets
+    heading: "What to look for"
+    bullets:
+      - "**Outer header:** source = tunsrc, destination = active segment"
+      - "**Segment list in reverse:** [0] is the last segment, [1] the first"
+      - "**End at r2:** segleft 1 → 0, new DA, hop limit 64 → 63"
+      - "**End.DT6 at r3:** outer header and SRH removed, ICMPv6 delivered"
+    say: >
+      Four things to check in every capture. The outer source is the tunsrc address,
+      and the outer destination is always the active segment.
+      The segment list is stored in reverse order, as RFC 8754 defines it:
+      entry zero is the last segment, R3's, and entry one is the first, R2's.
+      At R2, the End behavior takes segments left from one to zero, copies the next segment into the destination address,
+      and the outer hop limit drops by one. The inner packet is never touched.
+      At R3, with segments left at zero, End D T 6 removes the outer header and the S R H,
+      and delivers the inner ICMPv6 packet, as RFC 8986 describes.
+      When you're done, delete the three routes you added, and the ping goes back to the direct link.
+
+  - type: end
+    heading: "Build it yourself"
+    subtitle: "All three router configs, the cleanup commands, and the next lab"
+    url: "srv6.md/labs/containerlab"
+    chapter: "Next steps"
+    say: >
+      Every file from this video, all three router configs and the cleanup commands,
+      is in the written lab on srv6 dot md, linked below.
+      From there, the packet capture library gives you reference captures and Wireshark filters for the same headers,
+      and the Linux kernel page explains every seg six command you just used.
+      In the next lesson you'll build SRv6 labs even faster with netlab, which generates the whole configuration for you.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

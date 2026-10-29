@@ -1,0 +1,201 @@
+id: e06
+lang: es
+title: "SRv6 en redes de IA"
+playlist: "SRv6 en español"
+description: |
+  SRv6 en redes de IA, explicado en español: cómo la NIC escribe la ruta de cada paquete con uSID en los fabrics de entrenamiento de GPU, por qué SRv6 encaja con el tráfico de IA, quién lo usa en producción (OpenAI, Microsoft, Oracle, Google, Meta, Alibaba Cloud y otros), SRv6 entre centros de datos (scale-across), los estándares detrás de MRC y la diferencia con Ultra Ethernet. Datos a octubre de 2026.
+
+  Esta es la lección 6 de la ruta SRv6 en español del curso gratuito de SRv6.md.
+links:
+  "Lección escrita: SRv6 para IA": https://srv6.md/es/ia/
+  "Curso gratuito de SRv6": https://srv6.md/learn/
+  "Lección anterior, SRv6 vs MPLS": https://srv6.md/es/srv6-vs-sr-mpls/
+hashtags: ["#SRv6", "#IA", "#RedesDeIA", "#GPU"]
+tags: [srv6 ia, srv6, srv6 para ia, redes de ia, mrc srv6, fabric de gpu, usid, scale-across, ultra ethernet, srv6 en español]
+thumbnail:
+  kicker: "SRv6 para IA"
+  text: "Rutas por GPU"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Español · Lección 6"
+    title: "SRv6 en redes de IA"
+    subtitle: "Fabrics de GPU, MRC y scale-across"
+    chapter: "Introducción"
+    say: >
+      SRv6 ya no es solo una tecnología de operadores. Hoy también corre dentro de algunos de los clústeres
+      de entrenamiento de IA más grandes, y entre centros de datos de IA.
+      En esta lección vas a entender cómo se usa SRv6 dentro de un fabric de GPU, por qué encaja con el tráfico de entrenamiento,
+      quién lo usa en producción y qué estándares lo respaldan. Los datos son de octubre de 2026.
+
+  - type: bullets
+    heading: "Dos usos de SRv6 en IA"
+    chapter: "Dos usos"
+    bullets:
+      - "**Dentro del clúster:** la NIC elige la ruta exacta de cada paquete"
+      - "**Entre centros de datos:** ingeniería de tráfico SRv6 por la WAN"
+    say: >
+      SRv6 se usa en las redes de IA para dos cosas. Dentro de un clúster de entrenamiento de GPU,
+      la NIC usa micro-SID para elegir la ruta exacta de cada paquete a través del fabric de backend.
+      Eso elimina las colisiones de hash de ECMP, permite que los switches funcionen sin enrutamiento dinámico
+      y hace que cada ruta se pueda probar. Y entre centros de datos, la ingeniería de tráfico SRv6
+      dirige el tráfico de IA por rutas con la latencia y la capacidad adecuadas.
+
+  - type: bullets
+    heading: "Dentro del fabric de GPU"
+    chapter: "Dentro del fabric"
+    bullets:
+      - "La NIC escribe la ruta como **uSID de 16 bits** en el destino IPv6"
+      - "Los switches usan **tablas estáticas**, sin protocolo de enrutamiento"
+      - "El transporte **reparte** el tráfico entre cientos de rutas"
+      - "Una ruta que falla se abandona **en microsegundos**"
+    say: >
+      Veamos el fabric de entrenamiento más de cerca. La NIC emisora escribe la ruta exacta de cada paquete
+      como una lista de micro-SID de dieciséis bits en la dirección IPv6 de destino.
+      Los switches lo reenvían con tablas estáticas, sin ningún protocolo de enrutamiento.
+      Esas tablas son pequeñas y se escriben una sola vez, durante la instalación, así que no hay BGP en el backend.
+      El transporte reparte el tráfico, en inglés spraying, entre cientos de rutas explícitas,
+      y si una ruta falla, la abandona en microsegundos. El manejo de fallos pasa del switch a la NIC.
+
+  - type: bullets
+    heading: "Por qué SRv6 encaja"
+    chapter: "Por qué encaja"
+    bullets:
+      - "**Rutas deterministas**, no hashing"
+      - "**Un fabric estático** y más simple"
+      - "**Visibilidad real:** la sonda usa la misma ruta que los datos"
+    say: >
+      ¿Por qué SRv6 encaja? Primero, rutas deterministas en lugar de hashing. El entrenamiento de IA son unos pocos flujos
+      enormes y sincronizados, el peor caso posible para ECMP: el hashing por flujo genera colisiones,
+      y la ruta más lenta frena todo el trabajo. Con SRv6, el emisor coloca cada paquete en una ruta conocida.
+      Segundo, un fabric estático: las rutas micro-SID estáticas reemplazan a BGP y su reconvergencia,
+      y los operadores de M R C reinician switches spine sin coordinarlo con los equipos de entrenamiento.
+      Tercero, visibilidad real: una sonda que usa la misma ruta que los datos prueba exactamente lo que viven los datos.
+      Clustermapper, de OpenAI, sondea cada enlace cada milisegundo.
+
+  - type: bullets
+    heading: "Tres razones más"
+    bullets:
+      - "**Sobrecarga mínima:** hasta 6 saltos en una dirección"
+      - "**Una tecnología de la GPU a la WAN**, sin gateways MPLS"
+      - "**Abierto y multivendor:** NIC, switches, SONiC, SAI y FRR"
+    say: >
+      Hay tres razones más. Sobrecarga mínima: micro-SID empaqueta hasta seis saltos en una sola dirección de 128 bits,
+      y los ASIC de switch convencionales procesan esa cabecera a velocidad de línea.
+      Una sola tecnología de la GPU a la WAN: el mismo plano de datos sirve al backend, al frontend del centro de datos
+      y al backbone entre centros de datos, sin gateways MPLS en el borde.
+      Y es abierto y multivendor: NIC de NVIDIA, AMD y Broadcom, switches de NVIDIA, Arista y Cisco Silicon One,
+      y software abierto como SONiC, SAI y FRR.
+
+  - type: big
+    value: "40 bytes"
+    caption: "Una ruta completa del fabric: una cabecera IPv6, sin SRH"
+    say: >
+      Y este es el número que lo resume. Con micro-SID, una ruta completa a través del fabric
+      cabe en una sola dirección IPv6 de destino. El costo es una única cabecera IPv6 exterior de cuarenta bytes,
+      sin Segment Routing Header.
+
+  - type: bullets
+    heading: "Quién lo usa en el entrenamiento"
+    chapter: "Quién lo usa"
+    bullets:
+      - "**OpenAI:** MRC sobre uSID estático, mayores clústeres GB200"
+      - "**Microsoft:** Fairwater, SRv6 estático en lugar de BGP"
+      - "**Oracle (OCI):** red Acceleron, incluido Abilene, Texas"
+      - "**Google:** fabric Virgo, para clientes bare-metal"
+    say: >
+      ¿Quién lo usa? En los fabrics de entrenamiento, OpenAI usa M R C, Multipath Reliable Connection,
+      sobre enrutamiento de origen con micro-SID estático, en sus mayores clústeres G B doscientos,
+      con el enrutamiento dinámico desactivado en los switches.
+      Microsoft usa SRv6 estático en lugar de BGP en la red scale-out de sus supercomputadoras Fairwater.
+      Oracle usa M R C con enrutamiento de origen SRv6 en su red multiplano Acceleron, incluido el clúster de Abilene, en Texas.
+      Los trabajos reportados llegan a setenta y cinco mil GPU, en fabrics diseñados para ciento treinta y un mil setenta y dos.
+      Y Google ofrece enrutamiento de origen SRv6 en su fabric de IA Virgo, para clientes bare-metal con su propio stack de host.
+
+  - type: bullets
+    heading: "Entre sitios de IA: scale-across"
+    chapter: "Scale-across"
+    bullets:
+      - "**Meta:** backbone regional, SRv6 TE en producción (oct. 2026)"
+      - "**Alibaba Cloud:** eCore for AI, SRv6 TE por trabajo"
+      - "**Nebius:** VPN y TE SRv6 de extremo a extremo"
+      - "**China Telecom:** pruebas entre clústeres a 100–500 km"
+    say: >
+      Entre centros de datos, lo que se conoce como scale-across, también hay despliegues.
+      Meta usa ingeniería de tráfico con micro-SID, desde un controlador central, en el backbone regional
+      que interconecta sus campus y sus clústeres de IA. Su primer sitio entró en producción en octubre de 2026.
+      Alibaba Cloud opera una red dedicada, el eCore for AI, con ingeniería de tráfico SRv6 por cada trabajo de entrenamiento,
+      y usa IPv6 y SRv6 en más de catorce clústeres de IA.
+      Nebius corre VPN e ingeniería de tráfico SRv6 de extremo a extremo entre sus centros de datos y su WAN.
+      Y China Telecom hace pruebas en red comercial para entrenar entre clústeres separados por cien a quinientos kilómetros.
+
+  - type: bullets
+    heading: "Una cronología corta"
+    chapter: "Cronología y estándares"
+    bullets:
+      - "**Abr. 2025:** primer draft del IETF sobre SRv6 para backends de IA"
+      - "**2025:** SONiC 202505 con SRv6 estático"
+      - "**5 may. 2026:** OpenAI publica MRC; sale OCP MRC 1.0"
+      - "**Sep. 2026:** draft -05, con siete empresas"
+      - "**Oct. 2026:** OCP Global Summit"
+    say: >
+      Todo esto pasó muy rápido. En abril de 2025 apareció el primer draft del IETF sobre SRv6 para backends de IA, de Cisco.
+      Ese mismo año, SONiC incorporó la configuración SRv6 estática.
+      En febrero de 2026, Cisco y Microsoft presentaron su despliegue en NANOG noventa y seis.
+      El cinco de mayo de 2026, OpenAI y sus socios publicaron M R C y su diseño de SRv6 estático,
+      junto con la especificación O C P M R C uno punto cero.
+      Y en octubre de 2026, en el OCP Global Summit, se presentaron Clustermapper, el backbone SRv6 de Meta,
+      la ingeniería de tráfico por trabajo de Alibaba y Virgo de Google.
+
+  - type: bullets
+    heading: "Los estándares"
+    bullets:
+      - "**Plano de datos:** RFC 8986 y RFC 9800"
+      - "**Uso en IA:** draft-filsfils-srv6ops-srv6-ai-backend"
+      - "**Transporte:** OCP MRC 1.0"
+      - "**Software de switch:** SONiC desde 202505"
+    say: >
+      ¿Y los estándares? El plano de datos es el de siempre: RFC 8986 para la programación de red y RFC 9800 para micro-SID.
+      El uso en IA se describe en un draft del IETF, ya en su versión cinco, con autores de Cisco, OpenAI, Microsoft,
+      Oracle, IBM, NVIDIA y Arrcus. Ojo: todavía es un draft, no un RFC.
+      En julio de 2026, sus autores pidieron que el grupo de trabajo lo adopte.
+      El transporte se define en O C P M R C uno punto cero, y el software de switch está en SONiC
+      desde la versión dos mil veinticinco cero cinco.
+
+  - type: compare
+    heading: "SRv6 y Ultra Ethernet"
+    chapter: "SRv6 y Ultra Ethernet"
+    columns:
+      - title: "Ultra Ethernet"
+        items: ["Un transporte", "Reparte con valores de entropía", "Los switches hacen hash", "No cambia la capa de red"]
+      - title: "SRv6"
+        items: ["Capa de red", "Enrutamiento de origen", "Cada valor de entropía → una ruta explícita", "MRC combina ambos"]
+    say: >
+      Una pregunta frecuente: ¿SRv6 compite con Ultra Ethernet? Ultra Ethernet define un transporte que reparte los paquetes
+      usando valores de entropía, que los switches procesan con hash, sin cambiar la capa de red.
+      Su versión uno punto cero, de junio de 2025, no usa SRv6.
+      SRv6, en cambio, es enrutamiento de origen en la capa de red, y puede asignar cada valor de entropía a una ruta explícita.
+      Son complementarios. De hecho, M R C combina funciones de transporte derivadas de Ultra Ethernet
+      con el enrutamiento de origen de SRv6.
+
+  - type: bullets
+    heading: "Switches en despliegues publicados"
+    bullets:
+      - "**NVIDIA** Spectrum-4 y Spectrum-5, con Cumulus o SONiC"
+      - "**Arista EOS** sobre Broadcom Tomahawk 5"
+      - "**Cisco Silicon One** con SONiC"
+    say: >
+      ¿Y qué switches se usan? Los despliegues publicados usan NVIDIA Spectrum cuatro y Spectrum cinco, con Cumulus o SONiC,
+      Arista EOS sobre Broadcom Tomahawk cinco, y sistemas Cisco Silicon One con SONiC.
+      Es decir, ASIC de switch convencionales, con sistemas operativos de red que ya existen.
+
+  - type: end
+    heading: "Lee la guía completa"
+    subtitle: "Cada fuente, la cronología completa y las preguntas frecuentes"
+    url: "srv6.md/es/ia"
+    chapter: "Siguientes pasos"
+    say: >
+      La guía completa, con cada fuente, la cronología y las preguntas frecuentes, está en srv6 punto md, en el enlace de abajo.
+      Con esta lección terminas la ruta SRv6 en español del curso gratuito de srv6 punto md.
+      Si quieres profundizar, la sección de IA del sitio, en inglés, analiza M R C, el diseño de fabrics y scale-across.
+      Gracias por llegar hasta aquí. Suscríbete para no perderte lo que viene.

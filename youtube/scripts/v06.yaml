@@ -1,0 +1,191 @@
+id: v06
+lang: en
+title: "SRv6 on SONiC"
+playlist: "Track 6: SRv6 Configuration by Vendor"
+description: |
+  SONiC SRv6, explained: how the SONiC network OS forwards SRv6 in the switch ASIC through SAI and orchagent (srv6orch), why FRR supplies SIDs from BGP or static configuration rather than IS-IS, static SRv6 in CONFIG_DB for AI fabrics, the release-by-release status from 202111, and what SAI can and cannot express.
+
+  This is lesson 6 of Track 6 (SRv6 Configuration by Vendor) in the free SRv6.md course.
+links:
+  "Written lesson (SONiC SRv6)": https://srv6.md/implementations/sonic/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 with FRRouting": https://srv6.md/implementations/frrouting/
+  "SONiC and SAI": https://srv6.md/topics/sonic-sai/
+  "SRv6 AI fabric design": https://srv6.md/ai/ai-fabric-design/
+hashtags: ["#SRv6", "#SONiC", "#OpenSource", "#NetworkEngineering"]
+tags: [sonic srv6, srv6, sonic, sai, srv6orch, orchagent, frrouting, srv6 usid, config_db, ai fabric, open networking, segment routing]
+thumbnail:
+  kicker: "SONiC"
+  text: "SRv6 in the ASIC"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 6 · Lesson 6"
+    title: "SRv6 on SONiC"
+    subtitle: "ASIC data plane, FRR control plane, static SIDs"
+    chapter: "Intro"
+    say: >
+      The last platform in this track is SONiC, the open-source network operating system for switches.
+      SONiC is different from everything we've configured so far, because SRv6 on SONiC is spread across several layers,
+      and each one decides part of what works. By the end of this lesson, you'll know how those layers fit together,
+      where SIDs come from, what each release added, and how to read SONiC's entries in the SRv6 support matrix,
+      where almost everything is marked partial. The written lesson doesn't include a configuration example,
+      so this lesson is about the architecture, and I'll point you to the design documents for the configuration.
+
+  - type: big
+    value: "In the ASIC"
+    caption: "SONiC forwards SRv6 in the switch ASIC, through SAI"
+    chapter: "Architecture"
+    say: >
+      Start with the most important fact. On a SONiC switch, SRv6 forwarding happens in the ASIC.
+      SONiC programs it through orchagent, specifically the srv6orch module, and the SRv6 objects of S A I,
+      the Switch Abstraction Interface. The Linux kernel's seg6 data plane, the one F R R uses on a server, is not what forwards traffic on a SONiC switch.
+      So which SRv6 behaviors actually forward depends on each switch vendor's S A I implementation.
+      SONiC can ask for a behavior; the ASIC vendor decides whether it happens.
+
+  - type: bullets
+    heading: "From FRR to the ASIC"
+    bullets:
+      - "**FRR zebra** computes the SRv6 routes"
+      - "**fpmsyncd** writes them into **APP_DB**"
+      - "**srv6orch** turns them into SAI **my_sid** and **sidlist**"
+      - "The **ASIC vendor's SAI** programs the hardware"
+    say: >
+      Here's the path a SID takes. The control plane is F R R. Its zebra daemon produces SRv6 routes,
+      and a process called fpmsyncd carries them into SONiC's application database, APP DB.
+      Then srv6orch turns those APP DB entries into S A I objects: my sid entries, for the SIDs this switch terminates,
+      and sid lists, for the segment lists it pushes onto packets.
+      Finally, the vendor's S A I implementation programs those objects into the ASIC.
+      Four layers, and a feature has to make it through all of them to forward a packet.
+
+  - type: compare
+    heading: "Where SIDs come from"
+    columns:
+      - title: "SONiC's FRR runs"
+        items: ["bgpd", "staticd", "ospfd (OSPFv2)"]
+      - title: "It does not run"
+        items: ["isisd", "ospf6d", "So no IGP-learned SIDs"]
+    say: >
+      Now a detail with big consequences. SONiC's F R R container runs bgpd, staticd and ospfd, which is OSPF version 2.
+      It does not run isisd or ospf6d. So on SONiC, SIDs don't come from an I G P.
+      They come from BGP, for layer three VPN, or from static configuration.
+      That's a real contrast with the router platforms earlier in this track, where I S I S advertised every locator.
+      On SONiC, there's no SRv6 I S I S and no SRv6 OSPFv3.
+
+  - type: bullets
+    heading: "Static SRv6 in CONFIG_DB (202505+)"
+    chapter: "Static SRv6"
+    bullets:
+      - "Tables: **SRV6_MY_LOCATORS** and **SRV6_MY_SIDS**"
+      - "**bgpcfgd** translates them into FRR static SIDs"
+      - "uN and uDT46; rated **Alpha** in the release notes"
+      - "The model used for **AI back-end fabrics**"
+    say: >
+      Static configuration is where SONiC's SRv6 has been moving. Since the two zero two five zero five release,
+      you can define SRv6 in CONFIG DB, SONiC's configuration database, with two tables:
+      SRV6 MY LOCATORS and SRV6 MY SIDS. A process called bgpcfgd translates them into F R R static SIDs,
+      which then follow the same path down to the ASIC. The release notes rate it Alpha, and it covers micro-N and micro D T 46.
+      This is the model used for AI back-end fabrics, and the AI fabric design lesson in Track 5 follows it release by release.
+
+  - type: bullets
+    heading: "Release by release (1/2)"
+    chapter: "Release history"
+    bullets:
+      - "**202111:** first orchagent SRv6: End, End.DT46, H.Encaps.Red"
+      - "**202211:** uSID data plane: uN, uA"
+      - "**202305:** selectable SID-list type"
+    say: >
+      Now the history. SONiC has carried SRv6 code since the two zero two one one one release.
+      That first version of orchagent SRv6 handled End, End D T 46 and H Encaps Red.
+      Two zero two two one one added the micro-SID data plane, with micro-N and micro-A.
+      Two zero two three zero five made the SID-list type selectable: encaps, encaps reduced, or insert.
+      Each of these is a change in SONiC's software. Whether your switch forwards it still depends on its S A I.
+
+  - type: bullets
+    heading: "Release by release (2/2)"
+    bullets:
+      - "**202405:** adjacencies for End.X, uA, End.DX4/DX6"
+      - "**202505:** static CONFIG_DB SRv6 (Alpha), SRv6 VPN code"
+      - "**master, Aug 2026:** static uA in CONFIG_DB"
+    say: >
+      Two zero two four zero five added adjacency programming, called L3 adj, for End X, micro-A, and End D X 4 and D X 6.
+      Two zero two five zero five brought the static CONFIG DB support we just saw, rated Alpha,
+      and SRv6 VPN support in srv6orch. And in the master branch, as of August 2026, static micro-A can also be configured in CONFIG DB.
+      So the recent releases have moved toward configuring SRv6 statically.
+
+  - type: compare
+    heading: "What SAI can express"
+    chapter: "What SAI can express"
+    columns:
+      - title: "Defined in SAI"
+        items: ["End, End.X, End.T", "End.DX4/DX6, End.DT4/DT6/DT46", "End.B6.Encaps(.Red), uSID"]
+      - title: "Not in SAI"
+        items: ["End.DX2", "End.DT2U, End.DT2M", "So no EVPN over SRv6"]
+    say: >
+      S A I is the ceiling for everything above it. It defines End, End X, End T, End D X 4 and D X 6,
+      End D T 4, D T 6 and D T 46, End B 6 Encaps and its reduced version, and the micro-SID variants of these.
+      What it doesn't define is any layer two behavior: no End D X 2, no End D T 2 U or D T 2 M.
+      And without layer two behaviors, EVPN over SRv6 has no data plane in SONiC. If you need EVPN over SRv6,
+      SONiC isn't the platform for it today.
+
+  - type: bullets
+    heading: "Flavors and headend, as programmed"
+    bullets:
+      - "**PSP and USD** are programmed together"
+      - "**USP** is defined in SAI, never programmed"
+      - "**H.Encaps.Red** is the default SID-list type"
+    say: >
+      Flavors show the same gap between what S A I defines and what SONiC uses. Orchagent programs P S P and U S D together,
+      as a pair. U S P is defined in S A I, but orchagent never programs it.
+      At the headend, H Encaps Red is the default SID-list type, and plain H Encaps became selectable in two zero two three zero five.
+      None of this is visible in a release note headline. It's in the orchagent code, which is what the support matrix cites.
+
+  - type: compare
+    heading: "FRR on Linux vs FRR on SONiC"
+    columns:
+      - title: "FRR on a Linux host"
+        items: ["Kernel seg6 data plane", "IS-IS SIDs (FRR 9.1+)", "PSP only, for End"]
+      - title: "FRR on SONiC"
+        items: ["ASIC data plane, via SAI", "No isisd: BGP or static", "PSP and USD, together"]
+    say: >
+      It helps to put this next to the previous lesson, because both run F R R.
+      On a Linux host, F R R programs the kernel's seg6 data plane, I S I S can advertise SIDs from release 9.1,
+      and the only flavor is P S P, for End, because that's all the kernel implements.
+      On SONiC, the same F R R hands its routes to orchagent, the ASIC forwards, there's no isisd,
+      so SIDs come from BGP or static configuration, and P S P and U S D are programmed together.
+      Same control plane software, very different results. The data plane underneath decides.
+
+  - type: big
+    value: "Partial"
+    caption: "Why the support matrix marks almost every SONiC cell partial"
+    chapter: "Reading the matrix"
+    say: >
+      Which brings us to the support matrix. Open SONiC's column and nearly every supported behavior is marked partial.
+      That's not a judgment on SONiC's code. It's because forwarding depends on each ASIC vendor's S A I implementation,
+      so SONiC alone can't promise that a behavior works on your switch. Some features are also rated Alpha,
+      or exist in the code without appearing in the release notes. So for SONiC, the matrix tells you what's possible;
+      your switch vendor tells you what's real.
+
+  - type: bullets
+    heading: "Services and policies"
+    bullets:
+      - "**L3VPN:** code in srv6orch (202505), not in release notes"
+      - "**Steering:** static, into SID lists; no BGP SR Policy"
+      - "**No** EVPN, multicast or mobile user plane"
+    say: >
+      For services: SRv6 VPN code landed in srv6orch in two zero two five zero five, but it isn't mentioned in the release notes,
+      so the matrix marks layer three VPN as partial. Traffic steering is static, into SID lists; there's no BGP SR Policy.
+      And there's no EVPN, no SRv6 multicast and no mobile user plane, because S A I has no behaviors for them.
+      What remains is the static micro-SID model that the written lesson highlights, the one used for AI back-end fabrics.
+
+  - type: end
+    heading: "Read the written lesson"
+    subtitle: "Status table, architecture and SONiC's design docs"
+    url: "srv6.md/implementations/sonic"
+    chapter: "Next steps"
+    say: >
+      The written lesson on srv6 dot md has the release table with a source for every row.
+      For configuration, it links SONiC's own design documents: the SRv6 high-level design, the static configuration design for CONFIG DB,
+      and the SRv6 VPN design. The SONiC and S A I page explains how S A I models SRv6 objects.
+      That completes Track 6. This lesson is part of the free SRv6 dot md course.
+      Subscribe, and I'll see you in the next lesson.

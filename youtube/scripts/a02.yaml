@@ -1,0 +1,225 @@
+id: a02
+lang: en
+title: "Designing an AI Fabric with SRv6"
+playlist: "Track 5: SRv6 for AI Networks"
+description: |
+  How to design an SRv6 AI fabric for a GPU backend, step by step: a multi-plane two-tier Clos, a uSID addressing plan with the plane in every uSID, static per-switch tables of 513 entries, SONiC CONFIG_DB and the FRR configuration it produces, uN versus uA, the NIC's H.Encaps.Red role, published hardware support and the security rules from the IETF AI-backend draft.
+
+  This is lesson 2 of Track 5 (SRv6 for AI Networks) in the free SRv6.md course.
+links:
+  "Written lesson": https://srv6.md/ai/ai-fabric-design/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, MRC and SRv6": https://srv6.md/ai/mrc/
+  "Next lesson, SRv6 vs ECMP, adaptive routing and Ultra Ethernet": https://srv6.md/ai/srv6-vs-ai-fabric-alternatives/
+hashtags: ["#SRv6", "#AINetworking", "#SONiC", "#DataCenter"]
+tags: [srv6 ai fabric, srv6, ai fabric design, gpu backend network, usid, sonic srv6, frrouting, clos, ai networking, data center]
+thumbnail:
+  kicker: "AI Fabric"
+  text: "513 routes"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 5 · Lesson 2"
+    title: "Designing an AI Fabric with SRv6"
+    subtitle: "From the uSID plan to the switch tables"
+    chapter: "Intro"
+    say: >
+      In the last lesson you saw how MRC uses SRv6 in production. Now let's design one.
+      This lesson turns the public designs behind MRC, and the IETF draft on SRv6 for deterministic path placement in AI backends,
+      into a blueprint. By the end you'll be able to size the topology, write a micro-SID addressing plan,
+      list every static route a switch needs, configure it in SONiC,
+      and decide what the NIC, the orchestrator and the security rules must do.
+
+  - type: bullets
+    heading: "The design in five lines"
+    chapter: "The model"
+    bullets:
+      - "Two-tier Clos split into **4 or 8 planes**"
+      - "One **block**, one 16-bit **uN uSID** per switch"
+      - "**Static tables:** own uSID + one /48 per neighbor"
+      - "The **NIC** writes the path: up to 6 uSIDs, no SRH"
+      - "The **transport** sprays; **probes** test every link"
+    say: >
+      Here's the whole design in five lines.
+      A two-tier Clos, split into four or eight parallel planes, so it reaches more than a hundred thousand GPUs without a third tier.
+      One SRv6 block for the fabric, and one sixteen-bit micro N SID per switch, plus micro-SIDs for the last-hop ports.
+      Static tables on every switch: its own micro-SID, plus one slash forty-eight route per neighbor. No BGP or IGP needed for the backend.
+      The NIC encapsulates RoCE in an outer IPv6 header whose destination is the path, up to six micro-SIDs, no S R H, forty bytes of overhead.
+      And the transport, MRC or similar, sprays across many paths and abandons failing ones, while probes use the same encoding to test every link.
+
+  - type: compare
+    heading: "Who does what"
+    columns:
+      - title: "Static"
+        items: ["Switch: uN shift on static /48s", "Never changes at run time", "Orchestrator: templates, rarely"]
+      - title: "Dynamic"
+        items: ["NIC: builds the path per packet", "Reacts to ECN, trims, loss", "Host agent: probes, denylists"]
+    say: >
+      Four roles. The orchestrator discovers the topology and the micro-SIDs at bring-up,
+      and gives each NIC its path templates. It changes things rarely, only when the topology changes.
+      The switch does micro N shift and forward on static slash forty-eight routes, and never changes at run time.
+      The NIC builds the micro-SID path for every packet, encapsulates and decapsulates,
+      and reacts to ECN, trimming and loss.
+      And a host agent probes paths, maintains denylists and configures the NIC path profiles, continuously.
+      The IETF draft is explicit that this, in its words, is not switch adaptive routing.
+      Switches never change their decisions. Only the source does.
+
+  - type: record
+    url: https://srv6.md/ai/mrc/
+    index: 0
+    seconds: 12
+    chapter: "Topology"
+    say: >
+      Step one is the topology, the multi-plane two-tier Clos from the MRC paper.
+      Break each eight hundred gig NIC into eight ports of one hundred gig, or four of two hundred, one per plane.
+      In each plane, fifty-one point two terabit switches run as five hundred twelve ports of one hundred gig.
+      A T zero has two hundred fifty-six ports toward NICs and two hundred fifty-six uplinks, and a T one connects to five hundred twelve T zeros.
+      That's five hundred twelve T zeros times two hundred fifty-six NICs: one hundred thirty-one thousand and seventy-two GPUs in two tiers.
+      Microsoft has shown variants up to five hundred twenty-four thousand GPUs.
+      Every path is either T zero local, or crosses one T one, and every path stays inside one plane.
+
+  - type: code
+    heading: "One possible uSID plan"
+    chapter: "Addressing plan"
+    code: |
+      16-bit uSID = | type (2) | plane (3) | index (11) |
+        type 00 = T0 switch     index 0-511
+        type 01 = T1 switch     index 0-255
+        type 10 = last-hop port index 0-255 (the T0 downlink to a NIC)
+
+      DA = block | T0(src) | T1 | T0(dst) | PORT(dst) | 0000 | 0000
+    say: >
+      Step two, addressing. Pick one block for the backend: the IANA SRv6 block, five F zero zero, slash sixteen,
+      or a unique local block such as f c b b, b b zero zero, slash thirty-two.
+      Use a thirty-two bit block followed by sixteen-bit micro-SIDs, the F3216 format of RFC 9800.
+      MRC's NICs copy the plane number into every micro-SID, so it pays to make the plane a field of the micro-SID.
+      This plan is one example, built on the published constraints. The MRC paper doesn't publish its own numbering.
+      A cross T one path then uses four micro-SIDs, with two slots to spare.
+      Six fit in the destination address, enough to pin a five-hop path through a three-tier Clos. You need an S R H only beyond six.
+
+  - type: code
+    heading: "The IETF draft's example"
+    code: |
+      GPU1 → GPU3 via Leaf1, Spine5, Leaf3:   5f00:0:0100:0500:0300::
+      GPU2 → GPU3 via Leaf2, Spine6, Leaf4:   5f00:0:0200:0600:0400::
+      Avoid congested Spine5 (NIC rewrite):   5f00:0:0100:0600:0300::
+    say: >
+      The IETF draft walks through the same encoding on a small example: two spines, four leaves,
+      and NICs dual-homed to two leaves. Its block is five F zero zero, colon zero, slash thirty-two.
+      GPU one reaches GPU three through leaf one, spine five and leaf three, and each one is a micro-SID in the address.
+      GPU two takes a different leaf and spine.
+      Now look at the last line. To avoid a congested spine five, the NIC simply rewrites one micro-SID, from spine five to spine six.
+      No switch was touched, no protocol converged. The source chose a different path.
+
+  - type: bullets
+    heading: "Static switch tables"
+    chapter: "Switch tables"
+    bullets:
+      - "**T0:** own uN + 256 uplink /48s + 256 port /48s = **513**"
+      - "**T1:** own uN + 512 T0 /48s = **513**"
+      - "Grows with **radix**, not paths, flows or GPUs"
+      - "Written **once**, at install time"
+    say: >
+      Step three, the switch tables. Each switch needs exactly this.
+      A T zero has its own micro N SID, a slash forty-eight route to each T one's micro-SID on its uplinks,
+      and a slash forty-eight to each port micro-SID on its downlinks. One plus two fifty-six plus two fifty-six: five hundred thirteen entries.
+      A T one has its own micro N SID and a slash forty-eight to each T zero. One plus five hundred twelve: again five hundred thirteen.
+      The table grows with the switch radix, not with the number of paths, flows or GPUs, and it's written once.
+      Microsoft's NANOG 96 example uses the same pattern: static micro N SIDs as slash forty-eights,
+      plus a static route to each neighbor's SID.
+
+  - type: code
+    heading: "SONiC CONFIG_DB"
+    chapter: "SONiC and FRR"
+    code: |
+      {
+        "SRV6_MY_LOCATORS": {
+          "loc1": { "prefix": "FCBB:BB00:0103::", "block_len": "32", "node_len": "16", "func_len": "16", "arg_len": "0" }
+        },
+        "SRV6_MY_SIDS": {
+          "loc1|FCBB:BB00:0103::/48": { "action": "uN", "decap_dscp_mode": "pipe" }
+        }
+      }
+    say: >
+      On SONiC, since release 202505, static SRv6 is configured in CONFIG_DB with two tables:
+      SRV6 MY LOCATORS, which defines the locator with its block, node, function and argument lengths,
+      and SRV6 MY SIDS, which binds the slash forty-eight to the micro N action.
+      A process called bgpcfgd compiles them into F R R.
+      Note the maturity: the 202505 release notes rate the feature Alpha.
+      Releases 202505, 202511 and 202605 support micro N and micro D T 46 through CONFIG_DB,
+      and the master branch added micro A from August 2026.
+
+  - type: code
+    heading: "What FRR receives"
+    code: |
+      segment-routing
+       srv6
+        locators
+         locator loc1
+          prefix fcbb:bb00:103::/48 block-len 32 node-len 16 func-bits 16
+          behavior usid
+        static-sids
+         sid fcbb:bb00:103::/48 locator loc1 behavior uN
+    say: >
+      This is what bgpcfgd renders: a micro-SID locator, loc one, and a static SID on the whole slash forty-eight with behavior micro N.
+      If you've done the Containerlab lesson, the locator block will look familiar.
+      The neighbor routes, the slash forty-eights that point at the port facing each neighbor, are ordinary static IPv6 routes.
+      Below FRR, the SAI and orchagent layers already map micro N, micro A, micro D T 4, 6 and 46, and micro D X 4 and 6 to the ASIC.
+
+  - type: compare
+    heading: "uN or uA?"
+    columns:
+      - title: "uN names a switch"
+        items: ["Forwards on its route to the next uSID", "Still hashes across parallel links", "Used by the MRC deployment"]
+      - title: "uA names a link"
+        items: ["Pins one member of a bundle", "Asked for by OpenAI at OCP 2026", "Used by Meta's SRv6 backbone"]
+    say: >
+      Which behavior should the micro-SIDs use? Micro N names a switch. The switch forwards the shifted address on its route
+      to the next micro-SID, so a T zero with several parallel links to the same T one still hashes across them.
+      Micro A names a specific link, an adjacency. It's the tool for pinning one member of a bundle.
+      OpenAI's Clustermapper team asked vendors at OCP 2026 for exactly this: a supported way to select individual links among parallel adjacencies.
+      The MRC deployment uses micro N. Meta's SRv6 backbone uses micro A. And the IETF draft allows either.
+
+  - type: code
+    heading: "Linux as the NIC, for a lab"
+    chapter: "The NIC"
+    code: |
+      # Path to the remote GPU host: src T0 0103 -> T1 0b07 -> dst T0 0141 -> port 0012
+      ip -6 route add 2001:db8:3::3/128 \
+        encap seg6 mode encap.red segs fcbb:bb00:0103:0b07:0141:0012:: dev eth0
+    say: >
+      Step four, the NIC. It encapsulates with H Encaps Red, which puts the path in the outer destination address,
+      with no S R H when it fits. The inner IPv6 destination is the remote NIC's own address.
+      Per connection, it holds a set of paths, one hundred twenty-eight to two hundred fifty-six in MRC, spread across planes,
+      and fills in the plane and uplink fields of the orchestrator's template.
+      On ECN it deprioritizes a path for a while. On untrimmed loss it retires the path at once.
+      For lab work, Linux can play the NIC: an encap dot red route with one micro-SID container adds no S R H.
+
+  - type: bullets
+    heading: "Security and hardware"
+    chapter: "Security"
+    bullets:
+      - "Limit which **workloads** may originate SRv6"
+      - "Constrain hosts to **authorized paths**"
+      - "Keep the backend block **unreachable**; filter it everywhere"
+      - "Check each vendor's **behaviors and formats**"
+    say: >
+      A host that can write any SRv6 path can steer traffic anywhere in the fabric.
+      So the IETF draft recommends limiting which workloads may originate SRv6 traffic, constraining hosts to paths the orchestrator has authorized,
+      and keeping the backend block unreachable from the frontend and the Internet, filtered at every boundary.
+      For multi-tenant GPU clouds, a VPN service SID at the end of the path, such as micro D T 46 in a tenant VRF, separates tenants.
+      On hardware, support differs, so check each vendor's current documentation.
+      For example, Arista's documentation lists F3216 only, and H Encaps Red as unsupported on the switch,
+      which matters if the switch, rather than the NIC, is the headend.
+      And Cisco markets Silicon One G200 with native micro-SID, but on SONiC you should confirm support for the specific platform and image.
+
+  - type: end
+    heading: "Build your own plan"
+    subtitle: "The full design, the hardware table and a checklist"
+    url: "srv6.md/ai/ai-fabric-design"
+    chapter: "Next steps"
+    say: >
+      The full design, with the hardware support table and an eight-point checklist,
+      is on srv6 dot md, linked below. Size the fabric MTU for the extra forty-byte outer header before anything else.
+      Next, we'll compare this approach with ECMP, switch adaptive routing and Ultra Ethernet.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

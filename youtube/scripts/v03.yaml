@@ -1,0 +1,206 @@
+id: v03
+lang: en
+title: "SRv6 on Nokia SR OS"
+playlist: "Track 6: SRv6 Configuration by Vendor"
+description: |
+  Nokia SRv6 on SR OS: classic and micro-segment (uSID) SRv6 side by side, how uSIDs are allocated, segment list depth, supported behaviors, L2 and L3 services, SR policies and Flex-Algo, multi-vendor TI-LFA, Tree-SID multicast, platforms, and how SR Linux differs.
+
+  This is lesson 3 of Track 6 (SRv6 Configuration by Vendor) in the free SRv6.md course.
+links:
+  "Written lesson (SR OS SRv6)": https://srv6.md/implementations/nokia-sros/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 on Juniper Junos": https://srv6.md/implementations/juniper/
+  "Next lesson, SRv6 on Arista EOS": https://srv6.md/implementations/arista-eos/
+hashtags: ["#SRv6", "#Nokia", "#SROS", "#NetworkEngineering"]
+tags: [nokia srv6, srv6, nokia sr os, sr os srv6, srv6 usid, micro-segment srv6, ti-lfa, flex-algo, evpn over srv6, nokia 7750, sr linux, segment routing]
+thumbnail:
+  kicker: "Nokia SR OS"
+  text: "Classic + uSID"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 6 · Lesson 3"
+    title: "SRv6 on Nokia SR OS"
+    subtitle: "Classic SIDs and uSID, side by side"
+    chapter: "Intro"
+    say: >
+      Nokia S R O S supports SRv6 with full-length SIDs and with micro-SIDs,
+      and it can run both on the same router, at the same time.
+      By the end of this lesson, you'll know how S R O S organizes classic and micro-segment SRv6,
+      how micro-SIDs are allocated, which behaviors and services it supports and since which release,
+      what to check when you mix vendors for fast reroute, and which hardware you need.
+      One note up front: the written lesson doesn't include S R O S configuration, so this lesson is about the model,
+      and at the end I'll point you to Nokia's guides for the syntax.
+
+  - type: compare
+    heading: "Two SID modes, one router"
+    chapter: "Two SID modes"
+    columns:
+      - title: "Classic SRv6"
+        items: ["Full-length SIDs, RFC 8986", "32-, 16- or 128-bit SIDs", "Its own SID block"]
+      - title: "Micro-segment (uSID)"
+        items: ["16-bit uSIDs in a container", "Up to six per 32-bit block", "A different SID block"]
+    say: >
+      S R O S supports SRv6 in two forms. Classic SRv6 uses full-length SIDs, as defined in RFC 8986.
+      Nokia's application note describes classic SID length as variable: 32-bit, 16-bit or 128-bit.
+      Micro-segment SRv6 packs 16-bit micro-SIDs into a container behind a 32-bit block, up to six of them.
+      Nokia describes micro-segment SRv6 as an extension of the network programming model, not a replacement for it.
+      Both modes run concurrently on one platform. The rule to remember: SIDs of each type must come from different SID blocks.
+
+  - type: big
+    value: "Mix them"
+    caption: "uSID containers and classic SIDs in one segment list"
+    say: >
+      Here's what that buys you. Nokia's application note states that micro-SID containers and classic SIDs can be combined
+      in the same segment list. Most of the path stays compressed, while you can still carry a full-length service
+      or function SID where you need one. And coexistence goes further than SRv6: classic SRv6, micro-SIDs and MPLS or SR-MPLS
+      can all be enabled together on the same router, the same service, even the same IP interface.
+      Keep that in mind when we get to gateways, later in this lesson.
+
+  - type: bullets
+    heading: "Release by release"
+    chapter: "Releases"
+    bullets:
+      - "**21.5.R2:** first SRv6, on FP4 hardware"
+      - "**22.5.R1:** EVPN-IFL"
+      - "**22.7.R1:** EVPN-VPLS, EVPN-VPWS, SRv6 policies"
+      - "**26.3 / 26.7:** microloop avoidance / PCEP"
+    say: >
+      SRv6 first shipped in S R O S 21.5 R2, on FP4-based hardware. That first release already had I S I S,
+      the IP-VPN service Nokia calls VPRN, Flex-Algo, and L F A and T I L F A protection.
+      EVPN I F L followed in 22.5 R1, and EVPN V P L S, EVPN V P W S and SRv6 policies in 22.7 R1.
+      More recent additions: microloop avoidance for SRv6 is first documented in 26.3,
+      and SRv6 policies from a PCE over PCEP, RFC 9603, in 26.7.
+      The support matrix on srv6 dot md has the first documented release for every other feature.
+
+  - type: bullets
+    heading: "How uSIDs are allocated"
+    chapter: "uSID allocation"
+    bullets:
+      - "**Global** uSIDs identify nodes"
+      - "**Local** uSIDs: adjacency, service, function"
+      - "**global-sid-entries** (default 16) sets the split"
+      - "**block-length** must match network-wide"
+    say: >
+      Inside a micro-segment block, every micro-SID is either global or local.
+      Global micro-SIDs identify nodes. Local micro-SIDs identify things that only matter on one router: an adjacency, a service, a function.
+      The 16-bit space is split between them by a setting called global sid entries, which defaults to 16.
+      With the default, values zero through three F F F hex, the first quarter of the space, are global, and the rest are local.
+      The block length must be identical across the whole network. That's the same rule RFC 9800 sets for every micro-SID domain:
+      compression only works between nodes that share the block.
+
+  - type: compare
+    heading: "How deep can a segment list go?"
+    columns:
+      - title: "Application note"
+        items: ["Up to 9 classic SIDs", "or 47 uSIDs", "Incl. primary, LFA, service"]
+      - title: "Per SR policy list"
+        items: ["7 classic segments", "or 24 micro-segments", "42 uSIDs, pre-compressed"]
+    say: >
+      Segment list depth decides how long a traffic-engineered path can be. There are two numbers to keep apart.
+      Nokia's application note quotes up to nine classic SIDs, or forty-seven micro-SIDs,
+      and that count includes the primary path, the L F A backup and the service SID.
+      The user guide's configurable limit for one SR policy segment list is seven classic segments,
+      or twenty-four micro-segments, which becomes forty-two micro-SIDs if you configure pre-compressed containers.
+      Whichever number you quote in a design, say which one it is.
+
+  - type: bullets
+    heading: "Behaviors in SR OS 26.7"
+    chapter: "Behaviors"
+    bullets:
+      - "**uSID:** uN, uA, uDT4/6/46, uDX2, uDT2U, uDT2M"
+      - "**Classic:** End, End.X, End.DT4/6/46, End.DX2, End.DT2U/2M"
+      - "**Headend:** H.Encaps.Red and H.Encaps.L2.Red only"
+      - "**Not supported:** End.T, End.DX4, End.DX6"
+    say: >
+      Now the behaviors, as of S R O S 26.7. In micro-segment mode, I S I S advertises micro-N and micro-A,
+      and BGP services or static configuration use micro D T 4, D T 6 and D T 46, micro D X 2, D T 2 U and D T 2 M.
+      Classic mode has the same set with full-length SIDs, End and End X with the P S P, U S P and U S D flavors,
+      and End B 6 Encaps Red as the SR policy binding SID.
+      At the headend, only the reduced variants are supported: H Encaps Red and H Encaps L 2 Red, not the plain versions.
+      End T, End D X 4 and End D X 6 are not supported, so layer three VPNs use per-table D T SIDs.
+
+  - type: bullets
+    heading: "Services, classic and uSID"
+    chapter: "Services and TE"
+    bullets:
+      - "**L3:** base-router BGP routes, VPRN (IP-VPN), EVPN-IFL"
+      - "**L2:** EVPN-VPLS and EVPN-VPWS"
+      - "Single-active or **all-active** multihoming"
+      - "**Gateway:** MPLS, SR-MPLS, SRv6, VXLAN interworking"
+    say: >
+      Services work with both classic SIDs and micro-SIDs. For layer three, that's BGP routes in the base router,
+      which means the global routing table, plus the VPRN IP-VPN and EVPN I F L.
+      For layer two, it's EVPN V P L S and EVPN V P W S, with single-active or all-active multihoming.
+      S R O S can also act as a gateway, interworking MPLS, SR-MPLS, classic SRv6, micro-SID SRv6, VXLAN and MPLS over UDP,
+      at both the transport and the service layer. The migration guide on srv6 dot md covers those gateway designs.
+
+  - type: bullets
+    heading: "IGP and traffic engineering"
+    bullets:
+      - "**IS-IS** is the SRv6 IGP, with Flex-Algo, MT0 and MT2"
+      - "SR policies: **static**, **BGP SR Policy**, or **PCEP**"
+      - "**Microloop avoidance** for SRv6 (26.3)"
+      - "**BGP-LS** export of SRv6 data (IS-IS only)"
+    say: >
+      For the control plane, I S I S is the SRv6 I G P, including Flex-Algo and multi-topology zero and two.
+      The support matrix notes there's no OSPFv3 for SRv6 on S R O S.
+      SRv6 policies can be configured statically, learned through the BGP SR Policy address family since 22.7 R1,
+      or, since 26.7, pushed from a PCE over PCEP. Nokia's guide documents micro-SIDs inside policies from 23.10.
+      Microloop avoidance for SRv6 is first documented in 26.3, and BGP link state can export SRv6 information,
+      for I S I S topologies only.
+
+  - type: bullets
+    heading: "Protection, and the multi-vendor catch"
+    chapter: "Multi-vendor TI-LFA"
+    bullets:
+      - "LFA, remote LFA, **TI-LFA**: link, node, SRLG"
+      - "SR OS repairs with **H.Insert.Red**"
+      - "Others may use **H.Encaps.Red**"
+      - "SR OS can **terminate** encapsulated repair tunnels"
+    say: >
+      For protection, S R O S offers L F A, remote L F A and T I L F A, with link, node and SRLG protection.
+      Here's the catch when you mix vendors. S R O S builds its T I L F A and remote L F A repair tunnels with H Insert Red:
+      it inserts a reduced S R H into the packet. Some other implementations use H Encaps Red instead,
+      wrapping the packet in a new outer header. S R O S can terminate those encapsulated repair tunnels from other vendors,
+      and the guide describes a termination mode for it. If your I G P domain has more than one vendor, check this before you rely on fast reroute.
+
+  - type: bullets
+    heading: "Multicast and OAM"
+    bullets:
+      - "**Tree-SID SRv6** for NG-MVPN, first documented in 25.3"
+      - "Static config, **classic SIDs only**, no LFA or BFD"
+      - "**Ping and traceroute** to SIDs, VRF prefixes, policies"
+    say: >
+      Two more areas. For multicast, S R O S supports Tree-SID SRv6, using replication segments,
+      for next-generation MVPN, first documented in 25.3. Read the restrictions before you plan on it:
+      it's static configuration, it uses classic SIDs only, and there's no L F A or B F D protection.
+      For operations, S R O S can ping and traceroute to SRv6 SIDs, to V R F prefixes, and to SRv6 policies.
+
+  - type: bullets
+    heading: "Platforms"
+    chapter: "Platforms"
+    bullets:
+      - "**SR OS:** 7450 ESS, 7750 SR, 7950 XRS, VSR"
+      - "**FP4-based** hardware, SR OS 21.5.R2 and later"
+      - "EVPN over SRv6 needs **FP4 network ports**"
+      - "**SR Linux 26.3:** 7730 SXR, 7220 IXR-H5/H6"
+    say: >
+      On hardware: the SRv6 chapter of the S R O S 26.7 user guide applies to the seventy-four fifty E S S, the seventy-seven fifty S R,
+      the seventy-nine fifty X R S, and the virtual router, V S R. Nokia's advanced configuration guides add the condition:
+      SRv6 is supported on FP4-based equipment from 21.5 R2, and the EVPN chapters require FP4-based network ports.
+      SR Linux, Nokia's data center operating system, is a separate implementation. Its SRv6 chapter first appears in 26.3,
+      listing the seventy-seven thirty S X R and the seventy-two twenty I X R H5 and H6, the latter as basic micro-SID transit nodes
+      for AI back-end fabrics. EVPN V P L S over SRv6 isn't supported there.
+
+  - type: end
+    heading: "Read the written lesson"
+    subtitle: "The full feature tables and Nokia's guides"
+    url: "srv6.md/implementations/nokia-sros"
+    chapter: "Next steps"
+    say: >
+      The written lesson on srv6 dot md has the full behavior and service tables, with a source for every row.
+      For configuration syntax, it links Nokia's S R O S 26.7 Segment Routing and P C E User Guide,
+      the advanced configuration guide for SRv6, and Nokia's SRv6 application note.
+      Next, we look at Arista E O S. This lesson is part of the free SRv6 dot md course.
+      Subscribe, and I'll see you in the next lesson.

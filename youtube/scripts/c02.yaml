@@ -1,0 +1,217 @@
+id: c02
+lang: en
+title: "Flex-Algo with SRv6: Network Slicing Without RSVP-TE"
+playlist: "Track 2: Control Plane and Services"
+description: |
+  Flex-Algo with SRv6, explained. How IGP Flexible Algorithm (RFC 9350) lets IS-IS or OSPFv3 compute several topologies at once, each with its own metric and constraints, how per-algorithm SRv6 locators turn those topologies into network slices, and how to configure and verify Flex-Algo 128 on Cisco IOS-XR.
+
+  This is lesson 2 of Track 2 (Control Plane and Services) in the free SRv6.md course.
+links:
+  "Written lesson, Flex-Algorithm": https://srv6.md/topics/flex-algorithm/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, IS-IS for SRv6": https://srv6.md/rfcs/rfc9352/
+  "Next lesson, TI-LFA explained": https://srv6.md/topics/ti-lfa/
+hashtags: ["#SRv6", "#FlexAlgo", "#NetworkSlicing", "#SegmentRouting"]
+tags: [flex-algo, flexible algorithm, srv6, rfc 9350, network slicing, is-is, srv6 locator, traffic engineering, low latency, segment routing]
+thumbnail:
+  kicker: "Flex-Algo"
+  text: "One SID, one slice"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 2 · Lesson 2"
+    title: "Flex-Algo with SRv6"
+    subtitle: "Network slicing without RSVP-TE"
+    chapter: "Intro"
+    say: >
+      Your network has one physical topology, but your services want different paths through it.
+      Voice wants the lowest delay, bulk transfers want bandwidth, some customers must avoid certain links.
+      In this lesson you'll see how Flex-Algo lets the I G P compute all of those paths at once,
+      how SRv6 turns each one into a slice you can reach with a single SID, and how to configure it.
+
+  - type: bullets
+    heading: "One shortest path is not enough"
+    chapter: "The problem"
+    bullets:
+      - "**Voice and video:** the lowest-latency path"
+      - "**Bulk data:** the highest-bandwidth path"
+      - "**Critical services:** avoid certain nodes or links"
+      - "**Redundancy:** disjoint paths for protection"
+    say: >
+      A traditional I G P computes one shortest path, based on one link metric. Every service gets the same answer.
+      But modern networks need different answers for different traffic. Voice and video want the lowest latency.
+      Bulk data wants the most bandwidth. Critical services may need to stay away from certain nodes or links.
+      And redundancy needs paths that don't share anything.
+      Classically, you'd solve this with RSVP-TE tunnels and their per-tunnel state. Flex-Algo solves it inside the I G P.
+
+  - type: bullets
+    heading: "What a Flex-Algo defines"
+    chapter: "How Flex-Algo works"
+    bullets:
+      - "**Algorithm ID:** 128 to 255"
+      - "**Metric type:** IGP metric, delay or TE metric"
+      - "**Constraints:** include or exclude affinities, SRLGs"
+      - "**Calculation type:** SPF or strict SPF"
+    say: >
+      Flex-Algo, defined in RFC 9350, lets you define extra algorithms, numbered 128 to 255.
+      Each one has its own metric type: the normal I G P metric, delay, or a T E metric.
+      Each one can carry constraints, such as links to include or exclude by affinity, or shared risk link groups to avoid.
+      And a calculation type, S P F or strict S P F.
+      Every router that takes part runs a separate computation per algorithm. Each algorithm produces its own
+      set of SRv6 SIDs, and so its own independent forwarding plane.
+
+  - type: record
+    url: https://srv6.md/topics/flex-algorithm/
+    index: 0
+    seconds: 14
+    say: >
+      Here's the example from the written lesson. P E one can reach P E two through P one or through P two.
+      The top path, through P one, has ten plus five milliseconds of delay, but every link is a hundred gig.
+      The bottom path, through P two, is only two plus three milliseconds, but the links are ten gig.
+      Neither path is simply better. It depends on what the traffic needs.
+      A classic I G P with a single metric would pick one of them for everybody, and the other path would sit idle
+      for that destination. Flex-Algo lets both be the best path, for different traffic.
+
+  - type: bullets
+    heading: "Three algorithms, three answers"
+    bullets:
+      - "**Algo 0**, IGP metric: PE1 → P2 → PE2 (default routing)"
+      - "**Algo 128**, delay: PE1 → P2 → PE2, **5 ms**"
+      - "**Algo 129**, TE metric: PE1 → P1 → PE2, **100G links**"
+    say: >
+      So we define algorithms. Algorithm zero is the default I G P metric, and in this example it picks the path through P two.
+      Algorithm 128 minimizes latency. It picks P two as well, with five milliseconds end to end instead of fifteen.
+      Algorithm 129 uses the T E metric, which the example uses to express bandwidth, so it picks P one and the hundred-gig links.
+      Same routers, same links, three different best paths, all computed by the I G P at the same time.
+      Nothing is signaled hop by hop and nothing is reserved. Each router simply runs the computation for every algorithm it takes part in.
+
+  - type: code
+    heading: "One locator per algorithm"
+    chapter: "Per-algorithm locators"
+    code: |
+      Node PE2 advertises:
+        Algo 0:   fcbb:bb01:0002::/48  → Default IGP path
+        Algo 128: fcbb:bb02:0002::/48  → Latency-optimized path
+        Algo 129: fcbb:bb03:0002::/48  → Bandwidth-optimized path
+    say: >
+      Now the SRv6 part. Each Flex-Algo gets its own SRv6 locator, which means its own set of SIDs.
+      P E two advertises three locators, one per algorithm. Every other router installs each locator
+      along the path that its algorithm computed. The default locator follows algorithm zero,
+      the second one follows the low-latency tree, the third one follows the high-bandwidth tree.
+      Notice the numbering in this example: the second group of hex digits changes with the algorithm, and the third one is the node.
+      A plan like that makes the slice of any SID obvious when you read a capture or a routing table.
+
+  - type: big
+    value: "Pick the SID"
+    caption: "Use the Algo 128 SID as the destination and the IGP keeps traffic on the low-latency path"
+    say: >
+      And that's the whole steering mechanism. To send traffic on the low-latency path, you simply use the
+      algorithm 128 SID as the destination. No segment list, no tunnel, no state in the middle of the network.
+      The I G P handles the path computation automatically, and recomputes it when the topology changes.
+      This is why Flex-Algo is often described as traffic engineering without RSVP-TE.
+
+  - type: bullets
+    heading: "Constraints"
+    chapter: "Constraints"
+    bullets:
+      - "**Include-any:** links need at least one of these affinities"
+      - "**Include-all:** links need all of them"
+      - "**Exclude-any:** links must have none of them"
+      - "**Exclude SRLG:** avoid links sharing a risk group"
+    say: >
+      Metrics are half of it. Constraints are the other half. You color links with administrative groups, also called affinities.
+      Include-any keeps only links that have at least one of the listed affinities. Include-all needs every one of them.
+      Exclude-any removes links that carry any of them.
+      And exclude S R L G avoids links that share a risk group, such as the same fiber conduit.
+      Combine a metric with constraints and you get an algorithm like: lowest delay, but never over the leased links.
+      The constraints prune the topology first, and then the algorithm runs its shortest path computation on whatever is left.
+
+  - type: record
+    url: https://srv6.md/topics/flex-algorithm/
+    index: 1
+    seconds: 12
+    chapter: "Network slicing"
+    say: >
+      Put it together and you get network slicing. One physical network of routers. On top of it, slice one runs
+      algorithm 128 for low latency, and slice two runs algorithm 129 for high bandwidth.
+      Each slice is a logical topology with its own locators. Flex-Algo is the foundation of SRv6 network slicing,
+      for 5G and for enterprise services. A service lands in a slice simply by using that slice's SIDs,
+      so moving a customer from one slice to another is a change of SID, not a new set of tunnels.
+
+  - type: code
+    heading: "Cisco IOS-XR: define Flex-Algo 128"
+    chapter: "Configuration"
+    code: |
+      !! Define Flex-Algo 128 (low latency)
+      router isis CORE
+       flex-algo 128
+        metric-type delay
+        advertise-definition
+       !
+       address-family ipv6 unicast
+        segment-routing srv6
+         locator LATENCY algo 128
+        !
+       !
+      !
+    say: >
+      Here's the configuration on Cisco I O S X R, in two parts. First, in I S I S, you define flex-algo 128
+      with metric type delay, and advertise the definition so other routers compute the same thing.
+      Then, under the IPv6 address family, you advertise a locator called LATENCY for algorithm 128.
+
+  - type: code
+    heading: "Cisco IOS-XR: the Algo 128 locator"
+    code: |
+      !! Define SRv6 locator for Algo 128
+      segment-routing
+       srv6
+        locators
+         locator LATENCY
+          micro-segment behavior unode psp-usd
+          prefix fcbb:bb02::/48
+          algorithm 128
+         !
+        !
+       !
+      !
+    say: >
+      Second, the locator itself. Under segment routing SRv6, the LATENCY locator uses micro-SIDs,
+      takes its own prefix, and is bound to algorithm 128.
+      That separate prefix is the point: anything sent to it follows the low-latency topology.
+
+  - type: code
+    heading: "Verify on IOS-XR"
+    code: |
+      show isis flex-algo 128
+      show segment-routing srv6 locator LATENCY
+      show isis route ipv6 fcbb:bb02:0002::/48 detail
+    say: >
+      To verify, check that I S I S knows the algorithm 128 definition, that the LATENCY locator is up,
+      and then look at the route to a remote algorithm 128 locator in detail.
+      Its path should follow delay, not the default metric. If the route is missing, the first suspects are
+      the definition not being advertised, or a locator bound to a different algorithm number than the one you defined.
+
+  - type: bullets
+    heading: "What it costs"
+    chapter: "Trade-offs"
+    bullets:
+      - "Every algorithm adds a **locator and SIDs** per node"
+      - "Each one is **another computation** in the IGP"
+      - "Definitions must be **advertised and consistent**"
+      - "Deployed on a **commercial 5G network** in 2022"
+    say: >
+      Flex-Algo isn't free. Every algorithm you add means another locator and another set of SIDs on every node,
+      and another path computation. The definitions have to be advertised and consistent, and as we saw in the
+      previous lesson, a locator whose algorithm doesn't match the definition is simply ignored.
+      It is proven, though. According to a joint announcement by Cisco and SoftBank, SRv6 Flex-Algo was deployed on
+      a commercial 5G network in April 2022. And compared with RSVP-TE, the transit routers keep no per-tunnel state at all.
+
+  - type: end
+    heading: "Read the Flex-Algo lesson"
+    subtitle: "Configs for IOS-XR and Junos, and the next lesson: TI-LFA"
+    url: "srv6.md/topics/flex-algorithm"
+    chapter: "Next steps"
+    say: >
+      The written lesson, with the Junos configuration and the full list of Flex-Algo properties, is on srv6 dot md, linked below.
+      Next, we look at what happens when a link fails: T I L F A, fast reroute with SRv6.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

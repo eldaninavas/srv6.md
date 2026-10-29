@@ -1,0 +1,61 @@
+id: r07
+lang: en
+format: short
+title: "RFC 9855 in 60 Seconds: TI-LFA"
+playlist: "RFCs Explained (Shorts)"
+description: |
+  RFC 9855 in 60 seconds: TI-LFA, Topology Independent Fast Reroute using Segment Routing. Why classic LFA leaves gaps, how TI-LFA repairs onto the post-convergence path with a short repair list, and what that means for SRv6.
+
+  Part of the free SRv6.md course.
+links:
+  "Written lesson, RFC 9855 explained": https://srv6.md/rfcs/rfc9855/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous Short, RFC 9256": https://srv6.md/rfcs/rfc9256/
+  "Next Short, RFC 9602": https://srv6.md/rfcs/rfc9602/
+hashtags: ["#SRv6", "#RFC9855", "#TILFA", "#Shorts"]
+tags: [rfc 9855, ti-lfa, fast reroute, srv6 ti-lfa, post-convergence path, lfa, remote lfa, srv6 rfc, segment routing, network engineering]
+thumbnail:
+  kicker: "RFC 9855"
+  text: "Full coverage"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · RFCs Explained"
+    title: "RFC 9855"
+    subtitle: "TI-LFA, in 60 seconds"
+    say: >
+      RFC 9855, in sixty seconds. Classic loop-free alternates protect some failures, but not all:
+      coverage depends on the topology. T I L F A fixes that.
+
+  - type: bullets
+    heading: "What it defines"
+    bullets:
+      - "Repair onto the **post-convergence path**"
+      - "A short **repair list** of node and adjacency SIDs"
+      - "**Link, node** or **SRLG** protection"
+    say: >
+      The router next to the failure repairs straight onto the path the network will use after convergence.
+      It encodes that path as a short repair list of node and adjacency segments.
+
+  - type: big
+    value: "Full"
+    caption: "coverage in any two-connected network"
+    say: >
+      That gives guaranteed coverage in any two-connected network, hence topology independent.
+
+  - type: bullets
+    heading: "Why you should care"
+    bullets:
+      - "Traffic **moves once**, not twice"
+      - "SRv6: often a **shorter repair list**"
+      - "Still pair it with **microloop avoidance**"
+    say: >
+      Why care? Traffic moves once, not twice. With SRv6, adjacency SIDs are routable, so the list is often shorter.
+      But T I L F A doesn't stop microloops elsewhere, so pair it with microloop avoidance.
+
+  - type: end
+    heading: "RFC 9855, explained"
+    subtitle: "P-space, Q-space and repair lists"
+    url: "srv6.md/rfcs/rfc9855"
+    say: >
+      The full lesson is on srv6 dot md.

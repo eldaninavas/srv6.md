@@ -1,0 +1,215 @@
+id: e04
+lang: es
+title: "uSID en SRv6: seis saltos en una dirección"
+playlist: "SRv6 en español"
+description: |
+  Qué es uSID (micro-SID) en SRv6 y cómo reduce la sobrecarga: el contenedor de 128 bits con un bloque de 32 bits y hasta seis micro-SID de 16 bits, la operación de desplazar y buscar (shift-and-lookup) salto a salto, el ahorro frente a SRv6 clásico, la diferencia entre uSID y G-SRv6 en el RFC 9800 y la configuración en Cisco IOS XR y Linux.
+
+  Esta es la lección 4 de la ruta SRv6 en español del curso gratuito de SRv6.md.
+links:
+  "Lección escrita: uSID": https://srv6.md/es/usid/
+  "Curso gratuito de SRv6": https://srv6.md/learn/
+  "Lección anterior, la cabecera SRH": https://srv6.md/es/cabecera-srh/
+  "Siguiente lección, SRv6 vs MPLS": https://srv6.md/es/srv6-vs-sr-mpls/
+hashtags: ["#SRv6", "#uSID", "#SegmentRouting", "#Redes"]
+tags: [usid srv6, srv6, micro-sid, usid, rfc 9800, g-srv6, next-c-sid, compresión srv6, srv6 en español, segment routing]
+thumbnail:
+  kicker: "uSID en SRv6"
+  text: "6 saltos, 16 B"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Español · Lección 4"
+    title: "uSID: micro-SID en SRv6"
+    subtitle: "Seis saltos en una sola dirección IPv6"
+    chapter: "Introducción"
+    say: >
+      Una de las primeras críticas a SRv6 fue la sobrecarga: cada SID ocupa dieciséis bytes. Micro-SID lo resuelve.
+      En esta lección vas a ver cómo caben hasta seis instrucciones en una sola dirección IPv6.
+      Al terminar, vas a poder leer un contenedor de micro-SID, seguir la operación de desplazar y buscar salto a salto,
+      calcular cuánto ahorra frente a SRv6 clásico y reconocer su configuración en Cisco y en Linux.
+
+  - type: code
+    heading: "El problema"
+    chapter: "El problema"
+    code: |
+      SRv6 clásico (5 SIDs = 80 bytes de sobrecarga):
+      ┌──────────────────────────────────────────────┐
+      │ SRH: lista de segmentos                       │
+      │   [0]: fc00:0:5::1  (16 bytes)               │
+      │   [1]: fc00:0:4::1  (16 bytes)               │
+      │   [2]: fc00:0:3::1  (16 bytes)               │
+      │   [3]: fc00:0:2::1  (16 bytes)               │
+      │   [4]: fc00:0:1::1  (16 bytes)               │
+      │                          Total: 80 bytes      │
+      └──────────────────────────────────────────────┘
+    say: >
+      Empecemos por el problema. Con SRv6 clásico, cada salto de la lista de segmentos cuesta 128 bits, es decir, dieciséis bytes.
+      Una lista de cinco SID, como la que ves, suma ochenta bytes de sobrecarga a cada paquete.
+      Con seis SID serían noventa y seis bytes, y con doce, ciento noventa y dos.
+      Para paquetes pequeños, o para tráfico sensible a la latencia, esa sobrecarga es importante.
+      La pregunta es: ¿de verdad hace falta gastar 128 bits en cada instrucción?
+
+  - type: code
+    heading: "La solución: un contenedor uSID"
+    chapter: "La solución"
+    code: |
+      Contenedor uSID (6 micro-SIDs = 16 bytes en total):
+      ┌──────────────────────────────────────────────┐
+      │ Una sola dirección IPv6 de 128 bits:          │
+      │                                               │
+      │  fcbb:bbbb:0001:0002:0003:0004:0005:0006    │
+      │  ├──┬────┤├──┤├──┤├──┤├──┤├──┤├──┤          │
+      │  │Bloque ││uS1││uS2││uS3││uS4││uS5││uS6│    │
+      │  │(32bit)││16b││16b││16b││16b││16b││16b│     │
+      │                          Total: 16 bytes      │
+      └──────────────────────────────────────────────┘
+    say: >
+      La respuesta es no. Micro-SID, definido en el RFC 9800, empaqueta hasta seis microinstrucciones
+      en un solo contenedor de 128 bits. Míralo así: los primeros treinta y dos bits son el bloque.
+      Después vienen seis micro-SID de dieciséis bits cada uno: el uno, el dos, el tres, y así hasta el seis.
+      Seis instrucciones, dieciséis bytes en total. Es exactamente el espacio que SRv6 clásico usa para un solo SID.
+
+  - type: bullets
+    heading: "Las piezas del contenedor"
+    bullets:
+      - "**Bloque uSID** · 32 bits: prefijo común del dominio (fcbb:bbbb)"
+      - "**uSID** · 16 bits cada uno: un nodo y un comportamiento"
+      - "**Fin de contenedor** · 16 bits en 0000"
+    say: >
+      Cada contenedor tiene tres componentes. El bloque micro-SID, de treinta y dos bits,
+      es un prefijo común a todos los micro-SID del dominio; en el ejemplo, F C B B, B B B B.
+      Cada micro-SID ocupa dieciséis bits y es una microinstrucción que identifica un nodo y un comportamiento.
+      Y un campo de dieciséis bits en cero marca el fin del contenedor: ahí terminan los micro-SID activos.
+
+  - type: code
+    heading: "Desplazar y buscar"
+    chapter: "Desplazar y buscar"
+    code: |
+      Paso 1 - El ingress recibe:
+        DA = fcbb:bbbb:0001:0002:0003:0000:0000:0000
+                        ^^^^
+                        uSID activo → Nodo 1
+
+      Paso 2 - El Nodo 1 procesa el uSID 0001 y desplaza a la izquierda:
+        DA = fcbb:bbbb:0002:0003:0000:0000:0000:0000
+                        ^^^^
+                        uSID activo → Nodo 2
+    say: >
+      Procesar un contenedor es una operación sencilla: desplazar y buscar, en inglés shift and lookup.
+      Mira la dirección de destino. Después del bloque hay tres micro-SID, el uno, el dos y el tres, y luego ceros.
+      El micro-SID activo es el primero después del bloque, y apunta al nodo uno.
+      El nodo uno procesa su micro-SID y desplaza el resto de la dirección hacia la izquierda.
+      Ahora el micro-SID activo es el dos, y el paquete sigue hacia el nodo dos.
+      Fíjate en el patrón: el bloque nunca cambia, y el micro-SID activo siempre está en la misma posición,
+      justo después del bloque. Por eso cada nodo solo tiene que mirar ese lugar.
+
+  - type: bullets
+    heading: "Hasta el fin del contenedor"
+    bullets:
+      - "**Nodo 2:** procesa 0002, desplaza → activo: **Nodo 3**"
+      - "**Nodo 3:** procesa 0003, desplaza → solo quedan ceros"
+      - "**Fin de contenedor (0000):** pasar a la siguiente entrada de la SRH"
+    say: >
+      El proceso se repite. El nodo dos procesa su micro-SID, desplaza, y el activo pasa a ser el tres.
+      El nodo tres hace lo mismo, y después del desplazamiento solo quedan ceros detrás del bloque.
+      Ese cero es el fin del contenedor. Si la ruta es más larga, el paquete pasa a la siguiente entrada de la S R H,
+      que es otro contenedor con hasta seis micro-SID más.
+      En este ejemplo, tres saltos viajaron dentro de una sola dirección.
+
+  - type: bullets
+    heading: "Comparación de sobrecarga"
+    chapter: "Cuánto se ahorra"
+    bullets:
+      - "3 SIDs: 48 B → **16 B** (67% menos)"
+      - "6 SIDs: 96 B → **16 B** (83% menos)"
+      - "10 SIDs: 160 B → **32 B**, 2 contenedores (80% menos)"
+      - "12 SIDs: 192 B → **32 B**, 2 contenedores (83% menos)"
+    say: >
+      ¿Cuánto se ahorra? Con tres SID, SRv6 clásico necesita cuarenta y ocho bytes, y micro-SID, dieciséis.
+      Es un sesenta y siete por ciento menos. Con seis SID, noventa y seis bytes contra dieciséis: ochenta y tres por ciento.
+      Con diez SID hacen falta dos contenedores, treinta y dos bytes contra ciento sesenta, un ochenta por ciento menos.
+      Y con doce siguen siendo dos contenedores: treinta y dos bytes contra ciento noventa y dos.
+
+  - type: big
+    value: "6 en 16 B"
+    caption: "Hasta 6 instrucciones en el espacio de 1 SID clásico"
+    say: >
+      Esa es la idea que tienes que llevarte: un solo contenedor micro-SID codifica hasta seis instrucciones de segmento
+      en el mismo espacio que SRv6 clásico usa para un solo SID.
+      Un detalle para leer bien la tabla: esos números cuentan solo la lista de segmentos.
+      La cabecera IPv6 exterior, de cuarenta bytes, sigue estando.
+      Lo que cambia es que cada instrucción adicional ya no cuesta dieciséis bytes, sino dos.
+      La comparación completa con MPLS, con esa cabecera incluida, la vemos en la próxima lección.
+
+  - type: compare
+    heading: "uSID vs G-SRv6"
+    chapter: "uSID y G-SRv6"
+    columns:
+      - title: "uSID (NEXT-C-SID)"
+        items: ["Origen: Cisco, Bell Canada", "Desplazar y buscar", "16 o 32 bits", "RFC 9800"]
+      - title: "G-SRv6 (REPLACE-C-SID)"
+        items: ["Origen: China Mobile, Huawei", "Reemplazar y buscar", "16 o 32 bits", "RFC 9800"]
+    say: >
+      Micro-SID no fue el único enfoque de compresión. Surgieron dos.
+      Micro-SID, que el estándar llama NEXT C SID, nació de Cisco y Bell Canada, y funciona desplazando y buscando.
+      G SRv6, que el estándar llama REPLACE C SID, nació de China Mobile y Huawei, y funciona reemplazando y buscando.
+      Los dos admiten identificadores de dieciséis o treinta y dos bits, y los dos tienen adopción en varios operadores globales.
+      Hoy ambos están estandarizados en el mismo documento, el RFC 9800.
+
+  - type: code
+    heading: "Cisco IOS XR"
+    chapter: "Configuración"
+    code: |
+      segment-routing
+       srv6
+        locators
+         locator uSID-MAIN
+          micro-segment behavior unode psp-usd
+          prefix fcbb:bb01::/48
+         !
+        !
+       !
+      !
+    say: >
+      En Cisco IOS XR, micro-SID se configura en el localizador.
+      Dentro de segment-routing y srv6, el localizador u SID MAIN declara el comportamiento micro-segment de tipo unode,
+      con los sabores P S P y U S D, y un prefijo barra cuarenta y ocho dentro del bloque F C B B.
+      Ese prefijo es el localizador del nodo. Los signos de exclamación solo cierran cada nivel de la configuración.
+      Si quieres practicarlo, la lección escrita enlaza un laboratorio de netlab listo para usar.
+
+  - type: code
+    heading: "Linux (iproute2)"
+    code: |
+      # Encapsular con un contenedor uSID
+      ip route add 10.0.0.0/24 encap seg6 mode encap \
+        segs fcbb:bbbb:0001:0002:0003:: dev eth0
+    say: >
+      Y en Linux, con iproute2, basta una ruta con encapsulación seg6 cuya lista de segmentos es un solo contenedor:
+      el bloque y los micro-SID uno, dos y tres. Es la misma dirección del ejemplo de desplazar y buscar.
+      Un solo SID en la lista, tres saltos en el camino.
+      Con SRv6 clásico, esa misma ruta habría necesitado tres SID de dieciséis bytes cada uno.
+
+  - type: bullets
+    heading: "Lo que tienes que recordar"
+    bullets:
+      - "Bloque de 32 bits + hasta **6 uSID de 16 bits**"
+      - "Cada nodo **desplaza y busca**"
+      - "**0000** marca el fin del contenedor"
+      - "uSID y G-SRv6: los dos en **RFC 9800**"
+    say: >
+      Repasemos. Un contenedor micro-SID lleva un bloque de treinta y dos bits y hasta seis micro-SID de dieciséis bits.
+      Cada nodo procesa el suyo, desplaza el resto y reenvía. Un campo en cero marca el fin del contenedor.
+      Y micro-SID y G SRv6 están estandarizados en el RFC 9800.
+      Varios operadores ya anunciaron públicamente despliegues de SRv6 con micro-SID,
+      y el directorio de despliegues de srv6 punto md reúne esos anuncios con enlaces a sus fuentes.
+
+  - type: end
+    heading: "Lee la lección completa"
+    subtitle: "Las tablas de sobrecarga, la configuración y la próxima lección: SRv6 vs MPLS"
+    url: "srv6.md/es/usid"
+    chapter: "Siguientes pasos"
+    say: >
+      La lección escrita, con las tablas de sobrecarga y la configuración, está en srv6 punto md, en el enlace de abajo.
+      Esta lección es parte del curso gratuito de srv6 punto md.
+      En la próxima comparamos SRv6 con MPLS y SR-MPLS, con números reales. Suscríbete y nos vemos ahí.

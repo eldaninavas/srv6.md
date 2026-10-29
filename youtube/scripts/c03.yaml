@@ -1,0 +1,215 @@
+id: c03
+lang: en
+title: "TI-LFA Explained: Fast Reroute with Full Coverage"
+playlist: "Track 2: Control Plane and Services"
+description: |
+  TI-LFA explained with a worked example. How Topology Independent Loop-Free Alternate (RFC 9855) pre-computes a backup path that follows the post-convergence path, how to find the P-space, the Q-space and the repair list, how the repair is encoded with SRv6 micro-SIDs, link vs node vs SRLG protection, and how to enable TI-LFA on Cisco IOS-XR.
+
+  This is lesson 3 of Track 2 (Control Plane and Services) in the free SRv6.md course.
+links:
+  "Written lesson, TI-LFA": https://srv6.md/topics/ti-lfa/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, Flex-Algo with SRv6": https://srv6.md/topics/flex-algorithm/
+  "Next lesson, SR Policy explained": https://srv6.md/topics/sr-policy/
+hashtags: ["#SRv6", "#TILFA", "#FastReroute", "#SegmentRouting"]
+tags: [ti-lfa, tilfa, fast reroute, srv6, rfc 9855, segment routing, lfa, remote lfa, frr, is-is, network engineering]
+thumbnail:
+  kicker: "TI-LFA"
+  text: "Zero wait"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 2 · Lesson 3"
+    title: "TI-LFA Explained"
+    subtitle: "Fast reroute with Segment Routing and SRv6"
+    chapter: "Intro"
+    say: >
+      When a link fails, how long are your packets dropped? With T I L F A, the answer is: only until the router
+      next to the failure notices it. In this lesson you'll learn why the I G P alone is too slow,
+      how T I L F A finds a backup path that's guaranteed to work, and you'll compute one yourself,
+      step by step, on a small network. Then we'll see how SRv6 encodes it in a single micro-SID container.
+
+  - type: bullets
+    heading: "The convergence window"
+    chapter: "The problem"
+    bullets:
+      - "Detect the failure"
+      - "Flood the change, run SPF, update the FIB"
+      - "**Hundreds of ms to seconds** in a large network"
+      - "Meanwhile, packets are **dropped or loop**"
+    say: >
+      When a link fails, the I G P has a lot to do. It must detect the failure, flood the change to every router,
+      run S P F again, and update the forwarding table on every affected router.
+      In a large network, that takes hundreds of milliseconds to seconds.
+      Until it finishes, packets heading toward the failed link are dropped, or they loop between routers that
+      don't agree yet on the new topology. Fast reroute exists to close that window.
+
+  - type: bullets
+    heading: "IP fast reroute in one idea"
+    bullets:
+      - "The **PLR**: the router next to the failure"
+      - "Backup next hop **pre-installed** in the FIB"
+      - "Switch on **loss of light or BFD**"
+      - "The hard part: **where does the backup come from?**"
+    say: >
+      The idea of I P fast reroute is to repair locally. The router next to the failure is called the Point of Local Repair,
+      or P L R. It has a backup next hop already installed in its forwarding table, so as soon as it detects the failure,
+      through loss of light or B F D, it switches. No waiting for anyone else.
+      The whole question is where that backup path comes from, and whether one exists at all.
+
+  - type: compare
+    heading: "Where the backup comes from"
+    chapter: "LFA vs TI-LFA"
+    columns:
+      - title: "LFA and Remote LFA"
+        items: ["LFA: 67–99% per-prefix coverage (RFC 6571)", "Remote LFA: tunnels to a PQ node", "Both depend on the topology"]
+      - title: "TI-LFA (RFC 9855)"
+        items: ["Segment list that follows the post-convergence path", "Any two-connected network", "Needs SR and enough SID depth"]
+    say: >
+      Classic L F A uses a neighbor whose own shortest path doesn't come back through you. It works only if the topology happens
+      to provide one. RFC 6571 measured per-prefix coverage between sixty-seven and ninety-nine percent across eleven provider cores.
+      Remote L F A adds L D P tunnels to a remote node, and is still topology dependent.
+      T I L F A, standardized as RFC 9855, uses Segment Routing to steer the packet along any path with a couple of SIDs.
+      That gives guaranteed coverage in any two-connected network. What it needs is Segment Routing, and enough SID depth on the P L R.
+
+  - type: bullets
+    heading: "Five terms you need"
+    chapter: "Key terms"
+    bullets:
+      - "**Post-convergence path:** the shortest path once X is removed"
+      - "**P-space:** nodes the PLR reaches today without crossing X"
+      - "**Q-space:** nodes that reach the destination without crossing X"
+      - "**PQ node:** in both spaces, one segment repairs"
+      - "**Repair list:** the SIDs the PLR adds"
+    say: >
+      Five terms. X is the protected resource: a link, a node, or a shared risk group.
+      The post-convergence path is the shortest path from the P L R once X is removed. T I L F A repairs onto exactly that path,
+      so traffic doesn't move again when the I G P converges.
+      The P-space is every router the P L R reaches on its normal shortest paths without touching X.
+      The Q-space is every router whose normal path to the destination avoids X. A node in both is a P Q node.
+      And the repair list is the set of segments the P L R pushes onto the packet.
+
+  - type: record
+    url: https://srv6.md/topics/ti-lfa/
+    index: 0
+    click: "Fail"
+    click_at: 4
+    seconds: 18
+    chapter: "Worked example"
+    say: >
+      Here's our network. Six routers, I S I S metrics on the links. S protects its link to N, for traffic to D.
+      Today, S reaches D through N, with a cost of twenty. Every link costs ten, except B to C, which costs forty.
+      Now we fail the link from S to N. S immediately moves the traffic onto the post-convergence path:
+      through A, B and C, with a total cost of seventy. Let's see how S computed that repair.
+
+  - type: bullets
+    heading: "Finding P and Q"
+    bullets:
+      - "Classic LFA fails: A's path to D goes **back through S**"
+      - "Post-convergence path: **S → A → B → C → D** (cost 70)"
+      - "P-space (extended): **{A, B}**"
+      - "Q-space on the path: **{C}**"
+      - "No PQ node, but **B and C are adjacent**"
+    say: >
+      First, classic L F A has nothing here. A reaches D through S and N, at a cost of thirty, so sending traffic to A would just bounce it back.
+      Remove the S to N link, and the post-convergence path is S, A, B, C, D, cost seventy.
+      The P-space: A and B are reachable from S without the failed link. C isn't, because S's shortest path to C goes through N.
+      The Q-space: C's own path to D is direct. But B still prefers going back through A and S, cost forty against fifty.
+      So there's no P Q node. But the last P node, B, and the first Q node, C, are neighbors.
+
+  - type: code
+    heading: "The repair list"
+    code: |
+      RL = < Node-SID(B), Adj-SID(B→C) >
+    say: >
+      That gives the repair list from section five point three of RFC 9855: a node SID to B, then an adjacency SID from B to C.
+      The adjacency SID is essential. If S only sent the packet to B, B would forward it on its own shortest path to D,
+      back through A and S, and the packet would loop. The adjacency SID forces B onto the expensive B to C link,
+      and from C, normal routing delivers it.
+      If you lowered the B to C metric to ten, B would become a P Q node, and one segment would be enough.
+
+  - type: bullets
+    heading: "The same repair in SRv6, with uSID"
+    chapter: "TI-LFA with SRv6"
+    bullets:
+      - "S adds one outer IPv6 header: **DA = uN(B) + uA(B→C)**"
+      - "**No SRH:** both micro-SIDs fit in one container"
+      - "At B: uA forwards over B–C, **USD** pops the outer header"
+      - "At C: **plain IPv6 forwarding** of the original packet to D"
+    say: >
+      In SRv6 the computation is identical. Only the encoding changes. B's node SID becomes its micro-node SID,
+      and the adjacency becomes a micro-adjacency SID toward C. With micro-SIDs, both fit in one 128-bit container,
+      so S adds a single outer IPv6 header and no S R H.
+      At B, the micro-node SID shifts away, and the micro-adjacency forwards the packet over B to C.
+      With the U S D flavor, B also removes the outer header, so C just forwards the original packet to D.
+
+  - type: bullets
+    heading: "How long are repair lists?"
+    bullets:
+      - "Direct neighbor in P and Q: **no SID**, just another interface"
+      - "PQ node: **one SID**"
+      - "P and Q adjacent: **node SID + adjacency SID**"
+      - "Link protection: **≤ 1 SID for over 99%** of destinations"
+    say: >
+      RFC 9855 lists four shapes. If a direct neighbor already works, the repair is just a different outgoing interface.
+      If there's a P Q node, one SID. If P and Q are adjacent, like our example, two. If they're further apart, an explicit path.
+      Appendix B of the RFC measured nine real networks. For link protection, one SID or fewer covers more than ninety-nine percent of destinations.
+      For node protection, two or fewer cover ninety-nine percent. On SRv6, adjacency SIDs are globally routable,
+      so lists are often even shorter than on SR-MPLS.
+
+  - type: compare
+    heading: "Link, node or SRLG protection"
+    chapter: "Link, node, SRLG"
+    columns:
+      - title: "Link (default)"
+        items: ["Removes the link S–N", "Shortest lists", "Backup may still pass through N"]
+      - title: "Node or SRLG"
+        items: ["Node: removes N and all its links", "SRLG: removes links sharing a risk group", "Can need one more SID"]
+    say: >
+      The algorithm is always the same. What changes is what you remove from the topology before computing.
+      Link protection is the default and gives the shortest lists, but the backup may still go through N over another link.
+      If S has two parallel links to N, the link backup for one is simply the other, which dies too if N reboots.
+      Node protection removes N and all its links. S R L G protection removes every local link that shares a conduit or a line card with the protected one.
+      And remember: node protection protects transit through N, not traffic whose destination is N itself.
+
+  - type: code
+    heading: "Cisco IOS-XR: TI-LFA on an interface"
+    chapter: "Configuration"
+    code: |2
+       interface HundredGigE0/0/0/1
+        point-to-point
+        address-family ipv6 unicast
+         fast-reroute per-prefix
+         fast-reroute per-prefix ti-lfa
+         !! optional: prefer node-protecting, then SRLG-disjoint backups
+         fast-reroute per-prefix tiebreaker node-protecting index 100
+         fast-reroute per-prefix tiebreaker srlg-disjoint index 200
+    say: >
+      On Cisco I O S X R, T I L F A is enabled per interface under I S I S, in the IPv6 address family, once SRv6 and its locator are configured.
+      Two lines turn it on. The optional tiebreakers choose between protection types. On current releases, a lower index means a higher priority,
+      so this prefers node-protecting backups, then S R L G disjoint ones. Some older material describes the opposite ordering,
+      so check the guide for your release.
+
+  - type: bullets
+    heading: "What TI-LFA does not do"
+    chapter: "Limits"
+    bullets:
+      - "**Micro-loops** elsewhere during convergence"
+      - "Needs enough **SID depth** on the PLR"
+      - "Node protection can't save traffic **to** the failed node"
+      - "Platforms differ: IOS-XE **cannot guarantee 50 ms**"
+    say: >
+      T I L F A protects the moment of failure at the P L R. It does nothing for micro-loops that form elsewhere while routers update
+      at different times. The usual fix is to keep the repair path in place for a while after convergence; on I O S X R the default delay is five seconds.
+      Some platforms install a backup only if it fits in two SIDs. Traffic to a failed egress P E is a separate problem.
+      And timing depends on the platform: Cisco notes that I G P T I L F A on I O S X E cannot guarantee fifty milliseconds.
+
+  - type: end
+    heading: "Read the TI-LFA lesson"
+    subtitle: "The full worked example, IOS-XE and Junos configs, and the next lesson"
+    url: "srv6.md/topics/ti-lfa"
+    chapter: "Next steps"
+    say: >
+      The written lesson, with the full worked example, the I O S X E and Junos configurations and the verification commands,
+      is on srv6 dot md, linked below. Next, we take control of the path ourselves, with SR Policy.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

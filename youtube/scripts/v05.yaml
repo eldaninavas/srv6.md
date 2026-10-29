@@ -1,0 +1,210 @@
+id: v05
+lang: en
+title: "SRv6 with FRRouting"
+playlist: "Track 6: SRv6 Configuration by Vendor"
+description: |
+  FRR SRv6, from release 8.1 to 10.7: how FRRouting programs the Linux kernel's SRv6 data plane, what each release added (L3VPN, uSID, IS-IS, static SIDs, global-table services, BGP-LS), what is still missing, and an SRv6 locator, IS-IS and global IPv4/IPv6 over SRv6 configuration, line by line.
+
+  This is lesson 5 of Track 6 (SRv6 Configuration by Vendor) in the free SRv6.md course.
+links:
+  "Written lesson (FRR SRv6)": https://srv6.md/implementations/frrouting/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 on Arista EOS": https://srv6.md/implementations/arista-eos/
+  "Next lesson, SRv6 on SONiC": https://srv6.md/implementations/sonic/
+  "Build an FRR SRv6 lab with Containerlab": https://srv6.md/labs/containerlab/
+hashtags: ["#SRv6", "#FRRouting", "#OpenSource", "#NetworkEngineering"]
+tags: [frr srv6, frrouting srv6, srv6, frrouting, frr, srv6 linux, srv6 usid, srv6 l3vpn, isis srv6, bgp-ls, open source routing, segment routing]
+thumbnail:
+  kicker: "FRRouting"
+  text: "8.1 to 10.7"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 6 · Lesson 5"
+    title: "SRv6 with FRRouting"
+    subtitle: "Open-source SRv6, release by release"
+    chapter: "Intro"
+    say: >
+      So far in this track we've looked at commercial routers. Now we turn to FRRouting, or F R R,
+      the open-source routing suite behind the Containerlab labs in Track 4 of this course.
+      By the end of this lesson, you'll know how F R R does SRv6 on top of the Linux kernel,
+      what each release from 8.1 to 10.7 added, what is still missing, and how to configure an SRv6 locator,
+      I S I S, and global IPv4 and IPv6 over an SRv6 core. As always, every line of configuration on screen
+      comes from the written lesson on srv6 dot md.
+
+  - type: bullets
+    heading: "How FRR does SRv6"
+    chapter: "Architecture"
+    bullets:
+      - "Daemons: **zebra**, **IS-IS**, **BGP** and **static**"
+      - "Programs the **Linux kernel** seg6 / seg6local data plane"
+      - "Over **netlink**, from zebra"
+      - "Only the behaviors **the kernel implements**"
+    say: >
+      F R R provides SRv6 through four of its daemons: zebra, I S I S, BGP and static.
+      It doesn't forward packets itself. F R R programs the Linux kernel's SRv6 data plane, seg6 and seg6local, over netlink.
+      That has one big consequence: F R R can only use the SRv6 behaviors the kernel implements.
+      Whenever you wonder why F R R lacks a behavior, check the kernel first. Track 4 of this course has a full lesson
+      on SRv6 in the Linux kernel, if you want to see that data plane on its own.
+
+  - type: bullets
+    heading: "The early releases"
+    chapter: "Release history"
+    bullets:
+      - "**8.1:** SRv6 locator manager, BGP L3VPN for VPNv6"
+      - "**8.3:** VPNv4 over SRv6 (End.DT4)"
+      - "**8.5:** per-VRF End.DT46, uSID for BGP services"
+      - "**9.1:** IS-IS SRv6 (RFC 9352), static segment routes"
+    say: >
+      F R R's SRv6 history starts in release 8.1, with the zebra SRv6 locator manager and BGP layer three VPN for VPN IPv6,
+      using End D T 6. VPN IPv4, with End D T 4, followed in 8.3.
+      Release 8.5 added a per-VRF End D T 46 SID, and micro-SIDs for BGP services, with locators set to behavior usid.
+      And in 9.1, I S I S learned SRv6, following RFC 9352: locators, End and micro-N SIDs, End X and micro-A SIDs,
+      plus static SRv6 segment routes for IPv6. So BGP services came first, and the I G P part arrived later.
+
+  - type: bullets
+    heading: "10.3 to 10.5: static SIDs and migration"
+    bullets:
+      - "**10.3:** static SRv6 SIDs (uN, uDT4/6/46)"
+      - "**10.4:** static uA, H.Encaps.Red, PSP (End only)"
+      - "**10.5:** multiple locators, a locator per VRF"
+      - "**10.5:** MPLS and SRv6 on the same L3VRF"
+    say: >
+      The 10 dot x releases filled in the gaps. 10.3, in March 2025, added static SRv6 SIDs: micro-N, and micro D T 4, D T 6 and D T 46.
+      10.4, in July 2025, added static micro-A, the H Encaps Red headend behavior in both staticd and BGP,
+      the P S P flavor, for End only, and IPv4 static segment routes.
+      10.5, in November 2025, added multiple SRv6 locators, per-VRF locator selection,
+      and MPLS and SRv6 coexistence on the same layer three V R F, which is exactly what you need for migration scenarios.
+
+  - type: bullets
+    heading: "10.6 and 10.7: beyond VPNs"
+    bullets:
+      - "**10.6:** global IPv4/IPv6 unicast over an SRv6 core"
+      - "**10.7:** BGP-LS (RFC 9552) with SRv6 (RFC 9514)"
+      - "**10.7:** static SIDs exported into BGP-LS"
+      - "**10.7:** one shared uDT46 for the global table"
+    say: >
+      F R R 10.6, in March 2026, took SRv6 beyond VPNs. BGP can now carry global IPv4 and IPv6 unicast over an SRv6 core,
+      in the default V R F. Those are the global services of RFC 9252.
+      F R R 10.7, in July 2026, brought it into controller-driven traffic engineering. It adds BGP link state, RFC 9552,
+      with the SRv6 extensions of RFC 9514, so a TE controller can see the network's SRv6 locators and SIDs,
+      including static SIDs configured in zebra. And 10.7 adds a single micro D T 46 SID for the global table,
+      as an alternative to separate D T 4 and D T 6 SIDs.
+
+  - type: compare
+    heading: "Still missing (up to 10.7)"
+    chapter: "What's missing"
+    columns:
+      - title: "Not yet"
+        items: ["EVPN over SRv6", "SRv6 TI-LFA, SRv6 Flex-Algo", "OSPFv3 SRv6, SRv6 PCEP"]
+      - title: "Why"
+        items: ["L3 EVPN merged for 10.8", "isisd does them for SR-MPLS", "No SRv6 in ospf6d or pathd"]
+    say: >
+      Now what's missing, and this matters if you're choosing F R R for anything beyond a lab.
+      There's no EVPN over SRv6 in any release up to 10.7. Layer three EVPN, route type 5, is merged for 10.8, but not yet released.
+      There's no SRv6 T I L F A and no SRv6 Flex-Algo: I S I S in F R R does both only for SR-MPLS.
+      And there's no OSPFv3 for SRv6, and no PCEP or SR policies for SRv6, because ospf6d has no SRv6 and pathd is MPLS-based.
+      Release 10.6 did add IPv6 VTEPs for EVPN, but that's EVPN over VXLAN, not SRv6.
+
+  - type: big
+    value: "PSP only"
+    caption: "The kernel's only RFC 8986 flavor, so FRR's too"
+    say: >
+      Remember the kernel dependency? Here's where you feel it. Among the RFC 8986 flavors, the Linux kernel implements only P S P,
+      and only for End. So F R R's P S P flavor applies to End only, and there's no U S P or U S D.
+      The same goes for behaviors: End T and End D X 4 exist in the kernel, but only F R R's sharpd test daemon installs them,
+      and there are no layer two behaviors like End D T 2 U. The support matrix on srv6 dot md lists F R R and the kernel side by side.
+
+  - type: code
+    heading: "Step 1: define a locator"
+    chapter: "Configuration"
+    code: |
+      ! Define SRv6 locator
+      segment-routing
+       srv6
+        locators
+         locator MAIN
+          prefix fc00:0:1::/48 block-len 32 node-len 16 func-bits 16
+         exit
+        exit
+       exit
+    say: >
+      Now the configuration. Step one, the locator. Under segment routing, S R v 6, locators, we define a locator called MAIN.
+      The prefix line is where F R R is most explicit. The node's prefix is a slash forty-eight,
+      and the line spells out the structure: a 32-bit block, a 16-bit node part, and 16 function bits.
+      That's the same 32, 16, 16 layout as the F3216 micro-SID format, written out in full.
+      Every router gets its own slash forty-eight from the same block.
+      One caution: this example doesn't include the behavior usid setting that release 8.5 introduced for micro-SID locators,
+      so check the F R R documentation for your release if you want micro-SIDs.
+
+  - type: code
+    heading: "Step 2: enable SRv6 in IS-IS"
+    code: |
+      ! Enable SRv6 in IS-IS
+      router isis CORE
+       segment-routing srv6
+        locator MAIN
+       exit
+    say: >
+      Step two: I S I S. Under router isis CORE, segment routing S R v 6, reference locator MAIN.
+      I S I S now advertises the locator, following RFC 9352, and allocates End or micro-N, and End X or micro-A SIDs.
+      Remember, F R R's I S I S does this only from release 9.1. If your lab image is older,
+      SIDs can only come from BGP services, not from the I G P.
+
+  - type: code
+    heading: "Step 3: global IPv4/IPv6 over SRv6 (10.6+)"
+    chapter: "Global table over SRv6"
+    code: |
+      router bgp 65001
+       segment-routing srv6
+        locator MAIN
+       exit
+       neighbor 2001:db8::2 remote-as 65001
+       address-family ipv6 unicast
+        sid export auto
+        neighbor 2001:db8::2 activate
+        neighbor 2001:db8::2 encapsulation-srv6
+       exit-address-family
+    say: >
+      Step three is a service: the global routing table over SRv6, from release 10.6.
+      Under router bgp, segment routing S R v 6 points BGP at locator MAIN. Then there's an ordinary I B G P neighbor.
+      In the IPv6 unicast address family, sid export auto allocates the global-table service SID.
+      And encapsulation-srv6 makes BGP attach the Prefix-SID attribute toward that neighbor,
+      which is how the remote router learns which SID to send traffic to.
+
+  - type: bullets
+    heading: "Reading that config"
+    bullets:
+      - "**sid export:** default VRF only"
+      - "**sid vpn export:** the L3VPN equivalent"
+      - "**encapsulation-srv6-relax:** with and without Prefix-SID"
+      - "Default VRF uses DT4/DT6 and needs **sr0**"
+    say: >
+      A few details. Sid export works in the default V R F only. For a layer three VPN, the equivalent command is sid vpn export.
+      Encapsulation-srv6-relax is a softer variant: it sends routes both with and without the Prefix-SID attribute.
+      Per the implementing pull request, the default-VRF service uses D T 4 and D T 6 SIDs,
+      and needs the sr0 interface to install those routes, because of a kernel limitation.
+      These command names come from the F R R 10.6 BGP user guide, so check the documentation for your release before you deploy.
+
+  - type: bullets
+    heading: "Where to go for L3VPN on FRR"
+    bullets:
+      - "The page has no full **L3VPN** config"
+      - "**FRR BGP docs:** L3VPN over SRv6, sid vpn export"
+      - "**Containerlab lab:** FRR and Linux, step by step"
+    say: >
+      You might expect the same layer three VPN we built on I O S X R and Junos. F R R has supported it since 8.1,
+      but the written lesson doesn't include a full F R R layer three VPN configuration, so I won't improvise one here.
+      For that, use the F R R BGP documentation for your release, starting from sid vpn export.
+      Or go to Track 4, where the Containerlab lesson builds an F R R and Linux SRv6 lab you can run on a laptop.
+
+  - type: end
+    heading: "Read the written lesson"
+    subtitle: "Support table, release notes and config"
+    url: "srv6.md/implementations/frrouting"
+    chapter: "Next steps"
+    say: >
+      The written lesson on srv6 dot md has the full support table, every release note and pull request it's based on,
+      and the configuration from this video. Next, we look at SONiC, where F R R is the control plane
+      and the switch ASIC is the data plane. This lesson is part of the free SRv6 dot md course.
+      Subscribe, and I'll see you in the next lesson.

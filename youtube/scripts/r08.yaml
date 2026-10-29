@@ -1,0 +1,59 @@
+id: r08
+lang: en
+format: short
+title: "RFC 9602 in 60 Seconds: The 5f00::/16 Block"
+playlist: "RFCs Explained (Shorts)"
+description: |
+  RFC 9602 in 60 seconds: where SRv6 SIDs fit in the IPv6 addressing architecture, and the 5f00::/16 block IANA reserved for SRv6 SIDs. Why a dedicated block makes SIDs easy to recognize and filter at the edge of an SR domain.
+
+  Part of the free SRv6.md course.
+links:
+  "Written lesson, RFC 9602 explained": https://srv6.md/rfcs/rfc9602/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous Short, RFC 9855": https://srv6.md/rfcs/rfc9855/
+hashtags: ["#SRv6", "#RFC9602", "#IPv6", "#Shorts"]
+tags: [rfc 9602, 5f00::/16, srv6 sid block, srv6 security, srv6 filtering, iana srv6, ipv6 addressing, srv6 rfc, segment routing, network engineering]
+thumbnail:
+  kicker: "RFC 9602"
+  text: "5f00::/16"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · RFCs Explained"
+    title: "RFC 9602"
+    subtitle: "The 5f00::/16 block, in 60 seconds"
+    say: >
+      RFC 9602, in sixty seconds. SRv6 SIDs are IPv6 addresses. So how do you tell a SID from any other address,
+      and keep outsiders from sending packets to it?
+
+  - type: title
+    title: "5f00::/16"
+    subtitle: "Reserved by IANA for SRv6 SIDs"
+    say: >
+      This RFC reserves a block of the IPv6 address space for SRv6 SIDs: five F zero zero, slash sixteen.
+
+  - type: bullets
+    heading: "What the block is"
+    bullets:
+      - "**Forwardable** inside your SR domain"
+      - "**Not globally reachable**"
+      - "Your own GUA locators **still allowed**"
+    say: >
+      Inside your SR domain, it's forwardable. But it's not globally reachable.
+      And it's an option, not an obligation: operators may still use their own global prefixes as locators.
+
+  - type: bullets
+    heading: "Why you should care"
+    bullets:
+      - "SIDs are **easy to recognize**"
+      - "One prefix to **filter at every edge**"
+    say: >
+      Why care? With SIDs in one well-known block, they're easy to recognize,
+      and you have one prefix to filter at the edge of your domain.
+
+  - type: end
+    heading: "RFC 9602, explained"
+    subtitle: "The block, and how to filter it"
+    url: "srv6.md/rfcs/rfc9602"
+    say: >
+      The full lesson is on srv6 dot md.

@@ -1,0 +1,62 @@
+id: r03
+lang: en
+format: short
+title: "RFC 9800 in 60 Seconds: uSID Compression"
+playlist: "RFCs Explained (Shorts)"
+description: |
+  RFC 9800 in 60 seconds: compressed SRv6 SIDs, also known as uSID or micro-SID. The NEXT-C-SID and REPLACE-C-SID flavors, six 16-bit uSIDs in one 128-bit container, shift-and-lookup, and what it does to header overhead.
+
+  Part of the free SRv6.md course.
+links:
+  "Written lesson, RFC 9800 explained": https://srv6.md/rfcs/rfc9800/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous Short, RFC 8986": https://srv6.md/rfcs/rfc8986/
+  "Next Short, RFC 9252": https://srv6.md/rfcs/rfc9252/
+hashtags: ["#SRv6", "#RFC9800", "#uSID", "#Shorts"]
+tags: [rfc 9800, srv6 usid, micro-sid, c-sid, next-c-sid, replace-c-sid, srv6 compression, srv6 rfc, segment routing, network engineering]
+thumbnail:
+  kicker: "RFC 9800"
+  text: "6 hops, 1 address"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · RFCs Explained"
+    title: "RFC 9800"
+    subtitle: "uSID compression, in 60 seconds"
+    say: >
+      RFC 9800, in sixty seconds. Every classic SRv6 SID is 128 bits, so a long path means a big header.
+      This RFC compresses the segment list.
+
+  - type: bullets
+    heading: "What it defines"
+    bullets:
+      - "Two flavors: **NEXT-C-SID** (uSID) and **REPLACE-C-SID**"
+      - "Short **C-SIDs** packed into one 128-bit container"
+      - "**Shift-and-lookup** at each node"
+    say: >
+      It defines two flavors, NEXT C-SID, better known as micro-SID, and REPLACE C-SID.
+      Both pack short compressed SIDs into one 128-bit container. Each node shifts the rest along, and looks up the next one.
+
+  - type: big
+    value: "6"
+    caption: "16-bit uSIDs in one 128-bit container, after a 32-bit block"
+    say: >
+      With a 32-bit block and 16-bit micro-SIDs, one container holds up to six of them.
+      A four-segment path takes sixteen bytes, instead of sixty-four.
+
+  - type: bullets
+    heading: "Why you should care"
+    bullets:
+      - "Overhead close to **SR-MPLS**"
+      - "Transit nodes see a **normal IPv6 address**"
+      - "Every node shares **one block and length**"
+    say: >
+      Why care? It puts SRv6 overhead close to SR-MPLS, and transit routers still just see an IPv6 address.
+      The catch: every node must share the same block and micro-SID length.
+
+  - type: end
+    heading: "RFC 9800, explained"
+    subtitle: "Containers, shift-and-lookup and overhead"
+    url: "srv6.md/rfcs/rfc9800"
+    say: >
+      The full lesson is on srv6 dot md.

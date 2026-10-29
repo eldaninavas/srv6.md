@@ -1,0 +1,227 @@
+id: c04
+lang: en
+title: "SR Policy Explained: Color, ODN and Binding SID"
+playlist: "Track 2: Control Plane and Services"
+description: |
+  SR Policy explained for SRv6. What an SR Policy is (RFC 9256), how headend, color and endpoint identify it, how candidate paths and segment lists work, where policies come from (local configuration, BGP SR Policy and PCEP), how On-Demand Next Hop and color steering automate them, and how a Binding SID hides a whole path behind one SID.
+
+  This is lesson 4 of Track 2 (Control Plane and Services) in the free SRv6.md course.
+links:
+  "Written lesson, SR Policy": https://srv6.md/topics/sr-policy/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, TI-LFA explained": https://srv6.md/topics/ti-lfa/
+  "Next lesson, SRv6 L3VPN with BGP": https://srv6.md/topics/bgp-overlay-services/
+hashtags: ["#SRv6", "#SRPolicy", "#TrafficEngineering", "#SegmentRouting"]
+tags: [sr policy, srv6, rfc 9256, odn, on-demand next hop, binding sid, color steering, traffic engineering, pce, segment routing]
+thumbnail:
+  kicker: "SR Policy"
+  text: "Color = intent"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 2 · Lesson 4"
+    title: "SR Policy Explained"
+    subtitle: "Color, ODN and Binding SID"
+    chapter: "Intro"
+    say: >
+      Flex-Algo gives you a handful of slices. But sometimes you need a specific path, for a specific service, to a specific router.
+      That's what an SR Policy is for. In this lesson you'll learn how an SR Policy is identified, how it chooses between candidate paths,
+      where policies come from, and how color, On-Demand Next Hop and the Binding SID make traffic engineering automatic.
+
+  - type: bullets
+    heading: "What RSVP-TE costs"
+    chapter: "The problem"
+    bullets:
+      - "**Per-tunnel state** on every transit router"
+      - "**Multiple protocols:** RSVP, IGP, PCEP"
+      - "**Scalability limits** with thousands of tunnels"
+      - "**Slow convergence:** recompute and re-signal"
+    say: >
+      Traditional traffic engineering uses RSVP-TE, and it works, but it's expensive.
+      Every transit router keeps state for every tunnel through it: signaling messages, path maintenance, bandwidth reservations.
+      You run several protocols side by side. Thousands of tunnels degrade the control plane.
+      And when something fails, paths must be recomputed and signaled again.
+      SR Policy, defined in RFC 9256, removes all of that distributed state. The headend encodes the entire path as a segment list,
+      in the packet header. Transit nodes keep no per-flow state at all.
+
+  - type: big
+    value: "(headend, color, endpoint)"
+    caption: "Three values identify every SR Policy"
+    chapter: "Anatomy of a policy"
+    say: >
+      An SR Policy is identified by three values. The headend is the router that originates the policy, for example P E one.
+      The endpoint is where it goes, for example P E two. And the color is a number that stands for an intent,
+      like one hundred for low latency.
+      Two policies from the same headend to the same endpoint can coexist, as long as their colors differ.
+      One for low latency, one for high bandwidth, one for disjoint paths.
+      Notice what's not in the identifier: the path itself. The path can change, be recomputed or be replaced,
+      and it's still the same policy, so everything steered into it follows along.
+
+  - type: code
+    heading: "Candidate paths"
+    code: |
+      SR Policy (headend=PE1, color=100, endpoint=PE2)
+        ├── Candidate Path (preference 200, PCE-computed)
+        │     └── Segment List: [P1::1, P3::1, PE2::1]
+        ├── Candidate Path (preference 150, BGP SR Policy)
+        │     └── Segment List: [P2::1, PE2::1]
+        └── Candidate Path (preference 100, local config)
+              └── Segment List: [PE2::1]
+    say: >
+      Inside a policy are one or more candidate paths, ordered by preference. Only the highest-preference valid path is active.
+      Here, the path computed by a P C E wins with preference two hundred. If it becomes invalid, the one learned from B G P takes over,
+      and the locally configured one is the last resort.
+      Each candidate path can also hold several segment lists with weights, for weighted E C M P load balancing.
+      In the lifecycle diagram of the written lesson, two lists of weight fifty share the traffic equally,
+      while a lower-preference candidate path waits on standby.
+
+  - type: bullets
+    heading: "Where policies come from"
+    chapter: "Where policies come from"
+    bullets:
+      - "**Local configuration:** CLI or YANG, static TE and fallback"
+      - "**BGP SR Policy (SAFI 73):** pushed by a controller or RR"
+      - "**PCEP:** an SR-PCE computes and installs the path"
+      - "The PCE learns the topology through **BGP-LS (RFC 9514)**"
+    say: >
+      There are three ways to create a policy. Local configuration on the headend is simple and static, and makes a good fallback.
+      A controller or route reflector can distribute policies with B G P, using the SR Policy address family, SAFI seventy-three.
+      The update carries the color and endpoint, plus the segment lists, preference and binding SID.
+      Or a Path Computation Element learns the topology through B G P link-state and installs computed paths on the headend with P C E P.
+      That's the option for dynamic, bandwidth-aware or multi-domain computation.
+
+  - type: code
+    heading: "Cisco IOS-XR: an explicit SRv6 policy"
+    code: |2
+        policy LOW-LATENCY-TO-PE2
+         color 100 end-point ipv6 2001:db8::2
+         candidate-paths
+          preference 100
+           explicit segment-list VIA-P1-P3
+          !
+         !
+        !
+        segment-list VIA-P1-P3
+         index 10 srv6 sid fc00:0:1::
+         index 20 srv6 sid fc00:0:3::
+         index 30 srv6 sid fc00:0:2::
+    say: >
+      Here's a locally configured policy on Cisco I O S X R, under segment routing traffic engineering.
+      The policy has color one hundred and an IPv6 endpoint. Its candidate path, at preference one hundred, uses an explicit segment list.
+      The segment list is defined separately: three SRv6 SIDs, in order, through P one and P three to P E two.
+      Simple and predictable, but every policy has to be written by hand. That doesn't scale to thousands of services.
+
+  - type: bullets
+    heading: "On-Demand Next Hop (ODN)"
+    chapter: "On-Demand Next Hop"
+    bullets:
+      - "Remote PE advertises a VPN prefix **with color 100**"
+      - "Local PE matches it to an **ODN template** for color 100"
+      - "No policy for (color, endpoint)? **Create one automatically**"
+      - "Compute **locally** or **delegate to a PCE**"
+    say: >
+      On-Demand Next Hop removes the hand-written part. The remote P E advertises its VPN prefix with a color extended community,
+      say color one hundred. The local P E matches that color against an O D N template.
+      If no policy exists yet for that color and that endpoint, the headend creates one on its own,
+      and computes it locally or delegates it to a P C E, depending on the template.
+      Nothing is pre-provisioned. That's why the written lesson calls O D N the most operationally scalable approach.
+
+  - type: record
+    url: https://srv6.md/topics/sr-policy/
+    index: 2
+    seconds: 10
+    say: >
+      Here's the picture. P E two sends its prefix to P E one with color one hundred.
+      P E one sees the color, and O D N instantiates an SR Policy toward P E two across the SRv6 core.
+      Traffic from C E one to C E two now follows the low-latency path, and nobody configured that policy by hand.
+
+  - type: code
+    heading: "Cisco IOS-XR: an ODN template"
+    code: |
+      !! ODN template for color 100 (low-latency)
+      segment-routing
+       traffic-eng
+        on-demand color 100
+         dynamic
+          metric type latency
+         !
+         srv6
+          locator MAIN
+         !
+        !
+       !
+    say: >
+      The template is short. On-demand color one hundred, computed dynamically, optimizing the latency metric, with SRv6 SIDs
+      from the MAIN locator. A second template could delegate color two hundred to a P C E.
+      Dynamic paths can optimize T E metric, latency, hop count or I G P metric, under constraints such as affinities,
+      S R L Gs, bandwidth or disjointness, and they're re-optimized when the topology changes.
+
+  - type: bullets
+    heading: "Color steering"
+    chapter: "Color steering"
+    bullets:
+      - "**100:** low latency (Flex-Algo 128 or a latency policy)"
+      - "**200:** high bandwidth (Flex-Algo 129 or bandwidth)"
+      - "**300:** disjoint paths"
+      - "**400:** cost-optimized, default IGP metric"
+      - "Colors are **locally significant**: keep them consistent"
+    say: >
+      Color steering is how service intent reaches the data plane. A V R F route arrives with a color. The headend looks up the policy
+      for that color and the B G P next hop. If it exists, traffic is steered into it. If not, and O D N is enabled, it's created on demand.
+      Here's an example mapping. One caution: colors have no global meaning. Each operator defines its own mapping between color values and intent,
+      so consistent color assignment across the network is an operational requirement.
+      Notice too that the same intent can be served two ways: by a Flex-Algo, such as algorithm 128 for low latency,
+      or by an SR Policy computed with that metric. Color is the bridge between the service and either mechanism.
+
+  - type: bullets
+    heading: "The Binding SID"
+    chapter: "Binding SID"
+    bullets:
+      - "**One SID** that represents a whole SR Policy"
+      - "**Abstraction:** remote domains see only that SID"
+      - "**Scale:** shorter segment lists across domains"
+      - "**Stitching:** chain policies, domain by domain"
+    say: >
+      The last piece is the Binding SID. It's a single SID that represents an entire SR Policy.
+      When a packet arrives with a Binding SID as the active segment, the router steers it into that policy's segment list.
+      That hides the internal path, so remote domains see only one SID. It keeps segment lists short across domains.
+      And it lets you chain policies, domain by domain. Binding SIDs can be configured or allocated dynamically, and signaled by B G P or P C E P.
+      On I O S X R, a dynamic SRv6 Binding SID is requested with a behavior, such as u B six insert reduced, right in the policy.
+
+  - type: code
+    heading: "Stitching domains with Binding SIDs"
+    code: |
+      Ingress segment list:  [BSID_AS1, BSID_AS2, PE-Remote::DT4]
+
+      At AS1 border:  BSID_AS1 expands to [P1::1, ASBR1::1]
+      At AS2 border:  BSID_AS2 expands to [P5::1, PE-Remote::1]
+    say: >
+      Here's multi-domain stitching. The ingress only needs three SIDs: one Binding SID per domain, and the remote service SID.
+      At the border of the first domain, the first Binding SID expands into that domain's path.
+      At the second border, the second one expands into the rest. Neither domain exposes its internal topology to the other,
+      and the ingress segment list stays short however long the real path is.
+
+  - type: compare
+    heading: "SR Policy vs RSVP-TE"
+    chapter: "SR Policy vs RSVP-TE"
+    columns:
+      - title: "RSVP-TE"
+        items: ["Per-tunnel state on every hop", "RSVP PATH/RESV per tunnel", "Inter-AS RSVP is complex", "Limited automation"]
+      - title: "SR Policy"
+        items: ["No transit state: path in the header", "BGP, PCEP or local config", "Binding SID stitching", "ODN and color steering"]
+    say: >
+      To sum up. RSVP-TE keeps state on every hop and signals every tunnel. SR Policy keeps the path in the packet,
+      and only the headend knows about it. Policies come from B G P, P C E P or local configuration.
+      Multi-domain becomes Binding SID stitching, and automation comes from O D N and color.
+      The cost is that the headend must push the segment list, so check the S I D depth your hardware supports,
+      and that bandwidth admission now comes from a P C E or Flex-Algo design, not from RSVP reservations.
+
+  - type: end
+    heading: "Read the SR Policy lesson"
+    subtitle: "PCE, BSID and Junos configs, and the next lesson: SRv6 L3VPN"
+    url: "srv6.md/topics/sr-policy"
+    chapter: "Next steps"
+    say: >
+      The written lesson, with the P C E and Binding SID configurations and the verification commands, is on srv6 dot md, linked below.
+      Next, we put services on top of all this: an SRv6 layer three VPN with B G P.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

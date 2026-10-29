@@ -1,0 +1,142 @@
+id: l05
+lang: en
+title: "Decode Any SRv6 SID or uSID in Your Browser"
+playlist: "Track 4: Hands-on Labs"
+description: |
+  A free SRv6 SID decoder that runs in your browser. Paste a classic SID or a uSID container and it splits it into Locator-Block, node, function and argument bits, supports the F3216, F4816 and F1616 uSID formats, and walks the RFC 9800 shift-and-forward hop by hop. We decode a classic SID, an F3216 uSID path and a 5f00::/16 SID, and explain why you cannot read a SID's behavior from its bits.
+
+  This is lesson 5 of Track 4 (Hands-on Labs) in the free SRv6.md course.
+links:
+  "SRv6 SID decoder": https://srv6.md/tools/sid-decoder/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 in Wireshark": https://srv6.md/labs/pcaps/
+  "Next lesson, MRC and SRv6": https://srv6.md/ai/mrc/
+hashtags: ["#SRv6", "#uSID", "#IPv6", "#NetworkEngineering"]
+tags: [srv6 sid decoder, srv6 sid, usid calculator, srv6 usid, f3216, rfc 9800, rfc 8986, sid structure, srv6, ipv6]
+thumbnail:
+  kicker: "SID Decoder"
+  text: "Paste a SID"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 4 · Lesson 5"
+    title: "Decode Any SRv6 SID"
+    subtitle: "Classic SIDs and uSIDs, in your browser"
+    chapter: "Intro"
+    say: >
+      An SRv6 SID looks like any other IPv6 address, and that's exactly the problem when you're troubleshooting.
+      In this short lesson you'll learn to take any SID or micro-SID container apart:
+      which bits route the packet, which bits pick the behavior,
+      and what each router on a micro-SID path does to the address.
+      You'll do it with the free SID decoder on srv6 dot md.
+
+  - type: bullets
+    heading: "What the decoder does"
+    bullets:
+      - "Splits a SID into **block, node, function, argument**"
+      - "**Flags** what the address tells you"
+      - "Walks a **uSID container** hop by hop (RFC 9800)"
+      - "A **URL per decode**; runs **entirely in your browser**"
+    say: >
+      Paste a classic SID or a micro-SID container, and pick the format.
+      The decoder splits the address into its locator block, node, function and argument bits,
+      flags what the address tells you, and walks a container hop by hop,
+      the way an RFC 9800 next C SID router processes it.
+      Every decode gets its own URL, so you can send a colleague straight to it.
+      And it runs entirely in your browser. Nothing you paste is sent anywhere.
+
+  - type: bullets
+    heading: "A classic SID"
+    chapter: "Classic SIDs"
+    bullets:
+      - "**fc00:0:2:e004::** with B=32, N=16, F=16, A=0"
+      - "**Locator** fc00:0:2::/48: every router routes on it"
+      - "**Function** 0xe004: read only by the owning node"
+      - "Field lengths are the **operator's design choice**"
+    say: >
+      Start with a classic SID. RFC 8986 splits a SID into locator, function and argument.
+      The locator is a routable prefix that leads to one node, and it's made of the block,
+      shared by the whole domain, and the node part. Every router reads it, as an ordinary IPv6 route.
+      Only the node that owns the locator reads the function, which selects the behavior,
+      and the optional argument.
+      Here, with a thirty-two bit block, a sixteen bit node, a sixteen bit function and no argument,
+      this is function e zero zero four behind the locator f c zero zero, colon zero, colon two, slash forty-eight.
+      The key point: these lengths are the operator's design choice. You can't infer them from the address,
+      which is why the decoder asks you for them.
+
+  - type: bullets
+    heading: "uSID formats"
+    chapter: "uSID formats"
+    bullets:
+      - "**F3216:** 32-bit block, 16-bit uSIDs, **6** per container"
+      - "**F4816:** 48-bit block, **5** uSIDs"
+      - "**F1616:** 16-bit block, **7** uSIDs"
+      - "K = floor((128 − block) / uSID length)"
+    say: >
+      A micro-SID container packs several short instructions into one hundred twenty-eight bits:
+      a locator block, then a list of compressed SIDs, each one a node and function with the shared block left out.
+      The format name gives the two lengths. F3216 means a thirty-two bit block and sixteen bit micro-SIDs,
+      so six of them fit. It's the format every next C SID implementation must support.
+      F4816, with a forty-eight bit block, holds five, like the examples in RFC 9800.
+      F1616 holds seven, but the block takes a whole slash sixteen.
+      The rule behind all three is one formula: what's left after the block, divided by the micro-SID length.
+
+  - type: code
+    heading: "Reading an F3216 uSID"
+    code: |
+      fcbb:bb00:0100:0200:0300:e004:0000:0000
+      └─block──┘└uN1┘└uN2┘└uN3┘└uDT┘└EoC┘
+    say: >
+      Here's the decoder's first example. F c b b, b b zero zero is the thirty-two bit locator block,
+      the same on every node in the domain.
+      Zero one zero zero is the active micro-SID. Node one advertises that slash forty-eight in the IGP,
+      so plain longest-prefix match delivers the packet there.
+      Zero two zero zero and zero three zero zero are the next nodes,
+      and e zero zero four is a local service micro-SID, here a micro D T 4 on node three.
+      Then zero zero zero zero, the end-of-container marker. RFC 9800 reserves the value zero for exactly that.
+
+  - type: code
+    heading: "Shift and forward"
+    chapter: "Shift and forward"
+    code: |
+      received       fcbb:bb00:0100:0200:0300:e004:0000:0000   node 1 (uN 0100) shifts
+      after node 1   fcbb:bb00:0200:0300:e004:0000:0000:0000   node 2 (uN 0200) shifts
+      after node 2   fcbb:bb00:0300:e004:0000:0000:0000:0000   node 3 (uN 0300) shifts
+      after node 3   fcbb:bb00:e004:0000:0000:0000:0000:0000   node 3 (uDT4 e004): Argument 0, decapsulate
+    say: >
+      Now step through it. Node one matches its micro-SID. The bits after it aren't zero,
+      so it shifts them left by sixteen bits, fills the end with zeros, decrements the hop limit,
+      and forwards on the new destination. Segments Left isn't touched, and here there's no S R H at all.
+      Node two does the same, then node three.
+      Now the active micro-SID is e zero zero four and everything after it is zero,
+      so it's the last one in the container. Node three runs the ordinary behavior, micro D T 4, and decapsulates.
+      Four instructions, sixteen bytes, no S R H. The decoder's step-through shows this walk for whatever you paste.
+
+  - type: bullets
+    heading: "Bits are not behaviors"
+    chapter: "Bits vs behaviors"
+    bullets:
+      - "Function bits are **allocated locally** by each router"
+      - "Standardized: the **behavior codepoint** (IANA)"
+      - "**uN** = codepoint 48, **uA** = codepoint 57"
+      - "**5f00:0:1:e001::** is optional addressing, not a rule"
+    say: >
+      One last trap. Function bits are allocated locally.
+      E zero zero four means End D T 4 on one router and something else on the next.
+      What's standardized is the behavior codepoint each router advertises next to its SIDs, in IS-IS, OSPF version 3, BGP and BGP-LS.
+      Micro N is codepoint forty-eight, micro A is fifty-seven, and the decoder page includes a lookup for the whole IANA registry.
+      So to know a SID's behavior, check the router's SID table or the advertised codepoint.
+      And SIDs don't have to live in five F zero zero, slash sixteen. Try the example five F zero zero, colon zero, colon one, colon e zero zero one:
+      that block is optional, and your own prefixes work just as well. Whatever you use, filter it at the domain edge.
+
+  - type: end
+    heading: "Try the decoder"
+    subtitle: "Five worked examples, one click each"
+    url: "srv6.md/tools/sid-decoder"
+    chapter: "Next steps"
+    say: >
+      The decoder is free on srv6 dot md, linked below, with five worked examples you can open in one click,
+      including a malformed container it will warn you about.
+      That's the end of the hands-on track. Next, we go to the biggest SRv6 networks running today:
+      AI training fabrics, starting with MRC.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

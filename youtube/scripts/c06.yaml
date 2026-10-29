@@ -1,0 +1,217 @@
+id: c06
+lang: en
+title: "EVPN over SRv6 and EVPN Multihoming"
+playlist: "Track 2: Control Plane and Services"
+description: |
+  EVPN over SRv6 and EVPN multihoming, explained. How a customer device attaches to two or more PEs over one Ethernet Segment, what the ESI is, which EVPN routes multihoming uses, all-active vs single-active, DF election, aliasing, mass withdrawal, and how split-horizon works over SRv6 with the End.DT2M SID and its ESI-filtering argument (RFC 9252 and RFC 9819).
+
+  This is lesson 6 of Track 2 (Control Plane and Services) in the free SRv6.md course.
+links:
+  "Written lesson, EVPN multihoming": https://srv6.md/topics/evpn-multihoming/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 L3VPN with BGP": https://srv6.md/topics/bgp-overlay-services/
+  "Next lesson, SRv6 troubleshooting": https://srv6.md/topics/oam-troubleshooting/
+hashtags: ["#SRv6", "#EVPN", "#Multihoming", "#NetworkEngineering"]
+tags: [srv6 evpn, evpn, evpn multihoming, srv6, esi, df election, rfc 7432, rfc 9252, rfc 9819, end.dt2m, all-active]
+thumbnail:
+  kicker: "EVPN over SRv6"
+  text: "Two PEs, one LAG"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 2 · Lesson 6"
+    title: "EVPN over SRv6"
+    subtitle: "And EVPN multihoming"
+    chapter: "Intro"
+    say: >
+      In the last lesson, B G P carried layer three VPNs over SRv6. Now we do the same for layer two, with E VPN,
+      and we add the feature that makes E VPN worth it: multihoming.
+      By the end, you'll understand Ethernet Segments, designated forwarder election, aliasing and mass withdrawal,
+      and the one part that really changes over SRv6: how split-horizon filtering travels inside a SID.
+
+  - type: record
+    url: https://srv6.md/topics/evpn-multihoming/
+    index: 0
+    seconds: 12
+    chapter: "What multihoming is"
+    say: >
+      Here's the setup. A customer device bundles two links into one L A G, one link to P E one and one to P E two.
+      Across the core, a remote P E three serves another site. E VPN multihoming lets the two P Es act as one,
+      coordinating through B G P instead of a proprietary M C L A G channel. It's defined in RFC 7432, refined by RFC 8584,
+      and carried over SRv6 by RFC 9252 and RFC 9819. And it works with two or more P Es, with no peer link between them.
+
+  - type: bullets
+    heading: "Ethernet Segment and ESI"
+    chapter: "Ethernet Segment"
+    bullets:
+      - "**Ethernet Segment:** the links from one site to several PEs"
+      - "Every PE on the segment uses the **same ESI**"
+      - "ESI = **10 octets**: 1-octet type + 9-octet value"
+      - "**Type 0:** operator-configured, the most common"
+      - "All PEs present the **same LACP system ID** to the CE"
+    say: >
+      The set of links that connect one customer site to several P Es is an Ethernet Segment. From the C E's point of view,
+      it's usually a single L A C P bundle. Each P E sees one member link, and every P E on the segment configures the same
+      Ethernet Segment Identifier, the E S I. It's ten octets: a one-octet type and a nine-octet value.
+      All zeros means single-homed. Type zero is configured by the operator and portable between vendors; other types are derived automatically.
+      And on an all-active L A G, every P E must present the same L A C P system I D, or the C E won't bundle the links.
+
+  - type: bullets
+    heading: "The routes multihoming uses"
+    chapter: "EVPN routes"
+    bullets:
+      - "**Type 4**, Ethernet Segment: discovery and **DF election**"
+      - "**Type 1** A-D per ES: redundancy mode, **mass withdrawal**"
+      - "**Type 1** A-D per EVI: **aliasing** or backup paths"
+      - "**Type 2** MAC/IP, synced between PEs on the segment"
+      - "**Type 3** IMET: BUM delivery, the **End.DT2M SID** in SRv6"
+    say: >
+      E VPN uses its route types for multihoming. Type four, the Ethernet Segment route, lets the P Es on a segment discover each other
+      and elect a designated forwarder. Type one comes in two flavors. Per E S, it advertises the redundancy mode and the split-horizon information,
+      and withdrawing it is the mass withdrawal signal. Per E V I, it lets remote P Es build aliasing or backup paths.
+      Type two carries MAC and I P bindings. And type three handles broadcast, unknown unicast and multicast, B U M for short.
+      Over SRv6, type three also carries the End.DT2M SID.
+
+  - type: compare
+    heading: "All-active vs single-active"
+    chapter: "Redundancy modes"
+    columns:
+      - title: "All-active"
+        items: ["Every PE forwards known unicast", "One LAG across the PEs", "Remote PEs load-balance (aliasing)", "Needs split-horizon"]
+      - title: "Single-active"
+        items: ["Only the DF forwards, per VLAN", "Non-DF blocks its port", "Remote PEs keep a backup path", "No split-horizon toward the CE"]
+    say: >
+      There are two main redundancy modes. In all-active, every P E on the segment forwards known unicast. The C E sees one L A G,
+      and remote P Es spread traffic across all of them. That's typical for data center leaf pairs and access aggregation.
+      In single-active, only the designated forwarder sends traffic for a given V LAN; the other one blocks its port for that service,
+      and remote P Es keep a pre-programmed backup path. In both modes, only the designated forwarder sends B U M traffic toward the C E.
+      A third mode, port-active, elects one P E per interface, as a drop-in replacement for M C L A G active standby.
+
+  - type: bullets
+    heading: "Designated Forwarder election"
+    chapter: "DF election"
+    bullets:
+      - "One **DF per <ES, VLAN>** sends BUM to the CE"
+      - "Wait **3 seconds** for every Type 4 route, then elect"
+      - "**Modulo** (default): VLAN mod N"
+      - "**HRW:** only the failed PE's VLANs move"
+      - "**Preference:** deterministic primary and backup"
+    say: >
+      Without a designated forwarder, when the C E floods a broadcast, every P E would send remote copies back to it.
+      So one P E per segment and V LAN is elected D F. The P Es learn each other from type four routes, wait for the election timer,
+      three seconds by default, and run the election.
+      The default is modulo, or service carving. Highest random weight, H R W, moves only the V LANs of the P E that failed or joined.
+      Preference-based election gives a deterministic primary and backup. If the P Es on a segment disagree on the algorithm, they all fall back to modulo.
+
+  - type: code
+    heading: "Modulo, and why HRW exists"
+    code: |
+      Modulo example: ES with PE1 (192.0.2.1) and PE2 (192.0.2.2), N = 2
+        Ordered list: [PE1, PE2]
+        VLAN 100 → 100 mod 2 = 0 → PE1 is DF
+        VLAN 101 → 101 mod 2 = 1 → PE2 is DF
+        If you only use even VLANs, PE1 is DF for everything — HRW avoids this.
+    say: >
+      Here's modulo in practice. Sort the P Es by I P address, so P E one is index zero and P E two is index one.
+      The D F for V LAN one hundred is one hundred mod two, zero, so P E one. V LAN one oh one goes to P E two.
+      Simple, but if you only use even V LANs, P E one is D F for everything. And when a P E joins or leaves, almost every V LAN moves.
+      H R W avoids both problems. Check vendor support first: Cisco I O S X R and Junos expose modulo and preference-based election.
+
+  - type: bullets
+    heading: "Aliasing and mass withdrawal"
+    chapter: "Aliasing and mass withdrawal"
+    bullets:
+      - "A MAC may be learned by **only one** PE on the segment"
+      - "**Aliasing:** remote PEs balance across every PE of the ESI"
+      - "**Single-active:** the same routes give a backup path"
+      - "**Mass withdrawal:** one route removes a PE for all MACs"
+    say: >
+      A MAC address behind the C E may be learned by only one P E, the one whose link the C E hashed that flow onto.
+      Without help, remote P Es would send all traffic for that MAC to that single P E.
+      Aliasing fixes it: each P E advertises an A D per E V I route for the segment, so a remote P E that sees a MAC route with a non-zero E S I
+      load-balances across every P E on that segment, even the ones that never learned the MAC.
+      In single-active mode, the same routes install the non-D F as a ready backup.
+
+  - type: big
+    value: "1 route"
+    caption: "Withdraw one Ethernet A-D per ES route instead of 10 000 MAC routes"
+    say: >
+      Mass withdrawal is the convergence trick. If P E one loses its link to a C E with ten thousand MACs, withdrawing ten thousand
+      MAC routes takes time. Instead, P E one withdraws a single Ethernet A D per E S route. Every remote P E immediately removes P E one
+      from the next hops of all MACs on that segment, and the individual withdrawals follow in the background.
+      Underneath, T I L F A protects the core paths between P Es. The two mechanisms are complementary.
+
+  - type: compare
+    heading: "Split-horizon: MPLS vs SRv6"
+    chapter: "Split-horizon over SRv6"
+    columns:
+      - title: "MPLS"
+        items: ["ESI label from the A-D per ES route", "Pushed beneath the EVPN label", "Egress skips that ES"]
+      - title: "SRv6"
+        items: ["ESI-filtering argument (Arg.FE2)", "In the argument bits of End.DT2M", "Local bias also allowed"]
+    say: >
+      In all-active mode, a broadcast from the C E reaches P E one, which floods it to every P E, including P E two on the same segment.
+      If P E two is the D F, it would send the frame straight back to the C E. Split-horizon stops that: the receiver must know which segment the frame came from.
+      Over MPLS, the ingress pushes the egress P E's E S I label. SRv6 has no label stack, so the identifier travels as an argument inside the End.DT2M SID itself.
+      RFC 9746 lets P Es signal the method, and SRv6 defaults to E S I filtering.
+
+  - type: bullets
+    heading: "The argument, bit by bit"
+    bullets:
+      - "Type 3: End.DT2M **fc00:0:2:e002::**, 32/16/16, AL 16"
+      - "Type 1 per ES: Arg.FE2 for ES 1 = **0x00a1**"
+      - "PE1 inserts it at bit **32+16+16 = 64**"
+      - "DA = **fc00:0:2:e002:a1::**: flood everywhere **except ES 1**"
+    say: >
+      Here's the mechanism. P E two advertises its End.DT2M locator and function in the type three route, with a structure of thirty-two, sixteen, sixteen,
+      and a sixteen bit argument. In the type one per E S route, it advertises the argument for segment one, zero zero A one.
+      When P E one floods B U M that came from segment one, it inserts that argument at bit sixty-four. P E two decapsulates and floods
+      to every attachment circuit except segment one. RFC 9819 made this rule explicit, because implementations disagreed on the original bitwise OR.
+      Known unicast needs none of this: it uses End.DT2U or End.DX2 SIDs, and aliasing is simply E C M P across them.
+
+  - type: code
+    heading: "Cisco IOS-XR: an all-active segment over SRv6"
+    chapter: "Configuration"
+    code: |2
+       interface Bundle-Ether10
+        ethernet-segment
+         identifier type 0 11.22.33.44.55.66.77.88.99
+         !! all-active is the default; alternatives:
+         !! load-balancing-mode single-active | port-active
+         service-carving preference-based
+          weight 100
+        !
+       !
+       !! SRv6: EVPN services take SIDs from this locator
+       segment-routing srv6
+        locator MAIN
+    say: >
+      On Cisco I O S X R, under E VPN, the bundle interface gets an Ethernet Segment with a type zero identifier.
+      All-active is the default. Here, preference-based service carving with weight one hundred makes this P E preferred; the peer uses fifty.
+      And E VPN takes its SRv6 service SIDs from the MAIN locator. Note that I O S X R takes the nine-octet value after type zero,
+      while Junos takes all ten octets. Same segment, two notations.
+
+  - type: bullets
+    heading: "Common pitfalls"
+    chapter: "Pitfalls"
+    bullets:
+      - "**ESI typo:** all-active silently becomes two single-homed sites"
+      - "**LACP system ID** differs between the PEs"
+      - "**Mixed DF algorithms** fall back to modulo"
+      - "**Core isolation:** bring the access link down"
+      - "**SRv6 argument length** differs between Type 1 and Type 3"
+    say: >
+      Five things to check. A typo in one P E's E S I silently turns your all-active segment into two single-homed sites, with duplicate B U M and MAC flaps.
+      Every P E must present the same L A C P system I D. P Es that advertise different D F algorithms fall back to modulo.
+      If a P E loses the core but keeps its C E link, the C E keeps hashing traffic into a black hole, so enable core isolation.
+      And on SRv6, the argument length must match between the type one and type three routes, or B U M from that segment stops.
+
+  - type: end
+    heading: "Read the EVPN multihoming lesson"
+    subtitle: "ESI types, DF algorithms, L3 multihoming and Junos configs"
+    url: "srv6.md/topics/evpn-multihoming"
+    chapter: "Next steps"
+    say: >
+      The written lesson, with every E S I type, the D F algorithms, E VPN layer three multihoming and the Junos configuration,
+      is on srv6 dot md, linked below. That completes Track 2. Next, in Track 3, we operate the network, starting with troubleshooting.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

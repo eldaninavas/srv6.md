@@ -1,0 +1,210 @@
+id: f05
+lang: en
+title: "SRv6 uSID (Micro-SID) Explained: Six Hops in One Address"
+playlist: "Track 1: SRv6 Foundations"
+description: |
+  SRv6 uSID (micro-SID) explained: why classic 128-bit SIDs cost too much on long paths, how RFC 9800 packs up to six 16-bit instructions into one IPv6 address, how each node shifts the container hop by hop, how much overhead uSID saves, and how it compares with G-SRv6.
+
+  This is lesson 5 of Track 1 (SRv6 Foundations) in the free SRv6.md course.
+links:
+  "Written lesson, uSID compression": https://srv6.md/topics/usid-compression/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 network programming": https://srv6.md/topics/network-programming/
+  "Next lesson, SRv6 vs MPLS": https://srv6.md/topics/srv6-vs-sr-mpls/
+  "uSID calculator": https://srv6.md/tools/sid-decoder/
+hashtags: ["#SRv6", "#uSID", "#SegmentRouting", "#NetworkEngineering"]
+tags: [srv6 usid, usid, micro-sid, srv6 compression, rfc 9800, next-c-sid, g-srv6, srv6, segment routing, network engineering]
+thumbnail:
+  kicker: "SRv6 uSID"
+  text: "6 hops, 16 bytes"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 1 · Lesson 5"
+    title: "SRv6 uSID Explained"
+    subtitle: "Six hops in one address"
+    chapter: "Intro"
+    say: >
+      Micro-SIDs are SRv6's answer to its best-known early criticism: overhead. By the end of this lesson you'll know why they exist,
+      how to read a micro-SID container, how each node processes it, how much overhead it saves,
+      and how it differs from the other compression method, G SRv6.
+
+  - type: big
+    value: "16 bytes per SID"
+    caption: "Classic SRv6: 5 SIDs = 80 bytes on every packet"
+    chapter: "The problem"
+    say: >
+      Let's start with the problem. One of the early criticisms of SRv6 was overhead.
+      Every classic SID is a hundred and twenty-eight bits, sixteen bytes.
+      So a segment list of five SIDs adds eighty bytes to every single packet.
+      For short packets, or for latency-sensitive traffic, that overhead is significant.
+      And it grows by sixteen bytes with every hop you add to the list.
+
+  - type: code
+    heading: "Classic SRv6: five SIDs"
+    code: |
+      Classic SRv6 (5 SIDs = 80 bytes overhead):
+      ┌──────────────────────────────────────────────┐
+      │ SRH: Segment List                             │
+      │   [0]: fc00:0:5::1  (16 bytes)               │
+      │   [1]: fc00:0:4::1  (16 bytes)               │
+      │   [2]: fc00:0:3::1  (16 bytes)               │
+      │   [3]: fc00:0:2::1  (16 bytes)               │
+      │   [4]: fc00:0:1::1  (16 bytes)               │
+      │                          Total: 80 bytes      │
+      └──────────────────────────────────────────────┘
+    say: >
+      Here's that list in the S R H. Five SIDs, for nodes one to five, and each one is a full IPv6 address.
+      Look at what they have in common. Most of every sixteen-byte entry repeats the same prefix,
+      and only a small part, the node number, actually changes from one SID to the next.
+      That repetition is exactly what micro-SIDs remove.
+
+  - type: code
+    heading: "One container, six instructions"
+    chapter: "How uSID works"
+    code: |
+      ┌──────────────────────────────────────────────┐
+      │ Single 128-bit IPv6 Address:                  │
+      │                                               │
+      │  fcbb:bbbb:0001:0002:0003:0004:0005:0006    │
+      │  ├──┬────┤├──┤├──┤├──┤├──┤├──┤├──┤          │
+      │  │ Block ││uS1││uS2││uS3││uS4││uS5││uS6│   │
+      │  │(32bit)││16b││16b││16b││16b││16b││16b│     │
+      │                          Total: 16 bytes!     │
+      └──────────────────────────────────────────────┘
+    say: >
+      Micro-SIDs solve it by packing several instructions into one address.
+      A micro-SID is the compressed form of an SRv6 SID, standardized as the Next C SID flavor of RFC 9800.
+      Each one is a short instruction, usually sixteen bits.
+      After a thirty-two-bit block, up to six of them fit in a single hundred and twenty-eight bit IPv6 address.
+      Six instructions, sixteen bytes. So most SRv6 paths need no extension header at all.
+
+  - type: bullets
+    heading: "Inside the container"
+    bullets:
+      - "**uSID block:** 32 bits, common to the whole domain"
+      - "**uSID:** 16 bits each, a node + a behavior"
+      - "**End-of-Container:** 0000, no more active uSIDs"
+    say: >
+      There are three parts. The micro-SID block is a thirty-two-bit prefix shared by every micro-SID in the domain.
+      Each micro-SID is sixteen bits, and identifies a node and a behavior:
+      the same where and what as a full SID's locator and function, in an eighth of the space.
+      And sixteen bits of zeros mark the end of the container: nothing active is left after them.
+      Because the block is shared, it's written once per container, instead of once per SID.
+      That's where the savings come from.
+
+  - type: code
+    heading: "Shift and lookup: nodes 1 and 2"
+    code: |
+      Step 1 - Ingress receives:
+        DA = fcbb:bbbb:0001:0002:0003:0000:0000:0000
+                        ^^^^
+                        Active uSID → Node 1
+
+      Step 2 - Node 1 processes uSID 0001, shifts left:
+        DA = fcbb:bbbb:0002:0003:0000:0000:0000:0000
+                        ^^^^
+                        Active uSID → Node 2
+    say: >
+      Processing a container is a simple shift and lookup. Here the destination address carries three micro-SIDs.
+      The active one always sits right after the block: right now, that's node one.
+      Node one processes its micro-SID, then shifts the rest of the address left by sixteen bits.
+      Node two's micro-SID is now right after the block, and the packet is forwarded on that new destination address.
+      Notice the end of the address filling with zeros as the micro-SIDs move left.
+
+  - type: code
+    heading: "Shift and lookup: nodes 2 and 3"
+    code: |
+      Step 3 - Node 2 processes uSID 0002, shifts left:
+        DA = fcbb:bbbb:0003:0000:0000:0000:0000:0000
+                        ^^^^
+                        Active uSID → Node 3
+
+      Step 4 - Node 3 processes uSID 0003, shifts left:
+        DA = fcbb:bbbb:0000:0000:0000:0000:0000:0000
+                        ^^^^
+                        End-of-Container (0000) → Move to next SRH entry
+    say: >
+      Node two does the same, and node three is next. When node three is done, only zeros are left after the block:
+      the end of the container. If the path is longer, the next container comes from the S R H,
+      and the walk continues there. Three hops, and nothing changed but one destination address.
+      The written lesson links a calculator where you can step through your own container, node by node.
+
+  - type: bullets
+    heading: "Overhead: classic SIDs vs uSID"
+    chapter: "Overhead"
+    bullets:
+      - "3 SIDs: 48 B → **16 B** (67% less)"
+      - "6 SIDs: 96 B → **16 B** (83% less)"
+      - "10 SIDs: 160 B → **32 B**, 2 containers (80% less)"
+      - "12 SIDs: 192 B → **32 B**, 2 containers (83% less)"
+    say: >
+      Here's what that saves on the segment list. Three classic SIDs take forty-eight bytes; as micro-SIDs, sixteen.
+      Six SIDs drop from ninety-six bytes to sixteen. Ten SIDs need two containers, so thirty-two bytes instead of a hundred and sixty.
+      And twelve SIDs still fit in two containers, against a hundred and ninety-two bytes.
+      Savings between two thirds and more than four fifths.
+      Ten or twelve instructions need a second container, because one container holds six at most.
+
+  - type: big
+    value: "6 hops · 16 bytes"
+    caption: "The space classic SRv6 uses for one SID"
+    say: >
+      That's the headline. One micro-SID container encodes up to six segment instructions
+      in the same space classic SRv6 uses for a single SID.
+      A six-hop path, in sixteen bytes.
+      Keep in mind that these numbers count the segment list only. Every SRv6 packet still carries its outer IPv6 header.
+      The next lesson puts SRv6 and MPLS side by side, with the full header cost.
+
+  - type: compare
+    heading: "uSID vs G-SRv6"
+    chapter: "uSID vs G-SRv6"
+    columns:
+      - title: "uSID (NEXT-C-SID)"
+        items: ["Shift-and-lookup", "From Cisco and Bell Canada", "Standardized in RFC 9800"]
+      - title: "G-SRv6 (Replace-C-SID)"
+        items: ["Replace-and-lookup", "From China Mobile and Huawei", "Standardized in RFC 9800"]
+    say: >
+      Micro-SIDs weren't the only compression idea. Two approaches emerged, and both are now unified under RFC 9800.
+      Micro-SID, the Next C SID flavor, came from Cisco and Bell Canada, and works by shift and lookup.
+      G SRv6, the Replace C SID flavor, came from China Mobile and Huawei, and works by replace and lookup.
+      So the difference is how a node moves on to the next instruction: by shifting the address, or by replacing part of it.
+      Both are deployed by multiple operators around the world, and both are now standardized in the same RFC.
+
+  - type: code
+    heading: "A uSID path on Linux"
+    chapter: "Configuration"
+    code: |
+      # Encapsulate with uSID container
+      ip route add 10.0.0.0/24 encap seg6 mode encap \
+        segs fcbb:bbbb:0001:0002:0003:: dev eth0
+    say: >
+      From the headend's point of view, a micro-SID path is just a SID list with one entry.
+      On Linux, this route encapsulates traffic for ten dot zero dot zero dot zero, slash twenty-four,
+      with a single container in the destination address: nodes one, two and three, then the end of the container.
+      The double colon at the end is ordinary IPv6 shorthand: it stands for all the zeros that close the container.
+      The written lesson also shows how a micro-SID locator is configured on Cisco I O S X R.
+
+  - type: bullets
+    heading: "Recap"
+    chapter: "Recap"
+    bullets:
+      - "uSID = **NEXT-C-SID** flavor of RFC 9800"
+      - "**32-bit block** + up to **six 16-bit** uSIDs"
+      - "Each node **shifts** the DA left by 16 bits"
+      - "Up to 6 instructions in the space of 1 SID"
+    say: >
+      To recap. A micro-SID is the Next C SID flavor of RFC 9800. A thirty-two-bit block, followed by up to six sixteen-bit instructions,
+      all in one IPv6 address. Each node consumes its own micro-SID and shifts the rest left.
+      Zeros mark the end of the container. And many operators have announced micro-SID deployments publicly:
+      the written lesson links to every announcement.
+
+  - type: end
+    heading: "Read the full lesson"
+    subtitle: "Try the uSID calculator. Next: SRv6 vs MPLS"
+    url: "srv6.md/topics/usid-compression"
+    chapter: "Next steps"
+    say: >
+      The full lesson and the free micro-SID calculator are on srv6 dot md, linked below.
+      Paste in the container from this video, and step through the shift yourself.
+      It's part of the free SRv6 dot md course. Next, we'll put SRv6 and MPLS side by side,
+      with real numbers on overhead and on when to use each. Subscribe, and I'll see you there.

@@ -1,0 +1,264 @@
+id: l02
+lang: en
+title: "SRv6 Labs in Minutes with netlab"
+playlist: "Track 4: Hands-on Labs"
+description: |
+  Build netlab SRv6 labs in minutes: a ten-line topology file gives you three FRRouting routers running IS-IS and SRv6, with addressing, SIDs and device configurations generated and deployed for you on containerlab. We walk through the topology, the deploy and report commands, how to verify SRv6, how to practice the SRv6 configuration yourself on a ready IS-IS network, and the ready-made ipspace/srv6-examples topologies, from an unnumbered core to L3VPN over SRv6.
+
+  This is lesson 2 of Track 4 (Hands-on Labs) in the free SRv6.md course.
+links:
+  "Written lesson": https://srv6.md/labs/netlab/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 lab with Containerlab": https://srv6.md/labs/containerlab/
+  "Next lesson, SRv6 on Linux": https://srv6.md/implementations/linux-kernel/
+hashtags: ["#SRv6", "#netlab", "#NetworkAutomation", "#NetworkEngineering"]
+tags: [netlab srv6, netlab, srv6 lab, srv6, containerlab, frrouting, segment routing, is-is, network automation, infrastructure as code]
+thumbnail:
+  kicker: "netlab"
+  text: "10 lines"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 4 · Lesson 2"
+    title: "SRv6 Labs in Minutes with netlab"
+    subtitle: "Ten lines of YAML, a working SRv6 network"
+    chapter: "Intro"
+    say: >
+      In the last lesson you wrote every file of an SRv6 lab by hand.
+      This time, you'll let a tool do the boring part.
+      netlab takes a short description of the network you want and builds the rest:
+      the addressing, the routing design, the SRv6 SIDs and the device configurations.
+      By the end of this lesson you'll be able to bring up a three-router IS-IS and SRv6 lab with one command,
+      check what netlab built for you, practice the SRv6 configuration yourself on a ready-made IS-IS network,
+      and pick up the published SRv6 example topologies, from a basic IS-IS lab all the way to L3VPN over SRv6.
+
+  - type: bullets
+    heading: "What netlab does"
+    chapter: "What netlab is"
+    bullets:
+      - "Reads a **high-level** infrastructure-as-code description"
+      - "Builds the **design, addressing and topology**"
+      - "Deploys **containers or VMs** (containerlab or Vagrant)"
+      - "**Configures** the network devices for you"
+    say: >
+      netlab is an infrastructure-as-code tool. You describe the network at a high level:
+      which devices, which links, which protocols. netlab turns that into a full network design,
+      with addressing and a topology. Then it deploys the devices, as containers through containerlab,
+      the tool from the previous lesson, or as virtual machines through Vagrant.
+      And finally it configures every device.
+      That last step is what makes it so convenient for SRv6.
+      Whether you want to practice configuring SRv6, or just kick its tires and look at a working network,
+      you skip the part where a typo in a locator costs you an hour.
+
+  - type: bullets
+    heading: "Prerequisites"
+    bullets:
+      - "**Install netlab** (netlab.tools/install)"
+      - "**netlab install containerlab ansible**"
+      - "That installs **containerlab, Docker and Ansible**"
+      - "Then: an **empty directory** and a **topology.yml**"
+    say: >
+      Setup takes two steps. First, install netlab itself, following the install guide on netlab dot tools.
+      Second, let netlab install everything else: the command netlab install containerlab ansible
+      installs containerlab, Docker and Ansible for you.
+      That's the whole toolchain for this lesson, because the sample lab runs on FRRouting containers.
+      Then create an empty directory. Everything netlab needs goes into a single file in it, called topology dot yml.
+      One thing to know before you start: the SRv6 configuration module is recent.
+      The release notes linked from the written lesson show it arriving in netlab 26.10,
+      so make sure you install a current netlab, not an old copy you had lying around.
+
+  - type: code
+    heading: "topology.yml: IS-IS + SRv6"
+    chapter: "The topology"
+    code: |
+      addressing:                     # Define IPv6 address pools
+        p2p.ipv6: 2001:1::/48         # SRv6 requires ipv6 addresses on interfaces
+        loopback.ipv6: 2001:db8::/48  # Loopback IPv6 addresses can't hurt ;)
+      defaults.device: frr            # We'll use FRRouting ...
+      provider: clab                  # ... containers orchestrated with containerlab
+      module: [ isis, srv6 ]          # All devices are running IS-IS and SRv6
+      nodes: [ pe1, p, pe2 ]          # The lab topology has three nodes
+      links: [ pe1-p, p-pe2 ]         # And two links between them
+    say: >
+      Here's the whole lab. The addressing section defines two IPv6 pools:
+      one for the point-to-point links, because SRv6 needs IPv6 addresses on the interfaces,
+      and one for the loopbacks.
+      Defaults dot device says every node is an F R R router.
+      Provider clab says the containers are orchestrated by containerlab.
+      The module line is where SRv6 comes in: every device runs two netlab modules, IS-IS and SRv6.
+      Then three nodes, P E one, P, and P E two, and two links, P E one to P and P to P E two.
+      That's a small provider network: two edge routers and one core router in a line.
+      Eight lines of YAML, and no device configuration anywhere.
+      Read the comments too. They are part of the official example,
+      and they explain each choice in one line, including the joke that loopback IPv6 addresses can't hurt.
+
+  - type: bullets
+    heading: "What netlab builds from it"
+    bullets:
+      - "Designs **IS-IS** (three nodes, one area)"
+      - "Allocates **IPv4 and IPv6** addresses"
+      - "Allocates **SRv6 SIDs** to each node"
+      - "Creates **interface, IS-IS and SRv6** configs"
+      - "Deploys them with **bash** and **vtysh** scripts"
+    say: >
+      You don't write any initial device configuration. netlab does five things for you.
+      It designs the IS-IS routing protocol, which isn't too hard with three nodes and one area.
+      It allocates IPv4 and IPv6 addresses to the links and interfaces, from the pools you gave it.
+      It allocates SRv6 SIDs to the individual nodes.
+      It creates the interface, IS-IS and SRv6 configuration for every device.
+      And it deploys those configurations to the FRRouting containers,
+      using a combination of bash scripts and vtysh, the F R R shell.
+      Compare that with the previous lesson, where you wrote the locator, the NET and the interfaces of each router by hand.
+      Here, the only SRv6 decision you made was one word in the module list.
+      Everything else, including which SID each node gets, follows from netlab's design.
+
+  - type: code
+    heading: "Deploy, connect, destroy"
+    chapter: "Deploy"
+    code: |
+      # Start the lab
+      netlab up
+
+      # Check lab status
+      netlab status
+
+      # Connect to a node
+      netlab connect pe1
+
+      # Destroy the lab
+      netlab down --cleanup
+    say: >
+      Four commands cover the life of a lab. netlab up, run in the directory with your topology file,
+      builds the design, starts the containers and pushes the configurations.
+      netlab status shows you the state of the lab.
+      netlab connect, followed by a node name such as P E one, drops you into that device.
+      And when you're done, netlab down with dash dash cleanup destroys the lab.
+      Notice what you didn't do: no container names, no docker exec, no copying configuration files around.
+      netlab keeps track of all of that for you.
+      And because the whole lab is described by one small file, you can destroy it, change one line,
+      and bring it back up in a couple of minutes. That's what makes it practical to experiment.
+
+  - type: bullets
+    heading: "netlab reports"
+    bullets:
+      - "**devices:** nodes, IDs, device types, images"
+      - "**wiring:** lab nodes and links"
+      - "**addressing:** lab addressing"
+      - "**isis-nodes:** IS-IS routing"
+      - "**mgmt:** management access to devices"
+    say: >
+      Because netlab designed the network, it can also tell you what it built.
+      netlab report, followed by a report name, prints a summary.
+      The devices report lists the nodes, their node IDs, device types and images.
+      Wiring shows the lab nodes and links. Addressing shows the addresses it allocated.
+      I S I S nodes shows the IS-IS routing design. And mgmt shows how to reach each device
+      through the management network.
+      netlab can also draw graphs of the topology, although with three routers in a line
+      you can probably picture it without one.
+      Start with the addressing report. It shows you where every address in the lab came from.
+
+  - type: code
+    heading: "Verify SRv6"
+    chapter: "Verify"
+    code: |
+      # Check SRv6 SIDs
+      netlab connect pe1 vtysh -c "show ipv6 route"
+
+      # Check IS-IS topology database
+      netlab connect pe1 vtysh -c "show isis database detail"
+    say: >
+      To check SRv6, run vtysh commands on a node straight from netlab connect.
+      On P E one, show ipv6 route is where you check the SRv6 SIDs netlab allocated.
+      Then show isis database detail displays the IS-IS topology database:
+      the link-state information every router floods, which is how the other routers learn about each node.
+      Run the same two commands on P and on P E two, and compare.
+      This is the same verification you did by hand in the Containerlab lab,
+      just with a shorter way to reach each router.
+      If the SIDs are missing, check the addressing report first.
+      Remember the comment in the topology file: SRv6 requires IPv6 addresses on the interfaces.
+
+  - type: compare
+    heading: "Practice the SRv6 config yourself"
+    chapter: "Practice mode"
+    columns:
+      - title: "Ready-made SRv6"
+        items: ["module: [ isis, srv6 ]", "netlab configures IS-IS and SRv6", "Kick the tires"]
+      - title: "Practice topology"
+        items: ["module: [ isis ]", "netlab configures IS-IS only", "You add SRv6 by hand"]
+    say: >
+      There's a second way to use the same file. If you want to practice the SRv6 configuration itself,
+      remove srv6 from the module line, so it only lists IS-IS.
+      Everything else stays the same: same addressing pools, same nodes, same links.
+      netlab then builds an IS-IS network that is already configured and working,
+      and stops there. The SRv6 part is yours.
+      You configure the locators and SIDs on each router yourself,
+      on top of an IGP you know is healthy.
+      That's a good way to separate two kinds of mistakes: if something fails, you know it's your SRv6 configuration,
+      not your addressing or your IS-IS.
+
+  - type: bullets
+    heading: "Ready-made topologies: introductory"
+    chapter: "Ready-made labs"
+    bullets:
+      - "**ipspace/srv6-examples** by Ivan Pepelnjak"
+      - "**SRv6 with IS-IS:** basic SRv6 forwarding"
+      - "**Unnumbered core:** link-local addresses only"
+      - "**Multivendor SRv6:** interoperability across vendors"
+    say: >
+      You don't even have to write the topology. Ivan Pepelnjak published a collection of
+      ready-to-run netlab topologies for SRv6, called srv6 examples, on GitHub under ipspace.
+      It's organized in two tracks. The introductory track has three labs.
+      SRv6 with IS-IS shows basic SRv6 forwarding with IS-IS as the IGP.
+      Unnumbered core runs SRv6 over core links that have link-local addresses only,
+      the same idea you saw in the Containerlab lab, where IS-IS used link-local next hops.
+      And multivendor SRv6 shows interoperability across different vendor platforms.
+      That last one shows a real strength of netlab: the same short topology description
+      can bring up routers from more than one vendor and configure all of them.
+
+  - type: bullets
+    heading: "Ready-made topologies: services"
+    bullets:
+      - "**IPv4 islands** over an SRv6-enabled IPv6 core"
+      - "**BGP-free IPv6 core:** no BGP on transit nodes"
+      - "**L3VPN over SRv6:** MPLS-style VPN services"
+      - "Each lab directory is **self-contained**"
+    say: >
+      The services track goes further. IPv4 islands carries IPv4 networks over an SRv6-enabled IPv6 core.
+      BGP-free IPv6 core builds an IPv6 core with no BGP on the transit nodes.
+      And L3VPN over SRv6 delivers MPLS-style layer three VPN services over an SRv6 core.
+      Each lab directory is self-contained, so you can clone the collection, step into one directory,
+      and run netlab up.
+      Read the collection's getting started guide first,
+      and check the netlab SRv6 module documentation for the list of supported platforms,
+      before you plan a multivendor lab.
+      The L3VPN lab is the natural bridge to the rest of this course.
+      It's the same service you'll configure by hand on each vendor's routers later on,
+      already running, so you can study the configuration netlab generated before you write your own.
+
+  - type: bullets
+    heading: "Containerlab or netlab?"
+    bullets:
+      - "**Containerlab by hand:** every file is yours to read"
+      - "**netlab:** design, addressing and configs generated"
+      - "netlab **runs on containerlab** (provider: clab)"
+      - "Start with **srv6-examples**, then change one thing"
+    say: >
+      So which one should you use? They aren't rivals. netlab uses containerlab underneath,
+      that's what provider clab means in the topology file.
+      Building the lab by hand, as in the previous lesson, teaches you every file and every setting.
+      netlab gives you a working SRv6 network in minutes, so you can spend your time on SRv6 itself.
+      A good routine: start from one of the published examples, bring it up, verify it,
+      and then change one thing at a time. Add a node, switch the module list to practice mode,
+      or move on to the services labs.
+
+  - type: end
+    heading: "Read the full lesson"
+    subtitle: "Topologies, commands and links to every example lab"
+    url: "srv6.md/labs/netlab"
+    chapter: "Next steps"
+    say: >
+      Both topology files and the links to every example lab are on srv6 dot md, linked below,
+      together with the netlab documentation and the announcement of the example collection.
+      In the next lesson we go one level deeper, to the Linux kernel itself,
+      and build SRv6 from scratch with the seg six commands in I P route 2.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

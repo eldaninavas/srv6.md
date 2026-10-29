@@ -1,0 +1,192 @@
+id: f02
+lang: en
+title: "SRv6 SID Structure: Locator, Function and Argument"
+playlist: "Track 1: SRv6 Foundations"
+description: |
+  The SRv6 SID, taken apart. We cover the 128-bit SRv6 SID structure (locator, function and argument), why the locator is just an IPv6 route in the IGP, the 5f00::/16 block that RFC 9602 reserves for SRv6 SIDs, when to use it instead of your own global prefixes, and how to filter SIDs at the edge of your SR domain.
+
+  This is lesson 2 of Track 1 (SRv6 Foundations) in the free SRv6.md course.
+links:
+  "Written lesson, SID structure": https://srv6.md/topics/sid-structure/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, What is SRv6?": https://srv6.md/topics/what-is-srv6/
+  "Next lesson, the SRH packet walk": https://srv6.md/topics/srh-packet-walk/
+  "SRv6 SID decoder": https://srv6.md/tools/sid-decoder/
+hashtags: ["#SRv6", "#SegmentRouting", "#IPv6", "#NetworkEngineering"]
+tags: [srv6 sid, srv6, srv6 sid structure, srv6 locator, 5f00::/16, rfc 9602, segment routing, segment routing over ipv6, ipv6, network engineering]
+thumbnail:
+  kicker: "SRv6 SID"
+  text: "Where + what"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 1 · Lesson 2"
+    title: "SRv6 SID Structure"
+    subtitle: "Locator, function and argument"
+    chapter: "Intro"
+    say: >
+      Every SRv6 instruction is a SID. In this lesson you'll learn to split a SID into its locator,
+      function and argument, see why the locator is just an IPv6 route, understand the five F zero zero,
+      slash sixteen block, and filter SIDs at the edge of your network.
+
+  - type: code
+    heading: "Anatomy of an SRv6 SID"
+    chapter: "Anatomy of a SID"
+    code: |
+      |<------------ 128 bits ------------->|
+      |  Locator      | Function | Arguments|
+      |<-- L bits --->|<-F bits->|<-A bits->|
+    say: >
+      An SRv6 Segment Identifier is a hundred and twenty-eight bit value, written exactly like an IPv6 address.
+      That one value does two jobs. It says where a node is, and it says what that node should do with the packet.
+      To do both, it's split into three fields: the locator, the function, and the arguments.
+      You choose how many bits each one gets. L, F and A are just the lengths of the three fields,
+      and together they always add up to a hundred and twenty-eight.
+
+  - type: bullets
+    heading: "Three fields"
+    bullets:
+      - "**Locator:** routable prefix of the node, typically 40-64 bits"
+      - "**Function:** the local behavior, typically 16-24 bits"
+      - "**Arguments:** optional parameters, 0-48 bits"
+    say: >
+      The locator is a routable prefix that identifies the node. It's typically forty to sixty-four bits long.
+      The function identifies the behavior that node executes, such as End, or End D T 4,
+      which decapsulates and looks up the inner packet in an IPv4 table. It's typically sixteen to twenty-four bits.
+      The arguments are optional parameters for that function. Many SIDs carry none at all.
+      In the written lesson's example, the function one hundred on node one means End D T 4,
+      with no arguments.
+
+  - type: big
+    value: "Locator = a route"
+    caption: "Advertised in IS-IS or OSPFv3 as a regular IPv6 prefix"
+    say: >
+      Here's the part that makes SRv6 simple. The locator is advertised in the IGP, I S I S or O S P F v 3,
+      as a regular IPv6 route. That's how every router learns how to reach any SRv6-capable node.
+      A router that doesn't own the locator only needs that route. It forwards the packet on a longest-prefix match,
+      and never looks at the function bits.
+
+  - type: code
+    heading: "A typical plan inside 5f00::/16"
+    chapter: "The 5f00::/16 block"
+    code: |
+      5f00::/16                          <- IANA SRv6 SID block
+        5f00:<domain>::/32               <- Operator / SR domain
+          5f00:<domain>:<node>::/48      <- Node locator
+            5f00:<domain>:<node>:<func>::/64  <- SID (locator + function)
+    say: >
+      Where do SIDs come from? A typical plan starts from the SRv6 block that IANA reserved: five F zero zero, slash sixteen.
+      Each operator or SR domain takes a slash thirty-two. Each node gets a slash forty-eight locator inside it.
+      And each function on that node takes the next sixteen bits, so every SID is a slash sixty-four:
+      the node's locator, plus a function.
+      That nesting is what makes the block so easy to recognize, and to filter.
+
+  - type: bullets
+    heading: "RFC 9602: the SRv6 SID block"
+    bullets:
+      - "**5f00::/16**, allocated for SRv6 SIDs"
+      - "Recorded in IANA's special-purpose registry"
+      - "**Forwardable:** yes, within SR domains"
+      - "**Globally reachable:** no"
+    say: >
+      That block comes from RFC 9602, published in October 2024. IANA recorded it in the IPv6 Special-Purpose Address Registry.
+      Two properties matter. The block is forwardable, so it works inside SR domains.
+      But it's explicitly marked as not globally reachable:
+      packets addressed to these SIDs should never cross the public Internet.
+      The registry also marks it valid as a source and as a destination address,
+      and IANA allocated it in April 2024, a few months before the RFC itself was published.
+
+  - type: compare
+    heading: "5f00::/16 or your own prefix?"
+    columns:
+      - title: "IANA block 5f00::/16"
+        items: ["Easy to spot in captures and ACLs", "Simple filtering", "No GUA space used", "Must be advertised explicitly"]
+      - title: "Operator GUA prefix"
+        items: ["Already routable in your network", "Doubles as IPv6 reachability", "Consumes GUA space", "Harder to tell SRv6 apart"]
+    say: >
+      RFC 9602 doesn't force you to use it. You can keep using your own global unicast prefixes as locators, and both are valid.
+      The IANA block is instantly recognizable in captures and access lists, and it doesn't consume your G U A space,
+      but you must advertise it explicitly inside the domain.
+      Your own prefix is already routable, but SRv6 traffic is harder to tell apart from regular IPv6.
+      Most early deployments, such as China Mobile and SoftBank, used their own prefixes.
+      The new block helps most in greenfield networks and between SR domains.
+
+  - type: big
+    value: "Never leak SIDs"
+    caption: "Filter the SID space at every SR domain boundary"
+    chapter: "Filtering at the edge"
+    say: >
+      Whichever you choose, one rule doesn't change. You must stop SRv6 SIDs from leaking outside the SR domain.
+      With five F zero zero, the filter is a single prefix. With your own prefixes, you apply the same principle
+      to your locator range, as RFC 8754 section 5.1 describes. Here's what that looks like on three platforms.
+
+  - type: code
+    heading: "Cisco IOS XR"
+    code: |
+      prefix-set DENY-SRV6
+        5f00::/16 le 128
+      end-set
+
+      route-policy EBGP-IN
+        if destination in DENY-SRV6 then
+          drop
+        endif
+      end-policy
+    say: >
+      On Cisco I O S X R, a prefix set matches the whole block, at any prefix length up to a hundred and twenty-eight.
+      The route policy, E BGP IN, as its name says, is meant for routes coming in from external BGP peers.
+      It drops any route that falls inside the block.
+
+  - type: code
+    heading: "Juniper Junos"
+    code: |
+      policy-options {
+          prefix-list SRV6-SID-SPACE {
+              5f00::/16;
+          }
+          policy-statement REJECT-SRV6 {
+              term deny-srv6 {
+                  from prefix-list SRV6-SID-SPACE;
+                  then reject;
+              }
+          }
+      }
+    say: >
+      On Juniper Junos, the same idea: a prefix list holds the SID block,
+      and a policy statement rejects routes that match it.
+      The term matches the prefix list, and the action is reject,
+      so nothing in the SID space is accepted through this policy.
+      Both of these filter routes in the control plane.
+
+  - type: code
+    heading: "Linux (ip6tables)"
+    code: |
+      ip6tables -A FORWARD -d 5f00::/16 -j DROP
+    say: >
+      On Linux, one ip6tables rule drops any forwarded packet whose destination is in the SID block.
+      This one acts on packets in the data plane, not on routes.
+      It's a blunt rule: on a Linux box at the edge, anything heading for an SRv6 SID simply doesn't get through.
+
+  - type: bullets
+    heading: "Recap"
+    chapter: "Recap"
+    bullets:
+      - "SID = **locator + function + arguments**, 128 bits"
+      - "The locator is an ordinary IPv6 route in the IGP"
+      - "**5f00::/16**: forwardable, not globally reachable"
+      - "Filter SIDs at every boundary, whatever the prefix"
+    say: >
+      To recap. A SID is a hundred and twenty-eight bits: a locator for where, a function for what, and optional arguments.
+      The locator is an ordinary IPv6 route in the IGP. RFC 9602 reserves five F zero zero, slash sixteen,
+      which is forwardable but not globally reachable. And whatever prefix you use, filter SIDs at every boundary.
+
+  - type: end
+    heading: "Read the full lesson"
+    subtitle: "Try the SID decoder. Next: the SRH packet walk"
+    url: "srv6.md/topics/sid-structure"
+    chapter: "Next steps"
+    say: >
+      The full lesson is on srv6 dot md, linked below, and so is the free SID decoder:
+      paste any SID and see its block, node, function and argument bits.
+      This lesson is part of the free SRv6 dot md course. Next, we'll follow a packet through the Segment Routing Header,
+      step by step. Subscribe, and I'll see you there.

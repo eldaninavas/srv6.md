@@ -1,0 +1,205 @@
+id: e02
+lang: es
+title: "Estructura del SID en SRv6: localizador, función y argumento"
+playlist: "SRv6 en español"
+description: |
+  Cómo se compone un SID de SRv6: los 128 bits divididos en localizador (Locator), función (Function) y argumentos (Arguments), con un ejemplo, el bloque 5f00::/16 que IANA reservó para los SID SRv6 en el RFC 9602, cuándo usarlo en lugar de tu propio prefijo GUA y cómo filtrarlo en el borde del dominio en Cisco IOS XR, Juniper Junos y Linux.
+
+  Esta es la lección 2 de la ruta SRv6 en español del curso gratuito de SRv6.md.
+links:
+  "Lección escrita: Estructura del SID": https://srv6.md/es/estructura-del-sid/
+  "Curso gratuito de SRv6": https://srv6.md/learn/
+  "Lección anterior, ¿Qué es SRv6?": https://srv6.md/es/que-es-srv6/
+  "Siguiente lección, la cabecera SRH": https://srv6.md/es/cabecera-srh/
+hashtags: ["#SRv6", "#IPv6", "#SegmentRouting", "#Redes"]
+tags: [sid srv6, srv6, estructura del sid, srv6 locator, 5f00::/16, rfc 9602, segment routing, ipv6, srv6 en español, seguridad srv6]
+thumbnail:
+  kicker: "El SID de SRv6"
+  text: "5f00::/16"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Español · Lección 2"
+    title: "Estructura del SID"
+    subtitle: "Localizador, función y argumento"
+    chapter: "Introducción"
+    say: >
+      Cada instrucción de SRv6 es un SID, un valor de 128 bits con forma de dirección IPv6.
+      En esta lección lo vas a desarmar. Al terminar, vas a poder leer un SID y separar su localizador,
+      su función y sus argumentos. Vas a saber qué es el bloque cinco F cero cero, barra dieciséis, y cuándo conviene usarlo.
+      Y vas a poder filtrar los SID en el borde de tu dominio.
+
+  - type: code
+    heading: "Anatomía de un SID de SRv6"
+    chapter: "Anatomía del SID"
+    code: |
+      |<------------ 128 bits ------------->|
+      |  Locator      | Function | Arguments|
+      |<-- L bits --->|<-F bits->|<-A bits->|
+    say: >
+      Un Segment Identifier codifica dos cosas a la vez: dónde está un nodo y qué comportamiento se debe ejecutar ahí.
+      Para eso, los 128 bits se dividen en tres campos. A la izquierda va el localizador, de L bits.
+      En el medio, la función, de F bits. Y a la derecha, los argumentos, de A bits.
+      Como el SID tiene el formato de una dirección IPv6 estándar, se escribe y se lee igual que cualquier otra dirección.
+
+  - type: bullets
+    heading: "Los tres campos"
+    bullets:
+      - "**Locator:** prefijo enrutable que identifica al nodo · 40-64 bits"
+      - "**Function:** el comportamiento local (End, End.DT4…) · 16-24 bits"
+      - "**Arguments:** parámetros opcionales de la función · 0-48 bits"
+    say: >
+      El localizador es un prefijo enrutable que identifica al nodo. Su tamaño típico va de cuarenta a sesenta y cuatro bits.
+      La función identifica el comportamiento local. Por ejemplo, End, o End D T cuatro, que desencapsula
+      y busca el paquete en la tabla IPv4. Suele ocupar de dieciséis a veinticuatro bits.
+      Y los argumentos son parámetros opcionales para esa función, de cero a cuarenta y ocho bits.
+      Fíjate que el tamaño típico de los argumentos empieza en cero: muchas funciones no los necesitan.
+
+  - type: bullets
+    heading: "Un ejemplo"
+    bullets:
+      - "**Locator:** 5f00:0:1::/48 → identifica al nodo"
+      - "**Function:** 100 → End.DT4"
+      - "**Arguments:** ninguno"
+    say: >
+      Veamos un ejemplo. El localizador es cinco F cero cero, cero, uno, barra cuarenta y ocho: identifica al nodo.
+      La función es la cien, asociada a End D T cuatro. Es decir: cuando llegue un paquete a este SID,
+      desencapsúlalo y busca su destino en la tabla IPv4. Este SID no lleva argumentos.
+      Leído de izquierda a derecha, el SID dice primero a dónde ir y después qué hacer al llegar.
+
+  - type: bullets
+    heading: "El Locator es una ruta del IGP"
+    bullets:
+      - "Se anuncia como una **ruta IPv6 normal**"
+      - "En el IGP: **IS-IS u OSPFv3**"
+      - "Garantiza la **alcanzabilidad** de cada nodo SRv6"
+    say: >
+      ¿Cómo llega un paquete hasta ese nodo? Gracias al localizador.
+      El bloque del localizador se anuncia en el IGP, IS-IS u OSPFv3, como una ruta IPv6 normal.
+      Así se garantiza que cualquier nodo con SRv6 sea alcanzable en la red.
+      Para los demás routers, el localizador es un prefijo más en su tabla de enrutamiento.
+      La función, en cambio, es un comportamiento local: solo tiene sentido en el nodo que la define.
+
+  - type: big
+    value: "5f00::/16"
+    caption: "El bloque de IANA para los SID SRv6 (RFC 9602)"
+    chapter: "El bloque 5f00::/16"
+    say: >
+      Ahora, ¿de qué rango salen esas direcciones? El RFC 9602, publicado en octubre de 2024,
+      asigna un prefijo IPv6 dedicado a los identificadores de segmento SRv6: cinco F cero cero, barra dieciséis.
+      IANA tomó el bloque del registro de direcciones unicast IPv6 y lo inscribió en su registro de direcciones
+      de propósito especial, con el nombre Segment Routing SIDs. La fecha de asignación es abril de 2024.
+
+  - type: bullets
+    heading: "Cómo lo registró IANA"
+    bullets:
+      - "**Source** y **Destination:** sí"
+      - "**Forwardable:** sí, dentro de los dominios SR"
+      - "**Globally Reachable:** no"
+      - "**Reserved-by-Protocol:** no"
+    say: >
+      El registro dice mucho de cómo se debe usar el bloque. Una dirección de este rango puede ser origen y destino de un paquete,
+      y se puede reenviar. Pero está marcada explícitamente como no alcanzable globalmente.
+      En otras palabras: estos SID se reenvían dentro de los dominios SR,
+      y los paquetes con estas direcciones como destino no deben atravesar Internet.
+      Guarda esa idea, porque es la base del filtrado que vemos al final.
+
+  - type: code
+    heading: "Una jerarquía típica"
+    code: |
+      5f00::/16                          <- Bloque SRv6 de IANA
+        5f00:<dominio>::/32              <- Operador / dominio SR
+          5f00:<dominio>:<nodo>::/48     <- Locator del nodo
+            5f00:<dominio>:<nodo>:<func>::/64  <- SID (Locator + función)
+    say: >
+      Dentro del bloque, una jerarquía de asignación típica tiene cuatro niveles.
+      El barra dieciséis es el bloque de IANA. Cada operador o dominio SR toma un barra treinta y dos.
+      Dentro de él, cada nodo recibe su localizador, un barra cuarenta y ocho.
+      Y cada SID es un barra sesenta y cuatro: el localizador del nodo más la función.
+      Así, el plan de direcciones sigue la misma estructura que el propio SID.
+
+  - type: compare
+    heading: "¿5f00::/16 o tu propio GUA?"
+    chapter: "5f00::/16 o tu GUA"
+    columns:
+      - title: "Bloque de IANA"
+        items: ["Se reconoce al instante en capturas y ACL", "Fácil de filtrar", "No consume espacio GUA", "Hay que anunciarlo dentro del dominio SR"]
+      - title: "GUA del operador"
+        items: ["Ya es enrutable en tu red", "Sirve también para alcanzabilidad IPv6", "Consume espacio GUA", "Cuesta más distinguir SRv6 de IPv6"]
+    say: >
+      El RFC 9602 no obliga a usar este bloque. Puedes seguir usando tus propios prefijos globales, las direcciones G U A del operador,
+      como localizadores. Ambos enfoques son válidos.
+      El bloque de IANA se reconoce al instante en capturas y listas de acceso, es fácil de filtrar y no consume tu espacio global.
+      A cambio, no es enrutable globalmente y hay que anunciarlo explícitamente por IGP o BGP dentro del dominio SR.
+      Tu propio prefijo ya es enrutable en tu red, pero consume espacio y hace más difícil distinguir el tráfico SRv6 del IPv6 normal.
+
+  - type: bullets
+    heading: "¿Quién usa cada opción?"
+    bullets:
+      - "Primeros despliegues (China Mobile, SoftBank…): **GUA del operador**"
+      - "5f00::/16: muy útil en **redes nuevas**"
+      - "Y en **SRv6 entre dominios**, donde un prefijo común simplifica el filtrado"
+    say: >
+      En la práctica, la mayoría de los primeros despliegues de SRv6, como los de China Mobile y SoftBank,
+      usan prefijos globales del operador. El RFC 9602 ofrece una opción complementaria.
+      Es especialmente útil en redes nuevas y en SRv6 entre dominios,
+      donde un prefijo común y reconocible simplifica el filtrado.
+      Y elijas lo que elijas, hay una regla que no cambia.
+
+  - type: code
+    heading: "Filtrar en el borde: Cisco IOS XR"
+    chapter: "Filtrar en el borde"
+    code: |
+      prefix-set DENY-SRV6
+        5f00::/16 le 128
+      end-set
+
+      route-policy EBGP-IN
+        if destination in DENY-SRV6 then
+          drop
+        endif
+      end-policy
+    say: >
+      Esa regla es esta: ya sea que uses cinco F cero cero o tu propio prefijo,
+      debes evitar que los SID SRv6 se filtren fuera del dominio SR.
+      En Cisco IOS XR, la lección escrita lo hace con un prefix-set que cubre el bloque completo,
+      con cualquier largo de prefijo hasta barra ciento veintiocho,
+      y una route-policy de entrada para eBGP que descarta todo lo que coincida con ese conjunto.
+
+  - type: code
+    heading: "Juniper Junos"
+    code: |
+      policy-options {
+          prefix-list SRV6-SID-SPACE {
+              5f00::/16;
+          }
+          policy-statement REJECT-SRV6 {
+              term deny-srv6 {
+                  from prefix-list SRV6-SID-SPACE;
+                  then reject;
+              }
+          }
+      }
+    say: >
+      En Juniper Junos, la idea es la misma. Una prefix-list contiene el bloque de SID,
+      y una policy-statement tiene un término que rechaza todo lo que coincida con esa lista.
+
+  - type: code
+    heading: "Linux (ip6tables)"
+    code: |
+      ip6tables -A FORWARD -d 5f00::/16 -j DROP
+    say: >
+      Y en Linux, basta una regla de ip6tables en la cadena de reenvío,
+      que descarta todo paquete cuyo destino esté dentro de cinco F cero cero, barra dieciséis.
+      Si usas prefijos G U A del operador, aplica el mismo principio con el rango de tus localizadores.
+      La sección cinco punto uno del RFC 8754 trata este mismo tema.
+
+  - type: end
+    heading: "Lee la lección completa"
+    subtitle: "El registro de IANA, los filtros y la próxima lección: la cabecera SRH"
+    url: "srv6.md/es/estructura-del-sid"
+    chapter: "Siguientes pasos"
+    say: >
+      La lección escrita, con la tabla completa del registro de IANA y los ejemplos de filtrado,
+      está en srv6 punto md, en el enlace de abajo. Esta lección es parte del curso gratuito de srv6 punto md.
+      En la próxima seguimos un paquete a través de la cabecera S R H, paso a paso. Suscríbete y nos vemos ahí.

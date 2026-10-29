@@ -1,0 +1,224 @@
+id: e01
+lang: es
+title: "¿Qué es SRv6? Segment Routing sobre IPv6 explicado"
+playlist: "SRv6 en español"
+description: |
+  Qué es SRv6 y cómo funciona, explicado en español desde cero: el SID y sus tres partes, la dirección de destino como instrucción activa, la cabecera SRH, los roles de origen, tránsito y endpoint, el recorrido de un paquete salto a salto, la compresión uSID y lo que cuesta adoptar SRv6.
+
+  Esta es la lección 1 de la ruta SRv6 en español del curso gratuito de SRv6.md.
+links:
+  "Lección escrita: ¿Qué es SRv6?": https://srv6.md/es/que-es-srv6/
+  "Curso gratuito de SRv6": https://srv6.md/learn/
+  "Siguiente lección, estructura del SID": https://srv6.md/es/estructura-del-sid/
+hashtags: ["#SRv6", "#SegmentRouting", "#IPv6", "#Redes"]
+tags: [que es srv6, srv6, srv6 en español, segment routing, segment routing ipv6, ipv6, srh, sid srv6, mpls, redes de proveedores, ingeniería de redes]
+thumbnail:
+  kicker: "¿Qué es SRv6?"
+  text: "Sin LDP ni RSVP"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Español · Lección 1"
+    title: "¿Qué es SRv6?"
+    subtitle: "Segment Routing sobre IPv6, explicado desde cero"
+    chapter: "Introducción"
+    say: >
+      ¿Qué es SRv6? En esta lección vas a entender cómo funciona Segment Routing sobre IPv6,
+      desde la idea central hasta el recorrido de un paquete, salto a salto.
+      Al terminar, vas a poder explicar qué es un SID, qué hace cada router en el camino,
+      por qué SRv6 elimina protocolos como LDP y RSVP-TE, y qué cuesta adoptarlo. Empecemos.
+
+  - type: bullets
+    heading: "SRv6 en una frase"
+    chapter: "Qué es SRv6"
+    bullets:
+      - "La ruta y los servicios viajan **dentro del paquete IPv6**"
+      - "Cada instrucción es un **SID**: una dirección IPv6 de 128 bits"
+      - "Sin estado por flujo en el núcleo, **sin LDP ni RSVP-TE**"
+      - "Estándar del IETF: **RFC 8402, 8754 y 8986**"
+    say: >
+      SRv6 es una tecnología de red que dirige y programa el tráfico escribiendo,
+      dentro del propio paquete IPv6, una lista ordenada de instrucciones llamadas segmentos.
+      Cada instrucción es una dirección IPv6 de 128 bits, que se llama SID.
+      Un router ejecuta la instrucción que está en la dirección de destino, y luego toma su lugar la siguiente.
+      Así funcionan las rutas, las VPN y la protección rápida, sin estado por flujo en el núcleo,
+      sin LDP ni RSVP-TE y sin plano de datos MPLS.
+      Ojo: el v6 indica la versión de IP, no una sexta versión de Segment Routing.
+
+  - type: compare
+    heading: "Por qué existe SRv6"
+    chapter: "Por qué existe"
+    columns:
+      - title: "Red MPLS clásica"
+        items: ["IGP + LDP + RSVP-TE", "Estado de cada túnel en los routers intermedios", "FRR o LFA, con huecos de cobertura", "MPLS habilitado salto a salto"]
+      - title: "Red SRv6"
+        items: ["IGP + BGP, sin LDP ni RSVP-TE", "SR Policy: estado solo en la cabecera", "TI-LFA, con cobertura completa", "El tránsito solo necesita IPv6"]
+    say: >
+      ¿Por qué existe? Una red MPLS clásica usa cuatro o cinco protocolos para lo que en realidad es un solo trabajo:
+      llevar los paquetes por la ruta elegida y entregarlos en la VPN correcta.
+      Cada protocolo adicional suma estado, configuración y modos de falla.
+      RSVP-TE es el peor caso: una malla completa entre N routers de borde implica del orden de N al cuadrado túneles,
+      y cada router intermedio guarda estado de todos los túneles que lo atraviesan.
+      Además, MPLS se detiene en el borde de cada dominio, y los servicios se unen en cada frontera con VXLAN o GRE.
+
+  - type: bullets
+    heading: "Lo que gana la red"
+    bullets:
+      - "**Un solo plano de datos** de punta a punta"
+      - "**El servicio vive en la dirección**, sin etiqueta VPN aparte"
+      - "**Locators sumarizables** como cualquier prefijo IPv6"
+      - "**Una red programable**: SID encadenados como un programa"
+    say: >
+      Segment Routing resolvió el problema del estado con enrutamiento de origen:
+      el nodo de cabecera escribe la ruta en el paquete y el núcleo no guarda estado por ruta.
+      SRv6 da un paso más y expresa las instrucciones como direcciones IPv6.
+      Piensa en el GPS del auto con paradas intermedias. Tú marcas algunas paradas.
+      Entre una y otra, el GPS elige el mejor camino, y nadie en la carretera necesita conocer el itinerario completo.
+      En cada parada puede pasar algo, como recoger a un pasajero. En SRv6, eso es la función del SID.
+
+  - type: image
+    heading: "El paquete SRv6"
+    image: docs/assets/images/srv6-packet-format.png
+    chapter: "Las piezas"
+    say: >
+      Así se ve un paquete SRv6. Primero va la trama Ethernet. Después, una cabecera IPv6 exterior de cuarenta bytes:
+      su origen es el nodo de cabecera y su destino es el SID activo.
+      Luego, solo cuando la ruta necesita más SID de los que caben en la dirección de destino,
+      viene la Segment Routing Header, la S R H, con la lista de segmentos.
+      Y al final va el paquete del cliente, que puede ser IPv4, IPv6 o Ethernet, sin cambios.
+      Abajo ves cómo se arma un SID.
+
+  - type: bullets
+    heading: "Un SID, una instrucción"
+    bullets:
+      - "**Locator:** a dónde ir, un prefijo enrutable (5f00:0:5::/48)"
+      - "**Function:** qué hacer allí (0x100 = End.DT4, VRF Azul)"
+      - "**Arguments:** datos opcionales, casi siempre cero"
+      - "**5f00::/16** está reservado para SID (RFC 9602)"
+    say: >
+      Un segmento es una instrucción, y su identificador, el SID, tiene tres partes.
+      El localizador es un prefijo enrutable que lleva al nodo dueño del SID.
+      La función elige el comportamiento que ese nodo ejecuta.
+      Y los argumentos son datos opcionales.
+      El SID de este ejemplo significa: ve al nodo cinco, luego desencapsula y busca el paquete IPv4 interno en la V R F Azul.
+      Lo único fijo es el total de 128 bits. Y el bloque cinco F cero cero, barra dieciséis, está reservado para que los SID sean fáciles de reconocer y de filtrar.
+
+  - type: bullets
+    heading: "El SID activo va en el destino"
+    bullets:
+      - "Si el router no es dueño del SID, **lo enruta como IPv6**"
+      - "El dueño **ejecuta la función** y escribe el siguiente SID"
+      - "Una sola instrucción: **sin cabecera extra**"
+      - "Más de un SID: la **SRH** (Routing Type 4, RFC 8754)"
+    say: >
+      Esta es la idea clave de SRv6. La dirección de destino IPv6 siempre contiene el SID activo,
+      es decir, la próxima instrucción a ejecutar.
+      Los routers que no son dueños de ese SID enrutan el paquete como cualquier otro paquete IPv6.
+      El router dueño ejecuta la función, escribe el siguiente SID en la dirección de destino y vuelve a reenviar.
+      Por eso, un programa de una sola instrucción no necesita ninguna cabecera extra.
+      Cuando hacen falta más, los demás SID viajan en la S R H, cada uno con dieciséis bytes.
+
+  - type: bullets
+    heading: "Tres roles en la red"
+    bullets:
+      - "**Origen o cabecera:** elige los SID y encapsula (H.Encaps)"
+      - "**Tránsito:** búsqueda IPv6 normal, **no necesita SRv6**"
+      - "**Endpoint:** ejecuta el comportamiento del SID"
+    say: >
+      Cada nodo cumple uno de tres roles. El nodo de cabecera elige la lista de SID,
+      de BGP, de una SR Policy o de un controlador, y agrega la cabecera IPv6 exterior y la S R H.
+      El nodo de tránsito reenvía según la dirección de destino, con una búsqueda IPv6 normal, y ni siquiera revisa la S R H.
+      Y el endpoint es el nodo dueño del SID: ejecuta el comportamiento.
+      Como el tránsito solo necesita IPv6, SRv6 puede cruzar partes de la red que nunca oyeron hablar de él.
+      Es una gran diferencia con MPLS.
+
+  - type: bullets
+    heading: "Los SID como instrucciones"
+    bullets:
+      - "**End:** pasar al siguiente SID"
+      - "**End.X:** lo mismo, por una adyacencia concreta"
+      - "**End.DT4 / DT6 / DT46:** desencapsular y buscar en una VRF"
+      - "**End.DX2:** desencapsular una trama Ethernet (EVPN)"
+      - "**H.Encaps:** envolver el paquete en IPv6 + SRH"
+    say: >
+      RFC 8986 define lo que un SID puede hacer. Una lista de segmentos es, en la práctica, un pequeño programa.
+      End pasa al siguiente SID. End X hace lo mismo, pero por un enlace concreto, como en las reparaciones de T I L F A.
+      End D T cuatro y sus variantes desencapsulan y buscan el paquete en una tabla V R F: es la base de una VPN de capa tres.
+      End D X dos entrega tramas Ethernet para EVPN. Y H Encaps, en la cabecera, envuelve el paquete.
+      SRv6 no tiene un protocolo de señalización propio: IS-IS y OSPFv3 anuncian los localizadores, y BGP anuncia los SID de servicio.
+
+  - type: bullets
+    heading: "Un paquete, salto a salto"
+    chapter: "Recorrido de un paquete"
+    bullets:
+      - "**PE1:** H.Encaps, destino = SID End de P3, SL = 1"
+      - "**P2:** búsqueda IPv6 normal, ignora la SRH"
+      - "**P3:** SL 1 → 0, destino = SID End.DT4 de PE5"
+      - "**P4:** búsqueda IPv6 hacia el locator de PE5"
+      - "**PE5:** quita IPv6 + SRH, busca en la VRF Azul"
+    say: >
+      Veamos un ejemplo. Un paquete de VPN va hacia la V R F Azul, detrás de P E cinco,
+      y debe pasar por P tres, que está en el camino de menor latencia.
+      Paso uno: P E uno envuelve el paquete IPv4 en IPv6 más S R H,
+      con el SID de P tres en la dirección de destino y Segments Left en uno.
+      Paso dos: P dos no es dueño de ese SID, así que hace una búsqueda IPv6 normal.
+      Paso tres: en P tres, la dirección de destino es un SID local.
+      P tres reduce Segments Left a cero y copia el SID de servicio de P E cinco en la dirección de destino.
+      Paso cuatro: P cuatro, otra vez, solo reenvía IPv6.
+      Paso cinco: P E cinco reconoce su SID End D T cuatro, quita la cabecera exterior y la S R H,
+      y entrega el paquete IPv4 con la tabla de la V R F Azul.
+
+  - type: big
+    value: "80 B → 40 B"
+    caption: "El mismo ejemplo: SRv6 clásico vs uSID, sin SRH"
+    chapter: "uSID"
+    say: >
+      ¿Cuánto cuesta ese ejemplo? Cuarenta bytes de cabecera IPv6, más ocho de S R H, más dieciséis por cada uno de los dos SID:
+      ochenta bytes. Con H Encaps Red, que deja el primer SID solo en la dirección de destino, son sesenta y cuatro.
+      Y con micro-SID, las dos instrucciones caben en la dirección de destino: cuarenta bytes y sin S R H.
+      Micro-SID, estandarizado en RFC 9800, mete hasta seis instrucciones de dieciséis bits en una sola dirección.
+      Lo vemos a fondo en la lección cuatro.
+
+  - type: bullets
+    heading: "Lo que hay que tener en cuenta"
+    chapter: "Lo que cuesta"
+    bullets:
+      - "**MTU:** al menos 40 bytes más en el núcleo"
+      - "**Hardware:** profundidad de SID limitada; verifica uSID"
+      - "**Balanceo:** la cabecera completa el flow label"
+      - "**Seguridad:** el filtrado en el borde es obligatorio"
+      - "**Operación:** ping y traceroute funcionan sobre los SID"
+    say: >
+      SRv6 no es gratis. La encapsulación agrega al menos cuarenta bytes, así que los enlaces del núcleo necesitan una MTU mayor que el borde.
+      Cada ASIC puede agregar o procesar una cantidad limitada de SID. Micro-SID elimina en gran parte ese límite,
+      pero verifica que tus equipos lo soporten.
+      Los routers del núcleo calculan el hash sobre la cabecera exterior, así que el nodo de cabecera debe completar
+      el flow label a partir del paquete interno para que ECMP siga funcionando.
+      Igual que MPLS, SRv6 confía en su propio dominio, por lo que el filtrado en el borde es obligatorio.
+      Y aunque ping y traceroute funcionan sobre los SID, algunas herramientas de monitoreo todavía asumen MPLS.
+
+  - type: code
+    heading: "Pruébalo en Linux"
+    code: |
+      ip route add 10.2.2.0/24 vrf blue encap seg6 mode encap \
+        segs 5f00:0:3:1::,5f00:0:5:100:: dev eth0
+
+      # P3: instalar el SID End
+      ip -6 route add 5f00:0:3:1::/128 encap seg6local action End dev eth0
+    say: >
+      Puedes correr SRv6 en tu laptop, porque el kernel de Linux lo implementa de forma nativa.
+      El primer comando, en la cabecera, dirige el tráfico de la V R F blue por el SID End de P tres
+      y luego por el SID End D T cuatro de P E cinco.
+      Fíjate: iproute2 recibe los segmentos en el orden del recorrido y arma la S R H invertida por su cuenta.
+      El segundo comando instala el SID End en P tres.
+      El comando para P E cinco está en la lección escrita.
+
+  - type: end
+    heading: "Lee la lección completa"
+    subtitle: "Casos de uso, historia, preguntas frecuentes y la próxima lección: la estructura del SID"
+    url: "srv6.md/es/que-es-srv6"
+    chapter: "Siguientes pasos"
+    say: >
+      La lección completa está en srv6 punto md, en el enlace de abajo, con los casos de uso, quién usa SRv6,
+      su historia y las preguntas frecuentes. Esta lección es parte del curso gratuito de srv6 punto md.
+      En la próxima vemos en detalle la estructura del SID. Suscríbete y nos vemos ahí.

@@ -1,0 +1,235 @@
+id: e03
+lang: es
+title: "La cabecera SRH de SRv6, paso a paso"
+playlist: "SRv6 en español"
+description: |
+  La Segment Routing Header (SRH) de SRv6, explicada en español: el formato del RFC 8754 campo por campo, por qué la lista de segmentos va en orden inverso, el recorrido de un paquete nodo por nodo con Segments Left, los sabores PSP, USP y USD, los TLV, la encapsulación reducida H.Encaps.Red y los comandos para verificarlo en Linux, Cisco IOS XR y Juniper.
+
+  Esta es la lección 3 de la ruta SRv6 en español del curso gratuito de SRv6.md.
+links:
+  "Lección escrita: Cabecera SRH": https://srv6.md/es/cabecera-srh/
+  "Curso gratuito de SRv6": https://srv6.md/learn/
+  "Lección anterior, estructura del SID": https://srv6.md/es/estructura-del-sid/
+  "Siguiente lección, uSID": https://srv6.md/es/usid/
+hashtags: ["#SRv6", "#SRH", "#IPv6", "#Redes"]
+tags: [srh srv6, srv6, segment routing header, rfc 8754, segments left, srv6 psp, h.encaps.red, srv6 en español, ipv6, segment routing]
+thumbnail:
+  kicker: "Cabecera SRH"
+  text: "¿Orden inverso?"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Español · Lección 3"
+    title: "La cabecera SRH"
+    subtitle: "Recorrido de un paquete SRv6, paso a paso"
+    chapter: "Introducción"
+    say: >
+      La Segment Routing Header, o S R H, es donde SRv6 guarda la lista de instrucciones de un paquete.
+      En esta lección vas a recorrer un paquete nodo por nodo. Al terminar, vas a poder leer cada campo de la S R H,
+      predecir qué cambia en cada salto, distinguir los sabores P S P, U S P y U S D,
+      y verificar todo esto en Linux, Cisco y Juniper. Entenderlo a nivel de paquete es esencial
+      para diseñar y diagnosticar redes SRv6.
+
+  - type: code
+    heading: "Formato de la SRH (RFC 8754)"
+    chapter: "Formato"
+    code: |2
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |  Next Header  |  Hdr Ext Len  |  Routing Type | Segments Left |
+      |               |               |     (= 4)     |     (SL)      |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |  Last Entry   |    Flags      |              Tag              |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    say: >
+      La S R H es una cabecera de extensión de enrutamiento de IPv6, una Routing Header, con Routing Type igual a cuatro.
+      Está definida en el RFC 8754. Empieza con dos palabras de treinta y dos bits.
+      En la primera van Next Header, Hdr Ext Len, Routing Type y Segments Left.
+      En la segunda, Last Entry, Flags y Tag.
+      Después viene la lista de segmentos, con una dirección IPv6 de 128 bits por cada SID.
+      Y al final pueden ir objetos TLV opcionales: el TLV HMAC, que autentica criptográficamente la S R H,
+      el de Padding, que agrega relleno para la alineación, y el NSH Carrier, que transporta metadatos
+      para el encadenamiento de servicios.
+
+  - type: bullets
+    heading: "Los campos, uno por uno"
+    bullets:
+      - "**Next Header:** lo que sigue (41 = IPv6, 4 = IPv4)"
+      - "**Hdr Ext Len:** largo en unidades de 8 octetos, sin los primeros 8"
+      - "**Segments Left:** índice del segmento **activo**"
+      - "**Last Entry:** índice del último elemento (desde 0)"
+      - "**Flags** (ninguno definido) y **Tag** (marcado)"
+    say: >
+      Veamos los campos. Next Header indica el tipo de la cabecera siguiente:
+      por ejemplo, cuarenta y uno si adentro va un paquete IPv6, o cuatro si va IPv4.
+      Hdr Ext Len es el largo de la S R H en unidades de ocho octetos, sin contar los primeros ocho.
+      Segments Left es el campo más importante: es el índice que apunta al segmento activo.
+      Last Entry es el índice del último elemento de la lista, contando desde cero.
+      El RFC 8754 no define ninguna bandera en el campo Flags, y el Tag sirve para agrupar o marcar paquetes.
+
+  - type: bullets
+    heading: "¡Orden inverso!"
+    bullets:
+      - "**Segment List[0]** = el **último** SID de la ruta"
+      - "**Segment List[n]** = el **primero**"
+      - "Segments Left empieza en **n** y baja hasta **0**"
+      - "Destino IPv6 = **Segment List[Segments Left]**"
+    say: >
+      Y aquí está el detalle que más confunde. La lista de segmentos se codifica en orden inverso.
+      Segment List cero es el último SID que se procesa, y Segment List n es el primero.
+      Por eso Segments Left empieza en n y va bajando hasta cero.
+      Y hay una regla que se cumple siempre: la dirección IPv6 de destino es igual al SID activo,
+      es decir, al elemento de la lista que indica Segments Left.
+      Si recuerdas esa regla, puedes seguir cualquier paquete SRv6.
+
+  - type: code
+    heading: "El escenario"
+    chapter: "Recorrido del paquete"
+    code: |
+      Origen (A) → Nodo B → Nodo C → Destino (D)
+
+      SIDs SRv6:
+        B::100  = comportamiento End en el Nodo B
+        C::200  = comportamiento End.DT4 en el Nodo C (desencapsula a IPv4)
+    say: >
+      Sigamos un paquete. El origen A recibe un paquete IPv4 con destino diez punto cero punto cero punto dos,
+      y tiene que dirigirlo primero por el nodo B y luego por el nodo C.
+      Para eso hay dos SID. El SID B cien tiene el comportamiento End en el nodo B.
+      El SID C doscientos tiene el comportamiento End D T cuatro en el nodo C, que desencapsula hacia IPv4.
+      Para que sea fácil de leer, los SID se escriben de forma abreviada, con el nombre del nodo como prefijo.
+
+  - type: bullets
+    heading: "Paso 1: la entrada, en A"
+    bullets:
+      - "Destino: **B::100** ← SID activo"
+      - "Next Header: **43** (Routing)"
+      - "SRH: **Segments Left = 1**, Last Entry = 1"
+      - "Segment List[0] = **C::200**, [1] = **B::100**"
+      - "Adentro: el paquete IPv4 original, intacto"
+    say: >
+      Paso uno, la entrada. A envuelve el paquete IPv4 en una cabecera IPv6 exterior.
+      El origen es A, y el destino es B cien, el SID activo.
+      Next Header vale cuarenta y tres, que indica que lo que sigue es una Routing Header.
+      En la S R H, Segments Left vale uno, y Last Entry también vale uno.
+      Fíjate en el orden: Segment List cero es C doscientos, el último SID, y Segment List uno es B cien, el primero.
+      Adentro viaja el paquete IPv4 original, sin cambios.
+
+  - type: bullets
+    heading: "Paso 2: el Nodo B (End)"
+    bullets:
+      - "Destino = **B::100**: SID local con comportamiento **End**"
+      - "Segments Left: 1 → **0**"
+      - "Copia Segment List[0] al destino: **C::200**"
+      - "Reenvía según el nuevo destino"
+    say: >
+      Paso dos. El nodo B recibe el paquete. La dirección de destino coincide con su SID local B cien,
+      que tiene el comportamiento End. Entonces hace tres cosas.
+      Uno: decrementa Segments Left, de uno a cero.
+      Dos: copia Segment List cero en la dirección de destino, que ahora es C doscientos.
+      Y tres: reenvía el paquete según esa nueva dirección.
+      Observa lo que no cambia: el origen, Last Entry y la lista de segmentos siguen exactamente igual.
+
+  - type: bullets
+    heading: "Paso 3: el Nodo C (End.DT4)"
+    bullets:
+      - "Segments Left = 0: **es el último segmento**"
+      - "**Desencapsula:** quita el IPv6 exterior y la SRH"
+      - "**Busca** el destino IPv4 en la tabla de la VRF"
+      - "**Reenvía** el paquete IPv4 original"
+    say: >
+      Paso tres, la salida. El nodo C recibe el paquete, y la dirección de destino coincide con su SID local C doscientos,
+      con el comportamiento End D T cuatro. Segments Left vale cero, así que es el último segmento.
+      C desencapsula: quita la cabecera IPv6 exterior y la S R H.
+      Luego busca la dirección IPv4 interna en la tabla de la V R F indicada, y reenvía el paquete original.
+      Paso cuatro, la entrega: el paquete llega a diez punto cero punto cero punto dos como si SRv6 nunca hubiera intervenido.
+
+  - type: bullets
+    heading: "Sabores PSP, USP y USD"
+    chapter: "Sabores PSP, USP y USD"
+    bullets:
+      - "**PSP**, Penultimate Segment Pop: el penúltimo nodo quita la SRH"
+      - "**USP**, Ultimate Segment Pop: el último nodo quita la SRH"
+      - "**USD**, Ultimate Segment Decap: el último nodo quita el IPv6 exterior y la SRH"
+    say: >
+      Los endpoints SRv6 pueden soportar distintos sabores, en inglés flavors, que optimizan cómo se maneja la S R H.
+      Con P S P, Penultimate Segment Pop, el penúltimo nodo, el que ve Segments Left en uno,
+      quita la S R H antes de reenviar al último segmento. Así reduce la carga del nodo de salida.
+      Con U S P, Ultimate Segment Pop, el último nodo quita la S R H él mismo.
+      Y con U S D, Ultimate Segment Decap, el último nodo desencapsula toda la cabecera IPv6 exterior junto con la S R H.
+      De los tres, P S P es el más común, porque libera al PE de salida del trabajo de quitar la S R H.
+      Por eso la mayoría de las implementaciones modernas anuncian End con P S P,
+      o End con P S P, U S P y U S D a la vez.
+
+  - type: compare
+    heading: "Encapsulación reducida"
+    chapter: "Encapsulación reducida"
+    columns:
+      - title: "H.Encaps"
+        items: ["SRH [SID-3, SID-2, SID-1]", "SL = 2", "Destino = SID-1"]
+      - title: "H.Encaps.Red"
+        items: ["SRH [SID-3, SID-2]", "SL = 2", "SID-1 solo va en el destino", "16 bytes menos por paquete"]
+    say: >
+      Y una optimización importante: H Encaps Red, la encapsulación reducida del RFC 8986.
+      Toma una ruta de tres SID, guardada en orden inverso. Con H Encaps normal, la S R H lleva los tres,
+      y el primero, además, va en la dirección de destino.
+      Con H Encaps Red, el primer SID se omite de la lista, porque el nodo de entrada ya lo coloca en la dirección de destino.
+      Segments Left sigue valiendo dos. Así se ahorran dieciséis bytes por paquete,
+      y con una ruta de un solo SID, la S R H desaparece por completo.
+
+  - type: code
+    heading: "Verificación en Linux"
+    chapter: "Verificación"
+    code: |
+      # Capturar paquetes SRv6 (Routing Header, next header 43)
+      tcpdump -i eth0 -vv 'ip6 proto 43'
+
+      # Ver la tabla local de SIDs
+      ip -6 route show | grep seg6local
+
+      # Decodificar con tshark
+      tshark -i eth0 -O ipv6 -Y 'ipv6.routing.type == 4'
+    say: >
+      ¿Cómo lo verificas en una red real? En Linux, tcpdump captura los paquetes SRv6 filtrando por next header cuarenta y tres,
+      el de la Routing Header. Para ver la tabla local de SID, lista las rutas IPv6 y quédate con las que dicen seg6local.
+      Y tshark decodifica la cabecera IPv6 y te deja filtrar por Routing Type cuatro, es decir, solo los paquetes con S R H.
+
+  - type: code
+    heading: "Cisco IOS XR y Juniper"
+    code: |
+      show segment-routing srv6 sid
+      show cef ipv6 <SID> detail
+      debug segment-routing srv6 dataplane
+
+      show route table inet6.0 protocol srv6
+      show spring-traffic-engineering srv6-sid
+    say: >
+      En Cisco IOS XR, las tres primeras líneas muestran los SID SRv6 locales, el detalle de reenvío CEF de un SID concreto
+      y la depuración del plano de datos SRv6. Las dos últimas son de Juniper:
+      la primera muestra las rutas SRv6 de la tabla inet6 punto cero, y la segunda, los SID SRv6.
+
+  - type: bullets
+    heading: "Lo que tienes que recordar"
+    bullets:
+      - "SRH = Routing Header de IPv6 con **Routing Type 4**"
+      - "La lista va en **orden inverso**"
+      - "Destino IPv6 = **Segment List[Segments Left]**"
+      - "Cada endpoint **baja Segments Left** y copia el siguiente SID"
+      - "**PSP** y **H.Encaps.Red** achican o eliminan la SRH"
+    say: >
+      Antes de terminar, repasemos. La S R H es una Routing Header de IPv6 con Routing Type cuatro.
+      La lista de segmentos va en orden inverso, y la dirección de destino siempre es el elemento que indica Segments Left.
+      Cada endpoint baja Segments Left en uno y copia el siguiente SID en la dirección de destino,
+      mientras que los demás routers solo reenvían IPv6.
+      Y dos herramientas reducen el costo de la cabecera: P S P, que la quita antes del último salto,
+      y H Encaps Red, que deja el primer SID solo en la dirección de destino.
+
+  - type: end
+    heading: "Lee la lección completa"
+    subtitle: "El formato completo, el diagrama del recorrido y la próxima lección: uSID"
+    url: "srv6.md/es/cabecera-srh"
+    chapter: "Siguientes pasos"
+    say: >
+      La lección escrita, con el formato completo de la S R H y el diagrama de secuencia de este recorrido,
+      está en srv6 punto md, en el enlace de abajo. Esta lección es parte del curso gratuito de srv6 punto md.
+      En la próxima vemos micro-SID: cómo caben seis saltos en una sola dirección. Suscríbete y nos vemos ahí.

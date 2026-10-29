@@ -86,7 +86,7 @@ scenes:
       The bigger difference is the control plane. Classic MPLS needs two or three protocols on top of the IGP,
       and RSVP-TE keeps state for every tunnel on every router along the path.
       Both SR-MPLS and SRv6 drop all of that. The IGP advertises the segments, BGP signals the services,
-      and the path lives only in the packet. Fast reroute comes from TI-LFA, with full topology coverage.
+      and the path lives only in the packet. Fast reroute comes from T I L F A, with full topology coverage.
 
   - type: record
     url: https://srv6.md/topics/ti-lfa/
@@ -94,7 +94,7 @@ scenes:
     click_at: 4
     seconds: 16
     say: >
-      Here's TI-LFA in action. Packets flow from S to D through N. Now we fail the link from S to N.
+      Here's T I L F A in action. Packets flow from S to D through N. Now we fail the link from S to N.
       S immediately repairs onto the post-convergence path, through A, B and C, by adding a short
       repair segment list. No signaling, no waiting for the IGP to converge.
 

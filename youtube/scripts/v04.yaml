@@ -1,0 +1,189 @@
+id: v04
+lang: en
+title: "SRv6 on Arista EOS"
+playlist: "Track 6: SRv6 Configuration by Vendor"
+description: |
+  Arista SRv6 on EOS: the uSID-first design (F3216), the feature timeline from uN in 4.34.2F to IS-IS, Flex-Algo and counters in 4.36, what show srv6 capabilities reports, supported platforms, the router srv6 configuration model, the OAM gotcha, and what is documented versus only interop-tested.
+
+  This is lesson 4 of Track 6 (SRv6 Configuration by Vendor) in the free SRv6.md course.
+links:
+  "Written lesson (EOS SRv6)": https://srv6.md/implementations/arista-eos/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 on Nokia SR OS": https://srv6.md/implementations/nokia-sros/
+  "Next lesson, SRv6 with FRRouting": https://srv6.md/implementations/frrouting/
+hashtags: ["#SRv6", "#Arista", "#EOS", "#NetworkEngineering"]
+tags: [arista srv6, srv6, arista eos, eos srv6, srv6 usid, f3216, isis srv6, flex-algo, arista 7280r4, tomahawk 5, mrc srv6, segment routing]
+thumbnail:
+  kicker: "Arista EOS"
+  text: "uSID-first"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 6 · Lesson 4"
+    title: "SRv6 on Arista EOS"
+    subtitle: "uSID-first: uN, uA, IS-IS and platforms"
+    chapter: "Intro"
+    say: >
+      Arista E O S builds its SRv6 support around micro-SIDs first. In this lesson you'll learn what E O S supports and since which release,
+      how to read its capabilities output, which platforms run SRv6, how the configuration is organized,
+      and one O A M gotcha. You'll also learn to separate what Arista documents publicly from what has only been seen
+      in interoperability tests. That distinction matters a lot on this platform, so keep it in mind as we go.
+
+  - type: big
+    value: "F3216"
+    caption: "EOS is uSID-first: 32-bit block, 16-bit uSIDs"
+    chapter: "uSID-first design"
+    say: >
+      E O S implements SRv6 with a micro-SID-first design. The forwarding model is built around micro-SIDs in the F3216 format:
+      a 32-bit block, followed by 16-bit micro-SIDs. Arista started with the micro-N node SID,
+      then added static micro-A adjacency SIDs, I S I S integration, counters and hitless upgrade support,
+      over the 4.34 to 4.36 release trains. F3216 is the only micro-SID format E O S lists.
+      If your network uses another format, or full-length SIDs, check interoperability before you plan anything.
+
+  - type: bullets
+    heading: "Why it matters for AI fabrics"
+    bullets:
+      - "**MRC:** OpenAI's AI-cluster transport"
+      - "SRv6 implemented with Arista in EOS"
+      - "On **Broadcom Tomahawk 5** switches"
+      - "Runs in **large-scale production**"
+    say: >
+      Much of the interest in SRv6 on E O S comes from AI networking. The authors of MRC, OpenAI's AI-cluster transport,
+      collaborated with Arista to implement SRv6 in E O S on Broadcom Tomahawk 5 switches, and MRC runs in large-scale production.
+      MRC uses static, source-routed micro-SID paths.
+      Track 5 of this course covers MRC in detail. Here, we stay with what E O S itself supports.
+
+  - type: bullets
+    heading: "Feature timeline"
+    chapter: "Releases"
+    bullets:
+      - "**4.34.2F:** uN, End with uSID"
+      - "**4.35.2F:** static uA adjacency segments"
+      - "**4.36.1F:** IS-IS SRv6 + Flex-Algo (7280R4, 7800R4)"
+      - "**4.36.1F:** Smart System Upgrade with uN"
+      - "**4.36.2F:** per-endpoint counters"
+    say: >
+      Here's the timeline. E O S 4.34.2 F added micro-N, the End behavior with micro-SIDs.
+      4.35.2 F added static micro-A adjacency segments. 4.36.1 F brought SRv6 in I S I S, with micro-SID compression and Flex-Algo,
+      on the seventy-two eighty R4 and seventy-eight hundred R4 series only, plus Smart System Upgrade, or S S U, with micro-N.
+      S S U is the hitless upgrade support, so switches forwarding micro-N traffic can be upgraded with it.
+      And 4.36.2 F added per-endpoint counters: packets and bytes for each endpoint operation, such as micro-N.
+      These releases come from Arista's public Transfer of Information listings. The full documents need an Arista login,
+      so check them, and the release notes for your exact version, before you deploy.
+
+  - type: compare
+    heading: "show srv6 capabilities (4.36.2F manual)"
+    chapter: "Capabilities"
+    columns:
+      - title: "Supported"
+        items: ["End (uN), End.DT4, End.DT6", "PSP, USD, Next-CSID", "H.Encaps · F3216"]
+      - title: "Not supported"
+        items: ["End.X, End.DX4, End.DX6", "USP", "H.Encaps.Red, H.Insert(.Red)"]
+    say: >
+      The user manual includes an example of show srv6 capabilities. It reports End, which is micro-N when used with micro-SIDs,
+      plus End D T 4 and End D T 6. The flavors are P S P, U S D and next C-SID. At the headend, it's H Encaps, and the only format is F3216.
+      Not supported: End X, End D X 4 and End D X 6, the U S P flavor, and the reduced and insert headend behaviors.
+      Note that End D T 4 and D T 6 are listed, but the manual documents no configuration for them.
+
+  - type: bullets
+    heading: "Read the capabilities with care"
+    bullets:
+      - "Static **uA** exists since 4.35.2F, despite \"End.X: no\""
+      - "The table is a **snapshot** of the manual's example"
+      - "**SRv6 TI-LFA:** unverified; manual covers SR-MPLS only"
+    say: >
+      Two caveats. First, static micro-A, an End X type adjacency micro-SID, arrived in 4.35.2 F,
+      and it's configured per interface in the manual's I S I S chapter, even though the capabilities example still prints End X as unsupported.
+      So treat that table as a snapshot of the manual's example, not as a complete feature list.
+      Second, T I L F A. The I S I S SRv6 Transfer of Information document is tagged T I L F A, but its body needs a login,
+      and the manual documents T I L F A for SR-MPLS only. So SRv6 T I L F A on E O S is unverified. Ask Arista before you count on it.
+
+  - type: bullets
+    heading: "Supported platforms"
+    chapter: "Platforms"
+    bullets:
+      - "**7060X6** (Tomahawk 5 class)"
+      - "**7280R3 / R4** and **7500R3**"
+      - "**7800R3 / R4**, including 7700R4 models"
+      - "R3/R4 (Jericho): needs an **SRv6 uSID TCAM profile**"
+    say: >
+      The user manual lists four platform families: the seventy-sixty X6, the seventy-two eighty R3 and R4,
+      the seventy-five hundred R3, and the seventy-eight hundred R3 and R4, including some seventy-seven hundred R4 models.
+      On the R3 and R4 platforms, which are Jericho-family, SRv6 needs a TCAM profile with the micro-SID F3216 feature.
+      The seventy-sixty X6 isn't listed for that requirement.
+      Remember that I S I S SRv6 and Flex-Algo are documented for the seventy-two eighty R4 and seventy-eight hundred R4 series only.
+
+  - type: code
+    heading: "The EOS command map (from the user manual)"
+    chapter: "Configuration model"
+    code: |
+      router srv6
+      vrf default
+      micro-segment domain
+      prefix micro-segment domain <d> end usid <v>
+      igp algorithm flex-algo <name>
+      adjacency-segment srv6 locator <loc> usid <value> behavior end.x
+      show srv6 capabilities
+    say: >
+      E O S organizes SRv6 under router srv6, and then vrf default. Inside, a micro-segment domain defines the micro-SID block,
+      the micro-SID length and the global ID block range. Under a locator, the prefix line allocates the node's micro-N
+      from that domain. Igp algorithm flex-algo ties a locator to a Flex-Algo.
+      And under an I S I S interface, the adjacency-segment line configures a static micro-A.
+      This is a map of the commands, not a complete configuration. The written lesson doesn't reproduce a full E O S config,
+      because the exact syntax varies between releases. Use the user manual's examples for your version.
+
+  - type: bullets
+    heading: "Verification and OAM"
+    chapter: "Verification"
+    bullets:
+      - "**show srv6** capabilities, domain, locator, route"
+      - "**ping srv6 sid** and **traceroute srv6 sid**"
+      - "Gotcha: put the target **uN prefix on a loopback**"
+    say: >
+      To verify, E O S has show srv6 commands for capabilities, the domain, locators and routes.
+      For O A M, there's ping srv6 sid, which can follow a segment list, and traceroute srv6 sid.
+      And here's the gotcha the manual calls out: for ping or traceroute to a micro-N to work,
+      the target micro-N prefix, for example the slash forty-eight, must be configured on a loopback.
+      If your SRv6 ping fails and the forwarding looks fine, check that first.
+
+  - type: compare
+    heading: "Documented vs interop-tested"
+    chapter: "Where it fits"
+    columns:
+      - title: "In Arista's public docs"
+        items: ["uN, static uA, F3216", "IS-IS SRv6 and Flex-Algo", "SRv6 ping and traceroute"]
+      - title: "Seen only at EANTC"
+        items: ["L3VPN PE (7280R3, 7280R4)", "EVPN RT5 PE", "End.DT46 (7280R4, 2026)"]
+    say: >
+      Now the distinction I promised. Arista's public documentation covers micro-N, static micro-A, F3216,
+      I S I S SRv6 with Flex-Algo, and SRv6 O A M.
+      Layer three VPN is not in Arista's public documentation. But in the EANTC multi-vendor interoperability tests,
+      a seventy-two eighty R3 in 2025 and a seventy-two eighty R4 in 2026 acted as SRv6 layer three VPN and EVPN route type 5 PEs,
+      and End D T 46 was interop-tested in 2026. So it exists in some form. Ask Arista which E O S release supports it
+      before you plan a design around it.
+
+  - type: bullets
+    heading: "Where EOS SRv6 fits today"
+    bullets:
+      - "**AI back-end fabrics:** static uSID paths on Tomahawk 5"
+      - "**DC/WAN edge and spine:** Jericho 7280, 7500, 7800"
+      - "**L3VPN / EVPN RT5 PE:** confirm the release with Arista"
+    say: >
+      So where does E O S SRv6 fit today? In AI back-end fabrics, with static, source-routed micro-SID paths
+      on the Tomahawk 5 class seventy-sixty X6, which is what MRC uses.
+      At the data center and WAN edge and in the spine, on the Jericho-based seventy-two eighty, seventy-five hundred
+      and seventy-eight hundred, for micro-SID forwarding.
+      And as a layer three VPN or EVPN route type 5 PE, only after Arista confirms the release.
+      Whatever the role, check each feature against your exact E O S release.
+
+  - type: end
+    heading: "Read the written lesson"
+    subtitle: "Timeline, capabilities, platforms and sources"
+    url: "srv6.md/implementations/arista-eos"
+    chapter: "Next steps"
+    say: >
+      The written lesson on srv6 dot md has the feature timeline with its sources, the full platform list,
+      and links to Arista's user manual chapters on SRv6 and I S I S, the Transfer of Information documents,
+      and the EANTC test report. The SRv6 support matrix compares E O S with the other platforms feature by feature.
+      Next, we leave the vendors behind and run SRv6 with open-source FRRouting. This lesson is part of the free SRv6 dot md course.
+      Subscribe, and I'll see you in the next lesson.

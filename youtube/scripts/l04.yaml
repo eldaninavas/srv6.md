@@ -1,0 +1,187 @@
+id: l04
+lang: en
+title: "Reading SRv6 in Wireshark: SRH Filters and Captures"
+playlist: "Track 4: Hands-on Labs"
+description: |
+  How to read SRv6 in Wireshark with a free library of annotated pcapng captures from a real Linux lab. We cover the SRH display filters that matter, how to catch SRv6 packets that have no SRH at all, what Wireshark 4.4 does not decode, and three captures frame by frame: H.Encaps with Segments Left counting down, the reduced SRH of H.Encaps.Red, and the uSID container shift.
+
+  This is lesson 4 of Track 4 (Hands-on Labs) in the free SRv6.md course.
+links:
+  "Written lesson and pcap downloads": https://srv6.md/labs/pcaps/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 on Linux": https://srv6.md/implementations/linux-kernel/
+  "Next lesson, SRv6 SID decoder": https://srv6.md/tools/sid-decoder/
+hashtags: ["#SRv6", "#Wireshark", "#PacketCapture", "#NetworkEngineering"]
+tags: [srv6 wireshark, wireshark, srv6 pcap, srh, segment routing header, wireshark display filter, tcpdump, srv6, packet capture, usid]
+thumbnail:
+  kicker: "SRv6 Wireshark"
+  text: "type == 4"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 4 · Lesson 4"
+    title: "Reading SRv6 in Wireshark"
+    subtitle: "SRH filters and nine annotated captures"
+    chapter: "Intro"
+    say: >
+      You've built SRv6 labs. Now let's read the packets properly.
+      In this lesson you'll learn the Wireshark display filters that find SRv6 traffic,
+      including the packets that carry no Segment Routing Header at all,
+      and you'll walk through real captures frame by frame,
+      so you can follow Segments Left, the segment list and a micro-SID shift on your own screen.
+
+  - type: bullets
+    heading: "The capture library"
+    bullets:
+      - "**Nine** pcapng files, **1–6 KB** each"
+      - "**Eight live** from a Linux 6.12 lab, **one synthetic**"
+      - "**Every frame** carries a comment"
+      - "Documentation and **5f00::/16** addressing, MIT license"
+    say: >
+      Everything here comes from the SRv6 packet capture library on srv6 dot md.
+      Nine small captures you can open in Wireshark.
+      Eight were captured live from a Linux 6.12 lab, built from network namespaces and the kernel's seg six data plane.
+      One, the O-flag capture, is synthetic, crafted with Scapy, and it says so in its file name.
+      Every frame carries a comment explaining what the node in front of it just did,
+      so the files explain themselves even without the page.
+      They use only documentation and SRv6 addressing, and they're free to reuse under the site's MIT license.
+
+  - type: record
+    url: https://srv6.md/labs/pcaps/
+    index: 0
+    seconds: 12
+    chapter: "The lab"
+    say: >
+      This is the lab behind the captures. Two hosts, H1 and H2. R1 and R4 are P Es,
+      each with a customer VRF called blue. R2 and R3 are P routers, joined by two parallel links, A and B.
+      Router N's locator is five F zero zero, colon zero, colon N, slash forty-eight, from the SRv6 SID block.
+      Static routes stand in for IS-IS, so every forwarding decision you see comes from the SRv6 data plane,
+      not from a control protocol.
+      One more tip: each capture merges several interfaces, so one ping appears once per link it crossed.
+      Add frame dot interface name as a column to see where each frame was seen.
+
+  - type: bullets
+    heading: "SRH display filters"
+    chapter: "Display filters"
+    bullets:
+      - "**ipv6.routing.type == 4**: any packet with an SRH"
+      - "**ipv6.routing.segleft == 0**: on its last segment"
+      - "**ipv6.routing.srh.addr == <SID>**: SID anywhere in the list"
+      - "**ipv6.routing.nxt == 4 / 41 / 143**: IPv4, IPv6, Ethernet"
+    say: >
+      Wireshark dissects the S R H as IPv6 routing header type four. So the first filter to learn is
+      ipv6 dot routing dot type equals four: every packet with an S R H.
+      Add segleft equals zero to find packets on their last segment, where the next node decapsulates or delivers.
+      ipv6 dot routing dot s r h dot addr finds a SID anywhere in the segment list, not just in the destination address.
+      And routing dot n x t tells you what the S R H carries: four for IPv4, forty-one for IPv6, one forty-three for Ethernet.
+      Every filter on the page was checked against these captures, in Wireshark and tshark 4.x.
+
+  - type: bullets
+    heading: "SRv6 without an SRH"
+    bullets:
+      - "Single-SID **H.Encaps.Red** and one-container **uSID**: no SRH"
+      - "**ipv6.dst == 5f00::/16**: to a SID, SRH or not"
+      - "**ipv6.nxt == 4 || ipv6.nxt == 41**: payload right after IPv6"
+      - "**ipv6.routing.segleft > ipv6.routing.srh.last_entry**"
+    say: >
+      Here's the trap. Plenty of SRv6 packets have no S R H at all.
+      Reduced encapsulation with a single SID, and micro-SID containers that fit in one address,
+      carry the whole segment list in the destination address.
+      Routing type four misses all of them.
+      So also filter on the destination: ipv6 dot d s t equals your SID block, here five F zero zero, slash sixteen.
+      Combine it with next header four or forty-one to find encapsulation with no S R H.
+      And to find a reduced S R H, compare segleft with last entry:
+      if Segments Left is larger than Last Entry, the active SID lives only in the destination address.
+
+  - type: bullets
+    heading: "What Wireshark 4.4 won't decode"
+    bullets:
+      - "SRH **Flags** shown as one byte, bits not named"
+      - "SRH **TLVs** (such as HMAC) not dissected"
+      - "**uSID containers** shown as plain IPv6 addresses"
+    say: >
+      Know the dissector's limits, too. Wireshark 4.4, the version used to check these files,
+      shows the S R H flags as a single byte, without naming the bits.
+      It doesn't dissect S R H T L Vs: the H MAC T L V shows up only as extra length, and as raw bytes after the last address.
+      And it has no notion of micro-SID containers. A micro-SID destination is just an IPv6 address to Wireshark.
+      For that one, paste the address into the SID decoder on srv6 dot md, which is the next lesson.
+
+  - type: code
+    heading: "H.Encaps with a three-SID SRH"
+    chapter: "Walkthrough"
+    code: |
+      ip -n r2 -6 route add 5f00:0:2:1::/128 encap seg6local action End dev r2-r1
+      ip -n r3 -6 route add 5f00:0:3:1::/128 encap seg6local action End dev r3-r2
+      ip -n r4 -6 route add 5f00:0:4:d4::/128 encap seg6local action End.DT4 vrftable 100 dev blue
+      ip -n r1 route add 198.51.100.0/24 vrf blue encap seg6 mode encap \
+          segs 5f00:0:2:1::,5f00:0:3:1::,5f00:0:4:d4:: dev r1-r2
+      ip netns exec h1 ping -c 1 198.51.100.10
+    say: >
+      Let's walk the classic SRv6 L3VPN packet. R2 and R3 get End SIDs, R4 gets End D T 4 into VRF blue,
+      and R1 encapsulates traffic for H2's subnet with three SIDs.
+      Frame two, entering R2: the segment list is stored in reverse, entry zero is the last SID,
+      and Segments Left is two, pointing at entry two, R2's End SID, which is also the destination address.
+      Frame three, leaving R2: R2 ran End, Segments Left went from two to one,
+      and the destination became R3's SID. The rest of the S R H is untouched.
+      Frame four: Segments Left zero, destination R4's End D T 4 SID.
+      R4 removes the outer header and the S R H. The encapsulation cost ninety-six bytes:
+      forty for IPv6, eight for the S R H, and sixteen for each of three segments.
+      Try it: filter on routing type four, add segleft as a column, and watch it go two, one, zero.
+
+  - type: bullets
+    heading: "H.Encaps.Red: reduced SRH, no SRH"
+    bullets:
+      - "Three SIDs, **two** in the SRH: **SL 2 > Last Entry 1**"
+      - "Valid only because the active SID is **in the DA**"
+      - "One SID: **no SRH**, outer next header **41**"
+      - "**158-byte** frame vs **198** with the reduced SRH"
+    say: >
+      The second capture shows H Encaps Red, with End D T 6 at the far end.
+      With three SIDs, only two are in the S R H. Segments Left is two but Last Entry is one.
+      That looks broken, and it's valid only because the SID that Segments Left points at lives in the destination address.
+      The reply uses a single SID, and there's no S R H at all:
+      the outer IPv6 next header is forty-one directly, and R2 and R3 just route on the destination.
+      The single-SID frame is one hundred fifty-eight bytes, against one hundred ninety-eight for the reduced S R H.
+      That's forty bytes: the S R H header plus two SIDs.
+
+  - type: record
+    url: https://srv6.md/labs/pcaps/
+    index: 6
+    seconds: 12
+    say: >
+      The micro-SID capture is the one Wireshark can't explain on its own. Here's the path, with the destination address on each link.
+      Flow one fits in one container: block five F zero zero, colon zero, then micro N two, three and four,
+      and micro D T 46, e zero zero zero. Four SIDs in one address, and no S R H.
+      R2 matches its slash forty-eight, removes its own sixteen-bit micro-SID and shifts the rest left.
+      R3 shifts again. R4's micro D T 46 decapsulates.
+      Filter on the SID block with ipv6 dot d s t as a column, and you can watch the shift happen.
+      Flow two splits the path into two containers, to show what happens when the first one runs out:
+      the last micro N of the container acts as a plain End and advances the S R H.
+
+  - type: code
+    heading: "The same matches in tcpdump"
+    chapter: "tcpdump"
+    code: |
+      tcpdump -ni eth0 'ip6[6] == 43 and ip6[42] == 4'          # SRH present (routing type 4)
+      tcpdump -ni eth0 'ip6[6] == 43 and ip6[42] == 4 and ip6[43] == 0'   # Segments Left = 0
+      tcpdump -ni eth0 'dst net 5f00::/16'                      # to an SRv6 SID, SRH or not
+      tcpdump -ni eth0 'ip6[6] == 4 or ip6[6] == 41 or ip6[6] == 143'    # encapsulation without an SRH
+    say: >
+      On a router or a Linux host you'll often capture with T C P dump first.
+      The same matches work there, when the S R H directly follows the IPv6 header.
+      Byte six is the next header, so forty-three means a routing header.
+      The IPv6 header is forty bytes long, so byte forty-two is the routing type, and four means S R H.
+      Byte forty-three is Segments Left. Dst net with your SID block catches SRv6 with or without an S R H,
+      and next header four, forty-one or one forty-three catches encapsulation with no S R H.
+      Write the capture to a file, and open it in Wireshark with the filters from this lesson.
+
+  - type: end
+    heading: "Download the captures"
+    subtitle: "Nine pcaps, every filter and the script that rebuilds them"
+    url: "srv6.md/labs/pcaps"
+    chapter: "Next steps"
+    say: >
+      All nine captures, with the topology, the commands and a walkthrough for each one,
+      including End X, End D X 2, H MAC and traceroute, are on srv6 dot md, linked below.
+      Next, you'll decode any SID or micro-SID in your browser, including the ones Wireshark shows as plain addresses.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

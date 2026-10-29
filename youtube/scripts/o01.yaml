@@ -1,0 +1,190 @@
+id: o01
+lang: en
+title: "SRv6 Troubleshooting: Ping, Traceroute and OAM"
+playlist: "Track 3: Operating SRv6"
+description: |
+  SRv6 troubleshooting, from the first ping to the hardware FIB. How SRv6 ping and traceroute behave, what In-situ OAM (IOAM, RFC 9326) and Path Tracing add, and a step-by-step playbook for the failures you will actually meet: VPN traffic that never arrives, SRH filtering, MTU black holes and SIDs that never reach the hardware.
+
+  This is lesson 1 of Track 3 (Operating SRv6) in the free SRv6.md course.
+links:
+  "Written lesson, OAM and troubleshooting": https://srv6.md/topics/oam-troubleshooting/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, EVPN over SRv6 and multihoming": https://srv6.md/topics/evpn-multihoming/
+  "Next lesson, SRv6 performance measurement": https://srv6.md/topics/srpm/
+hashtags: ["#SRv6", "#Troubleshooting", "#OAM", "#NetworkEngineering"]
+tags: [srv6 troubleshooting, srv6, srv6 ping, srv6 traceroute, oam, ioam, rfc 9326, path tracing, mtu, segment routing]
+thumbnail:
+  kicker: "SRv6 Troubleshooting"
+  text: "Why no reply?"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 3 · Lesson 1"
+    title: "SRv6 Troubleshooting"
+    subtitle: "Ping, traceroute and OAM"
+    chapter: "Intro"
+    say: >
+      Sooner or later, a VPN stops working and someone asks you why. In this lesson you'll learn how ping and traceroute behave
+      in an SRv6 network, what In-situ O A M and Path Tracing add, and a step-by-step playbook for the failures
+      you're most likely to meet: missing SIDs, filtered headers, M T U black holes, and SIDs that never make it into hardware.
+
+  - type: bullets
+    heading: "SRv6 ping"
+    chapter: "Ping"
+    bullets:
+      - "ICMPv6 Echo Request **with an SRH**"
+      - "Follows the segment list, **like data traffic**"
+      - "The **target SID's node** sends the reply"
+      - "The reply returns by **normal IPv6 routing**"
+    say: >
+      SRv6 ping is ordinary I C M P v6 echo, with a twist. The source can add an S R H with the path you want to test,
+      so the request follows the segment list exactly like data traffic would. Each endpoint on the way decrements Segments Left
+      and updates the destination. The node that owns the target SID answers.
+      But notice: the reply comes back by normal IPv6 routing, not along the reverse SRv6 path. A successful ping proves the forward path,
+      and only the shortest path back.
+
+  - type: code
+    heading: "Ping through a path on Linux"
+    code: |
+      # Ping an SRv6 SID directly
+      ping6 fc00:0:2::100
+
+      # Ping with SRv6 encapsulation through specific path
+      # (requires custom route or scapy)
+      ip route add fc00:0:2::100/128 encap seg6 mode encap \
+        segs fc00:0:2::1,fc00:0:3::100 dev eth0
+      ping6 fc00:0:2::100
+    say: >
+      On Linux, you can ping a SID directly, like any IPv6 address. To ping through a specific path, add a route for the target
+      that encapsulates with seg6 and lists the segments, then ping again. Now the echo request travels inside an SRv6 header,
+      through the segments you chose. On routers, the vendor commands do the same: ping a SID, sourced from your own locator.
+
+  - type: bullets
+    heading: "SRv6 traceroute"
+    chapter: "Traceroute"
+    bullets:
+      - "Hop Limit 1, 2, 3… each hop returns **Time Exceeded**"
+      - "**Transit nodes** answer based on the IPv6 DA"
+      - "**SRv6 endpoints** process the SID and update the DA"
+      - "Shows the **underlay hops** between SRv6 nodes"
+    say: >
+      Traceroute works the familiar way: send probes with a hop limit of one, then two, then three, and each hop answers with Time Exceeded,
+      until the target SID responds. The difference is what you see. Transit routers that know nothing about SRv6 answer based on the outer destination address.
+      SRv6 endpoint nodes process their SID and rewrite the destination before forwarding.
+      So an SRv6 traceroute shows the real forwarding path, including the plain IPv6 hops between the segment endpoints.
+
+  - type: bullets
+    heading: "The ECMP trap"
+    bullets:
+      - "Each traceroute probe can **hash differently**"
+      - "The result can be a **stitched path** no packet followed"
+      - "**Path Tracing:** one probe records the real path"
+      - "One round trip, **low overhead**, ECMP-accurate"
+    say: >
+      Traceroute has one weakness that matters in modern networks. With E C M P, each probe has a different hop limit,
+      and can hash onto a different path. The reported path can be a stitched path that no real packet ever followed.
+      Path Tracing, an SRv6-native mechanism still in draft, fixes that with a single probe that follows the same path as data traffic
+      and records each hop as it goes. One round trip instead of one per hop, with very little header overhead.
+
+  - type: bullets
+    heading: "In-situ OAM (RFC 9326)"
+    chapter: "IOAM"
+    bullets:
+      - "Telemetry **inside live packets**, not separate probes"
+      - "**Pre-allocated** and **incremental trace:** per-hop data"
+      - "**Proof of Transit:** cryptographic proof of the path"
+      - "**Edge-to-edge:** written at ingress, read at egress"
+    say: >
+      In-situ O A M, defined in RFC 9326, instruments the real traffic instead of sending probes. Every I O A M capable node can read or write
+      telemetry fields in the packet, and the egress exports the result to a collector.
+      There are four option types. Two traces collect per-hop data, either in slots allocated up front, or appended hop by hop.
+      Proof of Transit gives a cryptographic proof that the packet crossed a given set of nodes.
+      Edge-to-edge data is written by the ingress and read only by the egress, for delay, loss and reordering.
+
+  - type: big
+    value: "Not in the SRH"
+    caption: "IOAM rides in IPv6 Hop-by-Hop or Destination Options headers, separate from the SRH"
+    say: >
+      A common misconception: I O A M data in SRv6 is not a T L V inside the S R H. It uses standard IPv6 extension headers.
+      Trace and Proof of Transit go in the Hop-by-Hop Options header, because every hop has to process them,
+      and IPv6 requires that header right after the main header, before the S R H.
+      Edge-to-edge data goes in the Destination Options header, because only the egress reads it.
+      The cost is header size: I O A M can add hundreds of bytes, which is why it's used for deep analysis rather than always-on discovery.
+
+  - type: record
+    url: https://srv6.md/topics/oam-troubleshooting/
+    index: 1
+    seconds: 14
+    chapter: "The playbook"
+    say: >
+      Now the playbook for the most common call: VPN traffic enters the ingress P E and never arrives, and no error comes back.
+      Walk the tree from the top. Is the SRv6 SID installed on the egress P E? Is it reachable through the underlay?
+      Is the ingress actually applying the SRv6 encapsulation? Are the routers in the middle forwarding it?
+      Each no points you to a specific fix, and if everything says yes, the problem is the egress SID table or the V R F import.
+
+  - type: code
+    heading: "Walk it on IOS-XR"
+    code: |
+      !! Step 1: Verify the SRv6 SID exists on the egress PE
+      show segment-routing srv6 sid
+
+      !! Step 2: Check that the locator is advertised in IGP
+      show isis segment-routing srv6 locators
+      show route ipv6 fc00:0:2::/48
+
+      !! Step 3: Verify the VRF is configured for SRv6 encapsulation
+      show vrf CUSTOMER-A detail
+      show bgp vpnv4 unicast vrf CUSTOMER-A
+    say: >
+      On I O S X R, the first three steps look like this. List the local SIDs on the egress P E: no SID for the VPN means B G P never allocated one.
+      Check that I S I S advertises the locator, and that the route to it exists everywhere. Then check the V R F has its SRv6 configuration,
+      and that the VPN routes carry SIDs. Next come C E F for the SID, and drop counters on the routers in between.
+
+  - type: bullets
+    heading: "Why SRv6 packets get dropped"
+    chapter: "Common causes"
+    bullets:
+      - "An **ACL** filters Routing Header type 4"
+      - "**MTU** exceeded by the encapsulation"
+      - "SID not in the **My SID table**"
+      - "**Hop Limit** of the new outer header too low"
+      - "**ICMPv6 rate limiting** hides ping and traceroute replies"
+    say: >
+      When packets vanish in the middle, five causes cover most cases. An access list that drops IPv6 Routing Header type four,
+      which is the S R H. The encapsulation pushing the packet over the M T U. A SID that isn't in the node's My SID table,
+      so the node doesn't recognize it as local. A new outer header that starts with too low a hop limit.
+      And remember that I C M P v6 errors are often rate-limited, so a missing traceroute reply doesn't always mean a missing path.
+
+  - type: big
+    value: "40 + 8 + 16 × N"
+    caption: "Bytes of SRv6 encapsulation with an SRH of N SIDs: 96 bytes for three"
+    chapter: "MTU"
+    say: >
+      M T U problems deserve their own moment, because they're silent. The outer IPv6 header is forty bytes, and an S R H adds eight plus sixteen per SID.
+      A three-SID policy adds ninety-six bytes, and I O A M can push it past two hundred.
+      The symptom is classic: pings work, but T C P sessions stall right after the handshake, because only the big packets die.
+      The fix is a nine thousand two hundred sixteen byte M T U on transit links, or T C P M S S clamping at the ingress P E. And never filter I C M P v6 Packet Too Big.
+
+  - type: bullets
+    heading: "SID in software, not in hardware"
+    chapter: "Hardware programming"
+    bullets:
+      - "Symptom: **high CPU**, high latency, punt drops"
+      - "**TCAM full:** reduce scale, or move to uSID"
+      - "**Unsupported behavior** on this platform"
+      - "**Too many SIDs** for the hardware: use binding SIDs"
+    say: >
+      The last scenario is the sneakiest. The SID is in the software table, but never made it into the hardware forwarding table.
+      Traffic gets punted to the C P U, latency jumps, and packets drop when the punt queue overflows.
+      Check whether the hardware resources are full: micro-SIDs use fewer entries than classic SIDs. Check the platform supports that behavior at all.
+      And if the segment list is deeper than the hardware can push, shorten it or hide part of it behind a binding SID.
+
+  - type: end
+    heading: "Read the troubleshooting lesson"
+    subtitle: "Every command, IOAM in depth, and the next lesson: performance measurement"
+    url: "srv6.md/topics/oam-troubleshooting"
+    chapter: "Next steps"
+    say: >
+      The written lesson has every command for I O S X R and Linux, the four playbook scenarios, and I O A M in depth. It's on srv6 dot md, linked below.
+      Next, we stop asking whether the path works, and start measuring how well: SRv6 performance measurement.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

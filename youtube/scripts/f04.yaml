@@ -1,0 +1,200 @@
+id: f04
+lang: en
+title: "SRv6 Network Programming: End, End.X, End.DT4 and More"
+playlist: "Track 1: SRv6 Foundations"
+description: |
+  SRv6 network programming explained: how a packet carries a program of SIDs, and what each instruction does. We cover the RFC 8986 endpoint behaviors (End, End.X, End.T, the DX and DT decapsulation family, Binding SIDs), the headend behaviors H.Encaps and H.Encaps.Red, the PSP, USP and USD flavors, the RFC 9800 compressed-SID flavors behind uSID, and a complete L3VPN program.
+
+  This is lesson 4 of Track 1 (SRv6 Foundations) in the free SRv6.md course.
+links:
+  "Written lesson, SRv6 network programming": https://srv6.md/topics/network-programming/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, the SRH packet walk": https://srv6.md/topics/srh-packet-walk/
+  "Next lesson, uSID explained": https://srv6.md/topics/usid-compression/
+  "SRv6 SID decoder and behavior codepoints": https://srv6.md/tools/sid-decoder/
+hashtags: ["#SRv6", "#SegmentRouting", "#NetworkProgramming", "#NetworkEngineering"]
+tags: [srv6 network programming, rfc 8986, srv6, srv6 behaviors, end.dt4, end.x, h.encaps, psp, segment routing, network engineering]
+thumbnail:
+  kicker: "Network programming"
+  text: "Packets = code"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 1 · Lesson 4"
+    title: "SRv6 Network Programming"
+    subtitle: "End, End.X, End.DT4 and more"
+    chapter: "Intro"
+    say: >
+      In SRv6, a packet carries a program. By the end of this lesson you'll be able to read a SID as an instruction,
+      name the main SRv6 behaviors and when each one is used, explain what the headend does,
+      and build a complete layer three VPN program out of them.
+
+  - type: bullets
+    heading: "Three kinds of building blocks"
+    chapter: "The idea"
+    bullets:
+      - "**Endpoint behaviors:** run by the node that owns the SID"
+      - "**Headend behaviors:** steer a packet into a policy"
+      - "**Flavors:** modifiers of End, End.X and End.T"
+      - "RFC 9800 adds **compressed-SID** flavors"
+    say: >
+      SRv6 network programming, from RFC 8986, is the idea that a packet carries an ordered list of instructions,
+      each one an IPv6 address. Every router that owns a SID binds it to a behavior,
+      like forward over this link, or decapsulate and look up in a V R F.
+      The source composes those behaviors into an end-to-end service.
+      RFC 8986 defines three kinds of building blocks: endpoint behaviors, headend behaviors, and flavors.
+      RFC 9800 later added two flavors for compressed SIDs.
+
+  - type: code
+    heading: "The SID as an instruction"
+    code: |
+      fc00:0:1:e004::        Locator fc00:0:1::/48 → node 1
+               └── e004      Function 0xe004 → End.DT4 VRF CUSTOMER-A
+    say: >
+      A SID is a locator, a function, and an optional argument. The locator is routed in the IGP,
+      so packets reach the right node. Here it's node one. The function selects the behavior on that node:
+      here, E zero zero four means End D T 4 into V R F Customer A.
+      Only the owner of the locator interprets the function bits. Every other router just does a longest-prefix match,
+      which is why transit nodes need no SRv6 support at all.
+
+  - type: bullets
+    heading: "Moving along the path"
+    chapter: "Endpoint behaviors"
+    bullets:
+      - "**End:** decrement SL, copy the next SID, forward by FIB"
+      - "**End.X:** like End, out a specific adjacency"
+      - "**End.T:** like End, lookup in a specific IPv6 table"
+    say: >
+      Three behaviors move a packet along its path. End decrements Segments Left, copies the next SID into the destination address,
+      and forwards normally. It's the node SID: a loose hop in a traffic-engineered path, or a T I L F A repair node.
+      End X does the same, but forwards over a specific layer three adjacency. That's the adjacency SID,
+      used for strict hops and T I L F A repair links.
+      End T looks up the next SID in a specific IPv6 table, for multi-table or per-slice forwarding.
+
+  - type: compare
+    heading: "Decapsulation: DX or DT"
+    columns:
+      - title: "Cross-connect (DX)"
+        items: ["End.DX4: IPv4 to a next hop", "End.DX6: IPv6 to a next hop", "End.DX2, End.DX2V: Ethernet out an interface"]
+      - title: "Table lookup (DT)"
+        items: ["End.DT4 / End.DT6: lookup in a VRF", "End.DT46: IPv4 or IPv6, one SID", "End.DT2U / End.DT2M: bridge table, flood"]
+    say: >
+      Then come the behaviors that end a service by decapsulating. There's a simple rule of thumb.
+      D X means cross-connect: no lookup, a fixed next hop or interface, very fast, and one SID per customer attachment.
+      D T means table lookup: one SID per V R F or bridge domain, and one lookup.
+      End D T 4 and D T 6 are the classic per-V R F layer three VPN SIDs, and D T 46 handles a dual-stack V R F with a single SID.
+      End D X 2 carries Ethernet for E V P N V P W S. D T 2 U and D T 2 M serve E V P N E-LAN, for known unicast and for flooding.
+
+  - type: bullets
+    heading: "Binding SIDs and codepoints"
+    bullets:
+      - "**End.B6.Encaps:** apply an SR policy (Binding SID)"
+      - "**End.B6.Encaps.Red:** same, with a reduced SRH"
+      - "**End.BM:** push an SR-MPLS label stack"
+      - "Every behavior has an **IANA codepoint**"
+    say: >
+      End B 6 Encaps binds a SID to an SR policy. It pushes a new outer header and S R H with the policy's SID list.
+      That's the Binding SID, used to stitch domains or hide a whole path behind one SID.
+      There's a reduced version too, and End B M does the same toward SR-MPLS, for interworking.
+      Each behavior also has an IANA codepoint, and each flavor combination gets its own: End is one, End with P S P is two.
+      Routers advertise these codepoints in I S I S, O S P F v 3 and BGP, so peers and controllers know what each SID does.
+
+  - type: bullets
+    heading: "Where the program starts"
+    chapter: "Headend behaviors"
+    bullets:
+      - "**H.Encaps:** outer IPv6 + SRH with the full SID list"
+      - "**H.Encaps.Red:** first SID only in the DA"
+      - "**H.Encaps.L2 / L2.Red:** the payload is an Ethernet frame"
+      - "H.Insert is **not** in RFC 8986"
+    say: >
+      A headend is where a packet enters an SR policy, and RFC 8986 only defines encapsulating headends.
+      H Encaps pushes an outer IPv6 header and an S R H with the full list, leaving the inner packet untouched.
+      H Encaps Red, the reduced version, puts the first SID only in the destination address. It's the default on most implementations.
+      The L 2 variants do the same for Ethernet frames, for E V P N and pseudowires.
+      Earlier drafts also had H Insert, which adds an S R H to the existing packet. It was moved out of RFC 8986,
+      because inserting a header in transit is debated against the IPv6 specification.
+
+  - type: code
+    heading: "H.Encaps vs H.Encaps.Red"
+    code: |
+      H.Encaps     with SID list <S1, S2, S3>:
+        IPv6(DA=S1) SRH[S3, S2, S1; SL=2] | inner packet
+
+      H.Encaps.Red with SID list <S1, S2, S3>:
+        IPv6(DA=S1) SRH[S3, S2;     SL=2] | inner packet      (S1 only in DA)
+
+      H.Encaps / H.Encaps.Red with SID list <S1>:
+        IPv6(DA=S1)                       | inner packet      (SRH may be omitted)
+    say: >
+      Here's the difference on the wire. With three SIDs, H Encaps carries all three in the S R H.
+      The reduced form leaves S 1 only in the destination address, saving sixteen bytes per packet.
+      And with a single SID, any encapsulating headend may leave out the S R H entirely,
+      as long as no flags, tag or T L Vs are needed.
+      That's why a plain layer three VPN over SRv6, with one End D T 4 service SID, usually carries no S R H at all.
+
+  - type: bullets
+    heading: "Flavors: PSP, USP, USD"
+    chapter: "Flavors"
+    bullets:
+      - "**PSP:** SL becomes 0, so remove the SRH"
+      - "**USP:** arrives with SL = 0, remove the SRH"
+      - "**USD:** arrives with SL = 0, decapsulate"
+      - "Only for **End, End.X and End.T**"
+    say: >
+      Flavors change what End, End X and End T do at the end of the list. They're signaled with the SID, so the headend knows what to expect.
+      P S P: when a node takes Segments Left to zero, it removes the S R H, so the last endpoint gets a plain IPv6 packet.
+      U S P: a packet arrives with Segments Left at zero, and the node removes the S R H before processing the next header.
+      U S D: the node removes the whole outer header, so a plain End SID can end an encapsulation,
+      like the last SID of a T I L F A repair list. P S P plus U S D is the common pair. Linux implements only P S P, and only on End.
+
+  - type: bullets
+    heading: "Compressed SIDs (RFC 9800)"
+    chapter: "Compressed SIDs"
+    bullets:
+      - "**NEXT-CSID** = uSID: 16-bit C-SIDs, shift the DA"
+      - "**REPLACE-CSID** = G-SID: 32-bit C-SIDs, replace"
+      - "New behaviors: **End.LBS**, **End.XLBS**"
+      - "uN, uA, uDT4: names, not new behaviors"
+    say: >
+      Full SIDs cost sixteen bytes each, so RFC 9800 adds two compressed flavors that pack several short SIDs into one container.
+      Next C SID, the basis of micro-SIDs, packs sixteen-bit SIDs after a shared block, and each node shifts the destination address left.
+      Replace C SID, also called G SID, uses thirty-two-bit SIDs, and each node replaces part of the address with the next one.
+      Vendors call the micro-SID versions u N, u A and u D T 4. Those are names, not separate behaviors.
+
+  - type: code
+    heading: "A uSID container"
+    code: |
+      uSID container (block fcbb:bb00::/32, 16-bit uSIDs):
+        DA = fcbb:bb00:0100:0200:0300:e004::
+                       └uN 1 └uN 2 └uN 3 └uDT4 VRF
+        Node 1 shifts → fcbb:bb00:0200:0300:e004::   (no SRH needed for 4 instructions)
+    say: >
+      Here's one container. After the block come three u N instructions, for nodes one, two and three,
+      and a final u D T 4 into a V R F. Node one consumes its micro-SID and shifts the rest left.
+      Four instructions, and no S R H at all. The next lesson covers this in depth.
+
+  - type: bullets
+    heading: "Putting it together: an L3VPN program"
+    chapter: "An L3VPN program"
+    bullets:
+      - "**PE1:** VRF lookup, H.Encaps.Red to PE2's End.DT4 SID"
+      - "**P:** plain IPv6 forwarding on PE2's locator"
+      - "**PE2:** End.DT4, decap, lookup in the VRF"
+      - "Add a waypoint: 2 instructions. A service: 3"
+    say: >
+      Let's put it together. C E 1 sends an IPv4 packet. P E 1 looks it up in the V R F, and encapsulates it
+      toward P E 2's End D T 4 SID, with the reduced headend. The P router just forwards IPv6 on P E 2's locator.
+      P E 2 runs End D T 4: it decapsulates and looks up the packet in the V R F. That program is a single instruction.
+      Add a traffic engineering waypoint, and it becomes two. Add a service function, and it's three. The packet format never changes.
+      Newer RFCs keep adding behaviors, for the mobile user plane, multicast and private lines, without touching transit routers.
+
+  - type: end
+    heading: "Read the full lesson"
+    subtitle: "Every behavior and codepoint. Next: uSID"
+    url: "srv6.md/topics/network-programming"
+    chapter: "Next steps"
+    say: >
+      The full reference, with every behavior and its IANA codepoint, is on srv6 dot md, linked below.
+      It's part of the free SRv6 dot md course. Next, we'll see how micro-SIDs fit six instructions
+      into a single IPv6 address. Subscribe, and I'll see you there.

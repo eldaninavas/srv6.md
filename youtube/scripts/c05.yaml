@@ -1,0 +1,215 @@
+id: c05
+lang: en
+title: "SRv6 L3VPN with BGP (RFC 9252), Step by Step"
+playlist: "Track 2: Control Plane and Services"
+description: |
+  SRv6 L3VPN, step by step. How BGP delivers layer 3 VPN services over SRv6 with RFC 9252: the overlay and underlay split, how a PE advertises a VPN prefix with an End.DT4 service SID instead of an MPLS label, per-VRF, per-CE and per-prefix SID allocation, the SRv6 L3 Service TLV inside the BGP update, and the Cisco IOS-XR and Junos configuration.
+
+  This is lesson 5 of Track 2 (Control Plane and Services) in the free SRv6.md course.
+links:
+  "Written lesson, BGP overlay services": https://srv6.md/topics/bgp-overlay-services/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SR Policy explained": https://srv6.md/topics/sr-policy/
+  "Next lesson, EVPN over SRv6 and multihoming": https://srv6.md/topics/evpn-multihoming/
+hashtags: ["#SRv6", "#L3VPN", "#BGP", "#SegmentRouting"]
+tags: [srv6 l3vpn, srv6, rfc 9252, bgp, l3vpn, vpnv4, end.dt4, srv6 service sid, segment routing, network engineering]
+thumbnail:
+  kicker: "SRv6 L3VPN"
+  text: "No VPN label"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 2 · Lesson 5"
+    title: "SRv6 L3VPN with BGP"
+    subtitle: "RFC 9252, step by step"
+    chapter: "Intro"
+    say: >
+      A layer three VPN is the service most networks actually sell. In this lesson we build one over SRv6.
+      You'll follow a customer prefix from one P E to the other, see exactly what B G P advertises instead of an MPLS label,
+      choose how SIDs are allocated, and read the configuration on Cisco I O S X R and Junos.
+      By the end you'll be able to explain an SRv6 VPN route field by field.
+
+  - type: bullets
+    heading: "Just IPv6 and BGP"
+    chapter: "Overlay and underlay"
+    bullets:
+      - "No MPLS, **no LDP, no RSVP-TE**"
+      - "BGP carries **SRv6 SIDs instead of labels**"
+      - "The SID tells the remote PE **what to do** with the packet"
+      - "Same model for **L3VPN and EVPN**"
+    say: >
+      SRv6 gives you a clean underlay for VPN services. There's no MPLS, no L D P and no RSVP-TE. Just IPv6, and B G P.
+      The key principle: B G P still carries the service information, the VPN prefixes, but each route carries an SRv6 SID
+      where it used to carry an MPLS label. That SID tells the remote P E exactly what to do with the packet:
+      decapsulate it into a given V R F, or cross-connect it to a given interface.
+      The same model carries layer two services with E VPN, which is the next lesson.
+
+  - type: record
+    url: https://srv6.md/topics/bgp-overlay-services/
+    index: 0
+    seconds: 12
+    say: >
+      Here are the two layers. On top, the overlay: the two P Es exchange multiprotocol B G P routes that carry SRv6 SIDs.
+      Underneath, the underlay: the SRv6 data plane, where the P node in the middle only forwards IPv6 toward the destination address.
+      The customer edges on each side don't know any of this. They just see a routed VPN.
+      Keep this split in mind: B G P decides what the service is, and IPv6 forwarding in the underlay decides how the packet gets there.
+
+  - type: bullets
+    heading: "One prefix, step by step"
+    chapter: "Step by step"
+    bullets:
+      - "PE1 learns **10.1.0.0/24** from CE1 in VRF CUSTOMER-A"
+      - "PE1 advertises it in VPNv4 with an **End.DT4 SID**"
+      - "PE2 installs the route"
+      - "PE2 sends traffic with **IPv6 DA = that SID**"
+      - "PE1 matches End.DT4, **decapsulates, looks up the VRF**"
+    say: >
+      Let's follow one prefix. P E one learns ten dot one dot zero dot zero slash twenty-four from C E one, in V R F customer A.
+      It advertises the prefix in VPN v four, with its own IPv6 address as next hop, and an SRv6 service SID with the End.DT4 behavior.
+      P E two receives the update and installs the route, keeping the SID next to it.
+      When traffic for that prefix arrives, P E two encapsulates it in an outer IPv6 header whose destination is that SID,
+      with the original IPv4 packet inside. P E one receives it, matches the End.DT4 SID, decapsulates, and looks up the inner packet in V R F customer A.
+
+  - type: big
+    value: "End.DT4"
+    caption: "Decapsulate, then look up the inner IPv4 packet in this VRF"
+    say: >
+      That one SID does the job of the MPLS VPN label. End.DT4 means: decapsulate, and look up the inner IPv4 destination
+      in a specific V R F table. For IPv6 customers, End.DT6 does the same for IPv6.
+      And because the SID is an IPv6 address inside the P E's locator, the core routes it like any other IPv6 prefix.
+      The transit routers never see the VPN.
+      They only need a route to P E one's locator, which they already learned from the I G P, as we saw in the first lesson of this track.
+
+  - type: compare
+    heading: "How SIDs are allocated"
+    chapter: "SID allocation"
+    columns:
+      - title: "Per-VRF (default)"
+        items: ["One SID for all prefixes of a VRF", "End.DT4 / End.DT6", "Most scalable"]
+      - title: "Per-CE or per-prefix"
+        items: ["Per-CE: one SID per CE neighbor", "Per-prefix: a SID for every prefix", "More SIDs to hold"]
+    say: >
+      A P E can allocate service SIDs in three ways. Per V R F, one SID is shared by every prefix in the V R F.
+      That's the default and the most scalable option, and it's exactly End.DT4 or End.DT6: decapsulate and look up in this table.
+      Per C E gives one SID per C E neighbor, and per prefix gives every prefix its own SID.
+      The finer the allocation, the more SIDs each P E holds and advertises. Start with per V R F unless you need something else.
+
+  - type: code
+    heading: "Inside the BGP update"
+    chapter: "Inside the BGP update"
+    code: |
+      BGP Update Message:
+        ├── NLRI: 10.1.0.0/24 (VPNv4)
+        ├── Next-Hop: 2001:db8::1
+        ├── Extended Community: RT 100:1
+        └── BGP Prefix-SID Attribute:
+            └── SRv6 L3 Service TLV:
+                ├── SRv6 SID: fcbb:bb01:0001::DT4
+                ├── SRv6 SID Behavior: End.DT4 (19)
+    say: >
+      RFC 9252 defines where the SID goes. The update looks like any VPN v four route: the prefix, an IPv6 next hop,
+      and the route target. The new part is in the B G P Prefix-SID attribute: an SRv6 L3 Service T L V.
+      It carries the SRv6 SID itself, and the behavior, End.DT4, code point nineteen.
+      The SID on screen is written with a D T 4 label at the end, so you can see its role at a glance.
+      In a real network, that last part is simply the function bits the P E allocated for this V R F.
+
+  - type: bullets
+    heading: "The SID structure travels too"
+    bullets:
+      - "Locator block: **32 bits**"
+      - "Locator node: **16 bits**"
+      - "Function: **16 bits**, argument: **0**"
+      - "**Transposition:** part of the SID rides inside the VPN route"
+    say: >
+      The service T L V also carries the SID structure, the same four lengths we met with I S I S.
+      In this example, a thirty-two bit block, a sixteen bit node, a sixteen bit function and no argument.
+      That tells the receiving P E how to read the SID.
+      And to save space in B G P updates, RFC 9252 adds an optimization called transposition: part of the SID, such as the function,
+      is encoded inside the VPN route itself, instead of repeating the full 128-bit SID in every update.
+
+  - type: code
+    heading: "Cisco IOS-XR: the VRF"
+    chapter: "Configuration"
+    code: |
+      !! VRF definition
+      vrf CUSTOMER-A
+       address-family ipv4 unicast
+        import route-target 100:1
+        export route-target 100:1
+       !
+      !
+    say: >
+      Now the configuration on Cisco I O S X R. The V R F itself is unchanged from MPLS:
+      an IPv4 unicast address family with import and export route targets.
+      Nothing in the V R F knows about the transport. Route distinguishers and route targets keep the same role they have in an MPLS VPN.
+
+  - type: code
+    heading: "Cisco IOS-XR: BGP with SRv6"
+    code: |
+      router bgp 65000
+       address-family vpnv4 unicast
+        segment-routing srv6
+         locator MAIN
+        !
+       !
+       vrf CUSTOMER-A
+        rd 100:1
+        address-family ipv4 unicast
+         segment-routing srv6
+          locator MAIN
+          alloc mode per-vrf
+    say: >
+      In B G P, two things change. Under the VPN v four address family, you enable segment routing SRv6 and name the locator.
+      Under the V R F, you do the same, and choose the allocation mode, here per V R F.
+      B G P then allocates an End.DT4 SID from the MAIN locator for this V R F and attaches it to every route it advertises.
+      Notice what's missing: there's no label allocation and no MPLS configuration anywhere. Only B G P and the locator change.
+
+  - type: code
+    heading: "Junos: the same VRF over SRv6"
+    code: |
+      set routing-instances CUSTOMER-A instance-type vrf
+      set routing-instances CUSTOMER-A route-distinguisher 100:1
+      set routing-instances CUSTOMER-A vrf-target target:100:1
+      set routing-instances CUSTOMER-A protocols bgp source-packet-routing srv6 locator myloc
+    say: >
+      On Junos, the routing instance looks familiar: instance type V R F, a route distinguisher, a V R F target.
+      The last line is the SRv6 part: B G P in this instance uses source packet routing SRv6, with the locator called my-loc.
+
+  - type: code
+    heading: "Verify"
+    chapter: "Verification"
+    code: |
+      !! Show VPNv4 routes with SRv6 SIDs
+      show bgp vpnv4 unicast vrf CUSTOMER-A
+
+      !! Show SRv6 SID details
+      show segment-routing srv6 sid
+    say: >
+      To verify on I O S X R, look at the VPN v four routes of the V R F: each remote route should carry an SRv6 SID.
+      Then list the local SIDs, and check that your End.DT4 SID for customer A is allocated.
+      On Linux with F R R, the equivalent commands in v t y s h show the B G P IPv4 VPN table and the SRv6 locator.
+
+  - type: bullets
+    heading: "What to plan for"
+    chapter: "Trade-offs"
+    bullets:
+      - "Outer header: **40 bytes**, no SRH needed for best effort"
+      - "Add an SRH only for **traffic-engineered** paths"
+      - "Locator and SID structure **consistent** on every PE"
+      - "Per-prefix allocation **multiplies** the SIDs"
+    say: >
+      What does it cost? For best-effort VPN traffic, the P E only adds an outer IPv6 header, forty bytes, and no S R H.
+      If you steer the VPN into a traffic-engineered path, an S R H adds more, so plan your core M T U.
+      The locator and the SID structure must be consistent, because remote P Es parse your SIDs with it.
+      And the finer your SID allocation, the more SIDs you hold.
+      For scale, the written lesson compares overheads: VXLAN adds fifty bytes, SRv6 forty without an S R H, and fifty-six or more with one.
+
+  - type: end
+    heading: "Read the BGP overlay lesson"
+    subtitle: "L3VPN and EVPN over SRv6, and the next lesson: EVPN multihoming"
+    url: "srv6.md/topics/bgp-overlay-services"
+    chapter: "Next steps"
+    say: >
+      The written lesson is on srv6 dot md, linked below, with the full B G P update and the F R R commands.
+      Next, we move to layer two: E VPN over SRv6, and E VPN multihoming.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

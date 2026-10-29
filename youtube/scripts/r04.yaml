@@ -1,0 +1,63 @@
+id: r04
+lang: en
+format: short
+title: "RFC 9252 in 60 Seconds: BGP Services over SRv6"
+playlist: "RFCs Explained (Shorts)"
+description: |
+  RFC 9252 in 60 seconds: BGP overlay services over SRv6. How BGP carries the service SID for L3VPN, EVPN and Internet routes in the Prefix-SID attribute, what transposition is, and the interop pitfall it creates.
+
+  Part of the free SRv6.md course.
+links:
+  "Written lesson, RFC 9252 explained": https://srv6.md/rfcs/rfc9252/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous Short, RFC 9800": https://srv6.md/rfcs/rfc9800/
+  "Next Short, RFC 9350": https://srv6.md/rfcs/rfc9350/
+hashtags: ["#SRv6", "#RFC9252", "#BGP", "#Shorts"]
+tags: [rfc 9252, srv6 l3vpn, srv6 bgp, bgp prefix-sid, srv6 evpn, srv6 vpn, transposition, srv6 rfc, segment routing, network engineering]
+thumbnail:
+  kicker: "RFC 9252"
+  text: "VPNs, no labels"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · RFCs Explained"
+    title: "RFC 9252"
+    subtitle: "BGP services over SRv6, in 60 seconds"
+    say: >
+      RFC 9252, in sixty seconds. In an SRv6 VPN, a PE must learn which SID delivers each customer route.
+      This RFC puts it in BGP.
+
+  - type: bullets
+    heading: "What it defines"
+    bullets:
+      - "**SRv6 Service TLVs** in the BGP Prefix-SID attribute"
+      - "**L3** (type 5) for VPNs, **L2** (type 6) for EVPN"
+      - "The SID, its **behavior** and its **structure**"
+    say: >
+      It adds SRv6 Service T L Vs to the BGP Prefix-SID attribute: an L3 T L V for VPN routes, and an L2 T L V for EVPN.
+      Each carries the SID, its endpoint behavior, such as End D T 4, and how the SID is structured.
+
+  - type: bullets
+    heading: "Transposition"
+    bullets:
+      - "Function bits move **into the NLRI**"
+      - "The receiver **rebuilds** the full SID"
+    say: >
+      To save space, the function bits can be transposed into the route itself.
+      The receiving PE uses the advertised structure to rebuild the SID.
+
+  - type: bullets
+    heading: "Why you should care"
+    bullets:
+      - "L3VPN, EVPN and Internet, **no MPLS**"
+      - "Transposition mismatch: **a top interop issue**"
+    say: >
+      Why care? This is how layer three VPN, EVPN and Internet routes run over SRv6 without MPLS.
+      And when transposition fields don't line up between vendors, the SID is rebuilt wrong.
+
+  - type: end
+    heading: "RFC 9252, explained"
+    subtitle: "TLVs, transposition and pitfalls"
+    url: "srv6.md/rfcs/rfc9252"
+    say: >
+      The full lesson is on srv6 dot md.

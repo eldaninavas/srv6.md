@@ -1,0 +1,63 @@
+id: r02
+lang: en
+format: short
+title: "RFC 8986 in 60 Seconds: SRv6 Network Programming"
+playlist: "RFCs Explained (Shorts)"
+description: |
+  RFC 8986 in 60 seconds: SRv6 Network Programming. How a SID becomes an instruction (locator, function, argument), the endpoint behaviors such as End, End.X and End.DT4, and the PSP, USP and USD flavors.
+
+  Part of the free SRv6.md course.
+links:
+  "Written lesson, RFC 8986 explained": https://srv6.md/rfcs/rfc8986/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous Short, RFC 8754": https://srv6.md/rfcs/rfc8754/
+  "Next Short, RFC 9800": https://srv6.md/rfcs/rfc9800/
+hashtags: ["#SRv6", "#RFC8986", "#NetworkProgramming", "#Shorts"]
+tags: [rfc 8986, srv6, srv6 network programming, end.dt4, end.x, srv6 behaviors, psp usp usd, srv6 rfc, segment routing, network engineering]
+thumbnail:
+  kicker: "RFC 8986"
+  text: "SIDs as code"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · RFCs Explained"
+    title: "RFC 8986"
+    subtitle: "SRv6 Network Programming, in 60 seconds"
+    say: >
+      RFC 8986, in sixty seconds. An SRv6 SID looks like an IPv6 address. So what should a router do when it gets one?
+
+  - type: bullets
+    heading: "A SID is an instruction"
+    bullets:
+      - "128 bits: **locator : function : argument**"
+      - "**Endpoint behaviors:** what the node does"
+      - "**Flavors:** PSP, USP and USD"
+    say: >
+      It defines the SID as 128 bits split into a locator, a function and an argument.
+      Then it defines a catalog of endpoint behaviors, the instructions, plus flavors that modify them.
+
+  - type: bullets
+    heading: "The behaviors you'll meet most"
+    bullets:
+      - "**End:** go to the next segment"
+      - "**End.X:** go out a specific adjacency"
+      - "**End.DT4 / DT6 / DT46:** decap, VPN table lookup"
+    say: >
+      End moves to the next segment. End X sends the packet over a specific adjacency.
+      And the D T behaviors decapsulate and look up the inner packet in a V R F table. That's an SRv6 layer three VPN.
+
+  - type: bullets
+    heading: "Why you should care"
+    bullets:
+      - "Every SRv6 service is built from these behaviors"
+      - "**PSP** removes the SRH one hop early"
+    say: >
+      Why care? Every SRv6 service you configure is built from these behaviors.
+      And with P S P, the penultimate node removes the S R H, so the egress gets a clean packet.
+
+  - type: end
+    heading: "RFC 8986, explained"
+    subtitle: "Every behavior and flavor, in one table"
+    url: "srv6.md/rfcs/rfc8986"
+    say: >
+      The full lesson is on srv6 dot md.

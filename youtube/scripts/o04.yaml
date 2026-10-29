@@ -1,0 +1,209 @@
+id: o04
+lang: en
+title: "MPLS to SRv6 Migration: Four Real Strategies"
+playlist: "Track 3: Operating SRv6"
+description: |
+  MPLS to SRv6 migration, planned properly. The four strategies operators use (greenfield, ship-in-the-night, SR-MPLS first, and direct MPLS to SRv6 uSID), how an SR-MPLS to SRv6 gateway translates labels and SIDs, how the Binding SID keeps the two domains apart, how IS-IS and BGP carry both data planes at once, the MTU to plan for, and a phased rollout with a rollback at every step.
+
+  This is lesson 4 of Track 3 (Operating SRv6) in the free SRv6.md course.
+links:
+  "Written lesson, MPLS to SRv6 migration": https://srv6.md/topics/interworking-migration/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 security": https://srv6.md/topics/security/
+  "Next lesson, build a free SRv6 lab": https://srv6.md/labs/containerlab/
+hashtags: ["#SRv6", "#MPLS", "#NetworkMigration", "#SegmentRouting"]
+tags: [mpls to srv6 migration, srv6 migration, srv6, mpls, sr-mpls, interworking, binding sid, brownfield, srv6 usid, segment routing]
+thumbnail:
+  kicker: "MPLS to SRv6"
+  text: "4 ways to migrate"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 3 · Lesson 4"
+    title: "MPLS to SRv6 Migration"
+    subtitle: "Four real strategies"
+    chapter: "Intro"
+    say: >
+      Most networks don't start from zero. They carry years of MPLS services that can't stop for a migration.
+      In this lesson you'll learn the four strategies operators use to get to SRv6, how a gateway lets the two worlds talk,
+      how the control plane carries both at once, and a phased rollout where every step has a way back.
+
+  - type: bullets
+    heading: "Four ways to get there"
+    chapter: "Four strategies"
+    bullets:
+      - "**1. Greenfield:** SRv6 from day zero"
+      - "**2. Ship-in-the-night:** two planes, one network"
+      - "**3. Via SR-MPLS:** segment routing first, SRv6 later"
+      - "**4. Direct:** from MPLS straight to SRv6 uSID"
+    say: >
+      There are four common paths. Greenfield, where a new network is SRv6 from the start.
+      Parallel overlay, also called ship-in-the-night, where SRv6 and MPLS run side by side on the same routers.
+      The incremental path, where you move to SR-MPLS first and then to SRv6 micro-SIDs.
+      And the direct path, straight from traditional MPLS to SRv6 micro-SIDs. Let's take them one at a time, with what each one costs.
+
+  - type: bullets
+    heading: "1. Greenfield"
+    chapter: "1. Greenfield"
+    bullets:
+      - "New network, **SRv6 from day zero**"
+      - "No MPLS, no LDP, no RSVP-TE"
+      - "**Pro:** simplest architecture, no interworking"
+      - "**Con:** only possible for new networks"
+    say: >
+      Greenfield is the easy case. You deploy SRv6 from scratch: no MPLS, no L D P, no RSVP-TE, and no interworking to design.
+      The architecture is as simple as it gets. The catch is obvious: it's only possible when the network is new.
+      Iliad, in Italy, took this route when it launched a greenfield, 5G-ready SRv6 network in 2019.
+      If you're building a new network or a new domain next to an old one, this is the option to beat.
+
+  - type: bullets
+    heading: "2. Parallel overlay (ship-in-the-night)"
+    chapter: "2. Ship-in-the-night"
+    bullets:
+      - "Deploy SRv6 **alongside** existing MPLS"
+      - "Migrate services **one by one**"
+      - "Decommission MPLS when the last one moves"
+      - "**Pro:** low risk, rollback possible. **Con:** two planes to run"
+    say: >
+      Ship-in-the-night runs SRv6 and MPLS as two separate planes on the same physical network. You deploy SRv6 alongside MPLS,
+      move services across one by one, and switch MPLS off when the last service has moved.
+      The risk is low, the migration is gradual, and you can always roll a service back.
+      The cost is running both during the transition: two data planes to configure, monitor and troubleshoot, for as long as the migration lasts.
+
+  - type: bullets
+    heading: "3. SR-MPLS first, then SRv6 uSID"
+    chapter: "3. Via SR-MPLS"
+    bullets:
+      - "**Phase 1:** replace LDP and RSVP with SR-MPLS"
+      - "**Phase 2:** upgrade nodes for SRv6 uSID"
+      - "**Phase 3:** enable SRv6, interwork with the rest"
+      - "**Phase 4:** complete, disable SR-MPLS"
+    say: >
+      If you already run SR-MPLS, or plan to, the move to SRv6 is simpler, because both share the Segment Routing architecture:
+      the same I G P extensions, the same SR Policy, the same T I L F A. Phase one replaces L D P and RSVP with SR-MPLS.
+      Phase two upgrades nodes so they support SRv6 micro-SIDs. Phase three enables SRv6 on upgraded nodes, and interworks with the ones not yet upgraded.
+      Phase four completes the migration and disables SR-MPLS. The price is two migrations instead of one.
+
+  - type: bullets
+    heading: "4. Direct: MPLS to SRv6 uSID"
+    chapter: "4. Direct to SRv6"
+    bullets:
+      - "**Skip SR-MPLS** entirely"
+      - "Avoids a **double migration**"
+      - "Needs **more careful planning**"
+      - "Chosen by **Telefonica VIVO**, per its public announcement"
+    say: >
+      The fourth path skips SR-MPLS entirely and goes from traditional MPLS directly to SRv6 micro-SIDs.
+      It avoids paying for a double migration, but it needs more careful planning, because the network changes its control plane and its data plane in one move.
+      According to their public announcement, Telefonica VIVO went directly to SRv6 micro-SIDs to avoid double migration costs.
+      Whichever path you pick, the same building blocks show up: interworking, Binding SIDs, and a phased rollout.
+
+  - type: record
+    url: https://srv6.md/topics/interworking-migration/
+    index: 0
+    seconds: 12
+    chapter: "Interworking gateway"
+    say: >
+      During any brownfield migration, some services cross between an SR-MPLS domain and an SRv6 domain.
+      A gateway node sits at the boundary and translates. On one side, P E one and P one forward MPLS labels.
+      On the other, the gateway sends SRv6 SIDs to P two and P E two. The gateway is the only node that understands both.
+      Where the gateways sit depends on your pattern: core first, with SR-MPLS edges around an SRv6 core; edge first, the other way around;
+      or region by region, with a gateway between each migrated region and the next.
+
+  - type: bullets
+    heading: "What the gateway does"
+    bullets:
+      - "**MPLS to SRv6:** pop the labels, encapsulate in IPv6"
+      - "VPN label → SRv6 SID, **learned from BGP**"
+      - "**SRv6 to MPLS:** decapsulate, push VPN and transport labels"
+      - "State for **every VPN prefix** that crosses the boundary"
+    say: >
+      From MPLS to SRv6, the gateway receives the labeled packet, pops the remaining VPN label, and looks up the matching SRv6 SID.
+      It learned that mapping from B G P, where the remote P E advertised both an MPLS label and an SRv6 SID for the same VPN prefix.
+      Then it builds an outer IPv6 header, with the End.DT4 SID as destination, and forwards it into the SRv6 domain.
+      The reverse direction mirrors it. The cost: the gateway holds state for every VPN prefix that crosses, which in large networks can reach
+      hundreds of thousands of entries. Plan its capacity, and filter routes at the boundary.
+
+  - type: code
+    heading: "The Binding SID keeps domains apart"
+    chapter: "Binding SID"
+    code: |
+      Without BSID:
+        Ingress PE must know the FULL path across all domains:
+        [16001, 16002, 16005, fcbb:bb01:0002::1, fcbb:bb01:0003::DT4]
+        ^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           SR-MPLS segments              SRv6 segments
+
+      With BSID:
+        Ingress PE only needs to know:
+        [16001, 16002, 24999]
+                       ^^^^^
+                  BSID at gateway — represents the entire SRv6 path
+    say: >
+      For traffic-engineered paths, the Binding SID does the heavy lifting. Without it, the SR-MPLS ingress would have to know the full path,
+      labels and SRv6 SIDs mixed together. With it, the ingress pushes a short label stack ending in one label, twenty-four nine nine nine,
+      which the gateway expands into the whole SRv6 path. The SR-MPLS side never sees SRv6 SIDs, and the SRv6 path behind the binding SID
+      can change without touching the SR-MPLS domain. During migration, allocate binding SIDs statically at domain boundaries, so stitching stays stable.
+
+  - type: bullets
+    heading: "One control plane, two data planes"
+    chapter: "Control plane coexistence"
+    bullets:
+      - "**One IS-IS instance:** SR-MPLS Prefix-SIDs and SRv6 locators"
+      - "SPF runs once, installs **both** forwarding entries"
+      - "**BGP** carries a label and an SRv6 SID per VPN prefix"
+      - "A **preference** decides which one is used"
+    say: >
+      The control plane makes coexistence easier than it sounds. A single I S I S instance can advertise SR-MPLS prefix SIDs and SRv6 locators side by side.
+      There's no second I G P: S P F runs once, and installs MPLS and SRv6 forwarding entries as appropriate.
+      B G P VPN routes can carry both an MPLS label and an SRv6 SID. When both are available, an explicit SR Policy wins, then color, then an
+      operator preference between the two transports. Early on, keep SR-MPLS primary and SRv6 as backup, and reverse it as confidence grows.
+
+  - type: big
+    value: "40 bytes"
+    caption: "SRv6 uSID overhead for up to 6 hops: one outer IPv6 header, no SRH"
+    chapter: "MTU"
+    say: >
+      Plan the M T U before the first service moves. Three MPLS labels add twelve bytes. SRv6 with micro-SIDs adds forty bytes, the outer IPv6 header,
+      for up to six hops, with no S R H. With an S R H, sixty-four bytes for one SID, ninety-six for three.
+      The written lesson's recommendation is at least nine thousand one hundred bytes of M T U on every link in the SRv6 domain,
+      so customer packets of fifteen hundred bytes are never fragmented.
+
+  - type: bullets
+    heading: "A phased rollout"
+    chapter: "Phased rollout"
+    bullets:
+      - "**Phase 0:** inventory, hardware audit, SID and gateway plan"
+      - "**Phase 1:** SRv6 underlay alongside MPLS, **no services yet**"
+      - "**Phase 2:** migrate services, lowest risk first"
+      - "**Phase 3:** optimize: uSID, Flex-Algo, SR Policies"
+      - "**Phase 4:** decommission MPLS after a **2–4 week** soak"
+    say: >
+      Whatever the strategy, the rollout has the same shape. Phase zero is planning: inventory every service, audit which hardware supports SRv6 and micro-SIDs,
+      design the SID plan and place the gateways. Phase one enables the SRv6 underlay next to MPLS, with no services on it, so rolling back has zero impact.
+      Phase two moves services, from internal V P Ns first to traffic-engineered services last. Phase three turns on the optimizations.
+      And phase four removes MPLS, but only after everything has run on SRv6 for at least two to four weeks. That's the point of no return.
+
+  - type: bullets
+    heading: "Moving one service, safely"
+    bullets:
+      - "Advertise the SRv6 SID **next to** the MPLS label"
+      - "Check the remote PE receives **both**"
+      - "Switch the **transport preference** to SRv6"
+      - "Soak **24–72 hours**, then remove the label"
+      - "Rollback: **flip the preference back**"
+    say: >
+      Here's one service moving in phase two. Configure the SRv6 VPN SID on the P Es, and advertise it in B G P alongside the existing MPLS label.
+      On the remote P E, check that both paths arrive. Then change the transport preference to SRv6 for that V R F, and watch the counters move.
+      After a soak of twenty-four to seventy-two hours, remove the MPLS label advertisement.
+      If anything goes wrong before that, you flip the preference back, and traffic returns to MPLS immediately, because both were advertised all along.
+
+  - type: end
+    heading: "Read the migration guide"
+    subtitle: "Gateway packet walks, SID planning and every phase in detail"
+    url: "srv6.md/topics/interworking-migration"
+    chapter: "Next steps"
+    say: >
+      The full migration guide, with the gateway packet walks, the SID allocation plan and the checklists for every phase, is on srv6 dot md, linked below.
+      That completes Track 3. Next, in Track 4, you'll build your own SRv6 lab, for free, on your laptop.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

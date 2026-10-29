@@ -1,0 +1,175 @@
+id: a04
+lang: en
+title: "SRv6 Between AI Data Centers (Scale-Across)"
+playlist: "Track 5: SRv6 for AI Networks"
+description: |
+  SRv6 for scale-across AI: how SRv6 traffic engineering carries AI training traffic between data centers. We cover why scale-across needs traffic engineering, Meta's SRv6 uSID regional backbone, Alibaba Cloud's eCore for AI with per-training-job SR Policies, China Telecom's cross-cluster training architecture, other signals from China, the well-known scale-across efforts that publish no SRv6 role, and the two design patterns that emerge.
+
+  This is lesson 4 of Track 5 (SRv6 for AI Networks) in the free SRv6.md course.
+links:
+  "Written lesson": https://srv6.md/ai/scale-across/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 vs ECMP, adaptive routing and Ultra Ethernet": https://srv6.md/ai/srv6-vs-ai-fabric-alternatives/
+  "Next lesson, SRv6 for AI inference over the WAN": https://srv6.md/ai/inference-wan/
+hashtags: ["#SRv6", "#AINetworking", "#DCI", "#TrafficEngineering"]
+tags: [srv6 scale across, scale-across, srv6, ai networking, data center interconnect, dci, traffic engineering, sr policy, meta, alibaba, multi-datacenter training]
+thumbnail:
+  kicker: "Scale-Across"
+  text: "650 km of SRv6"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 5 · Lesson 4"
+    title: "SRv6 Between AI Data Centers"
+    subtitle: "Scale-across, with traffic engineering"
+    chapter: "Intro"
+    say: >
+      AI training has outgrown the single building. Power and space limits push the largest jobs
+      across several data centers, campuses or regions, and that brings the WAN into the training loop.
+      After scale-up inside a rack and scale-out inside a cluster, this third dimension is usually called scale-across.
+      In this lesson you'll learn why it needs traffic engineering, what Meta, Alibaba and China Telecom
+      have published about running it on SRv6, which well-known efforts are not SRv6, and the two design patterns that emerge.
+
+  - type: compare
+    heading: "Why the WAN changes everything"
+    chapter: "Why traffic engineering"
+    columns:
+      - title: "Inside a cluster"
+        items: ["Symmetric Clos, full bisection", "Plentiful capacity", "Microsecond RTTs", "One traffic class dominates"]
+      - title: "Between sites"
+        items: ["A few fiber routes", "Scarce, expensive capacity", "Milliseconds of RTT", "Shared with storage and users"]
+    say: >
+      Inside a cluster, the fabric is symmetric and over-provisioned, so spraying traffic evenly works.
+      Between sites, everything changes. The topology is asymmetric, with a few fiber routes.
+      Capacity is scarce and expensive. Round trips take milliseconds, which collectives feel.
+      And AI traffic shares the links with storage, replication and user traffic.
+      Alibaba and Cisco summed it up at OCP 2026 in two words: traffic engineering is a must for AI D C I.
+      AI traffic has to stay on paths with the right latency and capacity, away from queues it would congest,
+      and move off degrading optical paths before they fail.
+      SRv6 fits because data center networks are IP-only. There's no MPLS in SONiC, nor on most data center switching silicon.
+      SRv6 gives explicit paths, SLA classes and VPNs on plain IPv6, end to end.
+
+  - type: bullets
+    heading: "Meta: the regional backbone"
+    chapter: "Meta"
+    bullets:
+      - "Rings of **1, 5 or 10 ms** RTT, **64 parallel planes**"
+      - "**FBOSS** on Cisco **Silicon One**, 800G ZR+ up to **650 km**"
+      - "ECN congestion control (**GLIDE**), not deep buffers"
+      - "First site with **SRv6 TE: October 2026**"
+    say: >
+      Meta is building regional backbone rings that let data center campuses in a region share compute and storage
+      within a latency envelope. They sit below the global Express Backbone, and carry AI and non-AI traffic between sites.
+      The rings have one, five or ten milliseconds of round-trip time, and sixty-four parallel planes,
+      with a full mesh between sites within a plane.
+      The hardware is shallow-buffer, data-center-class: FBOSS over OCP SAI on Cisco Silicon One,
+      with eight hundred gig ZR plus spans of up to six hundred fifty kilometers.
+      ECN-based congestion control, Meta's GLIDE, keeps queues short, not deep buffers.
+      The first site with SRv6 traffic engineering went into production in October 2026, with expansion planned.
+
+  - type: bullets
+    heading: "Meta's SRv6 data plane"
+    bullets:
+      - "Block **fcbb:bb00**, up to **six uSIDs** in the DA"
+      - "**H.Encaps.Red** head-end, **uA** transit, **End.DT46** egress"
+      - "**End.B6.Encaps.Red** stitches longer paths"
+      - "Controller per plane, every **30 seconds**"
+    say: >
+      The data plane is micro-SID, with the block f c b b, b b zero zero, and up to six micro-SIDs in the outer destination address.
+      The head-end uses H Encaps Red, transit hops use micro A adjacency SIDs, and the egress uses End D T 46.
+      When a path needs more than six micro-SIDs, an End B6 Encaps Red binding SID stitches two lists together.
+      For the control plane, one controller per plane programs every switch every thirty seconds, through a TE agent.
+      The SID table is installed once at bootstrap, with one entry per adjacency, not one per path.
+      Fast reroute sits below the controller.
+
+  - type: big
+    value: "6 vs 4"
+    caption: "Strict-priority classes Meta needs, vs what its MPLS encoding carries"
+    say: >
+      Why SRv6 and not MPLS? Meta already runs MPLS segment routing traffic engineering at scale, and still chose SRv6 here.
+      The deciding factor was quality of service. Meta needs six strict-priority classes.
+      Its MPLS encoding, with a three-bit traffic class, supports four. The eight-bit IPv6 traffic class carries all six.
+      One caveat: Meta's separate backend aggregation layer, which stitches training fabrics into one cluster
+      across buildings and regions, uses eBGP, not SRv6.
+
+  - type: bullets
+    heading: "Alibaba: eCore for AI"
+    chapter: "Alibaba"
+    bullets:
+      - "Scheduler hands the **job** to the TE system"
+      - "Controller computes an **SR Policy**, advertises a **BSID**"
+      - "Primary **<uA, uN>** with echo BFD, **anycast** backup"
+      - "Optical degradation withdraws a path **before** it fails"
+    say: >
+      Alibaba's backbone, eCore, is the largest published SRv6 D C I and WAN. Cisco describes it as an SRv6 deployment
+      across about a thousand cities in China, running since 2023.
+      At the OCP Global Summit 2026, Alibaba presented a dedicated eCore for AI:
+      a separate, single-tenant network with no overlay, built from SONiC and SRv6 routers, described as in production,
+      and engineered per training job.
+      The job scheduler hands the job's identity and endpoints to the TE system.
+      A controller computes an SR Policy for that job and advertises a binding SID for it through BGP.
+      Traffic is steered onto the binding SID. The primary path is a micro A, micro N list protected by echo BFD,
+      and an anycast SID provides the backup.
+      And optical degradation signals withdraw a path from use before it fails.
+
+  - type: bullets
+    heading: "China: trials and signals"
+    chapter: "China"
+    bullets:
+      - "**China Telecom:** L3EVPN over SRv6 Policy, 100–500 km"
+      - "Trials: **< 3%** degradation (vendor-reported)"
+      - "**China Mobile:** G-SRv6, no training run tied to it"
+      - "Long-distance records: **SRv6 not named**"
+    say: >
+      China Telecom's research institute, with Huawei, published a 2025 white paper that specifies L3 EVPN over SRv6 Policy
+      between compute gateways, for cross-cluster collaborative training, with tenant-level slicing.
+      It reports live-network trials in Shanghai, Zhejiang and Guangdong with less than three percent degradation,
+      and those are vendor-reported figures. It targets four and eight hundred gig links across one hundred to five hundred kilometers.
+      China Mobile says it has built the world's largest G-SRv6 network, but it hasn't tied a specific training run to it.
+      China Unicom uses SRv6 on its backbone and has piloted an SRv6-based task scheduling scheme.
+      And China's long-distance training records were published without naming SRv6 as the transport.
+      Treat them as proof that scale-across training works, not as SRv6 deployments.
+
+  - type: compare
+    heading: "What is not SRv6 (as published)"
+    chapter: "Not SRv6"
+    columns:
+      - title: "No SRv6 role published"
+        items: ["Cisco 8223 / P200 launch", "NVIDIA Spectrum-XGS", "Microsoft AI WAN (Fairwater)"]
+      - title: "Where SRv6 is, or isn't"
+        items: ["Meta BAG: eBGP", "Google: SRv6 only inside Virgo", "Alibaba runs per-job TE on P200"]
+    say: >
+      Just as useful is what isn't SRv6. The Cisco 8223, built on Silicon One P200, didn't mention SRv6 at launch,
+      although customers use P200 for SRv6: Alibaba's per-job traffic engineering runs on P200-based systems.
+      NVIDIA Spectrum-XGS is distance-aware congestion control and telemetry, with no routing or SRv6 component.
+      Microsoft's AI WAN between Fairwater sites has no public SRv6 claim. Microsoft's published SRv6 use is inside the cluster, with MRC.
+      Meta's backend aggregation uses eBGP.
+      And Google's only published SRv6 use is bare-metal source routing inside its Virgo fabric.
+
+  - type: compare
+    heading: "Two design patterns"
+    chapter: "Design patterns"
+    columns:
+      - title: "SR Policy at the DC edge"
+        items: ["Meta, Alibaba, China Telecom", "Border routers classify AI traffic", "Controller-computed uA/uN lists or BSIDs"]
+      - title: "Source routing from the NIC"
+        items: ["IETF AI-backend draft extension", "Cluster uSID path + DCI and WAN hops", "No production deployment published"]
+    say: >
+      Two patterns emerge. The first, used by Meta, Alibaba and China Telecom, is controller-driven SR Policy at the data center edge.
+      Hosts and cluster fabrics stay as they are. Border routers classify AI traffic by DSCP, flow label or VRF,
+      and steer it onto controller-computed micro A and micro N lists, or binding SIDs. That's classic traffic engineering, applied to AI.
+      The second is end-to-end source routing from the NIC: the same micro-SID path a NIC writes inside the cluster,
+      extended with D C I and WAN hops. The IETF draft says this can work across data centers,
+      but that's a capability statement. No production deployment of it has been published.
+      And remember what SRv6 doesn't do: it picks the path, it doesn't make a six hundred fifty kilometer link lossless.
+      Explicit paths make congestion control predictable, because each job's traffic stays on known links.
+
+  - type: end
+    heading: "Read the full lesson"
+    subtitle: "Every deployment, with its sources"
+    url: "srv6.md/ai/scale-across"
+    chapter: "Next steps"
+    say: >
+      Every deployment in this video, with its sources, is on srv6 dot md, linked below.
+      Next, the other end of AI networking: SRv6 for inference over the provider WAN.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

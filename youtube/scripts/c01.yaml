@@ -1,0 +1,191 @@
+id: c01
+lang: en
+title: "IS-IS for SRv6: Locators and SIDs in the IGP"
+playlist: "Track 2: Control Plane and Services"
+description: |
+  IS-IS for SRv6, explained from RFC 9352. How IS-IS advertises SRv6 locators and SIDs: the SRv6 Locator TLV (type 27), End and End.X SIDs, the SID Structure that tells every router how a 128-bit SID is split, the SRv6 Capabilities sub-TLV, Flex-Algo locators, and what the configuration looks like on Cisco IOS-XR and Junos.
+
+  This is lesson 1 of Track 2 (Control Plane and Services) in the free SRv6.md course.
+links:
+  "Written lesson, RFC 9352 explained": https://srv6.md/rfcs/rfc9352/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, SRv6 vs MPLS": https://srv6.md/topics/srv6-vs-sr-mpls/
+  "Next lesson, Flex-Algo with SRv6": https://srv6.md/topics/flex-algorithm/
+hashtags: ["#SRv6", "#ISIS", "#SegmentRouting", "#NetworkEngineering"]
+tags: [isis srv6, srv6, is-is, rfc 9352, srv6 locator, srv6 sid, igp, segment routing, flex-algo, network engineering]
+thumbnail:
+  kicker: "IS-IS for SRv6"
+  text: "TLV 27"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 2 · Lesson 1"
+    title: "IS-IS for SRv6"
+    subtitle: "Locators and SIDs in the IGP"
+    chapter: "Intro"
+    say: >
+      Before a router can steer a packet through a segment list, it has to know where every SID lives
+      and what it does. In an SRv6 network, that is the job of the I G P.
+      In this lesson we walk through RFC 9352, the I S I S extensions for SRv6.
+      By the end, you'll be able to read an SRv6 locator advertisement, tell an End SID from an End.X SID,
+      and spot the configuration mistakes that break SRv6 silently.
+
+  - type: bullets
+    heading: "What IS-IS has to tell every router"
+    chapter: "What IS-IS advertises"
+    bullets:
+      - "The **locator** prefix of each node"
+      - "The **SIDs** and their endpoint behaviors"
+      - "The **algorithm** used to compute the path"
+    say: >
+      RFC 9352 extends I S I S so it can carry SRv6 information inside the same I G P domain you already run.
+      Every router learns three things about every other router. First, its locator: the IPv6 prefix that
+      leads to that node. I S I S advertises locators as reachable IPv6 prefixes, with extra SRv6-specific
+      information attached. Second, the SIDs the node owns and the behavior behind each one.
+      Third, the algorithm used to compute the path toward that locator.
+      With that, SRv6 deployment inside an I G P domain becomes automatic. No LDP, no label distribution.
+
+  - type: bullets
+    heading: "The new TLVs and sub-TLVs"
+    chapter: "The new TLVs"
+    bullets:
+      - "**SRv6 Locator TLV (27):** the locator, its metric and flags"
+      - "**End SID sub-TLV:** a node SID, tied to a locator"
+      - "**End.X SID sub-TLV:** an adjacency SID"
+      - "**SID Structure:** the locator, function and argument split"
+      - "**SRv6 Capabilities sub-TLV:** what the node supports"
+    say: >
+      Here is the vocabulary. The top-level container is the SRv6 Locator T L V, type twenty-seven.
+      Inside it, End SID sub-T L Vs attach node SIDs to that locator.
+      Adjacency SIDs, the End.X SIDs, have their own sub-T L V. The SID Structure describes how each
+      128-bit SID is divided. And the SRv6 Capabilities sub-T L V tells the rest of the domain what this
+      node can do. That one rides in the I S I S Router Capability T L V, type two forty-two.
+      Five pieces, and together they describe the whole SRv6 data plane of a node.
+
+  - type: bullets
+    heading: "Inside the SRv6 Locator TLV"
+    bullets:
+      - "**Metric** (4 bytes): the route metric of the locator"
+      - "**Flags** (1 byte): the D-flag, set when leaked from L2 to L1"
+      - "**Algorithm** (1 byte): 0 = SPF, 128–255 = Flex-Algo"
+      - "**Prefix length + locator prefix**"
+      - "**Sub-TLVs:** End SIDs and their structure"
+    say: >
+      Open a Locator T L V and you find five fields. A four-byte metric for the locator prefix.
+      A flags byte, where the D-flag marks a locator leaked from level two into level one.
+      An algorithm byte: zero means plain shortest path first, and values from 128 to 255 are Flex-Algo.
+      Then the prefix length and the locator prefix itself.
+      Finally the sub-T L Vs, with the End SIDs that belong to this locator.
+      Notice what this means: one node can advertise several locators, each under a different algorithm.
+
+  - type: compare
+    heading: "End SID vs End.X SID"
+    chapter: "Node and adjacency SIDs"
+    columns:
+      - title: "End SID"
+        items: ["Identifies the node", "Sub-TLV of the Locator TLV", "Advertised with its locator"]
+      - title: "End.X SID"
+        items: ["Identifies one adjacency", "In the Extended IS Reachability TLV (22 or 222)", "LAN End.X adds the neighbor's system ID"]
+    say: >
+      The two SID types live in different places, and this trips people up.
+      An End SID is about the node, so it's a sub-T L V of the Locator T L V.
+      An End.X SID is a layer three cross-connect over one specific link, so it belongs to the adjacency.
+      It is carried in the Extended I S Reachability T L V, twenty-two or two twenty-two, next to the neighbor it points to.
+      On a multi-access LAN segment, there's a LAN End.X variant that also names the neighbor by its system ID.
+      End.X SIDs are per adjacency, not per locator.
+
+  - type: bullets
+    heading: "The SID Structure"
+    chapter: "SID structure"
+    bullets:
+      - "**Locator Block Length:** common across the domain"
+      - "**Locator Node Length:** the per-node part"
+      - "**Function Length:** the behavior"
+      - "**Argument Length:** optional, behavior-specific"
+      - "Locator length = **block + node**"
+    say: >
+      A SID is just 128 bits. To use it correctly, a remote router needs to know where the locator ends
+      and the function begins. The SID Structure carries that as four one-byte lengths.
+      The locator block length is the prefix shared by the whole SRv6 domain.
+      The locator node length is the part that identifies one node inside that block.
+      Then the function length, and the argument length, which is often zero.
+      Block plus node gives you the full locator length. With this, other nodes understand the SID without any pre-configuration.
+
+  - type: big
+    value: "16 ≠ 20"
+    caption: "Advertise one function length, use another, and remote nodes compute the wrong SIDs"
+    say: >
+      Here's why those lengths matter. If a node advertises a function length of sixteen bits,
+      but actually allocates twenty, every remote node parses its SIDs incorrectly.
+      For VPN services, that means remote P E routers build the wrong SIDs, and nothing in the I G P
+      complains. It is a silent failure. The same goes for mixing up block length and node length.
+      The block is the common prefix, the node part is per router, and confusing the two leads to
+      incorrect SID resolution.
+
+  - type: bullets
+    heading: "Locators and Flex-Algo"
+    chapter: "Flex-Algo locators"
+    bullets:
+      - "Different locators under **different algorithms**"
+      - "e.g. shortest path, low latency, disjoint paths"
+      - "Algorithm field must match the **Flex-Algo Definition**"
+      - "Mismatch: the locator is **not used** for that algorithm"
+    say: >
+      Because the algorithm is a field of the locator, I S I S ties SRv6 directly to Flex-Algo.
+      A node can advertise one locator for shortest path, another for low latency, another for disjoint paths.
+      Each locator gets its own path computation, which is the basis of the next lesson.
+      One rule to remember: when you advertise a locator under a Flex-Algo, from 128 to 255,
+      the algorithm field must match the Flex-Algo Definition advertised elsewhere in I S I S, defined in RFC 9350.
+      If it doesn't match, that locator is simply not used for that algorithm.
+
+  - type: code
+    heading: "Cisco IOS-XR: enable SRv6 in IS-IS"
+    chapter: "Configuration"
+    code: |
+      router isis CORE
+       address-family ipv6 unicast
+        segment-routing srv6
+         locator MAIN
+        !
+       !
+      !
+    say: >
+      On the router, this is refreshingly short. On Cisco I O S X R, you enable SRv6 under the I S I S
+      IPv6 unicast address family and name the locator to advertise, here MAIN.
+      The locator itself is defined once under segment routing. I S I S then builds the Locator T L V,
+      the End SIDs and the adjacency SIDs for you. You don't hand-craft any of the T L Vs we just saw.
+
+  - type: code
+    heading: "Junos: an SRv6 locator in IS-IS"
+    code: |
+      set protocols isis source-packet-routing srv6 locator myloc end-sid fc00:0:2::1
+    say: >
+      On Junos, it fits in one line. Under protocols I S I S, source packet routing, you attach the SRv6
+      locator, here called my-loc, and the End SID this node advertises.
+      Different syntax, same result: the node's locator and its End SID appear in the I S I S database of
+      every router in the domain.
+
+  - type: bullets
+    heading: "Related standards"
+    bullets:
+      - "**RFC 9513:** the OSPFv3 counterpart"
+      - "**RFC 9350:** Flex-Algo definitions"
+      - "**RFC 9800:** compressed SIDs add structure rules"
+      - "**RFC 8986:** the behaviors IS-IS advertises"
+      - "Security: **standard IS-IS authentication**"
+    say: >
+      A few related documents. If you run OSPF version three instead, RFC 9513 is the equivalent specification.
+      RFC 9350 defines the Flex-Algo IDs your locators refer to. RFC 9800, compressed SIDs,
+      adds new SID Structure considerations for micro-SID locators. And RFC 8986 defines the behaviors,
+      End, End.X and the rest, that these sub-T L Vs advertise.
+      On security, nothing new is needed: standard I S I S authentication protects the integrity of the SRv6 T L Vs.
+
+  - type: end
+    heading: "Read RFC 9352, explained"
+    subtitle: "Every TLV field, the pitfalls, and the next lesson: Flex-Algo"
+    url: "srv6.md/rfcs/rfc9352"
+    chapter: "Next steps"
+    say: >
+      The written lesson, with every field of the Locator T L V and the SID Structure, is on srv6 dot md, linked below.
+      Next, we use those per-algorithm locators to build network slices with Flex-Algo.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.

@@ -1,0 +1,110 @@
+id: s02
+lang: en
+title: "Learn SRv6 for Free: How the SRv6.md Course Works"
+playlist: "Start Here"
+description: |
+  Learn SRv6 for free, step by step. This video explains how the free SRv6.md course works: the 39 lessons in 8 tracks, the read, watch, build and check flow behind every lesson, the free labs you can run on a laptop, and where to start depending on what you already know. No sign-up, no paywall, and no certificate.
+
+  This is the Start Here lesson of the free SRv6.md course.
+links:
+  "Free SRv6 course (written lesson and all tracks)": https://srv6.md/learn/
+  "Next lesson, What is SRv6?": https://srv6.md/topics/what-is-srv6/
+  "Free SRv6 labs": https://srv6.md/labs/
+hashtags: ["#SRv6", "#LearnSRv6", "#SegmentRouting", "#NetworkEngineering"]
+tags: [learn srv6, srv6, srv6 course, srv6 training, free srv6 course, segment routing, segment routing over ipv6, srv6 lab, network engineering, ccie service provider]
+thumbnail:
+  kicker: "Learn SRv6"
+  text: "Free, no signup"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Start Here"
+    title: "Learn SRv6 for Free"
+    subtitle: "How the SRv6.md course works"
+    chapter: "Intro"
+    say: >
+      You want to learn SRv6, without paying for it or signing up for anything.
+      In this video you'll see how the free SRv6 dot md course works, what's in it,
+      and where you should start, depending on what you already know.
+
+  - type: big
+    value: "39 lessons"
+    caption: "In 8 tracks. Vendor-neutral, no sign-up, no paywall, MIT licensed"
+    chapter: "What the course is"
+    say: >
+      The course has thirty-nine lessons in eight tracks, from your first SID to AI fabrics.
+      It's vendor-neutral. There's no sign-up and no paywall, and the written lessons are MIT licensed.
+
+  - type: bullets
+    heading: "Every lesson, four steps"
+    chapter: "How a lesson works"
+    bullets:
+      - "**Read** the lesson on srv6.md, with its RFCs"
+      - "**Watch** the video to see it animated"
+      - "**Build it** in a free lab"
+      - "**Check yourself** with the FAQ at the end"
+    say: >
+      Every lesson follows the same four steps. First, read the written lesson on srv6 dot md.
+      Every page cites the RFCs behind it, so you can always check the source.
+      Then watch the video when you'd rather see it animated. Build it in a lab.
+      And finally, check yourself with the questions at the end of the lesson.
+
+  - type: compare
+    heading: "The tracks"
+    chapter: "The tracks"
+    columns:
+      - title: "Core path"
+        items: ["Start Here", "Track 1: SRv6 Foundations", "Track 2: Control Plane and Services", "Track 3: Operating SRv6"]
+      - title: "Go further"
+        items: ["Track 4: Hands-on Labs", "Track 5: SRv6 for AI Networks", "Track 6: Configuration by Vendor", "SRv6 en español"]
+    say: >
+      Here are the tracks. Foundations covers the data plane: SIDs, the S R H, behaviors and micro-SIDs.
+      Track two shows how the network learns SIDs and turns them into paths and services.
+      Track three is about troubleshooting, measuring, securing and migrating a real network.
+      Then come hands-on labs, SRv6 for AI networks, the same layer three VPN configured on each major vendor,
+      and the essential lessons in Spanish.
+
+  - type: bullets
+    heading: "No real routers needed"
+    bullets:
+      - "Labs run on a laptop with free tools"
+      - "**Containerlab**, **netlab** and **FRRouting**"
+      - "Packet captures open in **Wireshark**"
+    say: >
+      You don't need real routers to follow along. The labs run on a laptop with free tools,
+      such as Containerlab, netlab and FRRouting, and the packet captures open in Wireshark.
+
+  - type: bullets
+    heading: "Where to start"
+    chapter: "Where to start"
+    bullets:
+      - "**New to SRv6:** Track 1, lesson 1"
+      - "**Know SR-MPLS already:** jump to the uSID lesson"
+      - "**Prefer Spanish:** the SRv6 en español track"
+    say: >
+      Where should you start? If SRv6 is new to you, start with Track 1, which begins with What is SRv6,
+      and ends with SRv6 versus MPLS. If you already know Segment Routing with MPLS, you can jump to the micro-SID lesson.
+      And if you prefer Spanish, there's a Spanish track, and the written guides also come in Spanish and Japanese.
+
+  - type: bullets
+    heading: "What it is not"
+    chapter: "What to expect"
+    bullets:
+      - "**No certificate** today, and not a vendor certification"
+      - "Covers vendor-neutral topics that CCIE SP and JNCIE-SP also test"
+      - "Videos are published **track by track**"
+      - "Every written lesson is already online"
+    say: >
+      To be clear about what this course is not. There's no certificate today, and it isn't a vendor certification.
+      It covers the vendor-neutral SRv6 knowledge that exams such as CCIE Service Provider or JNCIE S P also test.
+      The videos are still in production and are published track by track,
+      but every lesson already has its written guide, so you never have to wait.
+
+  - type: end
+    heading: "Start with lesson 1"
+    subtitle: "What is SRv6? The full course is free on srv6.md"
+    url: "srv6.md/learn"
+    chapter: "Next steps"
+    say: >
+      The full course page, with every track and lesson, is on srv6 dot md, linked below.
+      Your next step is lesson one: What is SRv6. Subscribe, and I'll see you there.

@@ -1,0 +1,199 @@
+id: a03
+lang: en
+title: "SRv6 vs ECMP, Adaptive Routing and Ultra Ethernet"
+playlist: "Track 5: SRv6 for AI Networks"
+description: |
+  SRv6 vs Ultra Ethernet, ECMP hashing and switch adaptive routing: who picks the path for each packet in a GPU fabric, and what that changes. We compare per-flow ECMP, flowlets, adaptive routing in InfiniBand and Spectrum-X, UEC entropy spraying and SRv6 source routing, explain why SRv6 and a UEC-style transport combine rather than compete, and go through the published measurements and when each approach fits.
+
+  This is lesson 3 of Track 5 (SRv6 for AI Networks) in the free SRv6.md course.
+links:
+  "Written lesson": https://srv6.md/ai/srv6-vs-ai-fabric-alternatives/
+  "Free SRv6 course": https://srv6.md/learn/
+  "Previous lesson, designing an AI fabric with SRv6": https://srv6.md/ai/ai-fabric-design/
+  "Next lesson, SRv6 between AI data centers": https://srv6.md/ai/scale-across/
+hashtags: ["#SRv6", "#UltraEthernet", "#AINetworking", "#NetworkEngineering"]
+tags: [srv6 vs ultra ethernet, srv6, ultra ethernet, uec, ecmp, adaptive routing, packet spraying, mrc, ai networking, gpu fabric, infiniband]
+thumbnail:
+  kicker: "SRv6 vs UEC"
+  text: "Who picks?"
+
+scenes:
+  - type: title
+    kicker: "SRv6.md · Track 5 · Lesson 3"
+    title: "SRv6 vs ECMP, Adaptive Routing and Ultra Ethernet"
+    subtitle: "Who picks the path for each packet?"
+    chapter: "Intro"
+    say: >
+      Every AI backend has many equal-cost paths between any two GPUs.
+      The real question is who chooses the path for each packet, and how.
+      In this lesson you'll compare the three broad answers: the switch hashes, the switch adapts, or the sender decides.
+      You'll see where SRv6 fits, why it combines with Ultra Ethernet instead of competing with it,
+      and which approach makes sense for which kind of cluster.
+
+  - type: bullets
+    heading: "Five ways to pick a path"
+    chapter: "The options"
+    bullets:
+      - "**ECMP hashing:** switch, per flow, path unknown"
+      - "**Flowlets:** switch, on gaps in a flow"
+      - "**Adaptive routing:** switch, per packet, local queues"
+      - "**Entropy spraying (UEC):** sender picks, switch hashes"
+      - "**SRv6:** sender writes the **explicit path**"
+    say: >
+      Here are the five options. With ECMP hashing, the switch hashes the five-tuple, per flow,
+      and the sender has no idea which path a flow took. With flowlet switching, the switch picks again on gaps in a flow, per flowlet.
+      With switch adaptive routing, as in InfiniBand and NVIDIA Spectrum-X, each switch picks per packet from its local queue state.
+      With entropy spraying, the Ultra Ethernet style, the sender picks an entropy value and the switch hashes it,
+      so the sender knows its path only probabilistically.
+      And with SRv6 source routing, the sender writes the explicit path, so it knows it exactly.
+      The last three all reorder packets, and leave it to the NIC or the transport to put them back in order.
+
+  - type: bullets
+    heading: "ECMP: the baseline that breaks"
+    chapter: "ECMP"
+    bullets:
+      - "AI training: **a few huge, synchronized flows**"
+      - "Two flows on one link **halve each other**"
+      - "One RoCEv2 QP: **about half** the achievable all-reduce"
+      - "Failures wait for **routing reconvergence**"
+    say: >
+      Per-flow ECMP works well for many small flows. AI training produces the opposite: a few huge, synchronized flows.
+      Two of them that hash onto the same link halve each other's throughput,
+      and because collectives are synchronous, the whole job waits for the slowest one.
+      In the MRC paper's measurements, a single RoCE version two queue pair over ECMP reached about half
+      the achievable all-reduce throughput because of collisions, and opening more queue pairs helped only up to about eight.
+      ECMP also reacts to failures only through routing reconvergence.
+      The SRv6 AI-backend draft cites tens of milliseconds to under a second for BGP in Clos fabrics,
+      and during that time a fully loaded four hundred gig link loses a very large number of packets.
+
+  - type: compare
+    heading: "Switch adaptive routing"
+    chapter: "Adaptive routing"
+    columns:
+      - title: "Strengths"
+        items: ["Reacts to congestion where it happens", "No host involvement", "Proven at scale"]
+      - title: "Limits"
+        items: ["Path invisible to the sender", "Hard to reproduce or test", "The switch's view is local"]
+    say: >
+      Adaptive routing lets each switch send each packet out of its least-loaded eligible port.
+      NVIDIA Spectrum-X, for example, balances packet by packet in the switch, while the SuperNIC reorders the packets and places them in memory.
+      HPC networks such as InfiniBand have traditionally worked this way.
+      The strengths are real: it reacts to congestion right where it happens, it needs no help from the host, and it's proven at scale.
+      The limits: the path is decided hop by hop and is invisible to the sender, it's hard to reproduce or test,
+      and each switch only sees its own local state.
+
+  - type: bullets
+    heading: "Opposites that can coexist"
+    bullets:
+      - "IETF draft: **\"not switch adaptive routing\"**"
+      - "MRC: **one** adaptive mechanism, not two"
+      - "**Spectrum-4 and Spectrum-5** run MRC's static SRv6 mode"
+      - "**Google Virgo:** adaptive routing + SRv6 source routing"
+    say: >
+      The SRv6 model is the deliberate opposite. The IETF AI-backend draft states plainly that its approach is not switch adaptive routing.
+      The MRC authors disabled dynamic routing because they didn't want two adaptive mechanisms interacting.
+      But the two can live on the same hardware. NVIDIA Spectrum-4 and Spectrum-5 switches implement the static SRv6 mode used by MRC.
+      And Google's Virgo fabric combines switch adaptive routing with SRv6 source routing,
+      for bare-metal customers that run their own host stack.
+
+  - type: compare
+    heading: "Same idea, different guarantee"
+    chapter: "Ultra Ethernet"
+    columns:
+      - title: "UEC entropy"
+        items: ["Opaque hash input", "New value: likely, not guaranteed, a new path", "No network-layer change"]
+      - title: "SRv6 entropy (MRC)"
+        items: ["Maps to an explicit path", "New value: a different path by construction", "Loss identifies a physical path"]
+    say: >
+      The Ultra Ethernet Transport, specification 1.0 from June 2025, sprays packets by choosing among a set of entropy values,
+      typically sixty-four to two hundred fifty-six, carried in the UDP source port.
+      It backs off from entropies that return ECN marks or trimmed packets,
+      and it deliberately requires no change to the network layer: it works with existing routing protocols.
+      UEC 1.0 doesn't mention SRv6, and UEC 1.1, from October 2026, mentions it once, as a possible tunnel.
+      Here's the key difference. In UEC, an entropy value is an opaque hash input.
+      A new one after a failure is likely, but not guaranteed, to avoid the failed link, a point Cisco and Microsoft made at NANOG 96.
+      With SRv6, each entropy value maps to an explicit path, so a new value is a different path by construction,
+      and loss on a value identifies a physical path.
+
+  - type: bullets
+    heading: "Complementary, not rival"
+    bullets:
+      - "MRC borrows spraying, ECN, trimming and **NSCC** from UET"
+      - "Keeps the **RoCE verbs** model"
+      - "SRv6 mode: each EV is an **explicit uSID path**"
+      - "OCP spec: **ECMP, structured entropy or SRv6**"
+    say: >
+      So SRv6 doesn't compete with UEC-style transports. It gives them deterministic paths, and MRC shows it directly.
+      MRC borrows its spraying, ECN-driven load balancing, out-of-order placement, selective retransmission and packet trimming from the Ultra Ethernet Transport,
+      and uses UET's NSCC congestion control by default.
+      It keeps the RoCE verbs model, as a minimal extension of RoCE version two.
+      And in its SRv6 mode, it maps each entropy value to an explicit micro-SID path, so the same transport logic gains exact path identity.
+      The OCP MRC specification supports ECMP hashing, a structured entropy mode and SRv6.
+      That lets an operator start on an existing ECMP fabric, and move to source routing when the switches support it.
+
+  - type: bullets
+    heading: "When each approach makes sense"
+    chapter: "When to use each"
+    bullets:
+      - "**Small, mixed, existing RoCE:** ECMP + flowlets"
+      - "**Single-vendor adaptive gear:** adaptive routing"
+      - "**Multi-vendor, UEC NICs:** UEC spraying over ECMP"
+      - "**Very large clusters:** SRv6 + multipath transport"
+      - "**Between data centers:** SRv6 traffic engineering"
+    say: >
+      None of these is right everywhere. For a small cluster with mixed traffic and existing RoCE NICs, ECMP with flowlets
+      and well-tuned P F C and ECN is a good fit.
+      A single-vendor fabric with adaptive switches and NICs fits switch adaptive routing.
+      Multi-vendor Ethernet with UEC NICs, where you don't want switch changes, fits UEC entropy spraying over ECMP.
+      For very large clusters where failure handling, reproducibility and path-level telemetry matter,
+      SRv6 source routing with a multipath transport like MRC is the fit.
+      And for AI traffic between data centers, it's SRv6 traffic engineering with SR Policy at the data center edge.
+      That's the next lesson.
+
+  - type: bullets
+    heading: "What has been measured"
+    chapter: "Measurements"
+    bullets:
+      - "64 GPUs: **1 MRC QP** beat **16 RoCEv2 QPs** (ring all-reduce)"
+      - "7:1 incast: RoCEv2 victim **−25%**, MRC victim **no impact**"
+      - "Simulation: SRv6 re-routing **21.6–37.1%** faster"
+      - "**No primary source** vs InfiniBand"
+    say: >
+      What's actually been measured? From the MRC paper, on identical hardware with sixty-four GPUs:
+      one MRC queue pair spraying across two hundred fifty-six SRv6 paths beat sixteen RoCE queue pairs on ECMP for ring all-reduce,
+      and MRC won all-to-all at every message size.
+      In a seven to one incast, a RoCE victim flow lost about twenty-five percent of its throughput, and an MRC victim flow saw no impact.
+      From a Microsoft Research paper, in simulation: with one link degraded to half capacity,
+      SRv6-based re-routing finished an all-to-all twenty-one point six to thirty-seven point one percent faster than packet spraying,
+      depending on message size. The same paper found that deterministic SRv6 probing covers N paths with N probes,
+      which gave about five times faster failure detection for the same probe budget.
+      And one honest gap: no primary source benchmarks SRv6 with MRC directly against InfiniBand.
+
+  - type: bullets
+    heading: "Does SRv6 replace ECMP?"
+    chapter: "Does SRv6 replace ECMP?"
+    bullets:
+      - "**MRC over static SRv6:** yes, switches don't hash"
+      - "**Frontend networks:** ECMP remains common"
+      - "**RoCEv2 or UEC without source routing:** still ECMP"
+      - "SRv6 and UEC work at **different layers**"
+    say: >
+      So does SRv6 replace ECMP in AI data centers? In the backend fabrics that run MRC over static SRv6, yes:
+      the sender chooses every path, and the switches don't hash at all.
+      But ECMP remains common in frontend networks, and in AI fabrics that run RoCE version two or UEC without source routing.
+      And is SRv6 an alternative to Ultra Ethernet? No. They work at different layers.
+      Ultra Ethernet defines a transport that sprays packets using entropy values that switches hash,
+      and SRv6 can turn each of those entropy values into an explicit path.
+      Why not just rely on adaptive switches, then? Because the sender never learns which path a packet took,
+      which makes failures harder to pinpoint, and pairing it with an adaptive transport creates two control loops reacting to the same events.
+
+  - type: end
+    heading: "Read the full comparison"
+    subtitle: "The comparison table, sources and FAQ"
+    url: "srv6.md/ai/srv6-vs-ai-fabric-alternatives"
+    chapter: "Next steps"
+    say: >
+      The full comparison, with the side-by-side table and every source, is on srv6 dot md, linked below.
+      If you're choosing for a real cluster, start from the table of situations, not from the technology.
+      Next, we leave the single building: SRv6 between AI data centers, with Meta's and Alibaba's networks.
+      This lesson is part of the free SRv6 dot md course. Subscribe, and I'll see you in the next lesson.
