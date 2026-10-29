@@ -446,7 +446,7 @@
          <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/estructura-del-sid/"/>
          <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/sid-structure/"/>
          <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/sid-structure/"/>
-         <lastmod>2026-10-20</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/sonic-sai/</loc>
@@ -462,7 +462,7 @@
          <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/cabecera-srh/"/>
          <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/srh-packet-walk/"/>
          <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/srh-packet-walk/"/>
-         <lastmod>2026-10-25</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/srpm/</loc>
@@ -490,7 +490,7 @@
          <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/usid/"/>
          <xhtml:link rel="alternate" hreflang="ja" href="https://srv6.md/ja/usid/"/>
          <xhtml:link rel="alternate" hreflang="x-default" href="https://srv6.md/topics/usid-compression/"/>
-         <lastmod>2026-10-25</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/topics/what-is-srv6/</loc>

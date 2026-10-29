@@ -2872,11 +2872,11 @@ An SRv6 **Segment Identifier (SID)** is a 128-bit value, formatted as a standard
 ## Example
 
 ```
-SID:  5f00:0:1::100
+SID:  5f00:0:1:100::
 
 Breakdown:
-  Locator:  5f00:0:1::/48   (identifies the node)
-  Function: ::100            (End.DT4 - decap and lookup in IPv4 table)
+  Locator:  5f00:0:1::/48   (bits 0-47: identifies the node)
+  Function: 100              (bits 48-63: End.DT4, decapsulate and look up in an IPv4 table)
   Args:     (none)
 ```
 
@@ -2923,43 +2923,84 @@ Most early SRv6 deployments (China Mobile, SoftBank, and others) use operator-as
 
 ### Filtering `5f00::/16` at Domain Boundaries
 
-Whether you use `5f00::/16` or your own GUA, you must prevent SRv6 SIDs from leaking outside the SR domain.
+Whether you use `5f00::/16` or your own GUA, keep SRv6 SIDs inside the SR domain at two layers:
+
+1. **Routes:** never advertise the SID block to external peers, and never accept it from them.
+2. **Packets:** drop packets arriving on external interfaces whose destination is in the SID block, so nobody outside can send traffic to your SIDs.
 
 === "Cisco IOS-XR"
 
     ```cisco
-    prefix-set DENY-SRV6
+    prefix-set SRV6-SIDS
       5f00::/16 le 128
     end-set
-
-    route-policy EBGP-IN
-      if destination in DENY-SRV6 then
+    !
+    route-policy NO-SRV6-SIDS
+      if destination in SRV6-SIDS then
         drop
+      else
+        pass
       endif
     end-policy
+    !
+    router bgp 65000
+     neighbor 2001:db8:ff::1
+      address-family ipv6 unicast
+       route-policy NO-SRV6-SIDS in
+       route-policy NO-SRV6-SIDS out
+    !
+    ipv6 access-list EDGE-IN
+     10 deny ipv6 any 5f00::/16
+     20 permit ipv6 any any
+    !
+    interface HundredGigE0/0/0/0
+     ipv6 access-group EDGE-IN ingress
     ```
+
+    The `else pass` matters: an IOS-XR route policy drops everything it does not explicitly pass.
 
 === "Juniper Junos"
 
     ```junos
     policy-options {
-        prefix-list SRV6-SID-SPACE {
-            5f00::/16;
-        }
-        policy-statement REJECT-SRV6 {
+        policy-statement NO-SRV6-SIDS {
             term deny-srv6 {
-                from prefix-list SRV6-SID-SPACE;
+                from {
+                    route-filter 5f00::/16 orlonger;
+                }
                 then reject;
+            }
+        }
+    }
+    firewall {
+        family inet6 {
+            filter EDGE-IN {
+                term no-srv6-sids {
+                    from {
+                        destination-address {
+                            5f00::/16;
+                        }
+                    }
+                    then discard;
+                }
+                term rest {
+                    then accept;
+                }
             }
         }
     }
     ```
 
+    Apply `NO-SRV6-SIDS` as both `import` and `export` policy on the external BGP group, and `EDGE-IN` as `filter input` on the external interfaces (`family inet6`). `orlonger` is needed: without it the policy only matches the /16 itself.
+
 === "Linux (ip6tables)"
 
     ```bash
-    ip6tables -A FORWARD -d 5f00::/16 -j DROP
+    # External interface only: inside the domain, SRv6 traffic to the SID block is legitimate
+    ip6tables -t raw -A PREROUTING -i eth-external -d 5f00::/16 -j DROP
     ```
+
+    The `raw` table's `PREROUTING` chain runs before the routing decision, so it also covers packets addressed to local SIDs, which never reach `FORWARD`.
 
 For deployments using operator GUA prefixes, apply the same principle with your locator prefix range (see also [RFC 8754 Section 5.1](https://datatracker.ietf.org/doc/html/rfc8754#section-5.1)).
 
@@ -3279,7 +3320,7 @@ After SRv6 encapsulation:
 !!! info "DA = Active SID"
     The IPv6 Destination Address always equals the currently active SID (`Segment List[Segments Left]`).
 
-### Step 2: Transit (Node B — End Behavior)
+### Step 2: Endpoint (Node B — End Behavior)
 
 Node B receives the packet. The DA matches its local SID `B::100` with **End** behavior:
 
@@ -3354,10 +3395,10 @@ SRv6 endpoints can support different processing **flavors** that optimize how th
 |--------|-----------|-------------|
 | **PSP** | Penultimate Segment Pop | The penultimate node (SL=1) removes the SRH before forwarding to the last segment. Reduces overhead on the egress node. |
 | **USP** | Ultimate Segment Pop | The ultimate (last) node removes the SRH itself. |
-| **USD** | Ultimate Segment Decap | The ultimate node decapsulates the entire outer IPv6 header + SRH. Used with End.DT4/DT6. |
+| **USD** | Ultimate Segment Decap | The ultimate node decapsulates the entire outer IPv6 header + SRH. Applies to End, End.X and End.T; End.DT4/DT6/DT46 decapsulate by definition and take no flavor. |
 
 !!! tip "PSP is the most common"
-    PSP is widely deployed because it offloads SRH removal from the egress PE, improving efficiency. Most modern implementations advertise `End with PSP` or `End with PSP-USP-USD`.
+    PSP is widely deployed because it offloads SRH removal from the egress PE, improving efficiency. PSP and USD are the common pair (IOS-XR's `psp-usd` keyword); Linux implements PSP on End. Flavors apply only to End, End.X and End.T.
 
 ## SRH with TLVs
 
@@ -3385,7 +3426,7 @@ H.Encaps.Red:  SRH [SID-3, SID-2],        SL=2, DA = SID-1  ← SID-1 only in th
 === "Linux"
 
     ```bash
-    # Capture SRv6 packets (Routing Header type 43)
+    # Capture SRv6 packets: Next Header 43 is the Routing Header (SRv6 uses Routing Type 4)
     tcpdump -i eth0 -vv 'ip6 proto 43'
 
     # Show local SID table
@@ -4467,10 +4508,12 @@ Step 3 - Node 2 processes uSID 0002, shifts left:
                   ^^^^
                   Active uSID → Node 3
 
-Step 4 - Node 3 processes uSID 0003, shifts left:
-  DA = fcbb:bbbb:0000:0000:0000:0000:0000:0000
+Step 4 - Node 3 processes uSID 0003. Everything after it is 0000
+         (end-of-container), so there is nothing left to shift:
+  DA = fcbb:bbbb:0003:0000:0000:0000:0000:0000
                   ^^^^
-                  End-of-Container (0000) → Move to next SRH entry
+                  Last uSID → with an SRH, take the next container
+                  (Segments Left - 1); without one, run the final behavior
 ```
 
 !!! tip "Try it with your own container"
@@ -4486,7 +4529,7 @@ Step 4 - Node 3 processes uSID 0003, shifts left:
 | 12 SIDs | 192 bytes | 32 bytes (2 containers) | **83%** |
 
 !!! tip "6 hops in 16 bytes"
-    A single uSID container can encode **up to 6 segment instructions** in the same space that classic SRv6 uses for just **1 SID**. This makes SRv6 competitive with or better than MPLS label stacks in terms of overhead.
+    A single uSID container can encode **up to 6 segment instructions** in the same space that classic SRv6 uses for just **1 SID**. It removes the per-SID cost: a path of up to six instructions needs only the 40-byte outer IPv6 header and no SRH. A plain MPLS VPN is still smaller (8 bytes); see [SRv6 vs MPLS](https://srv6.md/topics/srv6-vs-sr-mpls/) for the numbers.
 
 ## uSID vs G-SRv6
 
@@ -4500,7 +4543,7 @@ Two compression approaches emerged and are now unified under **RFC 9800**:
 | **RFC** | RFC 9800 | RFC 9800 |
 | **Adoption** | Multiple global operators | Multiple global operators |
 
-Both are now standardized in **RFC 9800** (SRv6 SID Compression), ensuring interoperability.
+Both flavors are standardized in **RFC 9800** (Compressed SRv6 Segment List Encoding). They are different encodings, so a domain uses one of them; multi-vendor interoperability has been demonstrated for NEXT-C-SID (uSID).
 
 ## Configuration Examples
 
@@ -4512,7 +4555,7 @@ Both are now standardized in **RFC 9800** (SRv6 SID Compression), ensuring inter
       locators
        locator uSID-MAIN
         micro-segment behavior unode psp-usd
-        prefix fcbb:bb01::/48
+        prefix fcbb:bbbb:1::/48
        !
       !
      !
