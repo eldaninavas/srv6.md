@@ -1,6 +1,7 @@
 // Record live srv6.md pages (animated React Flow diagrams) as video scenes.
 //   node youtube/tools/record.mjs records.json
-// records.json: [{ url, selector, click, clickAt, seconds, width, height, out }]
+// records.json: [{ url, selector, index, click, clickAt, seconds, width, height, out }]
+// `index` picks the nth match of `selector` (default .srv6-flow, index 0).
 // The page is cleaned up (header, tabs, sidebars hidden), the element is
 // centred and zoomed to fill the frame, then recorded for `seconds`. When
 // `click` is set, the button whose text contains it is clicked after
@@ -26,23 +27,27 @@ for (const job of jobs) {
     .md-header,.md-tabs,.md-banner,.md-sidebar,.md-footer,.md-source-file,.md-content__button,.md-top{display:none!important}
     .md-main__inner{margin:0!important} body{overflow:hidden!important}` });
   const sel = job.selector || '.srv6-flow';
-  const el = await page.waitForSelector(sel);
+  await page.waitForSelector(sel);
+  const idx = job.index || 0;
+  const el = (await page.$$(sel))[idx];
+  if (!el) throw new Error(`${job.url}: no ${sel} #${idx}`);
   await el.scrollIntoViewIfNeeded();
   await page.waitForTimeout(1500); // let React Flow mount and the packets start
-  await page.evaluate(({ sel, W, H }) => {
+  await page.evaluate(({ sel, idx, W, H }) => {
     // Show only the element: pin it to the centre of the frame and scale it up
-    const e = document.querySelector(sel);
+    const e = document.querySelectorAll(sel)[idx];
+    e.setAttribute('data-rec', '');
     const r = e.getBoundingClientRect();
     const scale = Math.min((W * 0.9) / r.width, (H * 0.86) / r.height, 2.6);
     const style = document.createElement('style');
-    style.textContent = `body *{visibility:hidden!important} ${sel},${sel} *{visibility:visible!important}`;
+    style.textContent = 'body *{visibility:hidden!important} [data-rec],[data-rec] *{visibility:visible!important}';
     document.head.appendChild(style);
     Object.assign(e.style, {
       position: 'fixed', margin: '0', width: r.width + 'px', height: r.height + 'px',
       left: (W - r.width) / 2 + 'px', top: (H - r.height) / 2 + 'px',
       transform: `scale(${scale})`, transformOrigin: 'center center', zIndex: '9999',
     });
-  }, { sel, W: job.width, H: job.height });
+  }, { sel, idx, W: job.width, H: job.height });
   await page.waitForTimeout(800); // re-layout after the zoom
   const start = Date.now();
   if (job.click) {

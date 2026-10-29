@@ -1,10 +1,10 @@
 """
-Validate SRv6.md Academy video scripts without rendering them.
+Validate SRv6.md course video scripts without rendering them.
 
     venv/bin/python youtube/tools/check_script.py youtube/scripts/*.yaml
 
 Checks the fields video.py needs, that every image exists, that record
-scenes point at srv6.md, that the id and title match youtube/academy.yaml,
+scenes point at srv6.md, that the id and title match youtube/course.yaml,
 that YouTube will accept the chapters (first at the start, at least three),
 and estimates the narrated length (about 150 words per minute in English
 and Spanish).
@@ -28,7 +28,7 @@ FIELDS = {
 
 
 def lessons():
-    with open(os.path.join(YT, "academy.yaml"), encoding="utf-8") as f:
+    with open(os.path.join(YT, "course.yaml"), encoding="utf-8") as f:
         a = yaml.safe_load(f)
     return {l["id"]: l for t in a["tracks"] for l in t["lessons"]}
 
@@ -42,9 +42,9 @@ def check(path, catalog):
             errors.append(f"missing {k}")
     vid = sc.get("id")
     if vid not in catalog:
-        errors.append(f"id {vid} not in academy.yaml")
+        errors.append(f"id {vid} not in course.yaml")
     elif catalog[vid]["title"] != sc.get("title"):
-        warnings.append(f"title differs from academy.yaml: {catalog[vid]['title']!r}")
+        warnings.append(f"title differs from course.yaml: {catalog[vid]['title']!r}")
     if len(sc.get("title", "")) > 100:
         errors.append("title over YouTube's 100 characters")
     words, chapters = 0, []

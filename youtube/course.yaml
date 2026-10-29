@@ -1,11 +1,11 @@
-# SRv6.md Academy: the single source of truth for the free course.
-# Each track is a YouTube playlist and a section of srv6.md/academy/.
+# Learn SRv6, the free SRv6.md course: the single source of truth.
+# Each track is a YouTube playlist and a section of srv6.md/learn/.
 # Each lesson: id (also the script file youtube/scripts/<id>.yaml and the
 # video output folder), title (the YouTube title), page (the srv6.md lesson
 # the video teaches from, relative to docs/), keyword (the search it targets),
 # minutes (target length) and, once published, youtube (the video id).
 
-name: SRv6.md Academy
+name: Learn SRv6
 tagline: The free SRv6 course. From your first SID to AI fabrics.
 channel_handle: "@srv6md"   # desired handle; claim it when creating the channel
 # channel_url: https://www.youtube.com/@srv6md   # set once the channel exists; the site links it only then
@@ -17,7 +17,7 @@ tracks:
     summary: What SRv6 is, why it matters, and how this course works.
     lessons:
       - {id: s01, title: "SRv6 in 100 Seconds", page: topics/what-is-srv6.md, keyword: srv6, minutes: 2, format: short}
-      - {id: s02, title: "Learn SRv6 for Free: How the SRv6.md Academy Works", page: academy/index.md, keyword: learn srv6, minutes: 3}
+      - {id: s02, title: "Learn SRv6 for Free: How the SRv6.md Course Works", page: learn/index.md, keyword: learn srv6, minutes: 3}
 
   - id: foundations
     title: "Track 1: SRv6 Foundations"
@@ -104,7 +104,7 @@ tracks:
   - id: es
     title: "SRv6 en español"
     level: Principiante
-    summary: Las lecciones esenciales de la academia, en español.
+    summary: Las lecciones esenciales del curso, en español.
     lang: es
     lessons:
       - {id: e01, title: "¿Qué es SRv6? Segment Routing sobre IPv6 explicado", page: es/que-es-srv6.md, keyword: que es srv6, minutes: 8}

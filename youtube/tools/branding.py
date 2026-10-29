@@ -37,7 +37,7 @@ def main():
             # safe area: x 507..2053, y 508..931
             "<div style='position:absolute;left:507px;top:508px;width:1546px;height:423px;display:flex;align-items:center;gap:56px'>"
             f"<img src='{logo}' style='width:250px;height:250px;flex:none'>"
-            "<div><div style='font-size:112px;font-weight:800;letter-spacing:-2px;line-height:1'>SRv6.md <span style='color:#ce93d8'>Academy</span></div>"
+            "<div><div style='font-size:112px;font-weight:800;letter-spacing:-2px;line-height:1'>SRv6<span style='color:#ce93d8'>.md</span></div>"
             "<div style='font-size:52px;color:#e1bee7;margin-top:26px;font-weight:600'>The free SRv6 course: Segment Routing over IPv6, explained</div>"
             "<div style='font-size:40px;color:#ce93d8;margin-top:18px'>Foundations · Labs · TI-LFA · L3VPN · SRv6 for AI · srv6.md</div></div></div>"
             # faint network lines outside the safe area for TV/desktop

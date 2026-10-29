@@ -9,6 +9,6 @@ node_modules/
 build/
 docs/assets/diagrams/
 
-# YouTube academy: rendered videos and voice recordings stay local
+# YouTube course: rendered videos and voice recordings stay local
 youtube/out/
 youtube/voice/

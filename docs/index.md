@@ -63,11 +63,11 @@ hide:
   <a href="https://github.com/eldaninavas/srv6.md" target="_blank" rel="noopener" class="srv6-contributors-join">+ Become a contributor</a>
 </div>
 
-## :material-school: SRv6.md Academy: a free SRv6 course
+## :material-school: Learn SRv6: a free course
 
-Learn SRv6 in order, from your first SID to TI-LFA, L3VPN, migration from MPLS, vendor configuration and AI fabrics. The [SRv6.md Academy](academy/index.md) organizes every guide on this site into tracks, with hands-on labs, and video lessons coming to YouTube.
+Learn SRv6 in order, from your first SID to TI-LFA, L3VPN, migration from MPLS, vendor configuration and AI fabrics. [Learn SRv6](learn/index.md) organizes every guide on this site into tracks, with hands-on labs, and video lessons coming to YouTube.
 
-[:material-arrow-right: Start the free SRv6 course](academy/index.md){ .md-button .md-button--primary }
+[:material-arrow-right: Start the free SRv6 course](learn/index.md){ .md-button .md-button--primary }
 
 ## :material-robot-outline: SRv6 for AI
 

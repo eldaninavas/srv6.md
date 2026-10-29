@@ -1,7 +1,7 @@
 """
-Generate docs/academy/index.md (srv6.md/academy/) from youtube/academy.yaml.
+Generate docs/learn/index.md (srv6.md/learn/) from youtube/course.yaml.
 
-    venv/bin/python youtube/tools/academy_page.py
+    venv/bin/python youtube/tools/course_page.py
 
 Every lesson links to the srv6.md page it teaches from. When a lesson has
 a `youtube:` video id, the page shows a Watch link and the track gets an
@@ -16,46 +16,45 @@ import yaml
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
-OUT = os.path.join(REPO, "docs", "academy", "index.md")
+OUT = os.path.join(REPO, "docs", "learn", "index.md")
 
 
 def rel(page):
-    # docs/academy/index.md -> ../<page>
+    # docs/learn/index.md -> ../<page>
     return "../" + page
 
 
 def main():
-    with open(os.path.join(os.path.dirname(HERE), "academy.yaml"), encoding="utf-8") as f:
-        academy = yaml.safe_load(f)
+    with open(os.path.join(os.path.dirname(HERE), "course.yaml"), encoding="utf-8") as f:
+        course = yaml.safe_load(f)
 
     # Shorts have no written lesson of their own: list them only once published
     def shown(t):
         return [l for l in t["lessons"] if l.get("format") != "short" or l.get("youtube")]
-    tracks = [t for t in academy["tracks"] if shown(t)]
+    tracks = [t for t in course["tracks"] if shown(t)]
     total = sum(len(shown(t)) for t in tracks)
     published = sum(1 for t in tracks for l in shown(t) if l.get("youtube"))
     lines = [
         "---",
-        "title: SRv6.md Academy",
-        'seo_title: "SRv6.md Academy: Free SRv6 Course with Videos and Labs"',
+        "title: Learn SRv6",
+        'seo_title: "Learn SRv6: Free SRv6 Course with Videos and Labs"',
         'description: "Learn SRv6 for free: a structured course from SIDs and the SRH to TI-LFA, L3VPN, '
         'migration, vendor configs and AI fabrics, with written lessons, videos and hands-on labs."',
         "tags:",
-        "  - academy",
         "  - srv6 course",
         "  - learn srv6",
         "  - srv6 training",
         "---",
         "",
-        "# SRv6.md Academy",
+        "# Learn SRv6: the free SRv6.md course",
         "",
-        f"**{academy['tagline']}** A structured, vendor-neutral SRv6 course with {total} lessons in "
+        f"**{course['tagline']}** A structured, vendor-neutral SRv6 course with {total} lessons in "
         f"{len(tracks)} tracks. Every lesson is a written guide on srv6.md, a video on "
-        + (f"the [SRv6.md YouTube channel]({academy['channel_url']})" if academy.get("channel_url")
+        + (f"the [SRv6.md YouTube channel]({course['channel_url']})" if course.get("channel_url")
            else "the SRv6.md YouTube channel (launching soon)")
         + " and, where it applies, a lab you can run on your laptop. No sign-up, no paywall, MIT licensed.",
         "",
-        "!!! tip \"How to use the academy\"",
+        "!!! tip \"How to use the course\"",
         "    1. **Read** the lesson on srv6.md: every page cites the RFCs behind it.",
         "    2. **Watch** the video when you prefer to see it animated.",
         "    3. **Build it**: the [labs](../labs/index.md) reproduce each concept with free tools.",
@@ -82,7 +81,7 @@ def main():
         lines.append("")
 
     faq = [
-        ("Is the SRv6.md Academy free?",
+        ("Is the SRv6.md course free?",
          "Yes. Every lesson, video and lab is free, with no sign-up. The written lessons are MIT licensed."),
         ("Where should I start learning SRv6?",
          "Start with Track 1, SRv6 Foundations, which begins with What is SRv6? and ends with SRv6 vs MPLS. "
@@ -91,7 +90,7 @@ def main():
          "No. The labs run on a laptop with free tools such as Containerlab, netlab and FRRouting, and the "
          "packet captures open in Wireshark."),
         ("Is there a certificate?",
-         "Not today. The academy is a free learning path, not a vendor certification. It covers the vendor-neutral "
+         "Not today. The course is a free learning path, not a vendor certification. It covers the vendor-neutral "
          "SRv6 knowledge that certifications such as Cisco CCIE Service Provider or Juniper JNCIE-SP also test."),
         ("Is the course available in Spanish?",
          "Yes. The SRv6 en español track covers the essential lessons in Spanish, and the written guides have "
@@ -101,14 +100,14 @@ def main():
     for q, a in faq:
         lines += [f"### {q}", "", a, ""]
 
-    course = {
+    schema = {
         "@context": "https://schema.org",
         "@type": "Course",
-        "name": "SRv6.md Academy: Free SRv6 Course",
+        "name": "Learn SRv6: The Free SRv6.md Course",
         "description": "A free, vendor-neutral course on Segment Routing over IPv6 (SRv6): SIDs, the SRH, uSID, "
                        "TI-LFA, SR Policy, BGP services, operations, migration from MPLS, vendor configuration "
                        "and SRv6 for AI networks.",
-        "url": "https://srv6.md/academy/",
+        "url": "https://srv6.md/learn/",
         "provider": {"@type": "Organization", "name": "SRv6.md", "sameAs": "https://srv6.md"},
         "isAccessibleForFree": True,
         "inLanguage": ["en", "es"],
@@ -125,7 +124,7 @@ def main():
               "- :material-arrow-right: [SRv6 White Paper 2026](../white-papers/srv6-white-paper-2026.md) - "
               "Design and migration for architects",
               "",
-              f'<script type="application/ld+json">{json.dumps(course, ensure_ascii=False)}</script>', ""]
+              f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script>', ""]
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:

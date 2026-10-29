@@ -219,7 +219,7 @@ def main():
     jobs, records = [], []
     for i, s in enumerate(sc["scenes"], 1):
         if s["type"] == "record":
-            records.append({"url": s["url"], "selector": s.get("selector"), "click": s.get("click"),
+            records.append({"url": s["url"], "selector": s.get("selector"), "index": s.get("index", 0), "click": s.get("click"),
                             "clickAt": s.get("click_at", 0), "seconds": s.get("seconds", 12),
                             "width": W, "height": H, "out": os.path.join(work, f"{i:02}.webm")})
         else:

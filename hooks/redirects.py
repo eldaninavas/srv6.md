@@ -20,6 +20,7 @@ REDIRECTS = {
     "topics/when-is-srv6/": "topics/what-is-srv6/",
     "topics/srv6-v-sr-mpls/": "topics/srv6-vs-sr-mpls/",
     "documentation/": "docs/",
+    "academy/": "learn/",
     "topics/srv6-vs-mpls/": "topics/srv6-vs-sr-mpls/",
     "whitepapers/": "white-papers/",
     "white-paper/": "white-papers/srv6-white-paper-2026/",

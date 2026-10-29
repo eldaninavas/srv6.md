@@ -5,10 +5,10 @@ playlist: "Track 1: SRv6 Foundations"
 description: |
   SRv6 vs MPLS, explained with real numbers. We compare classic MPLS (LDP and RSVP-TE), SR-MPLS and SRv6: how each one carries a VPN packet, how much header overhead they add, how the control plane changes, where each one can reach, and when you should choose one or the other.
 
-  This is lesson 6 of Track 1 (SRv6 Foundations) in the free SRv6.md Academy.
+  This is lesson 6 of Track 1 (SRv6 Foundations) in the free SRv6.md course.
 links:
   "Written lesson (with all the numbers)": https://srv6.md/topics/srv6-vs-sr-mpls/
-  "SRv6.md Academy, the free SRv6 course": https://srv6.md/academy/
+  "Free SRv6 course": https://srv6.md/learn/
   "Previous lesson, uSID explained": https://srv6.md/topics/usid-compression/
   "MPLS to SRv6 migration": https://srv6.md/topics/interworking-migration/
 hashtags: ["#SRv6", "#MPLS", "#SegmentRouting", "#NetworkEngineering"]
@@ -19,7 +19,7 @@ thumbnail:
 
 scenes:
   - type: title
-    kicker: "SRv6.md Academy · Track 1 · Lesson 6"
+    kicker: "SRv6.md · Track 1 · Lesson 6"
     title: "SRv6 vs MPLS"
     subtitle: "Differences, overhead, and when to use each"
     chapter: "Intro"
@@ -147,5 +147,5 @@ scenes:
     chapter: "Next steps"
     say: >
       The full comparison, with every number from this video, is on srv6 dot md, linked below,
-      together with the migration guide from MPLS to SRv6. This lesson is part of the free SRv6 dot md Academy.
+      together with the migration guide from MPLS to SRv6. This lesson is part of the free SRv6 dot md course.
       Subscribe, and I'll see you in the next lesson.
