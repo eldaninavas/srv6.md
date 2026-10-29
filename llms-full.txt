@@ -4640,7 +4640,7 @@ graph LR
 |:---------:|--------|:------------------:|----------|
 | **Algo 0** | IGP metric (default) | PE1→P2→PE2 | Default routing |
 | **Algo 128** | Latency | PE1→P2→PE2 (5ms) | Low-latency services |
-| **Algo 129** | TE metric (bandwidth) | PE1→P1→PE2 (100G) | High-bandwidth services |
+| **Algo 129** | TE metric (operator-set, often derived from bandwidth) | PE1→P1→PE2 (100G) | High-bandwidth services |
 
 ### Per-Algorithm SRv6 Locators
 
@@ -4650,7 +4650,7 @@ Each Flex-Algo gets its own SRv6 locator, which means its own set of SIDs:
 Node PE2 advertises:
   Algo 0:   fcbb:bb01:0002::/48  → Default IGP path
   Algo 128: fcbb:bb02:0002::/48  → Latency-optimized path
-  Algo 129: fcbb:bb03:0002::/48  → Bandwidth-optimized path
+  Algo 129: fcbb:bb03:0002::/48  → TE-metric path (bandwidth-derived TE metric)
 ```
 
 To steer traffic on the low-latency path, simply use the Algo 128 SID as the destination. The IGP handles path computation automatically.
@@ -4719,10 +4719,13 @@ graph TB
 === "Juniper"
 
     ```junos
+    set routing-options flex-algorithm 128 definition metric-type delay-metric
     set protocols isis source-packet-routing flex-algorithm 128
-    set protocols isis source-packet-routing flex-algorithm 128 metric-type delay
-    set routing-options source-packet-routing srv6 locator latency fcbb:bb02::/48 algorithm 128
+    set routing-options source-packet-routing srv6 locator latency fcbb:bb02::/48
+    set protocols isis source-packet-routing srv6 locator latency algorithm 128
     ```
+
+    This snippet is illustrative. In Junos the Flex-Algo definition sits under `routing-options flex-algorithm`, IS-IS participation under `protocols isis source-packet-routing flex-algorithm`, and the locator is mapped to an algorithm with the `algorithm` option at the `[edit protocols isis source-packet-routing srv6 locator]` level. Check the exact statements for your release in Juniper's [Flexible Algorithms in IGP for Segment Routing](https://www.juniper.net/documentation/us/en/software/junos/segment-routing/topics/topic-map/infocus-isis-flex-algo-sr.html) and [SRv6 Network Programming in IS-IS](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/topic-map/infocus-isis-srv6-network-programming.html) guides.
 
 ## Flex-Algo Properties
 
@@ -4817,10 +4820,10 @@ graph TB
 2. **PE1** advertises via MP-BGP VPNv4/VPNv6 with an **SRv6 SID** instead of a VPN label:
     - Prefix: `10.1.0.0/24`
     - Next-Hop: `PE1 IPv6 address`
-    - SRv6 Service SID: `fcbb:bb01:0001::DT4` (End.DT4 behavior)
+    - SRv6 Service SID: `fcbb:bb01:1:e004::` (End.DT4 behavior; function value `0xe004` identifies VRF `CUSTOMER-A`)
 3. **PE2** receives the BGP update, installs the route
 4. When PE2 receives traffic for `10.1.0.0/24`, it encapsulates with:
-    - IPv6 DA = `fcbb:bb01:0001::DT4`
+    - IPv6 DA = `fcbb:bb01:1:e004::`
     - Inner packet = original IPv4
 5. **PE1** receives, matches End.DT4 SID, decapsulates, looks up in VRF `CUSTOMER-A`
 
@@ -4906,7 +4909,7 @@ The `End.DX2` SID tells PE2: "decapsulate and cross-connect this L2 frame to the
 | Underlay | IPv4 or IPv6 | IPv6 native |
 | TE capability | Limited | Full SR Policy support |
 | Network programming | None | Rich (service chaining, slicing) |
-| MTU overhead | 50 bytes | 40 bytes (no SRH) to 56+ bytes (with SRH) |
+| MTU overhead | 50 bytes | 40 bytes (no SRH) to 64+ bytes (with SRH: 40 + 8 + 16 per SID) |
 
 ## BGP SRv6 Service TLV (RFC 9252)
 
@@ -4919,7 +4922,7 @@ BGP Update Message:
   ├── Extended Community: RT 100:1
   └── BGP Prefix-SID Attribute:
       └── SRv6 L3 Service TLV:
-          ├── SRv6 SID: fcbb:bb01:0001::DT4
+          ├── SRv6 SID: fcbb:bb01:1:e004::   (block fcbb:bb01, node 1, function 0xe004)
           ├── SRv6 SID Behavior: End.DT4 (19)
           └── SRv6 SID Structure:
               ├── Locator Block Length: 32
@@ -4930,7 +4933,7 @@ BGP Update Message:
 
 ### SID Transposition
 
-To save space in BGP updates, the **function** part of the SID can be transposed into (encoded within) the VPN prefix itself, rather than carrying the full 128-bit SID. This is an optimization defined in RFC 9252.
+To pack more prefixes per BGP update, RFC 9252 defines a **Transposition Scheme**: the variable part of the SID (for example the function) is moved out of the SID and carried in the **MPLS Label field of the NLRI** (or another existing label field, such as the ESI Label of an EVPN route), while the SRv6 Services TLV carries only the common part, such as the locator. The SID Structure Sub-Sub-TLV's Transposition Offset and Transposition Length tell the receiver which bits were moved, so it can rebuild the full SID. The label field limits how many bits can be transposed: 20 bits for L3VPN (RFC 4364 / RFC 8277), 24 bits for EVPN (RFC 7432).
 
 ## Verification
 
@@ -5503,10 +5506,7 @@ graph LR
 
 === "Juniper"
 
-    ```junos
-    set protocols source-packet-routing sr-preference-override color 100 routing-policy LOW-LATENCY
-    set policy-options policy-statement LOW-LATENCY term 1 then install-nexthop lsp-regex ".*"
-    ```
+    On Junos, ODN is built from a **compute profile** (the D-CSPF constraints, such as metric type and admin groups) referenced in an ODN deployment, so Junos builds a path to any valid BGP protocol next hop without per-endpoint configuration. See Juniper's [Segment Routing User Guide](https://www.juniper.net/documentation/us/en/software/junos/segment-routing/index.html) (On-Demand Next-Hops and compute profiles) for the statements supported in your release.
 
 ## Binding SID (BSID)
 
@@ -5638,8 +5638,8 @@ Dynamic policies can be reoptimized when:
 |--------|---------|-----------|
 | **Transit state** | Per-tunnel on every hop | None — path in packet header |
 | **Signaling** | RSVP PATH/RESV per tunnel | BGP / PCEP / local config |
-| **Scalability** | 10K tunnels typical limit | 100K+ policies (headend only) |
-| **FRR** | Facility backup (manual) | TI-LFA (automatic, 100% coverage) |
+| **Scalability** | Limited by per-tunnel state on every transit node | Higher: policy state only on the headend |
+| **FRR** | Facility backup (manual) | TI-LFA (automatic, topology-independent) |
 | **Bandwidth** | RSVP admission control | PCE-based or Flex-Algo |
 | **Multi-domain** | Complex (inter-AS RSVP) | BSID stitching (simple) |
 | **Automation** | Limited | ODN + color steering (intent-based) |
@@ -6833,7 +6833,8 @@ The SRH supports an **HMAC TLV** that provides cryptographic authentication of t
 |------------|-------------|
 | **SRH forgery** | Attacker cannot create valid HMAC without the key |
 | **SRH tampering** | Any modification to the segment list invalidates the HMAC |
-| **Replay protection** | HMAC includes anti-replay mechanisms |
+
+HMAC does **not** provide replay protection. RFC 8754 defines no sequence number or timestamp in the HMAC TLV, so a captured packet with a valid HMAC is still valid if it is resent.
 
 #### HMAC TLV Format
 
@@ -6841,7 +6842,7 @@ The SRH supports an **HMAC TLV** that provides cryptographic authentication of t
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|   Type (5)    |    Length      |       Reserved               |
+|   Type (5)    |    Length     |D|        Reserved             |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                     HMAC Key ID (4 bytes)                     |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -6852,14 +6853,16 @@ The SRH supports an **HMAC TLV** that provides cryptographic authentication of t
 ```
 
 !!! warning "HMAC tradeoffs"
-    HMAC adds 38 bytes of overhead per packet and requires key management across all SRv6 nodes. Most deployments rely on iACLs at the boundary rather than per-packet HMAC for performance reasons.
+    HMAC adds 40 bytes of overhead per packet (with a 32-byte HMAC) and requires key management across all SRv6 nodes. Most deployments rely on iACLs at the boundary rather than per-packet HMAC for performance reasons.
 
 ### 3. SID Block Filtering
 
-Restrict the SRv6 SID block (e.g., `fcbb:bb00::/24`) to only be routable within your network:
+Restrict the SRv6 SID block to your network. For new allocations, use the IANA SRv6 SID block **`5f00::/16`** ([RFC 9602](https://srv6.md/rfcs/rfc9602/)): it is registered as not globally reachable and is easy to recognize in filters. The examples on this page use `5f00::/16`; if your locators come from your own GUA or another range (for example `fcbb:bb00::/24`, common in lab configurations), substitute that prefix.
 
-- **BGP policies**: Do not advertise SRv6 locator prefixes to external peers
-- **Prefix filtering**: Block SRv6 SID block at all external-facing interfaces
+Keep SIDs inside the SR domain at two layers (see [SID Structure](https://srv6.md/topics/sid-structure/#filtering-5f0016-at-domain-boundaries)):
+
+- **Routes**: never advertise the SID block to external BGP peers, and never accept it from them
+- **Packets**: drop packets arriving on external interfaces whose destination is in the SID block
 - **uRPF**: Enable Unicast Reverse Path Forwarding to catch spoofed SRv6 source addresses
 
 ### 4. Rate Limiting
@@ -6909,26 +6912,26 @@ SRv6 operates on a **trusted domain** model:
 
 This is the same trust model used by MPLS networks today — MPLS labels are not validated, only trusted within the operator's domain. SRv6 improves on this by offering **optional HMAC** for environments requiring stronger guarantees.
 
-## SRH Security Analysis (RFC 8754 Section 5)
+## SRH Security Analysis (RFC 8754 Sections 5 and 7)
 
-RFC 8754 Section 5 and RFC 8402 Section 8 define the formal security considerations for SRv6. Understanding the threat categories and deployment models is essential for designing a secure SRv6 network.
+RFC 8754 Section 5 (the intra-SR-domain deployment model) and Section 7 (security considerations), together with RFC 8402 Section 8, set out the security model for SRv6. Understanding the threat categories and deployment models is essential for designing a secure SRv6 network.
 
 ### Threat Categories
 
-The RFCs identify three primary threat categories:
+Three threat categories follow from those sections:
 
 | Threat Category | Description | RFC Reference |
 |----------------|-------------|---------------|
-| **Source address spoofing** | An attacker outside the trusted domain crafts packets with a spoofed source address belonging to the SRv6 domain, causing them to bypass iACL filters that match on source prefix | RFC 8754 Section 5.1 |
-| **SRH manipulation** | An attacker intercepts packets in transit and modifies the segment list, Segments Left field, or other SRH fields to alter the forwarding path | RFC 8754 Section 5.2 |
-| **Topology disclosure** | An attacker probes the SRv6 SID space (which uses routable IPv6 addresses) to discover internal network topology, node roles, and service chain structure | RFC 8402 Section 8.1 |
+| **Source address spoofing** | An attacker outside the trusted domain crafts packets with a spoofed source address belonging to the SRv6 domain, causing them to bypass iACL filters that match on source prefix | RFC 8754 Sections 5.1 and 7 |
+| **SRH manipulation** | An attacker intercepts packets in transit and modifies the segment list, Segments Left field, or other SRH fields to alter the forwarding path | RFC 8754 Sections 2.1.2 and 7 (HMAC) |
+| **Topology disclosure** | An attacker probes the SRv6 SID space (which uses routable IPv6 addresses) to discover internal network topology, node roles, and service chain structure | RFC 8402 Section 8.2 |
 
 !!! info "Key insight from the RFCs"
-    Unlike MPLS labels (which are locally significant and not routable), SRv6 SIDs are globally routable IPv6 addresses. This makes topology discovery easier for attackers unless SID prefixes are properly filtered at domain boundaries.
+    Unlike MPLS labels (which are locally significant and not routable), SRv6 SIDs are routable IPv6 addresses inside the domain. This makes topology discovery easier for attackers unless SID prefixes are properly filtered at domain boundaries.
 
-### The 3 Deployment Models
+### Three Ways to Deploy SRv6 Security
 
-RFC 8754 defines three security deployment models, each with different levels of protection:
+RFC 8754 defines one deployment model, a trusted SR domain protected at its boundary (Section 5.1), and the HMAC TLV for cases where that is not enough (Section 2.1.2). In practice that gives three options, with increasing protection:
 
 #### Model 1: Trusted Domain with Filtering
 
@@ -6952,7 +6955,7 @@ The most common deployment model. All nodes within the SRv6 domain are trusted. 
 Every SRH carries a cryptographic HMAC TLV. Nodes verify the HMAC before processing SIDs, providing per-packet authentication of the segment list.
 
 - **When to use:** Multi-domain environments, inter-provider SRv6 peering, or networks where internal links traverse untrusted infrastructure (e.g., leased dark fiber, shared data center interconnects).
-- **Tradeoffs:** Strong per-packet security, but adds 38 bytes of overhead per packet, requires HMAC computation at every verifying node, and demands a key management infrastructure across all participating nodes.
+- **Tradeoffs:** Strong per-packet security, but adds 40 bytes of overhead per packet, requires HMAC computation at every verifying node, and demands a key management infrastructure across all participating nodes.
 
 #### Model 3: Combined (Filtering + HMAC)
 
@@ -6968,36 +6971,36 @@ Uses iACL filtering at domain boundaries **and** HMAC verification for traffic c
 
 ## HMAC Deep Dive
 
-The HMAC TLV defined in RFC 8754 Section 7 provides optional per-packet cryptographic authentication of the SRH. This section covers the computation details, key management challenges, and real-world deployment status.
+The HMAC TLV defined in RFC 8754 Section 2.1.2 provides optional per-packet cryptographic authentication of the SRH. This section covers the computation details, key management challenges, and real-world deployment status.
 
 ### HMAC Computation Details
 
-The HMAC is computed over a concatenation of the following fields:
+Per RFC 8754 Section 2.1.2.1, the HMAC is computed over a concatenation of the following fields, as they would be received at the verifying node:
 
 | Field | Size | Purpose |
 |-------|------|---------|
 | **Source IPv6 Address** | 16 bytes | Binds the HMAC to the packet originator, preventing source spoofing |
-| **First Segment (Segment List[0])** | 16 bytes | The ultimate destination SID |
-| **Segments Left (SL)** | 1 byte | Binds to the current position in the segment list |
+| **Last Entry** | 1 byte | Index of the last element of the segment list |
 | **Flags** | 1 byte | SRH flags field |
-| **Full Segment List** | 16 x n bytes | All SIDs in the segment list, in order |
-| **HMAC Key ID** | 4 bytes | Identifies which pre-shared key was used |
+| **HMAC 16 bits following Length** | 2 bytes | The D bit and Reserved field of the HMAC TLV |
+| **HMAC Key ID** | 4 bytes | Identifies which pre-shared key and algorithm were used |
+| **Full Segment List** | 16 x n bytes | All addresses in the segment list |
 
-The HMAC algorithm is **HMAC-SHA-256**, truncated to 256 bits (32 bytes). Combined with the 4-byte Key ID and 2 bytes of type/length, the total HMAC TLV overhead is **38 bytes**.
+The hash algorithm is identified by the Key ID; implementations that support HMAC **must** support SHA-256. The digest is truncated to 32 bytes. With Type (1 byte), Length (1), D bit + Reserved (2) and Key ID (4), the total HMAC TLV overhead is **40 bytes**.
 
 ```
-HMAC = HMAC-SHA-256(Key,
+HMAC = HMAC(Key,                       ! algorithm identified by the Key ID
          IPv6-Source-Address ||
-         Segment-List[0]    ||
-         Segments-Left      ||
-         Flags              ||
-         Segment-List[0..n] ||
-         HMAC-Key-ID
+         Last-Entry          ||
+         Flags               ||
+         D-bit+Reserved      ||
+         HMAC-Key-ID         ||
+         Segment-List[0..n]
        )
 ```
 
 !!! note "What the HMAC does NOT cover"
-    The HMAC does **not** protect the payload, the IPv6 destination address (which changes at each hop), or any optional TLVs other than those explicitly included in the computation. It authenticates only the segment list and its associated metadata.
+    The HMAC does **not** protect the payload, the Segments Left field (which changes at each segment endpoint), the IPv6 destination address, or any SRH TLVs other than the fields listed above. Instead of hashing the destination address, the verifying node checks that it equals the current segment (Segment List[Segments Left]). It authenticates only the segment list and its associated metadata.
 
 ### Key Management Challenges
 
@@ -7014,7 +7017,7 @@ HMAC-based SRH verification introduces significant key management requirements:
 
 | Impact Area | Details |
 |------------|---------|
-| **Packet overhead** | 38 bytes per packet (HMAC TLV). For a 10-SID segment list, the SRH is already 168 bytes; HMAC adds another 23% overhead. |
+| **Packet overhead** | 40 bytes per packet (HMAC TLV). For a 10-SID segment list, the SRH is already 168 bytes; HMAC adds another 24% overhead. |
 | **Computation cost** | HMAC-SHA-256 computation at ingress (generation) and at each verifying node. On modern ASIC-based routers, this may require **packet recirculation** through the forwarding pipeline, effectively halving throughput for HMAC-verified traffic. |
 | **Latency** | HMAC verification adds per-hop latency. For latency-sensitive traffic (e.g., 5G URLLC), this may be unacceptable. |
 | **ASIC support** | Not all forwarding ASICs support HMAC computation in hardware. Software-based HMAC verification limits throughput to control-plane speeds. |
@@ -7096,8 +7099,8 @@ All interfaces facing external networks (peering, customers, internet transit) m
     !! Mandatory: Drop ALL packets with SRH from external sources
     ipv6 access-list SRV6-EDGE-INGRESS
      10 deny ipv6 any any routing-type 4
-     20 deny ipv6 any fcbb:bb00::/24       !! Drop traffic destined to SID block
-     30 deny ipv6 fcbb:bb00::/24 any       !! Drop traffic sourced from SID block
+     20 deny ipv6 any 5f00::/16            !! Drop traffic destined to SID block
+     30 deny ipv6 5f00::/16 any            !! Drop traffic sourced from SID block
      40 permit ipv6 any any
     !
     interface TenGigE0/0/0/0
@@ -7112,7 +7115,7 @@ All interfaces facing external networks (peering, customers, internet transit) m
     !! Prevent SRv6 internal details from leaking outward
     ipv6 access-list SRV6-EDGE-EGRESS
      10 deny ipv6 any any routing-type 4   !! No SRH should leave the domain
-     20 deny ipv6 fcbb:bb00::/24 any       !! No SID-sourced packets leave
+     20 deny ipv6 5f00::/16 any            !! No SID-sourced packets leave
      30 permit ipv6 any any
     !
     interface TenGigE0/0/0/0
@@ -7133,12 +7136,16 @@ When SRv6 domains interconnect (e.g., between autonomous systems), additional fi
 
 ### SID Block Filtering via BGP
 
-The SRv6 locator prefix (e.g., `fcbb:bb00::/24`) must **never** be advertised to external BGP peers:
+The SRv6 SID block (`5f00::/16`, or your own locator range) must **never** be advertised to external BGP peers, and should not be accepted from them either:
 
 ```cisco
-!! BGP policy to suppress SRv6 locator prefixes
+!! BGP policy to suppress SRv6 locator prefixes in both directions
+prefix-set SRV6-SIDS
+  5f00::/16 le 128
+end-set
+!
 route-policy DENY-SRV6-LOCATORS
-  if destination in (fcbb:bb00::/24 le 128) then
+  if destination in SRV6-SIDS then
     drop
   endif
   pass
@@ -7147,6 +7154,7 @@ end-policy
 router bgp 65000
  neighbor 198.51.100.1
   address-family ipv6 unicast
+   route-policy DENY-SRV6-LOCATORS in
    route-policy DENY-SRV6-LOCATORS out
   !
  !
@@ -7312,10 +7320,9 @@ sequenceDiagram
     ```cisco
     !! Ping a specific SRv6 SID
     ping ipv6 fc00:0:2::100 source fc00:0:1::1
-
-    !! Ping through an SRv6 path (with segment list)
-    ping sr-mpls nil-fec labels fc00:0:2::1,fc00:0:3::100
     ```
+
+    To ping through an explicit segment list, use your platform's SRv6 OAM ping/traceroute options; the syntax varies by vendor and release. [RFC 9259](https://srv6.md/rfcs/rfc9259/) Appendix A shows how ping and traceroute via a segment list work.
 
 === "Linux"
 
@@ -7600,7 +7607,7 @@ flowchart LR
 
 ## SRv6 Path Tracing Deep Dive
 
-**Path Tracing** (`draft-filsfils-spring-path-tracing`) is an SRv6-native mechanism that provides a complete path trace in a **single round-trip**, unlike traditional traceroute which requires N round-trips for N hops, and unlike IOAM which adds significant per-hop overhead.
+**Path Tracing** ([`draft-filsfils-ippm-path-tracing`](https://datatracker.ietf.org/doc/draft-filsfils-ippm-path-tracing/), which replaced the expired `draft-filsfils-spring-path-tracing`) is an SRv6 mechanism that records the path of a probe packet as a sequence of interface IDs, plus per-hop delay and egress-interface load, in a **single probe**, unlike traditional traceroute which requires N round-trips for N hops, and unlike IOAM which adds significant per-hop overhead.
 
 ### How Path Tracing Differs from IOAM
 
@@ -7608,34 +7615,35 @@ Path Tracing was designed as a **lightweight alternative** to IOAM, optimized fo
 
 | Characteristic | IOAM Trace | SRv6 Path Tracing |
 |:---------------|:----------:|:-----------------:|
-| **Per-hop data size** | 24+ bytes (configurable) | **2 bytes** (fixed) |
-| **Header location** | IPv6 Hop-by-Hop Options | SRH TLV |
-| **Processing model** | Every node reads HbH header | Every node writes to SRH TLV |
-| **Data richness** | Full telemetry (timestamps, queues, buffers) | Compressed interface + timestamp |
-| **MTU impact** | High (can add hundreds of bytes) | Low (2 bytes per hop) |
-| **Deployment complexity** | Requires HbH processing at all transit nodes | Only SRv6-aware nodes participate |
+| **Per-hop data size** | 24+ bytes (configurable) | **3 bytes** per midpoint (MCD) |
+| **Header location** | IPv6 Hop-by-Hop Options | IPv6 Hop-by-Hop Option (HbH-PT) + Destination Option (DOH-PT) |
+| **Processing model** | Every node reads HbH header | Every PT midpoint pushes its MCD onto the HbH-PT stack |
+| **Data richness** | Full telemetry (timestamps, queues, buffers) | Compressed interface ID + load + truncated timestamp |
+| **MTU impact** | High (can add hundreds of bytes) | Low (40-byte HbH header traces 14 hops) |
+| **Deployment complexity** | Requires HbH processing at all transit nodes | PT midpoints must process the HbH-PT option in the forwarding pipeline; nodes that do not support it skip it |
 
 !!! tip "When to Use Which"
     Use **IOAM** when you need rich per-hop telemetry (queue depth, buffer occupancy, precise timestamps) for deep performance analysis. Use **Path Tracing** for always-on path discovery in production where overhead must be minimal.
 
-### MidPoint Compressed (MPC) Format
+### Midpoint Compressed Data (MCD) Format
 
-Path Tracing uses the **MidPoint Compressed (MPC)** format to pack per-hop information into just **2 bytes (16 bits)** per node:
+Each Path Tracing midpoint records a **Midpoint Compressed Data (MCD)** entry of **3 bytes (24 bits)** with a 12-bit interface ID:
 
 ```
-    16 bits per hop
- ┌────────────────────┐
- │ IF_ID  │ IF_LOAD   │
- │ (12b)  │ (4b)      │
- └────────────────────┘
+          24 bits per midpoint
+ ┌──────────────┬─────────┬─────────┐
+ │   MCD.OIF    │ MCD.OIL │ MCD.TTS │
+ │  (12b or 8b) │  (4b)   │  (8b)   │
+ └──────────────┴─────────┴─────────┘
 ```
 
 | Subfield | Bits | Description |
 |----------|:----:|-------------|
-| `IF_ID` | 12 | Egress interface identifier (up to 4096 interfaces per node) |
-| `IF_LOAD` | 4 | Interface load / timestamp indicator (16 levels, or compressed delay) |
+| `OIF` | 12 or 8 | Outgoing interface ID, assigned by the operator (same size across the whole network) |
+| `OIL` | 4 | Outgoing interface load, on a logarithmic scale |
+| `TTS` | 8 | Truncated timestamp: 8 bits selected from the 64-bit egress timestamp by a per-interface template |
 
-The 12-bit interface ID is a **locally significant** compressed identifier mapped from the platform's actual interface index. The 4-bit load/timestamp field encodes either the interface utilization level or a compressed transit timestamp, depending on the deployment configuration.
+Interface IDs are **not globally unique**: the same ID may repeat in the network as long as the end-to-end path can be inferred from the chain of IDs. The source and the sink record a full 64-bit timestamp, interface ID and load in a separate Destination Option (DOH-PT).
 
 ### Single-Probe Advantage
 
@@ -7654,29 +7662,28 @@ Path Tracing solves this by using a **single probe packet** that follows the exa
  Probe 1: S ──▶ A ──▶ D ──▶ T
           │     │      │     │
           └─────┴──────┴─────┘
-          MPC: [A:IF3:Load2] [D:IF1:Load0] [T:IF2:Load1]
+          MCDs: [A:IF3:Load2:TTS] [D:IF1:Load0:TTS]  (S and T record in DOH-PT)
  Reported path: S → A → D → T               ← Correct actual path.
 ```
 
-### Implementation: SRH TLV
+### Implementation: IPv6 Hop-by-Hop Option
 
-Path Tracing data is carried in a **TLV within the SRH** (not in a Hop-by-Hop Options header like IOAM). Each SRv6-aware node along the path writes its 2-byte MPC entry into the TLV:
+Path Tracing data is carried in an **IPv6 Hop-by-Hop Option (HbH-PT)**, not in an SRH TLV. Each midpoint shifts the MCD stack and pushes its 3-byte MCD at the front. The draft recommends a 38-octet HbH-PT option, which with the 2-byte Hop-by-Hop header gives a 40-byte header holding 12 midpoint MCDs; with the source and sink records in the DOH-PT, that traces 14 hops:
 
 ```
  ┌──────────────────────────────────────────────────┐
  │                  IPv6 Header                      │
  ├──────────────────────────────────────────────────┤
- │           Segment Routing Header (SRH)            │
- │  Segments Left = N                                │
- │  Segment List [SID_0, SID_1, ..., SID_N]         │
- │                                                   │
- │  TLV: Path Tracing                               │
+ │      Hop-by-Hop Options Header: HbH-PT option     │
  │  ┌──────────┬──────────┬──────────┬──────────┐   │
- │  │ MPC Hop 1│ MPC Hop 2│ MPC Hop 3│  (empty) │   │
- │  │  2 bytes │  2 bytes │  2 bytes │  2 bytes │   │
+ │  │  MCD     │  MCD     │  MCD     │  (empty) │   │
+ │  │ 3 bytes  │ 3 bytes  │ 3 bytes  │   ...    │   │
  │  └──────────┴──────────┴──────────┴──────────┘   │
  ├──────────────────────────────────────────────────┤
- │                    Payload                        │
+ │   Segment Routing Header (if more than one SID)   │
+ ├──────────────────────────────────────────────────┤
+ │   Destination Options Header: DOH-PT              │
+ │   (64-bit timestamp, session ID, IF ID, load)     │
  └──────────────────────────────────────────────────┘
 ```
 
@@ -7685,14 +7692,14 @@ Path Tracing data is carried in a **TLV within the SRH** (not in a Hop-by-Hop Op
 | Feature | ICMP Traceroute | IOAM (RFC 9326) | SRv6 Path Tracing |
 |:--------|:---------------:|:---------------:|:-----------------:|
 | **Round trips needed** | N (one per hop) | 1 | 1 |
-| **Per-hop overhead** | 0 (no data in packet) | 24+ bytes | 2 bytes |
+| **Per-hop overhead** | 0 (no data in packet) | 24+ bytes | 3 bytes |
 | **ECMP accuracy** | Poor (path stitching) | Accurate | Accurate |
-| **Per-hop metrics** | RTT only | Timestamp, delay, queue, buffer | Interface ID, load |
-| **Header location** | N/A (separate probes) | IPv6 HbH Options | SRH TLV |
-| **Transit node support needed** | ICMPv6 Time Exceeded | HbH header processing | SRv6 awareness |
-| **Always-on capable** | No (active probing) | Yes (in data packets) | Yes (in data packets) |
+| **Per-hop metrics** | RTT only | Timestamp, delay, queue, buffer | Interface ID, load, truncated timestamp |
+| **Header location** | N/A (separate probes) | IPv6 HbH Options | IPv6 HbH Option (+ Destination Option) |
+| **Transit node support needed** | ICMPv6 Time Exceeded | HbH header processing | HbH-PT processing |
+| **Always-on capable** | No (active probing) | Yes (in data packets) | Yes (continuous probes) |
 | **Production overhead risk** | Low (separate probes) | High (large headers) | Very low |
-| **Standardization** | RFC 4443 | RFC 9326 | draft-filsfils-spring-path-tracing |
+| **Standardization** | RFC 4443 | RFC 9326 | draft-filsfils-ippm-path-tracing |
 | **Best for** | Basic reachability | Deep performance analysis | Lightweight path discovery |
 
 ## In-situ Performance Measurement (IPM)
@@ -7970,11 +7977,11 @@ flowchart TD
 
 | SRv6 Configuration | Overhead | Min Transit MTU (for 1500B payload) |
 |:------------------:|:--------:|:-----------------------------------:|
-| H.Encaps with 1 SID | 56 B | 1556 |
+| H.Encaps with 1 SID | 64 B | 1564 |
 | H.Encaps with 3 SIDs | 96 B | 1596 |
 | H.Encaps with 6 SIDs | 144 B | 1644 |
 | H.Encaps with 3 SIDs + IOAM (6 hops) | 240 B | 1740 |
-| H.Encaps with 3 SIDs + Path Tracing | 108 B | 1608 |
+| H.Encaps with 3 SIDs + Path Tracing (40 B HbH-PT + 16 B DOH-PT) | 152 B | 1652 |
 
 !!! tip "Best Practice"
     Configure all transit links with **9216-byte MTU** (jumbo frames) to accommodate SRv6 encapsulation overhead. If jumbo frames are not available, configure TCP MSS clamping at the ingress PE to reduce the effective MSS for customer traffic.
@@ -8069,7 +8076,7 @@ flowchart TD
 2. [RFC 9326 - In-situ OAM (IOAM) Data Fields](https://datatracker.ietf.org/doc/rfc9326/) - Defines IOAM option types (Pre-allocated Trace, Incremental Trace, Proof of Transit, Edge-to-Edge), data fields, and namespace semantics
 3. [RFC 8200 - IPv6 Specification](https://datatracker.ietf.org/doc/rfc8200/) - IPv6 base specification including extension header ordering (relevant for IOAM Hop-by-Hop placement)
 4. [draft-ietf-ippm-ioam-srv6-options](https://datatracker.ietf.org/doc/draft-ietf-ippm-ioam-srv6-options/) - Defines how IOAM data is carried in SRv6 using IPv6 Hop-by-Hop and Destination Options headers (NOT SRH TLVs)
-5. [draft-filsfils-spring-path-tracing](https://datatracker.ietf.org/doc/draft-filsfils-spring-path-tracing/) - SRv6 Path Tracing with MidPoint Compressed (MPC) format for lightweight single-probe path discovery
+5. [draft-filsfils-ippm-path-tracing](https://datatracker.ietf.org/doc/draft-filsfils-ippm-path-tracing/) - SRv6 Path Tracing with 3-byte Midpoint Compressed Data (MCD) carried in an IPv6 Hop-by-Hop option, for lightweight single-probe path discovery (replaces draft-filsfils-spring-path-tracing)
 
 
 ---
@@ -8107,7 +8114,7 @@ In SRv6 networks, traffic follows explicit segment lists through the fabric. Kno
 
 ### STAMP (RFC 8762)
 
-**Simple Two-Way Active Measurement Protocol** is the modern standard for active probing in SRv6 networks. It replaces older TWAMP with a simpler, stateless design.
+**Simple Two-Way Active Measurement Protocol** is the modern standard for active probing in SRv6 networks. It replaces older TWAMP with a simpler design that needs no control protocol.
 
 ```mermaid
 graph LR
@@ -8125,7 +8132,7 @@ How it works:
 4. Results are streamed to a telemetry collector for visualization and alerting
 
 !!! info "STAMP vs TWAMP"
-    STAMP eliminates the control channel required by TWAMP, making it simpler to deploy at scale. The reflector is stateless -- it does not need to maintain session state, reducing overhead on transit nodes.
+    STAMP eliminates the control channel required by TWAMP, making it simpler to deploy at scale; sessions are set up by configuration (CLI, NETCONF/YANG or a controller). RFC 8762 defines two Session-Reflector modes: **stateless**, where the reflector keeps no per-session state and only round-trip loss can be computed, and **stateful**, where it keeps per-session state so near-end and far-end loss can be told apart. The reflector is the far-end endpoint of the measurement; transit nodes just forward the probes as ordinary packets.
 
 ### Alternate-Marking (RFC 9341 / RFC 9342)
 
@@ -8194,8 +8201,8 @@ performance-measurement
  delay-profile interfaces default
   advertisement
    anomaly-loss
-    upper-bound 30      ← anomaly declared when loss exceeds 30%
-    lower-bound 20      ← anomaly cleared only when loss drops below 20%
+    upper-bound 30
+    lower-bound 20
    !
   !
  !
@@ -8211,6 +8218,8 @@ router isis 1
   !
  !
 ```
+
+In this example, `upper-bound 30` declares an anomaly when loss exceeds 30%, and `lower-bound 20` clears it only when loss drops below 20%. We could not verify the exact command hierarchy against Cisco documentation, so check the IOS-XR performance measurement configuration guide for your release.
 
 **How the hysteresis band works:**
 
@@ -8271,7 +8280,7 @@ Huawei is not in this table because we could not verify release numbers for it: 
 | **Fast Reroute Trigger** | Liveness probes detect failures and trigger path switchover in milliseconds |
 | **TE Optimization** | Feed real-time delay/loss into SR Policy path computation for dynamic optimization |
 | **End-to-End Visibility** | Measure performance across the entire SRv6 domain, not just individual links |
-| **Low Overhead** | STAMP is stateless; alternate-marking uses zero additional bandwidth |
+| **Low Overhead** | STAMP needs no control protocol and its reflector can run stateless; alternate-marking uses zero additional bandwidth |
 
 ## Further Reading
 
@@ -9218,17 +9227,20 @@ IS-IS LSP from Node R5 (dual-stack capable):
   │     Prefix: 10.255.0.5/32
   │     Sub-TLV: Prefix-SID = 16005 (MPLS label = SRGB base + 5)
   │
+  ├── TLV 27 (SRv6 Locator, RFC 9352):
+  │     Locator: fcbb:bb01:0005::/48
+  │     Algorithm: 0
+  │     Sub-TLV: SRv6 End SID = fcbb:bb01:0005::1
+  │
   └── TLV 236 (IPv6 Reachability):
-        Prefix: fcbb:bb01:0005::/48
-        Sub-TLV: SRv6 Locator
-          Algorithm: 0
-          SRv6 End SID: fcbb:bb01:0005::1
+        Prefix: fcbb:bb01:0005::/48   (algo 0/1 locators also go here,
+                                       so non-SRv6 routers can forward)
 ```
 
 | IS-IS TLV | Purpose | Data Plane |
 |-----------|---------|:----------:|
 | TLV 135 + Prefix-SID sub-TLV | Advertise MPLS Prefix-SID for an IPv4 node address | SR-MPLS |
-| TLV 236 + SRv6 Locator sub-TLV | Advertise SRv6 locator and associated End SIDs | SRv6 |
+| TLV 27 (SRv6 Locator) + SRv6 End SID sub-TLV | Advertise SRv6 locator and associated End SIDs | SRv6 |
 | TLV 22 + Adj-SID sub-TLV | Advertise per-adjacency MPLS SID | SR-MPLS |
 | TLV 22 + SRv6 End.X SID sub-TLV | Advertise per-adjacency SRv6 SID | SRv6 |
 
@@ -9247,8 +9259,8 @@ BGP VPNv4 Update (dual-stack PE advertising both):
   │     Route Target: 65000:100
   ├── MPLS Label: 24001
   └── SRv6-VPN SID TLV:
-        SRv6 SID: fcbb:bb01:0002::DT4
-        SID Behavior: End.DT4 (63)
+        SRv6 SID: fcbb:bb01:2:e004::   (function 0xe004 = this VRF)
+        SID Behavior: End.DT4 (19)
         SID Structure: BL=32, NL=16, FL=16, AL=0
 ```
 
@@ -9266,8 +9278,10 @@ When a node has **both** SR-MPLS and SRv6 paths available for the same destinati
 !!! tip "Fallback Strategy During Migration"
     Configure SR-MPLS as the **primary** transport during early migration phases and SRv6 as the **backup**. As confidence grows, reverse the preference. This allows instant rollback by simply changing the preference knob without removing any configuration.
 
+The block below is **pseudo-config** that illustrates the concept; it is not real CLI. Check your vendor's documentation for how to set the transport preference.
+
 ```
-! Example: IOS XR preference configuration concept
+! PSEUDO-CONFIG: concept only, not vendor CLI
 router bgp 65000
   address-family vpnv4 unicast
     ! Prefer SRv6 transport when available
@@ -9284,16 +9298,17 @@ A well-designed SID allocation plan is critical for a successful SRv6 deployment
 
 ### Choosing Your SID Block
 
-Per [RFC 9602](https://datatracker.ietf.org/doc/rfc9602/), the recommended SRv6 SID block ranges are:
+[RFC 9602](https://datatracker.ietf.org/doc/rfc9602/) allocates a dedicated block for SRv6 SIDs but does not mandate it. Common choices are:
 
 | Block | Purpose | Notes |
 |-------|---------|-------|
-| `5f00::/16` | IANA-registered SRv6 SID block | Globally routable, for use across organizational boundaries (RFC 9602) |
+| `5f00::/16` | IANA-registered SRv6 SID block (RFC 9602) | Forwardable but **not globally reachable**: meant for use within an SR domain or between collaborating SR domains, and easy to filter at the edge |
+| Operator GUA (e.g. a provider /32 or /48) | Operator's own globally unique space | Allowed; requires careful filtering at ingress and egress so SRv6 packets do not leak out of the SR domain (RFC 9602 Section 7) |
 | `fc00::/7` (ULA space) | Private/internal use | Commonly used in enterprise and SP networks that do not need global SRv6 reachability |
 | `fcbb:bbXX::/32` | Common convention in Cisco deployments | De facto standard in many production SRv6 networks |
 
-!!! warning "Avoid Using Global Unicast (2000::/3) for SIDs"
-    While technically possible, using globally routable IPv6 space for SRv6 SIDs creates confusion between transit IPv6 traffic and SRv6-encapsulated traffic. Use the dedicated `5f00::/16` block or ULA space instead.
+!!! warning "Using Global Unicast (2000::/3) for SIDs"
+    Operators may use their own GUA prefixes as locators. The cost is that SRv6 SIDs are harder to tell apart from ordinary IPv6 traffic, so boundary filters must list your locator ranges explicitly. The dedicated `5f00::/16` block makes that filtering simpler.
 
 ### Locator Structure
 
@@ -9333,11 +9348,11 @@ uSID Container (128-bit, carrying up to 6 micro-SIDs):
 
 | Parameter | Standard SRv6 | uSID |
 |-----------|:---:|:---:|
-| Block length | 32-48 bits | 32 bits (fixed) |
-| Per-node SID size | 128 bits | 16 bits |
-| SIDs per container | 1 | Up to 6 |
+| Block length | 32-48 bits | Parameter; 32 bits in the common F3216 format |
+| Per-node SID size | 128 bits | 16 bits (F3216) |
+| SIDs per container | 1 | Up to 6 (F3216: (128 - 32) / 16) |
 | SRH needed (up to 6 hops) | Yes | No |
-| Overhead (up to 6 hops) | 40 + 24 x N bytes | 40 bytes (IPv6 header only) |
+| Overhead (up to 6 hops) | 40 + 8 + 16 x N bytes (outer IPv6 header + SRH) | 40 bytes (IPv6 header only) |
 
 ### Numbering Plan Example: Medium Network (100 Nodes)
 
@@ -9380,7 +9395,7 @@ Per-node function allocation (16-bit function space):
 
     **2. Insufficient function space:** Allocating only 8 bits for the function field limits you to 256 functions per node. For nodes hosting many VRFs or EVPN instances, 16 bits (65,536 functions) is strongly recommended.
 
-    **3. Forgetting uSID alignment:** uSID requires the block to be exactly 32 bits and each micro-SID to be 16 bits. Choosing a 48-bit block breaks uSID compatibility.
+    **3. Forgetting uSID alignment:** In RFC 9800 the Locator-Block length and the uSID (CSID) length are parameters. Every implementation must support a 32-bit block with 16-bit uSIDs (the common F3216 format); other lengths, such as a 48-bit block, are optional. Use one block length and uSID length consistently across the domain, and check that all your platforms support the format you pick. A longer block also leaves room for fewer uSIDs per container.
 
     **4. No room for growth:** Allocate at least 2x the currently needed address space per region to accommodate future growth without renumbering.
 
@@ -9415,7 +9430,7 @@ This section expands the high-level migration options into a structured, phased 
 ```
 Actions:
   1. Enable IPv6 on all core links (if not already enabled)
-  2. Advertise SRv6 locators in IS-IS (TLV 236)
+  2. Advertise SRv6 locators in IS-IS (SRv6 Locator TLV 27)
   3. Continue advertising SR-MPLS Prefix-SIDs (TLV 135)
   4. Configure SRv6 End SIDs on upgraded nodes
   5. Do NOT configure any SRv6 VPN services yet
@@ -15775,34 +15790,39 @@ IS-IS advertises SRv6 locators as reachable IPv6 prefixes with additional SRv6-s
 | TLV/Sub-TLV | Description |
 |-------------|-------------|
 | **SRv6 Locator TLV (27)** | Advertises an SRv6 locator with its prefix and flags |
-| **SRv6 End SID Sub-TLV** | Associates an End SID with a locator |
-| **SRv6 End.X SID Sub-TLV** | Advertises adjacency-specific SIDs |
-| **SRv6 SID Structure Sub-TLV** | Describes the locator/function/argument split |
-| **SRv6 Capabilities Sub-TLV** | Advertises SRv6 capabilities of a node |
+| **SRv6 End SID Sub-TLV (5)** | Sub-TLV of the Locator TLV; associates an End SID with a locator |
+| **SRv6 End.X SID Sub-TLV (43)** / **LAN End.X SID Sub-TLV (44)** | Advertises adjacency-specific SIDs |
+| **SRv6 SID Structure Sub-Sub-TLV (1)** | Describes the locator/function/argument split; carried inside the End, End.X and LAN End.X SID sub-TLVs |
+| **SRv6 Capabilities Sub-TLV (25)** | Advertises SRv6 capabilities of a node |
 
 ### SRv6 SID Structure
 
-The SID Structure sub-TLV communicates how a 128-bit SID is divided:
+The SID Structure sub-sub-TLV communicates how a 128-bit SID is divided:
 
 ```
 |<-- Locator Block -->|<-- Locator Node -->|<-- Function -->|<-- Argument -->|
 |<------- Locator Length (bits) -------->|
 ```
 
-This allows other nodes to understand the structure of SIDs without pre-configuration.
+This allows other nodes, controllers and management systems to understand the structure of SIDs without pre-configuration. Per RFC 9352 Section 9, it is informational only and must not be used by transit nodes for forwarding.
 
 ## Key Sections
 
 | Section | Topic | Description |
 |---------|-------|-------------|
-| 2 | SRv6 Locator TLV (Type 27) | Top-level IS-IS TLV that advertises an SRv6 locator prefix, its metric, algorithm, and flags |
-| 2.1 | SRv6 End SID Sub-TLV | Sub-TLV of the Locator TLV; associates an End SID with a locator and specifies endpoint behavior |
-| 2.2 | SRv6 End.X SID Sub-TLV | Advertises adjacency-specific SIDs (layer-3 cross-connect); carried in the Extended IS Reachability TLV |
-| 2.3 | SRv6 LAN End.X SID Sub-TLV | End.X SID for multi-access (LAN) segments with a neighbor system-ID identifier |
-| 3 | SRv6 SID Structure Sub-TLV | Describes the bit-level decomposition of the SID: Locator Block Length, Locator Node Length, Function Length, Argument Length |
-| 4 | SRv6 Capabilities Sub-TLV | Advertises SRv6 capability flags within the IS-IS Router Capability TLV (type 242) |
-| 5 | Flex-Algorithm Integration | SRv6 locators can be associated with Flex-Algorithm IDs, enabling topology/constraint-aware SID advertisement |
-| 6 | Security Considerations | IS-IS authentication protects SRv6 TLV integrity; no additional mechanisms required beyond standard IS-IS security |
+| 2 | SRv6 Capabilities Sub-TLV | Sub-TLV (type 25) of the IS-IS Router Capability TLV (242); signals SR Segment Endpoint support and the O-flag (RFC 9259) |
+| 3 | Advertising Supported Algorithms | Supported algorithms use the SR-Algorithm sub-TLV from RFC 8667 |
+| 4 | Advertising Maximum SRv6 SID Depths | Four SRv6 MSD types (see [below](#maximum-srv6-sid-depths-msd)) |
+| 5 | SRv6 SIDs and Reachability | Locators are advertised in the SRv6 Locator TLV; algorithm 0/1 locators should also go in TLV 236/237 for non-SRv6 routers, Flex-Algorithm locators should not |
+| 6 | Advertising Anycast Property | A-flag in the Prefix Attribute Flags sub-TLV marks an anycast prefix or locator |
+| 7.1 | SRv6 Locator TLV Format | Top-level IS-IS TLV (type 27) that advertises an SRv6 locator prefix, its metric, algorithm, and flags |
+| 7.2 | SRv6 End SID Sub-TLV | Sub-TLV (type 5) of the Locator TLV; associates an End SID with a locator and specifies endpoint behavior |
+| 8.1 | SRv6 End.X SID Sub-TLV | Sub-TLV (type 43) for adjacency-specific SIDs; carried in TLVs 22, 23, 25, 141, 222 and 223 |
+| 8.2 | SRv6 LAN End.X SID Sub-TLV | Sub-TLV (type 44): End.X SID for multi-access (LAN) segments, with the neighbor's system ID |
+| 9 | SRv6 SID Structure Sub-Sub-TLV | Sub-sub-TLV (type 1) of the End, End.X and LAN End.X SID sub-TLVs: Locator Block Length, Locator Node Length, Function Length, Argument Length |
+| 10 | Advertising Endpoint Behaviors | Which RFC 8986 behavior codepoints may be advertised in which SID sub-TLV |
+| 11 | IANA Considerations | TLV, sub-TLV, sub-sub-TLV, flag and MSD-type registrations |
+| 12 | Security Considerations | Refers to IS-IS authentication (RFC 5304, RFC 5310) and to the security considerations of RFC 8402, RFC 8986, RFC 8491, RFC 9259 and RFC 9350 |
 
 ### SRv6 Locator TLV Detail
 
@@ -15813,11 +15833,11 @@ The SRv6 Locator TLV (Type 27) structure:
 | Metric | 4 bytes | Route metric for the locator prefix |
 | Flags | 1 byte | D-flag (leaking from L2 to L1) |
 | Algorithm | 1 byte | IGP Algorithm (0 = SPF, 128-255 = Flex-Algorithm) |
-| Locator Prefix Length | 1 byte | Prefix length in bits |
-| Locator Prefix | Variable | The SRv6 locator IPv6 prefix |
-| Sub-TLVs | Variable | End SID sub-TLVs, SID Structure sub-TLVs |
+| Loc-Size | 1 byte | Locator length in bits (1-128) |
+| Locator | Variable | The SRv6 locator IPv6 prefix |
+| Sub-TLVs | Variable | End SID sub-TLVs (each may carry a SID Structure sub-sub-TLV), Prefix Attribute Flags sub-TLV |
 
-### SRv6 SID Structure Sub-TLV Detail
+### SRv6 SID Structure Sub-Sub-TLV Detail
 
 | Field | Length | Description |
 |-------|--------|-------------|
@@ -15827,22 +15847,37 @@ The SRv6 Locator TLV (Type 27) structure:
 | Argument Length (AL) | 1 byte | Number of bits for the Argument (optional, behavior-specific) |
 
 !!! example "SID Structure Example"
-    For a SID `fc00:0:1::1` with block `fc00::/24`, node `0:0:1::/40`, function `::1/16`:
+    For the End SID `fcbb:bb00:1:1::` in the common F3216 format (block `fcbb:bb00::/32`, node `1`, so locator `fcbb:bb00:1::/48`, function `1`):
 
-    - Locator Block Length = 24
+    - Locator Block Length = 32
     - Locator Node Length = 16
     - Function Length = 16
     - Argument Length = 0
 
+    Locator length = 32 + 16 = 48 bits, and the SID uses 32 + 16 + 16 = 64 of its 128 bits; the rest is zero.
+
 !!! warning "Common Pitfalls"
 
-    **Locator Block Length vs Locator Node Length.** The Locator Block is the common prefix shared across the SRv6 domain (e.g., `fc00::/24`), while the Locator Node is the per-node portion within the block. Together they form the full Locator. Confusing these two fields leads to incorrect SID resolution. The total Locator Length = Locator Block Length + Locator Node Length.
+    **Locator Block Length vs Locator Node Length.** The Locator Block is the common prefix shared across the SRv6 domain (e.g., `fcbb:bb00::/32`), while the Locator Node is the per-node portion within the block. Together they form the full Locator. Confusing these two fields leads to incorrect SID resolution. The total Locator Length = Locator Block Length + Locator Node Length.
 
-    **SID Structure mismatch causes silent failures.** If the SID Structure sub-TLV values do not match the actual SID allocation on the advertising node, remote nodes will parse the SID incorrectly. For example, if a node advertises Function Length = 16 but actually uses 20 bits for the function, other nodes will compute wrong SIDs for VPN services.
+    **SID Structure mismatch causes silent failures.** If the SID Structure sub-sub-TLV values do not match the actual SID allocation on the advertising node, remote nodes will parse the SID incorrectly. For example, if a node advertises Function Length = 16 but actually uses 20 bits for the function, other nodes will compute wrong SIDs for VPN services.
 
     **Algorithm field must match Flex-Algorithm.** When advertising a locator under a Flex-Algorithm (algorithm value 128-255), the Algorithm field in the Locator TLV must match the Flex-Algorithm Definition advertised elsewhere in IS-IS (RFC 9350). A mismatch means the locator will not be used for that algorithm's path computation.
 
     **End.X SIDs are per-adjacency, not per-locator.** End.X SIDs are advertised in the Extended IS Reachability TLV (TLV 22 or TLV 222) as sub-TLVs of the adjacency, not as sub-TLVs of the Locator TLV. This is different from End SIDs which are sub-TLVs of the Locator TLV.
+
+### Maximum SRv6 SID Depths (MSD)
+
+Section 4 defines four SRv6 MSD types, advertised with the RFC 8491 MSD sub-TLVs (node MSD in the Router Capability TLV, link MSD in TLVs 22, 23, 25, 141, 222 and 223):
+
+| MSD Type | Value | Meaning | If not advertised |
+|----------|:-----:|---------|-------------------|
+| SRH Max Segments Left | 41 | Largest Segments Left value in a received SRH that the node can process | 0 |
+| SRH Max End Pop | 42 | Most SIDs in an SRH for which the node can apply the PSP or USP flavor | Node cannot apply PSP/USP (also if 0) |
+| SRH Max H.Encaps | 44 | Most SIDs the headend can push in an SRH with H.Encaps | Only single-segment policies without an SRH (also if 0) |
+| SRH Max End D | 45 | Most SIDs in an SRH when performing decapsulation (e.g. End.DT4, End.DX6) | Node cannot decapsulate if the outer header has an SRH (also if 0) |
+
+Headends and PCEs use these values to avoid building segment lists that a node cannot process.
 
 ### Interaction with Flex-Algorithm
 
