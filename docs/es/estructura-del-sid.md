@@ -30,11 +30,11 @@ Un **Segment Identifier (SID)** de SRv6 es un valor de 128 bits con formato de d
 ## Ejemplo
 
 ```
-SID:  5f00:0:1::100
+SID:  5f00:0:1:100::
 
 Desglose:
-  Locator:  5f00:0:1::/48   (identifica al nodo)
-  Function: ::100            (End.DT4 - desencapsula y busca en la tabla IPv4)
+  Locator:  5f00:0:1::/48   (bits 0-47: identifica al nodo)
+  Function: 100              (bits 48-63: End.DT4, desencapsula y busca en una tabla IPv4)
   Args:     (ninguno)
 ```
 
@@ -81,43 +81,84 @@ La mayoría de los primeros despliegues de SRv6 (China Mobile, SoftBank y otros)
 
 ### Filtrar `5f00::/16` en los bordes del dominio
 
-Uses `5f00::/16` o tu propio GUA, debes evitar que los SIDs SRv6 se filtren fuera del dominio SR.
+Uses `5f00::/16` o tu propio GUA, mantén los SIDs SRv6 dentro del dominio SR en dos capas:
+
+1. **Rutas:** nunca anuncies el bloque de SIDs a pares externos y nunca lo aceptes de ellos.
+2. **Paquetes:** descarta los paquetes que llegan por interfaces externas con destino dentro del bloque de SIDs, para que nadie de fuera pueda enviar tráfico a tus SIDs.
 
 === "Cisco IOS-XR"
 
     ```cisco
-    prefix-set DENY-SRV6
+    prefix-set SRV6-SIDS
       5f00::/16 le 128
     end-set
-
-    route-policy EBGP-IN
-      if destination in DENY-SRV6 then
+    !
+    route-policy NO-SRV6-SIDS
+      if destination in SRV6-SIDS then
         drop
+      else
+        pass
       endif
     end-policy
+    !
+    router bgp 65000
+     neighbor 2001:db8:ff::1
+      address-family ipv6 unicast
+       route-policy NO-SRV6-SIDS in
+       route-policy NO-SRV6-SIDS out
+    !
+    ipv6 access-list EDGE-IN
+     10 deny ipv6 any 5f00::/16
+     20 permit ipv6 any any
+    !
+    interface HundredGigE0/0/0/0
+     ipv6 access-group EDGE-IN ingress
     ```
+
+    El `else pass` es importante: una route policy de IOS-XR descarta todo lo que no deja pasar explícitamente.
 
 === "Juniper Junos"
 
     ```junos
     policy-options {
-        prefix-list SRV6-SID-SPACE {
-            5f00::/16;
-        }
-        policy-statement REJECT-SRV6 {
+        policy-statement NO-SRV6-SIDS {
             term deny-srv6 {
-                from prefix-list SRV6-SID-SPACE;
+                from {
+                    route-filter 5f00::/16 orlonger;
+                }
                 then reject;
+            }
+        }
+    }
+    firewall {
+        family inet6 {
+            filter EDGE-IN {
+                term no-srv6-sids {
+                    from {
+                        destination-address {
+                            5f00::/16;
+                        }
+                    }
+                    then discard;
+                }
+                term rest {
+                    then accept;
+                }
             }
         }
     }
     ```
 
+    Aplica `NO-SRV6-SIDS` como política `import` y `export` en el grupo BGP externo, y `EDGE-IN` como `filter input` en las interfaces externas (`family inet6`). `orlonger` es necesario: sin él, la política solo coincide con el /16 exacto.
+
 === "Linux (ip6tables)"
 
     ```bash
-    ip6tables -A FORWARD -d 5f00::/16 -j DROP
+    # Solo en la interfaz externa: dentro del dominio, el tráfico SRv6 hacia el bloque de SIDs es legítimo
+    ip6tables -t raw -A PREROUTING -i eth-external -d 5f00::/16 -j DROP
     ```
+
+    La cadena `PREROUTING` de la tabla `raw` se ejecuta antes de la decisión de enrutamiento, así que también cubre los paquetes dirigidos a SIDs locales, que nunca llegan a `FORWARD`.
 
 Si usas prefijos GUA del operador, aplica el mismo principio con el rango de tus Locators (ver también la [sección 5.1 del RFC 8754](https://datatracker.ietf.org/doc/html/rfc8754#section-5.1)).
 

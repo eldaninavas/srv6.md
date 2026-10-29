@@ -30,15 +30,15 @@ SRv6の**Segment Identifier（SID）**は128ビットの値で、通常のIPv6�
 ## 例
 
 ```
-SID:  5f00:0:1::100
+SID:  5f00:0:1:100::
 
 Breakdown:
-  Locator:  5f00:0:1::/48   (identifies the node)
-  Function: ::100            (End.DT4 - decap and lookup in IPv4 table)
+  Locator:  5f00:0:1::/48   (bits 0-47: identifies the node)
+  Function: 100              (bits 48-63: End.DT4, decapsulate and look up in an IPv4 table)
   Args:     (none)
 ```
 
-この例では、Locator `5f00:0:1::/48`がノードを識別し、Function `::100`がEnd.DT4（デカプセル化してIPv4テーブルを検索）を表します。Argumentsはありません。
+この例では、Locator `5f00:0:1::/48`（ビット0〜47）がノードを識別し、Function `100`（ビット48〜63）がEnd.DT4（デカプセル化してIPv4テーブルを検索）を表します。Argumentsはありません。
 
 !!! info "LocatorはIGPの経路として広告される"
     Locatorのブロックは、IGP（IS-ISまたはOSPFv3）で通常のIPv6経路として広告されます。これにより、ネットワーク内のSRv6対応ノードすべてへの到達性が確保されます。
@@ -83,43 +83,84 @@ RFC 9602は`5f00::/16`の使用を義務付けてはいません。事業者は�
 
 ### ドメイン境界での`5f00::/16`のフィルタリング
 
-`5f00::/16`を使う場合も自社のGUAを使う場合も、SRv6のSIDがSRドメインの外へ漏れないようにする必要があります。
+`5f00::/16`を使う場合も自社のGUAを使う場合も、SRv6のSIDは次の2つのレイヤーでSRドメイン内にとどめます。
+
+1. **経路:** SIDブロックを外部のピアに広告せず、外部のピアからも受け入れない。
+2. **パケット:** 外部インターフェースに着信し、宛先がSIDブロック内にあるパケットを破棄する。これにより、外部の誰もSIDに向けてトラフィックを送れなくなる。
 
 === "Cisco IOS-XR"
 
     ```cisco
-    prefix-set DENY-SRV6
+    prefix-set SRV6-SIDS
       5f00::/16 le 128
     end-set
-
-    route-policy EBGP-IN
-      if destination in DENY-SRV6 then
+    !
+    route-policy NO-SRV6-SIDS
+      if destination in SRV6-SIDS then
         drop
+      else
+        pass
       endif
     end-policy
+    !
+    router bgp 65000
+     neighbor 2001:db8:ff::1
+      address-family ipv6 unicast
+       route-policy NO-SRV6-SIDS in
+       route-policy NO-SRV6-SIDS out
+    !
+    ipv6 access-list EDGE-IN
+     10 deny ipv6 any 5f00::/16
+     20 permit ipv6 any any
+    !
+    interface HundredGigE0/0/0/0
+     ipv6 access-group EDGE-IN ingress
     ```
+
+    `else pass`は重要です。IOS-XRのroute policyは、明示的に`pass`しなかったものをすべて破棄します。
 
 === "Juniper Junos"
 
     ```junos
     policy-options {
-        prefix-list SRV6-SID-SPACE {
-            5f00::/16;
-        }
-        policy-statement REJECT-SRV6 {
+        policy-statement NO-SRV6-SIDS {
             term deny-srv6 {
-                from prefix-list SRV6-SID-SPACE;
+                from {
+                    route-filter 5f00::/16 orlonger;
+                }
                 then reject;
+            }
+        }
+    }
+    firewall {
+        family inet6 {
+            filter EDGE-IN {
+                term no-srv6-sids {
+                    from {
+                        destination-address {
+                            5f00::/16;
+                        }
+                    }
+                    then discard;
+                }
+                term rest {
+                    then accept;
+                }
             }
         }
     }
     ```
 
+    `NO-SRV6-SIDS`は外部BGPグループの`import`と`export`の両方のポリシーとして、`EDGE-IN`は外部インターフェース（`family inet6`）の`filter input`として適用します。`orlonger`は必須です。これがないと、ポリシーは/16そのものにしか一致しません。
+
 === "Linux (ip6tables)"
 
     ```bash
-    ip6tables -A FORWARD -d 5f00::/16 -j DROP
+    # 外部インターフェースのみ：ドメイン内では、SIDブロック宛てのSRv6トラフィックは正当なもの
+    ip6tables -t raw -A PREROUTING -i eth-external -d 5f00::/16 -j DROP
     ```
+
+    `raw`テーブルの`PREROUTING`チェーンはルーティング判断の前に処理されるため、`FORWARD`に到達しないローカルSID宛てのパケットも対象になります。
 
 事業者のGUAプレフィックスを使う場合も、同じ考え方を自社のLocatorのプレフィックス範囲に適用してください（[RFC 8754 Section 5.1](https://datatracker.ietf.org/doc/html/rfc8754#section-5.1)も参照）。
 

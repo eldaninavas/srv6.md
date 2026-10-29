@@ -67,7 +67,7 @@ SRHは、**Routing Type = 4**のIPv6 Routing Headerです。
 
 ## パケットウォークの全体像
 
-3ノード構成のSRv6ネットワークでパケットを追跡してみましょう。
+送信元Aから2つのSRv6エンドポイント（BとC）を経由して宛先Dに届くまで、パケットを追跡してみましょう。
 
 ```
 Source (A) → Node B → Node C → Destination (D)
@@ -110,7 +110,7 @@ After SRv6 encapsulation:
 !!! info "DA = アクティブSID"
     IPv6の宛先アドレス（DA）は、常に現在アクティブなSID（`Segment List[Segments Left]`）と一致します。
 
-### ステップ2：トランジット（ノードB：Endビヘイビア）
+### ステップ2：エンドポイント（ノードB：Endビヘイビア）
 
 ノードBがパケットを受信します。DAが自身のローカルSID `B::100`（**End**ビヘイビア）に一致するので、次の処理を行います。
 
@@ -185,10 +185,10 @@ SRv6のエンドポイントは、SRHの扱い方を最適化するさまざま�
 |------------|----------|------|
 | **PSP** | Penultimate Segment Pop | 最後から2番目のノード（SL=1）が、最後のセグメントへ転送する前にSRHを取り除く。Egressノードの負荷を減らせる |
 | **USP** | Ultimate Segment Pop | 最後のノード自身がSRHを取り除く |
-| **USD** | Ultimate Segment Decap | 最後のノードが外側のIPv6ヘッダーとSRHをまとめてデカプセル化する。End.DT4/DT6と組み合わせて使う |
+| **USD** | Ultimate Segment Decap | 最後のノードが外側のIPv6ヘッダーとSRHをまとめてデカプセル化する。End、End.X、End.Tに適用される。End.DT4/DT6/DT46は定義上デカプセル化を行うため、フレーバーは付かない |
 
 !!! tip "最も一般的なのはPSP"
-    PSPはSRHの除去をEgress PEから肩代わりして効率を高めるため、広く使われています。最近の実装の多くは`End with PSP`または`End with PSP-USP-USD`を広告します。
+    PSPはSRHの除去をEgress PEから肩代わりして効率を高めるため、広く使われています。PSPとUSDはよく組み合わせて使われます（IOS-XRの`psp-usd`キーワード）。LinuxはEndでPSPを実装しています。フレーバーが適用されるのはEnd、End.X、End.Tだけです。
 
 ## TLV付きのSRH
 
@@ -218,7 +218,7 @@ H.Encaps.Redでは、SID-1はDAにだけ存在し、SRHには入りません。S
 === "Linux"
 
     ```bash
-    # SRv6パケットをキャプチャ（Routing Header、Next Header 43）
+    # SRv6パケットをキャプチャ：Next Header 43はRouting Header（SRv6はRouting Type 4を使用）
     tcpdump -i eth0 -vv 'ip6 proto 43'
 
     # ローカルSIDテーブルを表示

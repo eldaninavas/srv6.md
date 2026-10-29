@@ -68,7 +68,7 @@ The SRH is an IPv6 Routing Header with **Routing Type = 4**.
 
 ## Complete Packet Walk
 
-Let's trace a packet through a 3-node SRv6 network:
+Let's trace a packet from source A, through two SRv6 endpoints (B and C), to destination D:
 
 ```
 Source (A) → Node B → Node C → Destination (D)

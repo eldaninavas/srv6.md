@@ -77,10 +77,12 @@ Paso 3 - El Nodo 2 procesa el uSID 0002 y desplaza a la izquierda:
                   ^^^^
                   uSID activo → Nodo 3
 
-Paso 4 - El Nodo 3 procesa el uSID 0003 y desplaza a la izquierda:
-  DA = fcbb:bbbb:0000:0000:0000:0000:0000:0000
+Paso 4 - El Nodo 3 procesa el uSID 0003. Todo lo que sigue es 0000
+         (fin de contenedor), así que no queda nada que desplazar:
+  DA = fcbb:bbbb:0003:0000:0000:0000:0000:0000
                   ^^^^
-                  Fin de contenedor (0000) → pasar a la siguiente entrada de la SRH
+                  Último uSID → con SRH, toma el siguiente contenedor
+                  (Segments Left - 1); sin SRH, ejecuta el comportamiento final
 ```
 
 ## Comparación de sobrecarga
@@ -93,7 +95,7 @@ Paso 4 - El Nodo 3 procesa el uSID 0003 y desplaza a la izquierda:
 | 12 SIDs | 192 bytes | 32 bytes (2 contenedores) | **83%** |
 
 !!! tip "6 saltos en 16 bytes"
-    Un solo contenedor uSID codifica **hasta 6 instrucciones de segmento** en el mismo espacio que SRv6 clásico usa para **1 solo SID**. Con esto, la sobrecarga de SRv6 queda a la par o por debajo de una pila de etiquetas MPLS.
+    Un solo contenedor uSID codifica **hasta 6 instrucciones de segmento** en el mismo espacio que SRv6 clásico usa para **1 solo SID**. Elimina el coste por SID: una ruta de hasta seis instrucciones solo necesita la cabecera IPv6 exterior de 40 bytes, sin SRH. Una VPN MPLS simple sigue siendo más pequeña (8 bytes); consulta [SRv6 vs MPLS](srv6-vs-sr-mpls.md) para ver las cifras.
 
 ## uSID vs G-SRv6
 
@@ -107,7 +109,7 @@ Surgieron dos enfoques de compresión, hoy unificados en el **RFC 9800**:
 | **RFC** | RFC 9800 | RFC 9800 |
 | **Adopción** | Varios operadores globales | Varios operadores globales |
 
-Ambos están estandarizados en el **RFC 9800** (compresión de SIDs SRv6), lo que garantiza la interoperabilidad.
+Ambos sabores están estandarizados en el **RFC 9800** (Compressed SRv6 Segment List Encoding). Son codificaciones distintas, así que un dominio usa una de las dos; la interoperabilidad entre fabricantes se ha demostrado para NEXT-C-SID (uSID).
 
 ## Ejemplos de configuración
 
@@ -119,7 +121,7 @@ Ambos están estandarizados en el **RFC 9800** (compresión de SIDs SRv6), lo qu
       locators
        locator uSID-MAIN
         micro-segment behavior unode psp-usd
-        prefix fcbb:bb01::/48
+        prefix fcbb:bbbb:1::/48
        !
       !
      !

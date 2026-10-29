@@ -13,13 +13,13 @@ tags:
 
 # SRv6 for AI: The Complete Guide
 
-**SRv6 has become a foundational protocol for AI networking.** In GPU training fabrics, the sending NIC writes the exact path of every packet as a list of 16-bit uSIDs in the IPv6 destination address. Switches forward it with static tables and no routing protocol, and the transport sprays traffic across hundreds of explicit paths and abandons a failing path within microseconds. Between data centers, SRv6 traffic engineering steers AI traffic across the WAN. OpenAI, Microsoft and Oracle run SRv6 in their AI training fabrics, Meta on the backbone that interconnects its AI clusters, and Alibaba Cloud across its AI computing network.
+**SRv6 has become a foundational technology for AI networking.** In GPU training fabrics, the sending NIC writes the exact path of every packet as a list of 16-bit uSIDs in the IPv6 destination address. Switches forward it with static tables and no routing protocol, and the transport sprays traffic across hundreds of explicit paths and abandons a failing path within microseconds. Between data centers, SRv6 traffic engineering steers AI traffic across the WAN. OpenAI, Microsoft and Oracle run SRv6 in their AI training fabrics, Meta on the backbone that interconnects its AI clusters, and Alibaba Cloud across its AI computing network.
 
 !!! abstract "Key facts (October 2026)"
     - **Production**: [MRC](mrc.md) over static SRv6 trains frontier models in OpenAI's largest GB200 clusters, Microsoft's Fairwater supercomputers and Oracle's OCI clusters, including Abilene, Texas. Reported jobs reach 75,000 GPUs on fabrics designed for 131,072 GPUs in two tiers.
     - **No BGP in the backend**: switches keep small static uSID tables written once at install time. Failure handling moves to the NIC.
     - **40 bytes**: with uSID, a full path fits in one IPv6 destination address, with no Segment Routing Header.
-    - **Scale-across**: Meta (regional backbone, SRv6 TE in production since October 2026) and Alibaba (a dedicated "eCore for AI" with per-job SRv6 TE) use SRv6 between AI sites.
+    - **Scale-across**: Meta (regional backbone, first SRv6 TE site in production in October 2026) and Alibaba (a dedicated "eCore for AI" with per-job SRv6 TE) use SRv6 between AI sites.
     - **Standards**: data plane in RFC 8986 and RFC 9800; AI usage in [draft-filsfils-srv6ops-srv6-ai-backend](ai-standards.md) (-05, authors from Cisco, OpenAI, Microsoft, Oracle, IBM, NVIDIA and Arrcus); transport in OCP MRC 1.0; switch software in SONiC since 202505.
 
 ## Why SRv6 fits AI networks

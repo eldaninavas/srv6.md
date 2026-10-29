@@ -14,13 +14,13 @@ tags:
 
 # SRv6 para IA: la guía completa
 
-**SRv6 se ha convertido en un protocolo fundamental para las redes de IA.** En los fabrics de entrenamiento de GPU, la NIC emisora escribe la ruta exacta de cada paquete como una lista de uSID de 16 bits en la dirección IPv6 de destino. Los switches lo reenvían con tablas estáticas y sin ningún protocolo de enrutamiento, y el transporte reparte (*spraying*) el tráfico entre cientos de rutas explícitas y abandona una ruta que falla en microsegundos. Entre centros de datos, la ingeniería de tráfico SRv6 dirige el tráfico de IA a través de la WAN. OpenAI, Microsoft y Oracle usan SRv6 en sus fabrics de entrenamiento de IA, Meta en el backbone que interconecta sus clústeres de IA y Alibaba Cloud en toda su red de cómputo para IA.
+**SRv6 se ha convertido en una tecnología fundamental para las redes de IA.** En los fabrics de entrenamiento de GPU, la NIC emisora escribe la ruta exacta de cada paquete como una lista de uSID de 16 bits en la dirección IPv6 de destino. Los switches lo reenvían con tablas estáticas y sin ningún protocolo de enrutamiento, y el transporte reparte (*spraying*) el tráfico entre cientos de rutas explícitas y abandona una ruta que falla en microsegundos. Entre centros de datos, la ingeniería de tráfico SRv6 dirige el tráfico de IA a través de la WAN. OpenAI, Microsoft y Oracle usan SRv6 en sus fabrics de entrenamiento de IA, Meta en el backbone que interconecta sus clústeres de IA y Alibaba Cloud en toda su red de cómputo para IA.
 
 !!! abstract "Datos clave (octubre de 2026)"
     - **En producción**: [MRC](../ai/mrc.md) *(en inglés)* sobre SRv6 estático entrena modelos de frontera en los mayores clústeres GB200 de OpenAI, en las supercomputadoras Fairwater de Microsoft y en los clústeres OCI de Oracle, incluido el de Abilene, Texas. Los trabajos reportados llegan a 75.000 GPU en fabrics diseñados para 131.072 GPU en dos niveles.
     - **Sin BGP en el backend**: los switches mantienen pequeñas tablas uSID estáticas que se escriben una sola vez durante la instalación. El manejo de fallos pasa a la NIC.
     - **40 bytes**: con uSID, una ruta completa cabe en una sola dirección IPv6 de destino, sin Segment Routing Header.
-    - **Scale-across**: Meta (backbone regional, SRv6 TE en producción desde octubre de 2026) y Alibaba (un "eCore for AI" dedicado con SRv6 TE por trabajo de entrenamiento) usan SRv6 entre sitios de IA.
+    - **Scale-across**: Meta (backbone regional, primer sitio con SRv6 TE en producción en octubre de 2026) y Alibaba (un "eCore for AI" dedicado con SRv6 TE por trabajo de entrenamiento) usan SRv6 entre sitios de IA.
     - **Estándares**: plano de datos en RFC 8986 y RFC 9800; uso en IA en [draft-filsfils-srv6ops-srv6-ai-backend](../ai/ai-standards.md) *(en inglés)* (-05, con autores de Cisco, OpenAI, Microsoft, Oracle, IBM, NVIDIA y Arrcus); transporte en OCP MRC 1.0; software de switch en SONiC desde la versión 202505.
 
 ## Por qué SRv6 encaja en las redes de IA

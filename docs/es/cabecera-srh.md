@@ -67,7 +67,7 @@ La SRH es una *Routing Header* de IPv6 con **Routing Type = 4**.
 
 ## Recorrido completo de un paquete
 
-Sigamos un paquete a través de una red SRv6 de 3 nodos:
+Sigamos un paquete desde el origen A, a través de dos endpoints SRv6 (B y C), hasta el destino D:
 
 ```
 Origen (A) → Nodo B → Nodo C → Destino (D)
@@ -108,7 +108,7 @@ Tras la encapsulación SRv6:
 !!! info "DA = SID activo"
     La dirección IPv6 de destino siempre es igual al SID activo (`Segment List[Segments Left]`).
 
-### Paso 2: tránsito (Nodo B, comportamiento End)
+### Paso 2: endpoint (Nodo B, comportamiento End)
 
 El Nodo B recibe el paquete. La dirección de destino coincide con su SID local `B::100`, que tiene el comportamiento **End**:
 
@@ -183,10 +183,10 @@ Los endpoints SRv6 pueden soportar distintos **sabores** (*flavors*) que optimiz
 |-------|-----------------|-------------|
 | **PSP** | Penultimate Segment Pop | El penúltimo nodo (SL=1) quita la SRH antes de reenviar al último segmento. Reduce la carga en el nodo de salida. |
 | **USP** | Ultimate Segment Pop | El último nodo quita la SRH él mismo. |
-| **USD** | Ultimate Segment Decap | El último nodo desencapsula toda la cabecera IPv6 externa y la SRH. Se usa con End.DT4/DT6. |
+| **USD** | Ultimate Segment Decap | El último nodo desencapsula toda la cabecera IPv6 externa y la SRH. Se aplica a End, End.X y End.T; End.DT4/DT6/DT46 desencapsulan por definición y no llevan sabor. |
 
 !!! tip "PSP es el más común"
-    PSP está muy desplegado porque libera al PE de salida de quitar la SRH. La mayoría de las implementaciones modernas anuncian `End with PSP` o `End with PSP-USP-USD`.
+    PSP está muy desplegado porque libera al PE de salida de quitar la SRH. PSP y USD son la pareja habitual (la palabra clave `psp-usd` de IOS-XR); Linux implementa PSP en End. Los sabores solo se aplican a End, End.X y End.T.
 
 ## SRH con TLVs
 
@@ -214,7 +214,7 @@ H.Encaps.Red:  SRH [SID-3, SID-2],        SL=2, DA = SID-1  ← SID-1 solo va en
 === "Linux"
 
     ```bash
-    # Capturar paquetes SRv6 (Routing Header, next header 43)
+    # Capturar paquetes SRv6: Next Header 43 es la Routing Header (SRv6 usa Routing Type 4)
     tcpdump -i eth0 -vv 'ip6 proto 43'
 
     # Ver la tabla local de SIDs
