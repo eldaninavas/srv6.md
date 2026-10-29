@@ -109,7 +109,7 @@ After SRv6 encapsulation:
 !!! info "DA = Active SID"
     The IPv6 Destination Address always equals the currently active SID (`Segment List[Segments Left]`).
 
-### Step 2: Transit (Node B — End Behavior)
+### Step 2: Endpoint (Node B — End Behavior)
 
 Node B receives the packet. The DA matches its local SID `B::100` with **End** behavior:
 
@@ -184,10 +184,10 @@ SRv6 endpoints can support different processing **flavors** that optimize how th
 |--------|-----------|-------------|
 | **PSP** | Penultimate Segment Pop | The penultimate node (SL=1) removes the SRH before forwarding to the last segment. Reduces overhead on the egress node. |
 | **USP** | Ultimate Segment Pop | The ultimate (last) node removes the SRH itself. |
-| **USD** | Ultimate Segment Decap | The ultimate node decapsulates the entire outer IPv6 header + SRH. Used with End.DT4/DT6. |
+| **USD** | Ultimate Segment Decap | The ultimate node decapsulates the entire outer IPv6 header + SRH. Applies to End, End.X and End.T; End.DT4/DT6/DT46 decapsulate by definition and take no flavor. |
 
 !!! tip "PSP is the most common"
-    PSP is widely deployed because it offloads SRH removal from the egress PE, improving efficiency. Most modern implementations advertise `End with PSP` or `End with PSP-USP-USD`.
+    PSP is widely deployed because it offloads SRH removal from the egress PE, improving efficiency. PSP and USD are the common pair (IOS-XR's `psp-usd` keyword); Linux implements PSP on End. Flavors apply only to End, End.X and End.T.
 
 ## SRH with TLVs
 
@@ -215,7 +215,7 @@ H.Encaps.Red:  SRH [SID-3, SID-2],        SL=2, DA = SID-1  ← SID-1 only in th
 === "Linux"
 
     ```bash
-    # Capture SRv6 packets (Routing Header type 43)
+    # Capture SRv6 packets: Next Header 43 is the Routing Header (SRv6 uses Routing Type 4)
     tcpdump -i eth0 -vv 'ip6 proto 43'
 
     # Show local SID table

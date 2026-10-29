@@ -79,10 +79,12 @@ Step 3 - Node 2 processes uSID 0002, shifts left:
                   ^^^^
                   Active uSID → Node 3
 
-Step 4 - Node 3 processes uSID 0003, shifts left:
-  DA = fcbb:bbbb:0000:0000:0000:0000:0000:0000
+Step 4 - Node 3 processes uSID 0003. Everything after it is 0000
+         (end-of-container), so there is nothing left to shift:
+  DA = fcbb:bbbb:0003:0000:0000:0000:0000:0000
                   ^^^^
-                  End-of-Container (0000) → Move to next SRH entry
+                  Last uSID → with an SRH, take the next container
+                  (Segments Left - 1); without one, run the final behavior
 ```
 
 !!! tip "Try it with your own container"
@@ -98,7 +100,7 @@ Step 4 - Node 3 processes uSID 0003, shifts left:
 | 12 SIDs | 192 bytes | 32 bytes (2 containers) | **83%** |
 
 !!! tip "6 hops in 16 bytes"
-    A single uSID container can encode **up to 6 segment instructions** in the same space that classic SRv6 uses for just **1 SID**. This makes SRv6 competitive with or better than MPLS label stacks in terms of overhead.
+    A single uSID container can encode **up to 6 segment instructions** in the same space that classic SRv6 uses for just **1 SID**. It removes the per-SID cost: a path of up to six instructions needs only the 40-byte outer IPv6 header and no SRH. A plain MPLS VPN is still smaller (8 bytes); see [SRv6 vs MPLS](srv6-vs-sr-mpls.md) for the numbers.
 
 ## uSID vs G-SRv6
 
@@ -112,7 +114,7 @@ Two compression approaches emerged and are now unified under **RFC 9800**:
 | **RFC** | RFC 9800 | RFC 9800 |
 | **Adoption** | Multiple global operators | Multiple global operators |
 
-Both are now standardized in **RFC 9800** (SRv6 SID Compression), ensuring interoperability.
+Both flavors are standardized in **RFC 9800** (Compressed SRv6 Segment List Encoding). They are different encodings, so a domain uses one of them; multi-vendor interoperability has been demonstrated for NEXT-C-SID (uSID).
 
 ## Configuration Examples
 
@@ -124,7 +126,7 @@ Both are now standardized in **RFC 9800** (SRv6 SID Compression), ensuring inter
       locators
        locator uSID-MAIN
         micro-segment behavior unode psp-usd
-        prefix fcbb:bb01::/48
+        prefix fcbb:bbbb:1::/48
        !
       !
      !
