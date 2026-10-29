@@ -7,8 +7,8 @@
 
 name: Learn SRv6
 tagline: The free SRv6 course. From your first SID to AI fabrics.
-channel_handle: "@srv6"   # desired handle (free on 2026-10-28); claim it when creating the channel
-# channel_url: https://www.youtube.com/@srv6   # set once the channel exists; the site links it only then
+channel_handle: "@LearnSRv6"   # created 2026-10-28 (brand account)
+# channel_url: https://www.youtube.com/@LearnSRv6   # uncomment once the first video is public   # set once the channel exists; the site links it only then
 
 tracks:
   - id: start
