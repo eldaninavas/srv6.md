@@ -10,7 +10,7 @@ solo puedes hacer tú: crear y configurar el canal, y subir cada video.
 1. Entra a YouTube con la cuenta de Google que será dueña del canal. Lo ideal
    es una **cuenta de marca** ("Brand Account"), así puedes dar acceso a otras
    personas sin compartir tu contraseña.
-2. Nombre del canal: **SRv6.md**. Handle: **@LearnSRv6** (canal creado el 28 de octubre
+2. Nombre del canal: **Learn SRv6** (YouTube rechaza "SRv6.md"). Handle: **@LearnSRv6** (canal creado el 28 de octubre
    de 2026 como cuenta de marca).
 3. **Verifica el canal con tu teléfono** (youtube.com/verify). Sin esto no
    puedes subir miniaturas personalizadas ni videos de más de 15 minutos.
