@@ -17,10 +17,6 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
-         <loc>https://srv6.md/academy/</loc>
-         <lastmod>2026-10-28</lastmod>
-    </url>
-    <url>
          <loc>https://srv6.md/ai/</loc>
          <xhtml:link rel="alternate" hreflang="en" href="https://srv6.md/ai/"/>
          <xhtml:link rel="alternate" hreflang="es" href="https://srv6.md/es/ia/"/>
@@ -267,6 +263,10 @@
     <url>
          <loc>https://srv6.md/labs/pcaps/</loc>
          <lastmod>2026-10-21</lastmod>
+    </url>
+    <url>
+         <loc>https://srv6.md/learn/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://srv6.md/reports/state-of-srv6-2026/</loc>

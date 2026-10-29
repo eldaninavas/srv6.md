@@ -4,9 +4,9 @@
 
 SRv6.md is a community-driven, MIT-licensed knowledge base covering SRv6 fundamentals, SRv6 for AI networking (GPU backend fabrics, OpenAI's MRC, multi-datacenter training), use cases, vendor implementations, hands-on labs, and RFC references. The full content is available at https://srv6.md/llms-full.txt.
 
-## SRv6.md Academy (free SRv6 course)
+## Learn SRv6 (the free SRv6.md course)
 
-- [SRv6.md Academy: Free SRv6 Course with Videos and Labs](https://srv6.md/academy/): Learn SRv6 for free: a structured course from SIDs and the SRH to TI-LFA, L3VPN, migration, vendor configs and AI fabrics, with written lessons, videos and hands-on labs.
+- [Learn SRv6: Free SRv6 Course with Videos and Labs](https://srv6.md/learn/): Learn SRv6 for free: a structured course from SIDs and the SRH to TI-LFA, L3VPN, migration, vendor configs and AI fabrics, with written lessons, videos and hands-on labs.
 
 ## SRv6 for AI networking
 
