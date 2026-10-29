@@ -39,7 +39,7 @@ In SRv6 networks, traffic follows explicit segment lists through the fabric. Kno
 
 ### STAMP (RFC 8762)
 
-**Simple Two-Way Active Measurement Protocol** is the modern standard for active probing in SRv6 networks. It replaces older TWAMP with a simpler, stateless design.
+**Simple Two-Way Active Measurement Protocol** is the modern standard for active probing in SRv6 networks. It replaces older TWAMP with a simpler design that needs no control protocol.
 
 ```mermaid
 graph LR
@@ -57,7 +57,7 @@ How it works:
 4. Results are streamed to a telemetry collector for visualization and alerting
 
 !!! info "STAMP vs TWAMP"
-    STAMP eliminates the control channel required by TWAMP, making it simpler to deploy at scale. The reflector is stateless -- it does not need to maintain session state, reducing overhead on transit nodes.
+    STAMP eliminates the control channel required by TWAMP, making it simpler to deploy at scale; sessions are set up by configuration (CLI, NETCONF/YANG or a controller). RFC 8762 defines two Session-Reflector modes: **stateless**, where the reflector keeps no per-session state and only round-trip loss can be computed, and **stateful**, where it keeps per-session state so near-end and far-end loss can be told apart. The reflector is the far-end endpoint of the measurement; transit nodes just forward the probes as ordinary packets.
 
 ### Alternate-Marking (RFC 9341 / RFC 9342)
 
@@ -126,8 +126,8 @@ performance-measurement
  delay-profile interfaces default
   advertisement
    anomaly-loss
-    upper-bound 30      ← anomaly declared when loss exceeds 30%
-    lower-bound 20      ← anomaly cleared only when loss drops below 20%
+    upper-bound 30
+    lower-bound 20
    !
   !
  !
@@ -143,6 +143,8 @@ router isis 1
   !
  !
 ```
+
+In this example, `upper-bound 30` declares an anomaly when loss exceeds 30%, and `lower-bound 20` clears it only when loss drops below 20%. We could not verify the exact command hierarchy against Cisco documentation, so check the IOS-XR performance measurement configuration guide for your release.
 
 **How the hysteresis band works:**
 
@@ -203,7 +205,7 @@ Huawei is not in this table because we could not verify release numbers for it: 
 | :material-lightning-bolt: **Fast Reroute Trigger** | Liveness probes detect failures and trigger path switchover in milliseconds |
 | :material-chart-line: **TE Optimization** | Feed real-time delay/loss into SR Policy path computation for dynamic optimization |
 | :material-eye: **End-to-End Visibility** | Measure performance across the entire SRv6 domain, not just individual links |
-| :material-leaf: **Low Overhead** | STAMP is stateless; alternate-marking uses zero additional bandwidth |
+| :material-leaf: **Low Overhead** | STAMP needs no control protocol and its reflector can run stateless; alternate-marking uses zero additional bandwidth |
 
 ## Further Reading
 

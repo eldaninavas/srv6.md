@@ -43,10 +43,10 @@ graph TB
 2. **PE1** advertises via MP-BGP VPNv4/VPNv6 with an **SRv6 SID** instead of a VPN label:
     - Prefix: `10.1.0.0/24`
     - Next-Hop: `PE1 IPv6 address`
-    - SRv6 Service SID: `fcbb:bb01:0001::DT4` (End.DT4 behavior)
+    - SRv6 Service SID: `fcbb:bb01:1:e004::` (End.DT4 behavior; function value `0xe004` identifies VRF `CUSTOMER-A`)
 3. **PE2** receives the BGP update, installs the route
 4. When PE2 receives traffic for `10.1.0.0/24`, it encapsulates with:
-    - IPv6 DA = `fcbb:bb01:0001::DT4`
+    - IPv6 DA = `fcbb:bb01:1:e004::`
     - Inner packet = original IPv4
 5. **PE1** receives, matches End.DT4 SID, decapsulates, looks up in VRF `CUSTOMER-A`
 
@@ -132,7 +132,7 @@ The `End.DX2` SID tells PE2: "decapsulate and cross-connect this L2 frame to the
 | Underlay | IPv4 or IPv6 | IPv6 native |
 | TE capability | Limited | Full SR Policy support |
 | Network programming | None | Rich (service chaining, slicing) |
-| MTU overhead | 50 bytes | 40 bytes (no SRH) to 56+ bytes (with SRH) |
+| MTU overhead | 50 bytes | 40 bytes (no SRH) to 64+ bytes (with SRH: 40 + 8 + 16 per SID) |
 
 ## BGP SRv6 Service TLV (RFC 9252)
 
@@ -145,7 +145,7 @@ BGP Update Message:
   ├── Extended Community: RT 100:1
   └── BGP Prefix-SID Attribute:
       └── SRv6 L3 Service TLV:
-          ├── SRv6 SID: fcbb:bb01:0001::DT4
+          ├── SRv6 SID: fcbb:bb01:1:e004::   (block fcbb:bb01, node 1, function 0xe004)
           ├── SRv6 SID Behavior: End.DT4 (19)
           └── SRv6 SID Structure:
               ├── Locator Block Length: 32
@@ -156,7 +156,7 @@ BGP Update Message:
 
 ### SID Transposition
 
-To save space in BGP updates, the **function** part of the SID can be transposed into (encoded within) the VPN prefix itself, rather than carrying the full 128-bit SID. This is an optimization defined in RFC 9252.
+To pack more prefixes per BGP update, RFC 9252 defines a **Transposition Scheme**: the variable part of the SID (for example the function) is moved out of the SID and carried in the **MPLS Label field of the NLRI** (or another existing label field, such as the ESI Label of an EVPN route), while the SRv6 Services TLV carries only the common part, such as the locator. The SID Structure Sub-Sub-TLV's Transposition Offset and Transposition Length tell the receiver which bits were moved, so it can rebuild the full SID. The label field limits how many bits can be transposed: 20 bits for L3VPN (RFC 4364 / RFC 8277), 24 bits for EVPN (RFC 7432).
 
 ## Verification
 

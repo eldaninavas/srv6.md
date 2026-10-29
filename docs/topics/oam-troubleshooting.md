@@ -45,10 +45,9 @@ sequenceDiagram
     ```cisco
     !! Ping a specific SRv6 SID
     ping ipv6 fc00:0:2::100 source fc00:0:1::1
-
-    !! Ping through an SRv6 path (with segment list)
-    ping sr-mpls nil-fec labels fc00:0:2::1,fc00:0:3::100
     ```
+
+    To ping through an explicit segment list, use your platform's SRv6 OAM ping/traceroute options; the syntax varies by vendor and release. [RFC 9259](../rfcs/rfc9259.md) Appendix A shows how ping and traceroute via a segment list work.
 
 === "Linux"
 
@@ -333,7 +332,7 @@ flowchart LR
 
 ## SRv6 Path Tracing Deep Dive
 
-**Path Tracing** (`draft-filsfils-spring-path-tracing`) is an SRv6-native mechanism that provides a complete path trace in a **single round-trip**, unlike traditional traceroute which requires N round-trips for N hops, and unlike IOAM which adds significant per-hop overhead.
+**Path Tracing** ([`draft-filsfils-ippm-path-tracing`](https://datatracker.ietf.org/doc/draft-filsfils-ippm-path-tracing/), which replaced the expired `draft-filsfils-spring-path-tracing`) is an SRv6 mechanism that records the path of a probe packet as a sequence of interface IDs, plus per-hop delay and egress-interface load, in a **single probe**, unlike traditional traceroute which requires N round-trips for N hops, and unlike IOAM which adds significant per-hop overhead.
 
 ### How Path Tracing Differs from IOAM
 
@@ -341,34 +340,35 @@ Path Tracing was designed as a **lightweight alternative** to IOAM, optimized fo
 
 | Characteristic | IOAM Trace | SRv6 Path Tracing |
 |:---------------|:----------:|:-----------------:|
-| **Per-hop data size** | 24+ bytes (configurable) | **2 bytes** (fixed) |
-| **Header location** | IPv6 Hop-by-Hop Options | SRH TLV |
-| **Processing model** | Every node reads HbH header | Every node writes to SRH TLV |
-| **Data richness** | Full telemetry (timestamps, queues, buffers) | Compressed interface + timestamp |
-| **MTU impact** | High (can add hundreds of bytes) | Low (2 bytes per hop) |
-| **Deployment complexity** | Requires HbH processing at all transit nodes | Only SRv6-aware nodes participate |
+| **Per-hop data size** | 24+ bytes (configurable) | **3 bytes** per midpoint (MCD) |
+| **Header location** | IPv6 Hop-by-Hop Options | IPv6 Hop-by-Hop Option (HbH-PT) + Destination Option (DOH-PT) |
+| **Processing model** | Every node reads HbH header | Every PT midpoint pushes its MCD onto the HbH-PT stack |
+| **Data richness** | Full telemetry (timestamps, queues, buffers) | Compressed interface ID + load + truncated timestamp |
+| **MTU impact** | High (can add hundreds of bytes) | Low (40-byte HbH header traces 14 hops) |
+| **Deployment complexity** | Requires HbH processing at all transit nodes | PT midpoints must process the HbH-PT option in the forwarding pipeline; nodes that do not support it skip it |
 
 !!! tip "When to Use Which"
     Use **IOAM** when you need rich per-hop telemetry (queue depth, buffer occupancy, precise timestamps) for deep performance analysis. Use **Path Tracing** for always-on path discovery in production where overhead must be minimal.
 
-### MidPoint Compressed (MPC) Format
+### Midpoint Compressed Data (MCD) Format
 
-Path Tracing uses the **MidPoint Compressed (MPC)** format to pack per-hop information into just **2 bytes (16 bits)** per node:
+Each Path Tracing midpoint records a **Midpoint Compressed Data (MCD)** entry of **3 bytes (24 bits)** with a 12-bit interface ID:
 
 ```
-    16 bits per hop
- ┌────────────────────┐
- │ IF_ID  │ IF_LOAD   │
- │ (12b)  │ (4b)      │
- └────────────────────┘
+          24 bits per midpoint
+ ┌──────────────┬─────────┬─────────┐
+ │   MCD.OIF    │ MCD.OIL │ MCD.TTS │
+ │  (12b or 8b) │  (4b)   │  (8b)   │
+ └──────────────┴─────────┴─────────┘
 ```
 
 | Subfield | Bits | Description |
 |----------|:----:|-------------|
-| `IF_ID` | 12 | Egress interface identifier (up to 4096 interfaces per node) |
-| `IF_LOAD` | 4 | Interface load / timestamp indicator (16 levels, or compressed delay) |
+| `OIF` | 12 or 8 | Outgoing interface ID, assigned by the operator (same size across the whole network) |
+| `OIL` | 4 | Outgoing interface load, on a logarithmic scale |
+| `TTS` | 8 | Truncated timestamp: 8 bits selected from the 64-bit egress timestamp by a per-interface template |
 
-The 12-bit interface ID is a **locally significant** compressed identifier mapped from the platform's actual interface index. The 4-bit load/timestamp field encodes either the interface utilization level or a compressed transit timestamp, depending on the deployment configuration.
+Interface IDs are **not globally unique**: the same ID may repeat in the network as long as the end-to-end path can be inferred from the chain of IDs. The source and the sink record a full 64-bit timestamp, interface ID and load in a separate Destination Option (DOH-PT).
 
 ### Single-Probe Advantage
 
@@ -387,29 +387,28 @@ Path Tracing solves this by using a **single probe packet** that follows the exa
  Probe 1: S ──▶ A ──▶ D ──▶ T
           │     │      │     │
           └─────┴──────┴─────┘
-          MPC: [A:IF3:Load2] [D:IF1:Load0] [T:IF2:Load1]
+          MCDs: [A:IF3:Load2:TTS] [D:IF1:Load0:TTS]  (S and T record in DOH-PT)
  Reported path: S → A → D → T               ← Correct actual path.
 ```
 
-### Implementation: SRH TLV
+### Implementation: IPv6 Hop-by-Hop Option
 
-Path Tracing data is carried in a **TLV within the SRH** (not in a Hop-by-Hop Options header like IOAM). Each SRv6-aware node along the path writes its 2-byte MPC entry into the TLV:
+Path Tracing data is carried in an **IPv6 Hop-by-Hop Option (HbH-PT)**, not in an SRH TLV. Each midpoint shifts the MCD stack and pushes its 3-byte MCD at the front. The draft recommends a 38-octet HbH-PT option, which with the 2-byte Hop-by-Hop header gives a 40-byte header holding 12 midpoint MCDs; with the source and sink records in the DOH-PT, that traces 14 hops:
 
 ```
  ┌──────────────────────────────────────────────────┐
  │                  IPv6 Header                      │
  ├──────────────────────────────────────────────────┤
- │           Segment Routing Header (SRH)            │
- │  Segments Left = N                                │
- │  Segment List [SID_0, SID_1, ..., SID_N]         │
- │                                                   │
- │  TLV: Path Tracing                               │
+ │      Hop-by-Hop Options Header: HbH-PT option     │
  │  ┌──────────┬──────────┬──────────┬──────────┐   │
- │  │ MPC Hop 1│ MPC Hop 2│ MPC Hop 3│  (empty) │   │
- │  │  2 bytes │  2 bytes │  2 bytes │  2 bytes │   │
+ │  │  MCD     │  MCD     │  MCD     │  (empty) │   │
+ │  │ 3 bytes  │ 3 bytes  │ 3 bytes  │   ...    │   │
  │  └──────────┴──────────┴──────────┴──────────┘   │
  ├──────────────────────────────────────────────────┤
- │                    Payload                        │
+ │   Segment Routing Header (if more than one SID)   │
+ ├──────────────────────────────────────────────────┤
+ │   Destination Options Header: DOH-PT              │
+ │   (64-bit timestamp, session ID, IF ID, load)     │
  └──────────────────────────────────────────────────┘
 ```
 
@@ -418,14 +417,14 @@ Path Tracing data is carried in a **TLV within the SRH** (not in a Hop-by-Hop Op
 | Feature | ICMP Traceroute | IOAM (RFC 9326) | SRv6 Path Tracing |
 |:--------|:---------------:|:---------------:|:-----------------:|
 | **Round trips needed** | N (one per hop) | 1 | 1 |
-| **Per-hop overhead** | 0 (no data in packet) | 24+ bytes | 2 bytes |
+| **Per-hop overhead** | 0 (no data in packet) | 24+ bytes | 3 bytes |
 | **ECMP accuracy** | Poor (path stitching) | Accurate | Accurate |
-| **Per-hop metrics** | RTT only | Timestamp, delay, queue, buffer | Interface ID, load |
-| **Header location** | N/A (separate probes) | IPv6 HbH Options | SRH TLV |
-| **Transit node support needed** | ICMPv6 Time Exceeded | HbH header processing | SRv6 awareness |
-| **Always-on capable** | No (active probing) | Yes (in data packets) | Yes (in data packets) |
+| **Per-hop metrics** | RTT only | Timestamp, delay, queue, buffer | Interface ID, load, truncated timestamp |
+| **Header location** | N/A (separate probes) | IPv6 HbH Options | IPv6 HbH Option (+ Destination Option) |
+| **Transit node support needed** | ICMPv6 Time Exceeded | HbH header processing | HbH-PT processing |
+| **Always-on capable** | No (active probing) | Yes (in data packets) | Yes (continuous probes) |
 | **Production overhead risk** | Low (separate probes) | High (large headers) | Very low |
-| **Standardization** | RFC 4443 | RFC 9326 | draft-filsfils-spring-path-tracing |
+| **Standardization** | RFC 4443 | RFC 9326 | draft-filsfils-ippm-path-tracing |
 | **Best for** | Basic reachability | Deep performance analysis | Lightweight path discovery |
 
 ## In-situ Performance Measurement (IPM)
@@ -703,11 +702,11 @@ flowchart TD
 
 | SRv6 Configuration | Overhead | Min Transit MTU (for 1500B payload) |
 |:------------------:|:--------:|:-----------------------------------:|
-| H.Encaps with 1 SID | 56 B | 1556 |
+| H.Encaps with 1 SID | 64 B | 1564 |
 | H.Encaps with 3 SIDs | 96 B | 1596 |
 | H.Encaps with 6 SIDs | 144 B | 1644 |
 | H.Encaps with 3 SIDs + IOAM (6 hops) | 240 B | 1740 |
-| H.Encaps with 3 SIDs + Path Tracing | 108 B | 1608 |
+| H.Encaps with 3 SIDs + Path Tracing (40 B HbH-PT + 16 B DOH-PT) | 152 B | 1652 |
 
 !!! tip "Best Practice"
     Configure all transit links with **9216-byte MTU** (jumbo frames) to accommodate SRv6 encapsulation overhead. If jumbo frames are not available, configure TCP MSS clamping at the ingress PE to reduce the effective MSS for customer traffic.
@@ -802,4 +801,4 @@ flowchart TD
 2. [RFC 9326 - In-situ OAM (IOAM) Data Fields](https://datatracker.ietf.org/doc/rfc9326/) - Defines IOAM option types (Pre-allocated Trace, Incremental Trace, Proof of Transit, Edge-to-Edge), data fields, and namespace semantics
 3. [RFC 8200 - IPv6 Specification](https://datatracker.ietf.org/doc/rfc8200/) - IPv6 base specification including extension header ordering (relevant for IOAM Hop-by-Hop placement)
 4. [draft-ietf-ippm-ioam-srv6-options](https://datatracker.ietf.org/doc/draft-ietf-ippm-ioam-srv6-options/) - Defines how IOAM data is carried in SRv6 using IPv6 Hop-by-Hop and Destination Options headers (NOT SRH TLVs)
-5. [draft-filsfils-spring-path-tracing](https://datatracker.ietf.org/doc/draft-filsfils-spring-path-tracing/) - SRv6 Path Tracing with MidPoint Compressed (MPC) format for lightweight single-probe path discovery
+5. [draft-filsfils-ippm-path-tracing](https://datatracker.ietf.org/doc/draft-filsfils-ippm-path-tracing/) - SRv6 Path Tracing with 3-byte Midpoint Compressed Data (MCD) carried in an IPv6 Hop-by-Hop option, for lightweight single-probe path discovery (replaces draft-filsfils-spring-path-tracing)

@@ -87,7 +87,8 @@ The SRH supports an **HMAC TLV** that provides cryptographic authentication of t
 |------------|-------------|
 | **SRH forgery** | Attacker cannot create valid HMAC without the key |
 | **SRH tampering** | Any modification to the segment list invalidates the HMAC |
-| **Replay protection** | HMAC includes anti-replay mechanisms |
+
+HMAC does **not** provide replay protection. RFC 8754 defines no sequence number or timestamp in the HMAC TLV, so a captured packet with a valid HMAC is still valid if it is resent.
 
 #### HMAC TLV Format
 
@@ -95,7 +96,7 @@ The SRH supports an **HMAC TLV** that provides cryptographic authentication of t
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|   Type (5)    |    Length      |       Reserved               |
+|   Type (5)    |    Length     |D|        Reserved             |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                     HMAC Key ID (4 bytes)                     |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -106,14 +107,16 @@ The SRH supports an **HMAC TLV** that provides cryptographic authentication of t
 ```
 
 !!! warning "HMAC tradeoffs"
-    HMAC adds 38 bytes of overhead per packet and requires key management across all SRv6 nodes. Most deployments rely on iACLs at the boundary rather than per-packet HMAC for performance reasons.
+    HMAC adds 40 bytes of overhead per packet (with a 32-byte HMAC) and requires key management across all SRv6 nodes. Most deployments rely on iACLs at the boundary rather than per-packet HMAC for performance reasons.
 
 ### 3. SID Block Filtering
 
-Restrict the SRv6 SID block (e.g., `fcbb:bb00::/24`) to only be routable within your network:
+Restrict the SRv6 SID block to your network. For new allocations, use the IANA SRv6 SID block **`5f00::/16`** ([RFC 9602](../rfcs/rfc9602.md)): it is registered as not globally reachable and is easy to recognize in filters. The examples on this page use `5f00::/16`; if your locators come from your own GUA or another range (for example `fcbb:bb00::/24`, common in lab configurations), substitute that prefix.
 
-- **BGP policies**: Do not advertise SRv6 locator prefixes to external peers
-- **Prefix filtering**: Block SRv6 SID block at all external-facing interfaces
+Keep SIDs inside the SR domain at two layers (see [SID Structure](sid-structure.md#filtering-5f0016-at-domain-boundaries)):
+
+- **Routes**: never advertise the SID block to external BGP peers, and never accept it from them
+- **Packets**: drop packets arriving on external interfaces whose destination is in the SID block
 - **uRPF**: Enable Unicast Reverse Path Forwarding to catch spoofed SRv6 source addresses
 
 ### 4. Rate Limiting
@@ -163,26 +166,26 @@ SRv6 operates on a **trusted domain** model:
 
 This is the same trust model used by MPLS networks today — MPLS labels are not validated, only trusted within the operator's domain. SRv6 improves on this by offering **optional HMAC** for environments requiring stronger guarantees.
 
-## SRH Security Analysis (RFC 8754 Section 5)
+## SRH Security Analysis (RFC 8754 Sections 5 and 7)
 
-RFC 8754 Section 5 and RFC 8402 Section 8 define the formal security considerations for SRv6. Understanding the threat categories and deployment models is essential for designing a secure SRv6 network.
+RFC 8754 Section 5 (the intra-SR-domain deployment model) and Section 7 (security considerations), together with RFC 8402 Section 8, set out the security model for SRv6. Understanding the threat categories and deployment models is essential for designing a secure SRv6 network.
 
 ### Threat Categories
 
-The RFCs identify three primary threat categories:
+Three threat categories follow from those sections:
 
 | Threat Category | Description | RFC Reference |
 |----------------|-------------|---------------|
-| **Source address spoofing** | An attacker outside the trusted domain crafts packets with a spoofed source address belonging to the SRv6 domain, causing them to bypass iACL filters that match on source prefix | RFC 8754 Section 5.1 |
-| **SRH manipulation** | An attacker intercepts packets in transit and modifies the segment list, Segments Left field, or other SRH fields to alter the forwarding path | RFC 8754 Section 5.2 |
-| **Topology disclosure** | An attacker probes the SRv6 SID space (which uses routable IPv6 addresses) to discover internal network topology, node roles, and service chain structure | RFC 8402 Section 8.1 |
+| **Source address spoofing** | An attacker outside the trusted domain crafts packets with a spoofed source address belonging to the SRv6 domain, causing them to bypass iACL filters that match on source prefix | RFC 8754 Sections 5.1 and 7 |
+| **SRH manipulation** | An attacker intercepts packets in transit and modifies the segment list, Segments Left field, or other SRH fields to alter the forwarding path | RFC 8754 Sections 2.1.2 and 7 (HMAC) |
+| **Topology disclosure** | An attacker probes the SRv6 SID space (which uses routable IPv6 addresses) to discover internal network topology, node roles, and service chain structure | RFC 8402 Section 8.2 |
 
 !!! info "Key insight from the RFCs"
-    Unlike MPLS labels (which are locally significant and not routable), SRv6 SIDs are globally routable IPv6 addresses. This makes topology discovery easier for attackers unless SID prefixes are properly filtered at domain boundaries.
+    Unlike MPLS labels (which are locally significant and not routable), SRv6 SIDs are routable IPv6 addresses inside the domain. This makes topology discovery easier for attackers unless SID prefixes are properly filtered at domain boundaries.
 
-### The 3 Deployment Models
+### Three Ways to Deploy SRv6 Security
 
-RFC 8754 defines three security deployment models, each with different levels of protection:
+RFC 8754 defines one deployment model, a trusted SR domain protected at its boundary (Section 5.1), and the HMAC TLV for cases where that is not enough (Section 2.1.2). In practice that gives three options, with increasing protection:
 
 #### Model 1: Trusted Domain with Filtering
 
@@ -206,7 +209,7 @@ The most common deployment model. All nodes within the SRv6 domain are trusted. 
 Every SRH carries a cryptographic HMAC TLV. Nodes verify the HMAC before processing SIDs, providing per-packet authentication of the segment list.
 
 - **When to use:** Multi-domain environments, inter-provider SRv6 peering, or networks where internal links traverse untrusted infrastructure (e.g., leased dark fiber, shared data center interconnects).
-- **Tradeoffs:** Strong per-packet security, but adds 38 bytes of overhead per packet, requires HMAC computation at every verifying node, and demands a key management infrastructure across all participating nodes.
+- **Tradeoffs:** Strong per-packet security, but adds 40 bytes of overhead per packet, requires HMAC computation at every verifying node, and demands a key management infrastructure across all participating nodes.
 
 #### Model 3: Combined (Filtering + HMAC)
 
@@ -222,36 +225,36 @@ Uses iACL filtering at domain boundaries **and** HMAC verification for traffic c
 
 ## HMAC Deep Dive
 
-The HMAC TLV defined in RFC 8754 Section 7 provides optional per-packet cryptographic authentication of the SRH. This section covers the computation details, key management challenges, and real-world deployment status.
+The HMAC TLV defined in RFC 8754 Section 2.1.2 provides optional per-packet cryptographic authentication of the SRH. This section covers the computation details, key management challenges, and real-world deployment status.
 
 ### HMAC Computation Details
 
-The HMAC is computed over a concatenation of the following fields:
+Per RFC 8754 Section 2.1.2.1, the HMAC is computed over a concatenation of the following fields, as they would be received at the verifying node:
 
 | Field | Size | Purpose |
 |-------|------|---------|
 | **Source IPv6 Address** | 16 bytes | Binds the HMAC to the packet originator, preventing source spoofing |
-| **First Segment (Segment List[0])** | 16 bytes | The ultimate destination SID |
-| **Segments Left (SL)** | 1 byte | Binds to the current position in the segment list |
+| **Last Entry** | 1 byte | Index of the last element of the segment list |
 | **Flags** | 1 byte | SRH flags field |
-| **Full Segment List** | 16 x n bytes | All SIDs in the segment list, in order |
-| **HMAC Key ID** | 4 bytes | Identifies which pre-shared key was used |
+| **HMAC 16 bits following Length** | 2 bytes | The D bit and Reserved field of the HMAC TLV |
+| **HMAC Key ID** | 4 bytes | Identifies which pre-shared key and algorithm were used |
+| **Full Segment List** | 16 x n bytes | All addresses in the segment list |
 
-The HMAC algorithm is **HMAC-SHA-256**, truncated to 256 bits (32 bytes). Combined with the 4-byte Key ID and 2 bytes of type/length, the total HMAC TLV overhead is **38 bytes**.
+The hash algorithm is identified by the Key ID; implementations that support HMAC **must** support SHA-256. The digest is truncated to 32 bytes. With Type (1 byte), Length (1), D bit + Reserved (2) and Key ID (4), the total HMAC TLV overhead is **40 bytes**.
 
 ```
-HMAC = HMAC-SHA-256(Key,
+HMAC = HMAC(Key,                       ! algorithm identified by the Key ID
          IPv6-Source-Address ||
-         Segment-List[0]    ||
-         Segments-Left      ||
-         Flags              ||
-         Segment-List[0..n] ||
-         HMAC-Key-ID
+         Last-Entry          ||
+         Flags               ||
+         D-bit+Reserved      ||
+         HMAC-Key-ID         ||
+         Segment-List[0..n]
        )
 ```
 
 !!! note "What the HMAC does NOT cover"
-    The HMAC does **not** protect the payload, the IPv6 destination address (which changes at each hop), or any optional TLVs other than those explicitly included in the computation. It authenticates only the segment list and its associated metadata.
+    The HMAC does **not** protect the payload, the Segments Left field (which changes at each segment endpoint), the IPv6 destination address, or any SRH TLVs other than the fields listed above. Instead of hashing the destination address, the verifying node checks that it equals the current segment (Segment List[Segments Left]). It authenticates only the segment list and its associated metadata.
 
 ### Key Management Challenges
 
@@ -268,7 +271,7 @@ HMAC-based SRH verification introduces significant key management requirements:
 
 | Impact Area | Details |
 |------------|---------|
-| **Packet overhead** | 38 bytes per packet (HMAC TLV). For a 10-SID segment list, the SRH is already 168 bytes; HMAC adds another 23% overhead. |
+| **Packet overhead** | 40 bytes per packet (HMAC TLV). For a 10-SID segment list, the SRH is already 168 bytes; HMAC adds another 24% overhead. |
 | **Computation cost** | HMAC-SHA-256 computation at ingress (generation) and at each verifying node. On modern ASIC-based routers, this may require **packet recirculation** through the forwarding pipeline, effectively halving throughput for HMAC-verified traffic. |
 | **Latency** | HMAC verification adds per-hop latency. For latency-sensitive traffic (e.g., 5G URLLC), this may be unacceptable. |
 | **ASIC support** | Not all forwarding ASICs support HMAC computation in hardware. Software-based HMAC verification limits throughput to control-plane speeds. |
@@ -350,8 +353,8 @@ All interfaces facing external networks (peering, customers, internet transit) m
     !! Mandatory: Drop ALL packets with SRH from external sources
     ipv6 access-list SRV6-EDGE-INGRESS
      10 deny ipv6 any any routing-type 4
-     20 deny ipv6 any fcbb:bb00::/24       !! Drop traffic destined to SID block
-     30 deny ipv6 fcbb:bb00::/24 any       !! Drop traffic sourced from SID block
+     20 deny ipv6 any 5f00::/16            !! Drop traffic destined to SID block
+     30 deny ipv6 5f00::/16 any            !! Drop traffic sourced from SID block
      40 permit ipv6 any any
     !
     interface TenGigE0/0/0/0
@@ -366,7 +369,7 @@ All interfaces facing external networks (peering, customers, internet transit) m
     !! Prevent SRv6 internal details from leaking outward
     ipv6 access-list SRV6-EDGE-EGRESS
      10 deny ipv6 any any routing-type 4   !! No SRH should leave the domain
-     20 deny ipv6 fcbb:bb00::/24 any       !! No SID-sourced packets leave
+     20 deny ipv6 5f00::/16 any            !! No SID-sourced packets leave
      30 permit ipv6 any any
     !
     interface TenGigE0/0/0/0
@@ -387,12 +390,16 @@ When SRv6 domains interconnect (e.g., between autonomous systems), additional fi
 
 ### SID Block Filtering via BGP
 
-The SRv6 locator prefix (e.g., `fcbb:bb00::/24`) must **never** be advertised to external BGP peers:
+The SRv6 SID block (`5f00::/16`, or your own locator range) must **never** be advertised to external BGP peers, and should not be accepted from them either:
 
 ```cisco
-!! BGP policy to suppress SRv6 locator prefixes
+!! BGP policy to suppress SRv6 locator prefixes in both directions
+prefix-set SRV6-SIDS
+  5f00::/16 le 128
+end-set
+!
 route-policy DENY-SRV6-LOCATORS
-  if destination in (fcbb:bb00::/24 le 128) then
+  if destination in SRV6-SIDS then
     drop
   endif
   pass
@@ -401,6 +408,7 @@ end-policy
 router bgp 65000
  neighbor 198.51.100.1
   address-family ipv6 unicast
+   route-policy DENY-SRV6-LOCATORS in
    route-policy DENY-SRV6-LOCATORS out
   !
  !

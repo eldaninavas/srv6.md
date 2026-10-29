@@ -348,17 +348,20 @@ IS-IS LSP from Node R5 (dual-stack capable):
   │     Prefix: 10.255.0.5/32
   │     Sub-TLV: Prefix-SID = 16005 (MPLS label = SRGB base + 5)
   │
+  ├── TLV 27 (SRv6 Locator, RFC 9352):
+  │     Locator: fcbb:bb01:0005::/48
+  │     Algorithm: 0
+  │     Sub-TLV: SRv6 End SID = fcbb:bb01:0005::1
+  │
   └── TLV 236 (IPv6 Reachability):
-        Prefix: fcbb:bb01:0005::/48
-        Sub-TLV: SRv6 Locator
-          Algorithm: 0
-          SRv6 End SID: fcbb:bb01:0005::1
+        Prefix: fcbb:bb01:0005::/48   (algo 0/1 locators also go here,
+                                       so non-SRv6 routers can forward)
 ```
 
 | IS-IS TLV | Purpose | Data Plane |
 |-----------|---------|:----------:|
 | TLV 135 + Prefix-SID sub-TLV | Advertise MPLS Prefix-SID for an IPv4 node address | SR-MPLS |
-| TLV 236 + SRv6 Locator sub-TLV | Advertise SRv6 locator and associated End SIDs | SRv6 |
+| TLV 27 (SRv6 Locator) + SRv6 End SID sub-TLV | Advertise SRv6 locator and associated End SIDs | SRv6 |
 | TLV 22 + Adj-SID sub-TLV | Advertise per-adjacency MPLS SID | SR-MPLS |
 | TLV 22 + SRv6 End.X SID sub-TLV | Advertise per-adjacency SRv6 SID | SRv6 |
 
@@ -377,8 +380,8 @@ BGP VPNv4 Update (dual-stack PE advertising both):
   │     Route Target: 65000:100
   ├── MPLS Label: 24001
   └── SRv6-VPN SID TLV:
-        SRv6 SID: fcbb:bb01:0002::DT4
-        SID Behavior: End.DT4 (63)
+        SRv6 SID: fcbb:bb01:2:e004::   (function 0xe004 = this VRF)
+        SID Behavior: End.DT4 (19)
         SID Structure: BL=32, NL=16, FL=16, AL=0
 ```
 
@@ -396,8 +399,10 @@ When a node has **both** SR-MPLS and SRv6 paths available for the same destinati
 !!! tip "Fallback Strategy During Migration"
     Configure SR-MPLS as the **primary** transport during early migration phases and SRv6 as the **backup**. As confidence grows, reverse the preference. This allows instant rollback by simply changing the preference knob without removing any configuration.
 
+The block below is **pseudo-config** that illustrates the concept; it is not real CLI. Check your vendor's documentation for how to set the transport preference.
+
 ```
-! Example: IOS XR preference configuration concept
+! PSEUDO-CONFIG: concept only, not vendor CLI
 router bgp 65000
   address-family vpnv4 unicast
     ! Prefer SRv6 transport when available
@@ -414,16 +419,17 @@ A well-designed SID allocation plan is critical for a successful SRv6 deployment
 
 ### Choosing Your SID Block
 
-Per [RFC 9602](https://datatracker.ietf.org/doc/rfc9602/), the recommended SRv6 SID block ranges are:
+[RFC 9602](https://datatracker.ietf.org/doc/rfc9602/) allocates a dedicated block for SRv6 SIDs but does not mandate it. Common choices are:
 
 | Block | Purpose | Notes |
 |-------|---------|-------|
-| `5f00::/16` | IANA-registered SRv6 SID block | Globally routable, for use across organizational boundaries (RFC 9602) |
+| `5f00::/16` | IANA-registered SRv6 SID block (RFC 9602) | Forwardable but **not globally reachable**: meant for use within an SR domain or between collaborating SR domains, and easy to filter at the edge |
+| Operator GUA (e.g. a provider /32 or /48) | Operator's own globally unique space | Allowed; requires careful filtering at ingress and egress so SRv6 packets do not leak out of the SR domain (RFC 9602 Section 7) |
 | `fc00::/7` (ULA space) | Private/internal use | Commonly used in enterprise and SP networks that do not need global SRv6 reachability |
 | `fcbb:bbXX::/32` | Common convention in Cisco deployments | De facto standard in many production SRv6 networks |
 
-!!! warning "Avoid Using Global Unicast (2000::/3) for SIDs"
-    While technically possible, using globally routable IPv6 space for SRv6 SIDs creates confusion between transit IPv6 traffic and SRv6-encapsulated traffic. Use the dedicated `5f00::/16` block or ULA space instead.
+!!! warning "Using Global Unicast (2000::/3) for SIDs"
+    Operators may use their own GUA prefixes as locators. The cost is that SRv6 SIDs are harder to tell apart from ordinary IPv6 traffic, so boundary filters must list your locator ranges explicitly. The dedicated `5f00::/16` block makes that filtering simpler.
 
 ### Locator Structure
 
@@ -463,11 +469,11 @@ uSID Container (128-bit, carrying up to 6 micro-SIDs):
 
 | Parameter | Standard SRv6 | uSID |
 |-----------|:---:|:---:|
-| Block length | 32-48 bits | 32 bits (fixed) |
-| Per-node SID size | 128 bits | 16 bits |
-| SIDs per container | 1 | Up to 6 |
+| Block length | 32-48 bits | Parameter; 32 bits in the common F3216 format |
+| Per-node SID size | 128 bits | 16 bits (F3216) |
+| SIDs per container | 1 | Up to 6 (F3216: (128 - 32) / 16) |
 | SRH needed (up to 6 hops) | Yes | No |
-| Overhead (up to 6 hops) | 40 + 24 x N bytes | 40 bytes (IPv6 header only) |
+| Overhead (up to 6 hops) | 40 + 8 + 16 x N bytes (outer IPv6 header + SRH) | 40 bytes (IPv6 header only) |
 
 ### Numbering Plan Example: Medium Network (100 Nodes)
 
@@ -510,7 +516,7 @@ Per-node function allocation (16-bit function space):
 
     **2. Insufficient function space:** Allocating only 8 bits for the function field limits you to 256 functions per node. For nodes hosting many VRFs or EVPN instances, 16 bits (65,536 functions) is strongly recommended.
 
-    **3. Forgetting uSID alignment:** uSID requires the block to be exactly 32 bits and each micro-SID to be 16 bits. Choosing a 48-bit block breaks uSID compatibility.
+    **3. Forgetting uSID alignment:** In RFC 9800 the Locator-Block length and the uSID (CSID) length are parameters. Every implementation must support a 32-bit block with 16-bit uSIDs (the common F3216 format); other lengths, such as a 48-bit block, are optional. Use one block length and uSID length consistently across the domain, and check that all your platforms support the format you pick. A longer block also leaves room for fewer uSIDs per container.
 
     **4. No room for growth:** Allocate at least 2x the currently needed address space per region to accommodate future growth without renumbering.
 
@@ -545,7 +551,7 @@ This section expands the high-level migration options into a structured, phased 
 ```
 Actions:
   1. Enable IPv6 on all core links (if not already enabled)
-  2. Advertise SRv6 locators in IS-IS (TLV 236)
+  2. Advertise SRv6 locators in IS-IS (SRv6 Locator TLV 27)
   3. Continue advertising SR-MPLS Prefix-SIDs (TLV 135)
   4. Configure SRv6 End SIDs on upgraded nodes
   5. Do NOT configure any SRv6 VPN services yet

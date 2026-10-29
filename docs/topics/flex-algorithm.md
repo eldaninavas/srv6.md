@@ -46,7 +46,7 @@ graph LR
 |:---------:|--------|:------------------:|----------|
 | **Algo 0** | IGP metric (default) | PE1→P2→PE2 | Default routing |
 | **Algo 128** | Latency | PE1→P2→PE2 (5ms) | Low-latency services |
-| **Algo 129** | TE metric (bandwidth) | PE1→P1→PE2 (100G) | High-bandwidth services |
+| **Algo 129** | TE metric (operator-set, often derived from bandwidth) | PE1→P1→PE2 (100G) | High-bandwidth services |
 
 ### Per-Algorithm SRv6 Locators
 
@@ -56,7 +56,7 @@ Each Flex-Algo gets its own SRv6 locator, which means its own set of SIDs:
 Node PE2 advertises:
   Algo 0:   fcbb:bb01:0002::/48  → Default IGP path
   Algo 128: fcbb:bb02:0002::/48  → Latency-optimized path
-  Algo 129: fcbb:bb03:0002::/48  → Bandwidth-optimized path
+  Algo 129: fcbb:bb03:0002::/48  → TE-metric path (bandwidth-derived TE metric)
 ```
 
 To steer traffic on the low-latency path, simply use the Algo 128 SID as the destination. The IGP handles path computation automatically.
@@ -125,10 +125,13 @@ graph TB
 === "Juniper"
 
     ```junos
+    set routing-options flex-algorithm 128 definition metric-type delay-metric
     set protocols isis source-packet-routing flex-algorithm 128
-    set protocols isis source-packet-routing flex-algorithm 128 metric-type delay
-    set routing-options source-packet-routing srv6 locator latency fcbb:bb02::/48 algorithm 128
+    set routing-options source-packet-routing srv6 locator latency fcbb:bb02::/48
+    set protocols isis source-packet-routing srv6 locator latency algorithm 128
     ```
+
+    This snippet is illustrative. In Junos the Flex-Algo definition sits under `routing-options flex-algorithm`, IS-IS participation under `protocols isis source-packet-routing flex-algorithm`, and the locator is mapped to an algorithm with the `algorithm` option at the `[edit protocols isis source-packet-routing srv6 locator]` level. Check the exact statements for your release in Juniper's [Flexible Algorithms in IGP for Segment Routing](https://www.juniper.net/documentation/us/en/software/junos/segment-routing/topics/topic-map/infocus-isis-flex-algo-sr.html) and [SRv6 Network Programming in IS-IS](https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/topic-map/infocus-isis-srv6-network-programming.html) guides.
 
 ## Flex-Algo Properties
 

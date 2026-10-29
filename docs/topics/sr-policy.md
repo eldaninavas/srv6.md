@@ -206,10 +206,7 @@ graph LR
 
 === "Juniper"
 
-    ```junos
-    set protocols source-packet-routing sr-preference-override color 100 routing-policy LOW-LATENCY
-    set policy-options policy-statement LOW-LATENCY term 1 then install-nexthop lsp-regex ".*"
-    ```
+    On Junos, ODN is built from a **compute profile** (the D-CSPF constraints, such as metric type and admin groups) referenced in an ODN deployment, so Junos builds a path to any valid BGP protocol next hop without per-endpoint configuration. See Juniper's [Segment Routing User Guide](https://www.juniper.net/documentation/us/en/software/junos/segment-routing/index.html) (On-Demand Next-Hops and compute profiles) for the statements supported in your release.
 
 ## Binding SID (BSID)
 
@@ -341,8 +338,8 @@ Dynamic policies can be reoptimized when:
 |--------|---------|-----------|
 | **Transit state** | Per-tunnel on every hop | None — path in packet header |
 | **Signaling** | RSVP PATH/RESV per tunnel | BGP / PCEP / local config |
-| **Scalability** | 10K tunnels typical limit | 100K+ policies (headend only) |
-| **FRR** | Facility backup (manual) | TI-LFA (automatic, 100% coverage) |
+| **Scalability** | Limited by per-tunnel state on every transit node | Higher: policy state only on the headend |
+| **FRR** | Facility backup (manual) | TI-LFA (automatic, topology-independent) |
 | **Bandwidth** | RSVP admission control | PCE-based or Flex-Algo |
 | **Multi-domain** | Complex (inter-AS RSVP) | BSID stitching (simple) |
 | **Automation** | Limited | ODN + color steering (intent-based) |
