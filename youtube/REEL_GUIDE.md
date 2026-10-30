@@ -27,6 +27,25 @@ TikTok) told as a story in a 3D diorama. Each one is a YAML file in
 - Friendly and warm, short sentences, contractions, a few exclamations.
   The facts must still be exactly what the lesson's srv6.md page says.
 
+## Long stories (1:30–1:45)
+
+The main format, like loconstruiste: a personal story, no technical words
+until the reveal. `youtube/reels/l01.yaml` is the reference.
+
+- **One diorama that grows.** Start with two things (you and a friend) and
+  add one piece per problem. Never jump to a new scene; the viewer watches
+  the thing get built.
+- **The chain is the story:** simple fix → "but…" → better fix → "but…".
+  Aim for 5–7 links in the chain, 18–20 beats, 8–15 words each.
+- **Personal and concrete:** your mom, your cousin, a truck, one night.
+  No protocol names, no numbers that need explaining.
+- **The reveal at the end** names the real things in one breath ("Those
+  boxes? Routers. The strings? Fiber.") and calls back to the opening.
+- Chatterbox talks fast (~3.8 words/s): set `tempo: 0.85` (slower, same
+  pitch) and `gap: 0.6` (pause between beats).
+- Use `{unlink: [a, b]}` to take a messy solution away before the better
+  one replaces it, and `end_card` for a subtitle that fits the story.
+
 ## Format
 
 ```yaml
@@ -34,6 +53,7 @@ id: s01
 voice: af_bella          # Kokoro voice; speed 1.0 sounds most natural
 title: "SRv6 in <b>60 seconds</b>"   # big title during the first beat
 ground: paper            # or grass
+end_card: {url: srv6.md, sub: "How the internet works"}   # optional, default srv6.md/learn + Free SRv6 course
 caption: |               # Instagram / Shorts text, link in bio
   ...
 beats:
@@ -54,6 +74,7 @@ about -3.5…3.5 and use z from about -7 (back) to 7 (front).
 | connect two objects | `{link: [r1, r2]}`, a road `{link: [a, b], style: road}`, a river `style: river` |
 | move along objects | `{move: pkt, path: [you, r1, r2], dur: 2}` (seconds) |
 | highlight a path | `{route: [you, r1, r2], color: purple}`, clear all with `{unroute: true}` |
+| remove a link | `{unlink: [r1, r2]}` |
 | break / repair a link | `{fail: [r1, r2]}`, `{fix: [r1, r2]}` |
 | bubble over an object | `{tag: {on: r1, text: "Where to?", color: orange}}`, `{untag: r1}` |
 | radio beam (follows moving objects) | `{beam: [tower1, car], color: yellow}`, faint with `weak: true`; remove with `{unbeam: [tower1, car]}` |

@@ -260,7 +260,7 @@ window.setup = tl => {
   }
   for (const e of ev.filter(e => e.link)) {
     const [a, b] = e.link, A = P(a), B = P(b), len = Math.hypot(B[0] - A[0], B[1] - A[1]);
-    const l = { a, b, t0: e.t, len, fail: [], route: [] };
+    const l = { a, b, t0: e.t, t1: 1e9, len, fail: [], route: [] };
     if (e.style === 'road' || e.style === 'river') {
       const road = e.style === 'road';
       l.strip = strip(A, B, e.width || (road ? .9 : 1.8), road ? 0x475569 : 0x60a5fa, .03, road ? 0xffffff : null);
@@ -279,6 +279,7 @@ window.setup = tl => {
   for (const e of ev) {
     if (e.fail) { const l = findLink(...e.fail); l && l.fail.push(e.t); }
     if (e.fix) { const l = findLink(...e.fix); l && l.fail.push(-e.t); }
+    if (e.unlink) { const l = findLink(...e.unlink); l && (l.t1 = e.t); }
     if (e.route) for (let i = 0; i < e.route.length - 1; i++) { const l = findLink(e.route[i], e.route[i + 1]); l && l.route.push({ t: e.t, c: col(e.color || 'purple') }); }
     if (e.unroute) LINKS.forEach(l => l.route.push({ t: e.t, c: null }));
   }
@@ -316,7 +317,7 @@ window.setup = tl => {
   Object.assign(sun.shadow.camera, { left: -r, right: r, top: r, bottom: -r }); sun.shadow.camera.updateProjectionMatrix();
 
   // camera keyframes: frame what is visible, or focus on one object
-  const times = [...new Set([0, ...ev.filter(e => e.add || e.remove || e.camera || e.link).map(e => e.t)])].sort((a, b) => a - b);
+  const times = [...new Set([0, ...ev.filter(e => e.add || e.remove || e.camera || e.link || e.unlink).map(e => e.t)])].sort((a, b) => a - b);
   const camEv = ev.filter(e => e.camera);
   for (const t of times) {
     let focus = null;
@@ -325,6 +326,10 @@ window.setup = tl => {
   }
   CAMK.forEach((k, i) => k.from = i ? camAt(k.t, i - 1) : k.v);
   document.getElementById('title').innerHTML = tl.title || '';
+  if (tl.endCard) {
+    document.querySelector('#end .url').textContent = tl.endCard.url || 'srv6.md/learn';
+    document.querySelector('#end .sub').textContent = tl.endCard.sub || '';
+  }
 };
 
 function framing(t, focus) {
@@ -334,7 +339,12 @@ function framing(t, focus) {
   }
   const pts = [];
   Object.values(OBJ).filter(o => t >= o.t0 && t < o.t1).forEach(o => { pts.push([o.pos[0] - o.r, o.pos[1] - o.r], [o.pos[0] + o.r, o.pos[1] + o.r]); o.moves.filter(m => m.t0 <= t + 3).forEach(m => pts.push(...m.pts)); });
-  LINKS.filter(l => l.t0 <= t).forEach(l => pts.push(P(l.a), P(l.b)));
+  LINKS.filter(l => l.t0 <= t && t < l.t1).forEach(l => pts.push(P(l.a), P(l.b)));
+  // tags are wider than their object: keep the whole bubble in frame
+  TAGS.filter(g => t >= g.t0 && t < g.t1 && OBJ[g.on] && t < OBJ[g.on].t1).forEach(g => {
+    const o = OBJ[g.on], hw = .4 * g.s.userData.aspect + .8;
+    pts.push([o.pos[0] - hw, o.pos[1]], [o.pos[0] + hw, o.pos[1]]);
+  });
   if (!pts.length) return { x: 0, z: 0, span: 6 };
   const xs = pts.map(p => p[0]), zs = pts.map(p => p[1]);
   const w = Math.max(...xs) - Math.min(...xs) + 2.2, d = Math.max(...zs) - Math.min(...zs) + 2.2;
@@ -387,7 +397,7 @@ window.renderAt = t => {
     o.ring.visible = !o.floats;
   }
   for (const l of LINKS) {
-    const grow = ease(win(t, l.t0, .6));
+    const grow = ease(win(t, l.t0, .6)) * (1 - ease(win(t, l.t1, .5)));
     const ft = l.fail.filter(f => Math.abs(f) <= t).pop();
     const broken = ft > 0 ? ease(win(t, ft, .3)) : 0;
     const rt = l.route.filter(r => r.t <= t).pop();

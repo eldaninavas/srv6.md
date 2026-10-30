@@ -27,7 +27,7 @@ import yaml
 HERE = os.path.dirname(os.path.abspath(__file__))
 YT = os.path.dirname(HERE)
 SR = 24000
-GAP = 0.25        # silence after each beat
+GAP = 0.25        # silence after each beat (spec "gap" overrides)
 LEAD, TAIL = 0.3, 2.2
 KOKORO = os.path.expanduser("~/.cache/kokoro")
 # how the voice should read terms it would otherwise spell or mangle
@@ -74,6 +74,14 @@ def narrate(spec, texts, cache):
         speak = voice_for(spec)
         for t, p in todo:
             sf.write(p, speak(t), SR)
+    tempo = spec.get("tempo")
+    if tempo and tempo != 1:
+        # slow down (or speed up) without changing the pitch; Chatterbox has no speed knob
+        for i, p in enumerate(keyed):
+            q = p[:-4] + f".t{tempo}.wav"
+            if not os.path.exists(q):
+                subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", p, "-filter:a", f"atempo={tempo}", q], check=True)
+            keyed[i] = q
     return [load_human(p) for p in keyed]
 
 
@@ -136,7 +144,7 @@ def compile_actions(beat_no, actions, start, dur, words, known):
             if "id" not in e:
                 raise SystemExit(f"beat {beat_no}: add needs an id")
             known.add(e["id"])
-        refs = [e.get("move"), e.get("on")] + list(e.get("path", [])) + list(e.get("link", [])) + list(e.get("fail", [])) \
+        refs = [e.get("move"), e.get("on")] + list(e.get("path", [])) + list(e.get("link", [])) + list(e.get("fail", [])) + list(e.get("unlink", [])) \
             + list(e.get("route", [])) + list(e.get("beam", [])) + list(e.get("unbeam", [])) + [x for k in ("pulse", "remove") for x in ([e[k]] if isinstance(e.get(k), str) else e.get(k, []))]
         if isinstance(e.get("tag"), dict):
             refs.append(e["tag"].get("on"))
@@ -170,15 +178,16 @@ def main():
     else:
         synth = narrate(spec, [b["say"] for b, r in zip(spec["beats"], recs) if not r], os.path.join(out, "tts"))
         clips = [load_human(r) if r else synth.pop(0) for r in recs]
+    gap = spec.get("gap", GAP)
     t = LEAD
     for i, (b, clip) in enumerate(zip(spec["beats"], clips), 1):
         dur = len(clip) / SR
-        beats.append({"start": round(t, 3), "dur": round(dur + GAP, 3)})
+        beats.append({"start": round(t, 3), "dur": round(dur + gap, 3)})
         beat_caps = chunks(b.get("text", b["say"]), t, t + dur)
         caps += beat_caps
         events += compile_actions(i, b.get("do"), t, dur, [w for c in beat_caps for w in c["words"]], known)
-        audio += [clip, np.zeros(int(GAP * SR), "float32")]
-        t += dur + GAP
+        audio += [clip, np.zeros(int(gap * SR), "float32")]
+        t += dur + gap
     if args.check:
         print(f"ok   {os.path.basename(args.spec):14} ~{t:4.1f}s, {len(events)} events")
         return
@@ -198,7 +207,7 @@ def main():
     wav = os.path.join(out, "narration.wav")
     sf.write(wav, np.concatenate(audio), SR)
     tl = {"events": events, "chunks": caps, "total": round(total, 3), "title": spec.get("title", ""),
-          "titleUntil": beats[0]["start"] + beats[0]["dur"] - GAP, "endAt": end_at,
+          "titleUntil": beats[0]["start"] + beats[0]["dur"] - gap, "endAt": end_at, "endCard": spec.get("end_card"),
           "ground": spec.get("ground"), "format": spec.get("format", "vertical")}
     tl_path = os.path.join(out, "timeline.json")
     with open(tl_path, "w") as f:
