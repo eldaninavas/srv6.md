@@ -54,11 +54,11 @@ beats:
   - say: "Then a fourth kid. And a fifth! Now there are strings everywhere. What a mess!"
     do:
       - {at: 0, untag: k3}
-      - {at: "fourth", add: house, id: k4, pos: [2.8, 3.1], color: teal}
+      - {at: "fourth", add: house, id: k4, pos: [3.1, 3.0], color: teal}
       - {at: "fourth", link: [k4, you]}
       - {at: "fourth", link: [k4, friend]}
       - {at: "fourth", link: [k4, k3]}
-      - {at: "fifth", add: house, id: k5, pos: [1.3, 1.1], color: yellow}
+      - {at: "fifth", add: house, id: k5, pos: [2.6, 0.6], color: yellow}
       - {at: "fifth", link: [k5, you]}
       - {at: "fifth", link: [k5, friend]}
       - {at: "fifth", link: [k5, k3]}
@@ -68,7 +68,7 @@ beats:
 
   - say: "So you get a better idea. One box, right in the middle of the block."
     do:
-      - {at: "box", add: router, id: hub, pos: [0, 3.8]}
+      - {at: "box", add: router, id: hub, pos: [1.45, 3.4]}
       - {at: "middle", pulse: hub}
 
   - say: "Everyone runs just one string to the box. Five strings, instead of ten!"
@@ -101,10 +101,11 @@ beats:
     do:
       - {at: 0, unroute: true}
       - {at: 0, untag: k5}
+      - {at: "across", link: [[0, 4.6], [0, -7.8]], style: road, width: 1}
       - {at: "cousin", add: house, id: cousin, pos: [-2, -6.2], color: pink}
       - {at: "cousin", tag: {on: cousin, text: "Your cousin", color: pink}}
-      - {at: "block", add: house, id: c2, pos: [2, -6.2], color: blue}
-      - {at: "box", add: router, id: hub2, pos: [0, -4.4]}
+      - {at: "block", add: house, id: c2, pos: [2.8, -6.3], color: blue}
+      - {at: "box", add: router, id: hub2, pos: [1.45, -4.2]}
       - {at: "box", link: [cousin, hub2]}
       - {at: "box", link: [c2, hub2]}
 
@@ -118,9 +119,9 @@ beats:
     do:
       - {at: 0, unroute: true}
       - {at: 0, untag: cousin}
-      - {at: "truck", link: [[3.9, -1.1], [-1, -1.1]], style: road, width: 1}
-      - {at: "truck", add: truck, id: truck, pos: [3.6, -1.1], color: orange}
-      - {at: "truck", move: truck, path: [[3.6, -1.1], [0.4, -1.1]], dur: 1.2}
+      - {at: "truck", link: [[4.2, -1.1], [0.7, -1.1]], style: road, width: 1}
+      - {at: "truck", add: truck, id: truck, pos: [3.9, -1.1], color: orange}
+      - {at: "truck", move: truck, path: [[3.9, -1.1], [1.5, -1.1]], dur: 1.2}
       - {at: "snaps", fail: [hub, hub2]}
 
   - say: "You run outside in your pajamas. Your cousin can't hear a thing!"
@@ -175,12 +176,12 @@ beats:
       - {at: "call", move: msg3, path: [cousin, hub2, hub, you], dur: 2.4}
       - {at: "exactly", remove: [msg, msg2, msg3]}
 
-  - say: "Those boxes? Routers. The strings? Fiber. And all of it, together, is the internet."
+  - say: "Those boxes? Routers. And those strings? Those are fiber cables, made of glass. And all of it, together, is the internet."
     do:
       - {at: 0, untag: cousin}
       - {at: "Routers", tag: {on: hub, text: "Router", color: dark}}
       - {at: "Routers", tag: {on: hub2, text: "Router", color: dark}}
-      - {at: "Fiber", route: [you, hub, hub2, cousin], color: yellow}
+      - {at: "fiber", route: [you, hub, hub2, cousin], color: yellow}
       - {at: "internet", big: "The internet", sub: "you built it!", dur: 2.6}
 
   - say: "Want more stories like this? Follow How IT Connects!"

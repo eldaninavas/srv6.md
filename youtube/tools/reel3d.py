@@ -32,7 +32,7 @@ LEAD, TAIL = 0.3, 2.2
 KOKORO = os.path.expanduser("~/.cache/kokoro")
 # how the voice should read terms it would otherwise spell or mangle
 # phonetic spellings: Chatterbox mangles "S R v 6" and lowercase "srv6" ("sssrrv6")
-PRONOUNCE = {r"\bHow IT Connects\b": "How I.T. Connects", r"(?i)\bsrv6 dot md\b": "ess are vee six dot em dee", r"(?i)\bSRv6\b": "ess are vee six",
+PRONOUNCE = {r"\bHow IT Connects\b": "How it connects", r"(?i)\bsrv6 dot md\b": "ess are vee six dot em dee", r"(?i)\bSRv6\b": "ess are vee six",
              r"(?i)\bIPv6\b": "eye pee vee six", r"(?i)\bIPv4\b": "eye pee vee four", r"\buSIDs?\b": "micro-SID",
              r"\bTI-LFA\b": "T I L F A", r"\bSRH\b": "S R H", r"\bMPLS\b": "M P L S", r"\bBGP\b": "B G P",
              r"\bIS-IS\b": "I S I S", r"\bLDP\b": "L D P", r"\bVPN\b": "V P N", r"\bGPUs?\b": "G P U"}
@@ -280,7 +280,7 @@ def main():
 
     mjs = os.path.join(HERE, "reel3d.mjs")
     if args.frame:
-        pngs = [os.path.join(out, f"frame-{x:05.1f}.png") for x in args.frame]
+        pngs = [os.path.join(out, f"frame-{x:07.3f}.png") for x in args.frame]
         subprocess.run(["node", mjs, tl_path, wav, "-", "--frames", ",".join(map(str, args.frame)), ",".join(pngs)], check=True)
         print("\n".join(pngs))
     else:

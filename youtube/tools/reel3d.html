@@ -70,7 +70,8 @@ const WIDE = new URLSearchParams(location.search).get('format') === 'wide';
 if (WIDE) document.body.classList.add('wide');
 const W = WIDE ? 1920 : 1080, H = WIDE ? 1080 : 1920;
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true, logarithmicDepthBuffer: true });
-renderer.setSize(W, H); renderer.setPixelRatio(1);
+// render at twice the size and let the page scale it down: thin edges stop shimmering as the camera drifts
+renderer.setSize(W, H); renderer.setPixelRatio(2);
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.prepend(renderer.domElement);
 const scene = new THREE.Scene();
@@ -80,7 +81,9 @@ const hemi = new THREE.HemisphereLight(0xe3f3ff, 0x7cc75a, 1.35);
 scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xfff3dc, 2.5);
 scene.fog = new THREE.Fog(0xd4ecff, 30, 90);
-sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096);
+// without a bias every object shadows itself at its base ("shadow acne"), which flickers
+sun.shadow.bias = -.0006; sun.shadow.normalBias = .035;
 scene.add(sun, sun.target);
 
 // ---- palette and helpers --------------------------------------------------
@@ -281,13 +284,18 @@ let TL, OBJ = {}, LINKS = [], TAGS = [], CAMK = [], BEAMS = [], SPARKS = [], CLO
 const P = id => OBJ[id] ? OBJ[id].pos : id;           // object id or [x, z]
 
 function strip(a, b, width, color, y, lineColor) {
+  // built from its start point, so it grows out from there (scale z)
   const [ax, az] = a, [bx, bz] = b, len = Math.hypot(bx - ax, bz - az);
-  const g = new THREE.Group();
-  g.add(mesh(new THREE.BoxGeometry(width, .04, len), mat(color, { roughness: .8 }), y, false));
-  if (lineColor && !PAPER) g.add(mesh(new THREE.BoxGeometry(width + .4, .05, len), mat(0xd6d3d1), y - .02, false));
+  const g = new THREE.Group(), h = new THREE.Group();
+  // the asphalt stops just short of the sidewalk ends: no two faces in one plane (that flickers),
+  // and two roads that meet end to end do not overlap
+  const road = lineColor && !PAPER;
+  h.add(mesh(new THREE.BoxGeometry(width, .04, road ? len - .1 : len), mat(color, { roughness: .8 }), y, false));
+  if (road) h.add(mesh(new THREE.BoxGeometry(width + .4, .05, len), mat(0xd6d3d1), y - .02, false));
   if (lineColor) for (let s = -len / 2 + .3; s < len / 2 - .2; s += .7)
-    g.add(mesh(new THREE.BoxGeometry(.07, .05, .35), mat(lineColor), y + .01, false).translateZ(s));
-  g.position.set((ax + bx) / 2, 0, (az + bz) / 2);
+    h.add(mesh(new THREE.BoxGeometry(.07, .05, .35), mat(lineColor), y + .01, false).translateZ(s));
+  h.position.z = len / 2; g.add(h);
+  g.position.set(ax, 0, az);
   g.rotation.y = Math.atan2(bx - ax, bz - az);
   scene.add(g); return g;
 }
@@ -326,7 +334,8 @@ window.setup = tl => {
     const l = { a, b, t0: e.t, t1: 1e9, len, fail: [], route: [] };
     if (e.style === 'road' || e.style === 'river') {
       const road = e.style === 'road';
-      l.strip = strip(A, B, e.width || (road ? .9 : 1.8), road ? 0x475569 : 0x60a5fa, PAPER ? .03 : .06, road ? 0xffffff : null);
+      l.w = e.width || (road ? .9 : 1.8);
+      l.strip = strip(A, B, l.w, road ? 0x475569 : 0x60a5fa, PAPER ? .03 : .06, road ? 0xffffff : null);
     } else if (!PAPER) {
       // a cable that hangs between its two ends, drawn as two halves that meet in the middle
       const hA = attachY(a), hB = attachY(b), sag = Math.min(.18 + len * .05, .6);
@@ -460,13 +469,13 @@ function world(minX, maxX, minZ, maxZ) {
   // keep props off the story: objects, cables, roads and paths
   const blockers = [], segs = [];
   Object.values(OBJ).forEach(o => blockers.push([o.pos[0], o.pos[1], o.r + .7]));
-  LINKS.forEach(l => segs.push([P(l.a), P(l.b)]));
+  LINKS.forEach(l => segs.push([P(l.a), P(l.b), l.strip ? l.w / 2 + .45 : .55]));  // roads keep props off the sidewalk too
   Object.values(OBJ).forEach(o => o.moves.forEach(m => m.pts.slice(1).forEach((p, i) => segs.push([m.pts[i], p]))));
   const dSeg = (x, z, [[ax, az], [bx, bz]]) => {
     const dx = bx - ax, dz = bz - az, L = dx * dx + dz * dz || 1, u = clamp(((x - ax) * dx + (z - az) * dz) / L);
     return Math.hypot(x - ax - u * dx, z - az - u * dz);
   };
-  const free = (x, z, r) => blockers.every(([bx, bz, br]) => Math.hypot(x - bx, z - bz) > r + br) && segs.every(sg => dSeg(x, z, sg) > r + .55);
+  const free = (x, z, r) => blockers.every(([bx, bz, br]) => Math.hypot(x - bx, z - bz) > r + br) && segs.every(sg => dSeg(x, z, sg) > r + (sg[2] ?? .55));
   const inside = (x, z) => x > minX && x < maxX && z > minZ && z < maxZ;
   const placed = [];
   const put = (kind, x, z, r, o = {}) => {
@@ -496,10 +505,10 @@ function world(minX, maxX, minZ, maxZ) {
   }
   // grass tufts everywhere (one instanced mesh)
   const tuft = new THREE.ConeGeometry(.045, .22, 4); tuft.translate(0, .11, 0);
-  const tufts = new THREE.InstancedMesh(tuft, mat(0x5fae45, { flatShading: true }), 900);
+  const tufts = new THREE.InstancedMesh(tuft, mat(0x5fae45, { flatShading: true }), 600);
   const M = new THREE.Matrix4(); let n = 0;
-  for (let i = 0; i < 4000 && n < 900; i++) {
-    const x = minX - 10 + R() * (maxX - minX + 20), z = minZ - 14 + R() * (maxZ - minZ + 14);
+  for (let i = 0; i < 4000 && n < 600; i++) {
+    const x = minX - 5 + R() * (maxX - minX + 10), z = minZ - 6 + R() * (maxZ - minZ + 6);  // far tufts are under a pixel and shimmer
     if (!free(x, z, .05)) continue;
     M.makeRotationY(R() * 3).setPosition(x, 0, z); tufts.setMatrixAt(n++, M);
   }
@@ -652,7 +661,7 @@ window.renderAt = t => {
     l.x.visible = ft > 0;
     if (l.strip) {
       l.strip.scale.set(1, 1, Math.max(grow, .0001)); l.strip.visible = grow > 0;
-      l.strip.children[0].material.color.setHex(broken > 0 ? COLORS.red : rt?.c ?? (l.strip.children.length > 1 ? 0x475569 : 0x60a5fa));
+      l.strip.children[0].children[0].material.color.setHex(broken > 0 ? COLORS.red : rt?.c ?? (l.strip.children[0].children.length > 1 ? 0x475569 : 0x60a5fa));
       continue;
     }
     if (l.tubes) {
