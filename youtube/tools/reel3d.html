@@ -24,9 +24,9 @@ canvas{position:absolute;inset:0}
 #hdr .row{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
 #hdr .chip{min-width:90px;padding:8px 24px;border-radius:24px;font-weight:800;font-size:48px;text-align:center;color:#fff;background:#4c3a7a}
 #hdr .active{background:#8b5cf6}#hdr .repair{background:#ef4444}#hdr .done{background:#3a2a62;color:#7c6aa8}
-#big{position:absolute;left:40px;right:40px;top:300px;text-align:center;transform-origin:50% 50%}
-#big .v{display:inline-block;background:#fff;color:#2b1650;font-weight:800;font-size:120px;letter-spacing:-4px;padding:18px 56px;border-radius:48px;box-shadow:0 16px 0 #c4b5fd}
-#big .s{margin-top:30px;font-weight:800;font-size:54px;color:#3b1d7a}
+#big{position:absolute;left:40px;right:40px;top:150px;text-align:center;transform-origin:50% 0}
+#big .v{display:inline-block;background:#fff;color:#2b1650;font-weight:800;font-size:96px;letter-spacing:-3px;padding:10px 48px;border-radius:40px;box-shadow:0 12px 0 #c4b5fd}
+#big .s{margin-top:22px;font-weight:800;font-size:42px;color:#3b1d7a}
 #cap{position:absolute;left:50px;right:50px;top:1560px;text-align:center;font-weight:800;font-size:96px;line-height:1.08;color:#fff;letter-spacing:-1px;
   paint-order:stroke fill;-webkit-text-stroke:14px #1d0f3d}
 #cap .w{display:inline-block;margin:0 .12em}
@@ -38,7 +38,7 @@ canvas{position:absolute;inset:0}
 .wide #title{top:120px;font-size:96px}
 .wide #hdr{top:40px}
 .wide #hdr .card{padding:20px 34px 28px}.wide #hdr .t{font-size:38px;margin-bottom:14px}.wide #hdr .chip{font-size:50px}
-.wide #big{top:180px}.wide #big .v{font-size:110px}
+.wide #big{top:40px}.wide #big .v{font-size:84px}
 .wide #cap{top:880px;font-size:76px;-webkit-text-stroke:12px #1d0f3d}
 .wide #end{top:700px}
 </style>
@@ -389,9 +389,15 @@ window.renderAt = t => {
 
   // overlays: hook title, card, big text, captions, end card
   document.getElementById('title').style.opacity = 1 - win(t, TL.titleUntil, .3);
+  const big = TL.events.filter(e => 'big' in e && e.t <= t).pop();
+  const bigEl = document.getElementById('big');
+  const bs = big && big.big ? back(win(t, big.t, .35)) * (1 - ease(win(t, big.t + (big.dur || 2.6), .3))) : 0;
+  bigEl.style.opacity = bs > .01 ? 1 : 0; bigEl.style.transform = `scale(${bs})`;
+  if (big && big.big) { bigEl.querySelector('.v').textContent = big.big; bigEl.querySelector('.s').textContent = big.sub || ''; }
   const card = TL.events.filter(e => 'card' in e && e.t <= t).pop();
   const hdr = document.getElementById('hdr');
-  const cs = card && card.card ? back(win(t, card.shown, .4)) : 0;
+  // the card and the big text share the top slot: the card steps aside while big text shows
+  const cs = card && card.card ? back(win(t, card.shown, .4)) * (bs > .01 ? 0 : 1) : 0;
   hdr.style.opacity = cs > .01 ? 1 : 0; hdr.style.transform = `scale(${cs})`;
   if (card && card.card) {
     const key = JSON.stringify(card.card);
@@ -399,16 +405,11 @@ window.renderAt = t => {
       cardKey = key;
       hdr.querySelector('.t').textContent = card.card.title || '';
       hdr.querySelector('.row').innerHTML = (card.card.chips || []).map(ch => {
-        const [l, s = 'next'] = [].concat(ch);
-        return `<div class="chip ${s}">${l}</div>`;
+        const [l, st = 'next'] = [].concat(ch);
+        return `<div class="chip ${st}">${l}</div>`;
       }).join('');
     }
   }
-  const big = TL.events.filter(e => 'big' in e && e.t <= t).pop();
-  const bigEl = document.getElementById('big');
-  const bs = big && big.big ? back(win(t, big.t, .35)) * (1 - ease(win(t, big.t + (big.dur || 2.6), .3))) : 0;
-  bigEl.style.opacity = bs > .01 ? 1 : 0; bigEl.style.transform = `scale(${bs})`;
-  if (big && big.big) { bigEl.querySelector('.v').textContent = big.big; bigEl.querySelector('.s').textContent = big.sub || ''; }
 
   const end = document.getElementById('end');
   const endOn = win(t, TL.endAt, .3);
