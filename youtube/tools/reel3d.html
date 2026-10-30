@@ -161,6 +161,14 @@ const KINDS = {
     }
     return { g, top: .75, vehicle: true };
   },
+  ship(o) {
+    const g = new THREE.Group();
+    const hull = mesh(new THREE.BoxGeometry(.8, .35, 1.9), mat(o.color || 'red'), .25); g.add(hull);
+    g.add(mesh(new THREE.BoxGeometry(.7, .08, 1.8), mat('white'), .46));
+    g.add(mesh(new THREE.BoxGeometry(.5, .45, .45), mat('white'), .72).translateZ(-.55));
+    for (const [z, c] of [[.1, 'blue'], [.55, 'orange']]) g.add(mesh(new THREE.BoxGeometry(.55, .3, .4), mat(c), .65).translateZ(z));
+    return { g, top: 1.1, vehicle: true };
+  },
   person(o) {
     const g = new THREE.Group();
     g.add(mesh(new THREE.CylinderGeometry(.22, .3, .7, 16), mat(o.color || 'blue'), .35));

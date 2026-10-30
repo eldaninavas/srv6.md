@@ -58,7 +58,7 @@ about -3.5…3.5 and use z from about -7 (back) to 7 (front).
 | camera close-up | `{camera: {on: r1, zoom: 5}}`, back with `{camera: auto}` |
 | end card | `{end: true}` (in the last beat, on "Learn") |
 
-Objects: `router`, `house`, `building` (`height`), `datacenter`, `server`,
+Objects: `router`, `ship`, `house`, `building` (`height`), `datacenter`, `server`,
 `gpu`, `tower`, `truck`, `car`, `person`, `tree`, `cloud`, `packet`,
 `sign` (`text`), `box` (`size: [w, h, d]`). Colors: purple, green, grey,
 red, orange, blue, yellow, pink, teal, dark, white, brown, or `"#rrggbb"`.

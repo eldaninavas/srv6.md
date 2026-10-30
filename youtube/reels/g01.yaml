@@ -1,0 +1,76 @@
+# Everyday networking story: how a message crosses the ocean.
+id: g01
+voice: af_bella
+speed: 1.0
+caption: |
+  You send a message to someone on another continent, and it arrives in less than a second. How? 🌊
+
+  Learn how networks really work → link in bio (srv6.md)
+
+  #Networking #Internet #SubmarineCables #Telecom #NetworkEngineering #Fiber
+beats:
+  - say: "Imagine your cousin lives on the other side of the ocean, and you want to tell them something. Right now."
+    do:
+      - {at: 0, add: house, id: you, pos: [0, 6.4], color: purple}
+      - {at: 0, tag: {on: you, text: "You", color: purple}}
+      - {at: "ocean", link: [[-3.7, 0], [3.7, 0]], style: river, width: 3.8}
+      - {at: "cousin", add: house, id: cousin, pos: [0, -6.4], color: green}
+      - {at: "cousin", tag: {on: cousin, text: "Your cousin", color: green}}
+
+  - say: "A letter? It goes on a ship, and takes weeks."
+    do:
+      - {at: "letter", add: ship, id: ship, pos: [-3.2, 0.6]}
+      - {at: "ship", move: ship, path: [[-3.2, 0.6], [3.2, 0.6]], dur: 6}
+      - {at: "weeks", big: "Weeks", sub: "for a letter to cross", dur: 2}
+
+  - say: "So, back in the eighteen fifties, people laid a cable under the sea, and sent pulses of electricity through it. The telegraph!"
+    do:
+      - {at: "cable", add: router, id: a1, pos: [-2.2, 3.4], color: purple}
+      - {at: "cable", add: router, id: b1, pos: [-2.2, -3.4], color: green}
+      - {at: "cable", link: [a1, b1]}
+      - {at: "pulses", link: [you, a1]}
+      - {at: "pulses", link: [b1, cousin]}
+      - {at: "telegraph", remove: ship}
+
+  - say: "Today, those cables are made of glass fibers, as thin as a hair. And they don't carry electricity. They carry light."
+    do:
+      - {at: "glass", tag: {on: a1, text: "Glass fiber", color: blue}}
+      - {at: "light", route: [you, a1, b1, cousin], color: yellow}
+
+  - say: "Your message turns into tiny flashes of light, and crosses the Atlantic in about thirty milliseconds."
+    do:
+      - {at: "message", add: packet, id: msg, pos: [0, 6.4], color: yellow}
+      - {at: "flashes", move: msg, path: [you, a1, b1, cousin], dur: 1.6}
+      - {at: "thirty", big: "~30 ms", sub: "across the Atlantic, at the speed of light in glass", dur: 2.6}
+      - {at: "milliseconds", pulse: cousin, color: green}
+
+  - say: "But cables break. A ship drags its anchor, an earthquake shakes the seabed... it happens more often than you'd think."
+    do:
+      - {at: 0, untag: a1}
+      - {at: 0, unroute: true}
+      - {at: "anchor", add: ship, id: ship2, pos: [-3.4, -0.7], color: blue}
+      - {at: "anchor", move: ship2, path: [[-3.4, -0.7], [-2.2, -0.7]], dur: 1.6}
+      - {at: "earthquake", fail: [a1, b1]}
+      - {at: "earthquake", pulse: a1, color: red}
+
+  - say: "So the network never trusts just one cable. There are many, and routers switch to another path in milliseconds."
+    do:
+      - {at: "many", add: router, id: a2, pos: [2.2, 3.4], color: purple}
+      - {at: "many", add: router, id: b2, pos: [2.2, -3.4], color: green}
+      - {at: "many", link: [a2, b2]}
+      - {at: "many", link: [a1, a2]}
+      - {at: "many", link: [b2, b1]}
+      - {at: "routers", add: packet, id: msg2, pos: [0, 6.4], color: yellow}
+      - {at: "routers", move: msg2, path: [you, a1, a2, b2, b1, cousin], dur: 2.4}
+      - {at: "switch", route: [a1, a2, b2, b1], color: yellow}
+      - {at: "milliseconds", pulse: cousin, color: green}
+      - {at: "milliseconds", tag: {on: cousin, text: "Got it!", color: green}}
+
+  - say: "In fact, almost all the traffic between continents travels through these cables under the sea. Not satellites."
+    do:
+      - {at: "almost", big: "Under the sea", sub: "almost all traffic between continents", dur: 3}
+
+  - say: "So next time you hit send, think of the light crossing the ocean for you. Learn how networks really work, at srv6 dot md."
+    text: "So next time you hit send, think of the light crossing the ocean for you. Learn how networks really work at srv6.md"
+    do:
+      - {at: "Learn", end: true}
