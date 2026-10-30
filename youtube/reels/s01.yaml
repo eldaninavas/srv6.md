@@ -1,34 +1,94 @@
-# 3D vertical reel (Instagram Reels / YouTube Shorts / TikTok), rendered by
-# youtube/tools/reel3d.py. `say` is what the voice reads, `text` is the
-# on-screen caption, `act` drives the animation in youtube/tools/reel3d.html.
+# 3D story reel (Instagram Reels / YouTube Shorts / TikTok), rendered by
+# youtube/tools/reel3d.py. See youtube/REEL_GUIDE.md for the format.
 id: s01
-voice: af_heart
+voice: af_bella
+speed: 1.0
 title: "SRv6 in <b>60 seconds</b>"
 caption: |
-  SRv6 in 60 seconds: one IPv6 address can carry the whole path. ⚡
+  How does a package find its way across the city... and what if YOU could choose the route? That's SRv6. ⚡
 
   Free SRv6 course → link in bio (srv6.md/learn)
 
   #SRv6 #SegmentRouting #IPv6 #NetworkEngineering #CCIE #Networking
 beats:
-  - act: intro
-    say: "One IPv6 address can steer a packet across an entire network."
-    text: "One IPv6 address can steer a packet across an entire network."
-  - act: build
-    say: "This is S R v 6. Segment Routing over IPv6."
-    text: "This is SRv6. Segment Routing over IPv6."
-  - act: list
-    say: "The source writes the path into the packet, as a list of segments. Go to B. Then to D."
-    text: "The source writes the path into the packet, as a list of segments. Go to B. Then to D."
-  - act: travel
-    say: "Each segment is an IPv6 address, and an instruction. B runs its instruction, then points the packet at D."
-    text: "Each segment is an IPv6 address, and an instruction. B runs it, then points the packet at D."
-  - act: transit
-    say: "Routers in the middle just forward IPv6. No labels. No L D P. No tunnel state."
-    text: "Routers in the middle just forward IPv6. No labels. No LDP. No tunnel state."
-  - act: fail
-    say: "If a link fails, the router next to it adds one repair segment, and traffic keeps flowing in milliseconds."
-    text: "If a link fails, the router next to it adds one repair segment, and traffic keeps flowing in milliseconds."
-  - act: outro
-    say: "That's S R v 6. Learn it free, at S R v 6 dot M D."
-    text: "That's SRv6. Learn it free at srv6.md"
+  - say: "Imagine you have to send a package to a friend, all the way across the city."
+    do:
+      - {at: 0, add: house, id: you, pos: [0, 6.2], color: purple}
+      - {at: 0, tag: {on: you, text: "You", color: purple}}
+      - {at: "package", add: packet, id: pkt, pos: [0, 6.2]}
+      - {at: "friend", add: house, id: friend, pos: [0, -6.2], color: green}
+      - {at: "friend", tag: {on: friend, text: "Your friend", color: green}}
+
+  - say: "So you drop it at the post office, and every office along the way decides where it goes next."
+    do:
+      - {at: "post", add: router, id: o1, pos: [0, 3.6]}
+      - {at: "post", link: [you, o1]}
+      - {at: "every", add: router, id: w1, pos: [-2.6, 0.8]}
+      - {at: "every", add: router, id: e1, pos: [2.6, 0.8]}
+      - {at: "every", add: router, id: w2, pos: [-2.6, -2.2]}
+      - {at: "every", add: router, id: e2, pos: [2.6, -2.2]}
+      - {at: "every", add: router, id: o2, pos: [0, -3.8]}
+      - {at: "along", link: [o1, w1]}
+      - {at: "along", link: [o1, e1]}
+      - {at: "along", link: [w1, e1]}
+      - {at: "along", link: [w1, w2]}
+      - {at: "along", link: [e1, e2]}
+      - {at: "along", link: [w2, e2]}
+      - {at: "along", link: [w2, o2]}
+      - {at: "along", link: [e2, o2]}
+      - {at: "along", link: [o2, friend]}
+      - {at: "drop", move: pkt, path: [you, o1], dur: 1.2}
+      - {at: "decides", tag: {on: o1, text: "Where to?", color: orange}}
+
+  - say: "It works! But you get zero say in the route. Your package takes the short way, right through the busiest part of town."
+    do:
+      - {at: "works", untag: o1}
+      - {at: "short", move: pkt, path: [o1, w1], dur: 1.4}
+      - {at: "busiest", add: car, id: c1, pos: [-3.6, 1.6], color: blue}
+      - {at: "busiest", add: car, id: c2, pos: [-1.7, 0.1], color: yellow}
+      - {at: "busiest", add: car, id: c3, pos: [-3.4, -0.2], color: pink}
+      - {at: "busiest", pulse: w1, color: red}
+      - {at: "town", tag: {on: w1, text: "Traffic jam!", color: red}}
+
+  - say: "So what if you could write the whole route on the package yourself? First, through the east side. Then, to your friend."
+    do:
+      - {at: 0, remove: pkt}
+      - {at: "what", add: packet, id: pkt2, pos: [0, 6.2]}
+      - {at: "write", card: {title: "Your route, written on the package", chips: [["East side", active], ["Your friend", next]]}}
+      - {at: "east", tag: {on: e1, text: "Stop 1", color: purple}}
+      - {at: "east", pulse: e1}
+      - {at: "friend", pulse: friend, color: green}
+      - {at: "friend", route: [you, o1, e1, e2, o2, friend]}
+
+  - say: "That's SRv6! Each stop on your list is an IPv6 address... and an instruction."
+    do:
+      - {at: "SRv6", big: "SRv6", sub: "Segment Routing over IPv6", dur: 2.4}
+      - {at: "SRv6", move: pkt2, path: [you, o1, e1], dur: 2.6}
+      - {at: "instruction", pulse: e1}
+      - {at: "instruction", card: {title: "Your route, written on the package", chips: [["East side", done], ["Your friend", active]]}}
+
+  - say: "And the offices in between? They don't even read your note. They just forward it, like always."
+    do:
+      - {at: "between", move: pkt2, path: [e1, e2], dur: 1.6}
+      - {at: "forward", tag: {on: e2, text: "Just forwards", color: dark}}
+
+  - say: "But what if a road suddenly closes?"
+    do:
+      - {at: "closes", fail: [e2, o2]}
+      - {at: "closes", pulse: e2, color: red}
+      - {at: "closes", untag: e2}
+
+  - say: "No problem. The office right next to it adds one detour to your note, and your package still arrives. In milliseconds."
+    do:
+      - {at: "detour", card: {title: "Your route, written on the package", chips: [["East side", done], ["Detour", repair], ["Your friend", next]]}}
+      - {at: "detour", route: [e2, w2, o2], color: red}
+      - {at: "package", move: pkt2, path: [e2, w2, o2, friend], dur: 2.4}
+      - {at: "milliseconds", pulse: friend, color: green}
+      - {at: "milliseconds", tag: {on: friend, text: "Delivered!", color: green}}
+      - {at: "milliseconds", card: {title: "Your route, written on the package", chips: [["East side", done], ["Detour", done], ["Your friend", done]]}}
+
+  - say: "One address can carry the whole route. That's SRv6. Learn it for free, at srv6 dot md."
+    text: "One address can carry the whole route. That's SRv6. Learn it for free at srv6.md"
+    do:
+      - {at: "Learn", end: true}
+      - {at: "Learn", card: null}
