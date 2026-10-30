@@ -66,7 +66,7 @@ beats:
       - {at: "instruction", pulse: e1}
       - {at: "instruction", card: {title: "Your route, written on the package", chips: [["East side", done], ["Your friend", active]]}}
 
-  - say: "And the offices in between? They don't even read your note. They just forward it, like always."
+  - say: "And the offices in between? They don't even look at your note. They just forward it, like always."
     do:
       - {at: "between", move: pkt2, path: [e1, e2], dur: 1.6}
       - {at: "forward", tag: {on: e2, text: "Just forwards", color: dark}}
