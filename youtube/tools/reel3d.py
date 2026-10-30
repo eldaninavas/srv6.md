@@ -87,6 +87,21 @@ def narrate(spec, texts, cache):
     return [load_human(p) for p in keyed]
 
 
+def add_music(spec, narration, total, out):
+    """Mix quiet synthesized music under the voice; it ducks a little more while the voice speaks."""
+    import zlib
+    import music
+    bed = os.path.join(out, "music.wav")
+    sf.write(bed, music.render(total, zlib.crc32(spec["id"].encode())).T, music.SR)
+    mix = os.path.join(out, "mix.wav")
+    vol = spec.get("music_volume", 0.13)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", narration, "-i", bed, "-filter_complex",
+                    "[0:a]aresample=48000,pan=stereo|c0=c0|c1=c0,asplit=2[v][sc];"
+                    f"[1:a]volume={vol}[m];[m][sc]sidechaincompress=threshold=0.015:ratio=4:attack=60:release=700[md];"
+                    "[v][md]amix=inputs=2:duration=first:normalize=0", mix], check=True)
+    return mix
+
+
 def pron(text):
     for a, b in PRONOUNCE.items():
         text = re.sub(a, b, text)
@@ -208,6 +223,8 @@ def main():
 
     wav = os.path.join(out, "narration.wav")
     sf.write(wav, np.concatenate(audio), SR)
+    if spec.get("music", "cute") != "none":
+        wav = add_music(spec, wav, total, out)
     tl = {"events": events, "chunks": caps, "total": round(total, 3), "title": spec.get("title", ""),
           "titleUntil": beats[0]["start"] + beats[0]["dur"] - gap, "endAt": end_at, "endCard": spec.get("end_card"),
           "ground": spec.get("ground"), "format": spec.get("format", "vertical")}

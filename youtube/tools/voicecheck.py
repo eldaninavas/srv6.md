@@ -23,7 +23,7 @@ def main(path):
     spec = yaml.safe_load(open(path))
     script = " ".join(b["say"] for b in spec["beats"])
     wav = os.path.join(YT, "out", f"{spec['id']}-3d", "narration.wav")
-    model = WhisperModel("base.en", device="cpu", compute_type="int8")
+    model = WhisperModel("small.en", device="cpu", compute_type="int8")
     segs, _ = model.transcribe(wav)  # no prompt: it would bias toward the script
     heard = " ".join(s.text for s in segs)
     a, b = words(script), words(heard)
