@@ -11,11 +11,12 @@
 @font-face{font-family:Inter;font-weight:800;src:url(../../node_modules/@fontsource/inter/files/inter-latin-800-normal.woff2) format('woff2')}
 @font-face{font-family:Inter;font-weight:600;src:url(../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2) format('woff2')}
 html,body{margin:0;width:1080px;height:1920px;overflow:hidden;font-family:Inter,sans-serif;
-  background:radial-gradient(120% 80% at 50% 30%,#fdf6ff 0%,#efe4ff 45%,#d9c8fb 100%)}
+  background:linear-gradient(#5eb6ff 0%,#9fd3ff 40%,#d4ecff 70%,#d4ecff 100%)}
+body.paper{background:radial-gradient(120% 80% at 50% 30%,#fdf6ff 0%,#efe4ff 45%,#d9c8fb 100%)}
 body.wide{width:1920px;height:1080px}
 canvas{position:absolute;inset:0}
-#brand{position:absolute;top:84px;left:0;right:0;text-align:center;font-weight:800;font-size:46px;color:#3b1d7a;letter-spacing:-.5px}
-#brand span{color:#8b5cf6}
+#brand{position:absolute;top:84px;left:0;right:0;text-align:center;font-weight:800;font-size:46px;color:#fff;letter-spacing:-.5px;paint-order:stroke fill;-webkit-text-stroke:8px #1d0f3d}
+#brand span{color:#c4b5fd}
 #title{position:absolute;top:200px;left:60px;right:60px;text-align:center;font-weight:800;font-size:112px;line-height:1.02;color:#2b1650;letter-spacing:-3px}
 #title b{color:#8b5cf6}
 #hdr{position:absolute;top:150px;left:0;right:0;display:flex;justify-content:center;transform-origin:50% 0}
@@ -26,7 +27,8 @@ canvas{position:absolute;inset:0}
 #hdr .active{background:#8b5cf6}#hdr .repair{background:#ef4444}#hdr .done{background:#3a2a62;color:#7c6aa8}
 #big{position:absolute;left:40px;right:40px;top:150px;text-align:center;transform-origin:50% 0}
 #big .v{display:inline-block;background:#fff;color:#2b1650;font-weight:800;font-size:96px;letter-spacing:-3px;padding:10px 48px;border-radius:40px;box-shadow:0 12px 0 #c4b5fd}
-#big .s{margin-top:22px;font-weight:800;font-size:42px;color:#3b1d7a}
+#big .s{margin-top:22px;font-weight:800;font-size:50px;color:#fff;paint-order:stroke fill;-webkit-text-stroke:10px #1d0f3d}
+.paper #big .s{color:#3b1d7a;-webkit-text-stroke:0}
 #dim{position:absolute;inset:0;background:rgba(29,15,61,.45)}
 #pkt{position:absolute;left:70px;right:70px;top:470px;transform-origin:50% 50%}
 #pkt .panel{background:#fff;border-radius:48px;padding:40px 40px 46px;box-shadow:0 20px 0 #c4b5fd}
@@ -35,13 +37,14 @@ canvas{position:absolute;inset:0}
 #pkt .row .l{font-weight:600;font-size:34px;opacity:.85}
 #pkt .row .v{font-weight:800;font-size:58px;letter-spacing:-1px}
 .wide #pkt{left:520px;right:520px;top:120px}
-#cap{position:absolute;left:50px;right:50px;top:1560px;text-align:center;font-weight:800;font-size:96px;line-height:1.08;color:#fff;letter-spacing:-1px;
-  paint-order:stroke fill;-webkit-text-stroke:14px #1d0f3d}
+#cap{position:absolute;left:40px;right:40px;top:1420px;text-align:center;font-weight:800;font-size:124px;line-height:1.05;color:#fff;letter-spacing:-2px;
+  paint-order:stroke fill;-webkit-text-stroke:20px #111;text-shadow:0 10px 0 rgba(0,0,0,.35)}
 #cap .w{display:inline-block;margin:0 .12em}
 #cap .on{color:#ffd23f}
 #end{position:absolute;left:0;right:0;top:1360px;text-align:center}
 #end .url{display:inline-block;background:#8b5cf6;color:#fff;font-weight:800;font-size:92px;padding:26px 56px;border-radius:40px;letter-spacing:-2px;box-shadow:0 18px 0 #5b2fb0}
-#end .sub{margin-top:44px;font-weight:800;font-size:58px;color:#2b1650}
+#end .sub{margin-top:44px;font-weight:800;font-size:62px;color:#fff;paint-order:stroke fill;-webkit-text-stroke:12px #1d0f3d}
+.paper #end .sub{color:#2b1650;-webkit-text-stroke:0}
 .wide #brand{top:44px;left:60px;text-align:left;font-size:40px}
 .wide #title{top:120px;font-size:96px}
 .wide #hdr{top:40px}
@@ -73,8 +76,10 @@ document.body.prepend(renderer.domElement);
 const scene = new THREE.Scene();
 const FOV = 42;
 const camera = new THREE.PerspectiveCamera(FOV, W / H, 0.1, 400);
-scene.add(new THREE.HemisphereLight(0xffffff, 0xb9a3e8, 1.6));
-const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+const hemi = new THREE.HemisphereLight(0xe3f3ff, 0x7cc75a, 1.35);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff3dc, 2.5);
+scene.fog = new THREE.Fog(0xd4ecff, 30, 90);
 sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
 scene.add(sun, sun.target);
 
@@ -91,6 +96,12 @@ const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const ease = x => (x = clamp(x), x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 const back = x => { const c = 1.9; x = clamp(x); return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
 const win = (t, t0, d) => clamp((t - t0) / d);
+const bounce = x => { x = clamp(x); const n = 7.5625, d = 2.75;
+  return x < 1 / d ? n * x * x : x < 2 / d ? n * (x -= 1.5 / d) * x + .75 : x < 2.5 / d ? n * (x -= 2.25 / d) * x + .9375 : n * (x -= 2.625 / d) * x + .984375; };
+function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const hashStr = s => [...String(s)].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261);
+const at = (m, x, y, z) => { m.position.set(x, y, z); scene.add(m); return m; };
+const GROUND_TOP = .0;
 
 function sprite(text, { bg = '#ffffff', fg = '#2b1650', font = 120, h = 200, pad = 50, r = 60 } = {}) {
   const c = document.createElement('canvas'), g = c.getContext('2d');
@@ -115,12 +126,23 @@ const KINDS = {
     return { g, top: .7 };
   },
   house(o) {
-    const g = new THREE.Group();
-    g.add(mesh(new THREE.BoxGeometry(1.2, .9, 1.1), mat(o.wall || 0xfffaf0), .45));
-    const roof = mesh(new THREE.ConeGeometry(1.05, .7, 4), mat(o.color || 'red'), 1.25);
-    roof.rotation.y = Math.PI / 4; g.add(roof);
-    g.add(mesh(new THREE.BoxGeometry(.3, .5, .05), mat('brown'), .25).translateZ(.56));
-    return { g, top: 1.6 };
+    const g = new THREE.Group(), wall = mat(o.wall || 0xfff1dc), glass = mat(0x8fd3ff, { roughness: .2 }), frame = mat('white');
+    g.add(mesh(new THREE.BoxGeometry(1.2, .85, 1.0), wall, .425));
+    g.add(mesh(new THREE.BoxGeometry(1.26, .08, 1.06), mat(0xd6c4a8), .04, false));
+    const tri = new THREE.Shape([new THREE.Vector2(-.74, 0), new THREE.Vector2(.74, 0), new THREE.Vector2(0, .62)]);
+    const roofG = new THREE.ExtrudeGeometry(tri, { depth: 1.22, bevelEnabled: false }); roofG.translate(0, 0, -.61);
+    g.add(mesh(roofG, mat(o.color || 'red', { flatShading: true }), .84));
+    g.add(mesh(new THREE.BoxGeometry(.15, .38, .15), mat(0xb45309), 1.3).translateX(.32).translateZ(-.18));
+    g.add(mesh(new THREE.BoxGeometry(.28, .46, .04), mat(0x8b5a2b), .24, false).translateZ(.51));
+    for (const x of [-.36, .36]) {
+      g.add(mesh(new THREE.BoxGeometry(.28, .28, .03), frame, .55, false).translateX(x).translateZ(.505));
+      g.add(mesh(new THREE.BoxGeometry(.21, .21, .04), glass, .55, false).translateX(x).translateZ(.51));
+    }
+    for (const sx of [-1, 1]) {
+      g.add(mesh(new THREE.BoxGeometry(.03, .28, .3), frame, .55, false).translateX(sx * .605));
+      g.add(mesh(new THREE.BoxGeometry(.04, .21, .23), glass, .55, false).translateX(sx * .61));
+    }
+    return { g, top: 1.55, r: .75 };
   },
   building(o) {
     const g = new THREE.Group(), h = o.height || 2.4;
@@ -190,11 +212,43 @@ const KINDS = {
     g.add(mesh(new THREE.SphereGeometry(.24, 20, 16), mat(0xf5c9a6), .92));
     return { g, top: 1.2, vehicle: true };
   },
-  tree() {
+  tree(o) {
+    const g = new THREE.Group(), leaf = mat(o.color || 0x4caf50, { flatShading: true }), leaf2 = mat(0x66c95a, { flatShading: true });
+    g.add(mesh(new THREE.CylinderGeometry(.08, .12, .55, 7), mat(0x8b5a2b), .27));
+    g.add(mesh(new THREE.IcosahedronGeometry(.5, 0), leaf, .9));
+    g.add(mesh(new THREE.IcosahedronGeometry(.36, 0), leaf2, 1.28).translateX(.08));
+    return { g, top: 1.6, r: .5 };
+  },
+  pine() {
+    const g = new THREE.Group(), leaf = mat(0x2f8f4e, { flatShading: true });
+    g.add(mesh(new THREE.CylinderGeometry(.07, .1, .4, 6), mat(0x7a4a24), .2));
+    for (const [y, r, h] of [[.6, .55, .7], [1.0, .42, .6], [1.35, .28, .5]]) g.add(mesh(new THREE.ConeGeometry(r, h, 7), leaf, y));
+    return { g, top: 1.7, r: .5 };
+  },
+  bush(o) {
+    const g = new THREE.Group(), m = mat(o.color || 0x3fa34d, { flatShading: true });
+    for (const [x, z, r] of [[0, 0, .3], [.25, .05, .22], [-.22, .08, .2]]) g.add(mesh(new THREE.IcosahedronGeometry(r, 0), m, r * .8).translateX(x).translateZ(z));
+    return { g, top: .6, r: .4 };
+  },
+  flowers(o) {
+    const g = new THREE.Group(), cs = [0xf472b6, 0xfacc15, 0xa78bfa, 0xf87171, 0xffffff], R = mulberry(o.seed || 1);
+    for (let i = 0; i < 7; i++) {
+      const x = (R() - .5) * .6, z = (R() - .5) * .6, h = .12 + R() * .1;
+      g.add(mesh(new THREE.CylinderGeometry(.012, .012, h, 4), mat(0x3f9142), h / 2, false).translateX(x).translateZ(z));
+      g.add(mesh(new THREE.IcosahedronGeometry(.055, 0), mat(cs[Math.floor(R() * cs.length)]), h, false).translateX(x).translateZ(z));
+    }
+    return { g, top: .4, r: .35 };
+  },
+  rock(o) {
     const g = new THREE.Group();
-    g.add(mesh(new THREE.CylinderGeometry(.08, .12, .5, 8), mat('brown'), .25));
-    g.add(mesh(new THREE.IcosahedronGeometry(.45, 0), mat(0x4ade80, { flatShading: true }), .85));
-    return { g, top: 1.3 };
+    g.add(mesh(new THREE.DodecahedronGeometry(o.size || .22, 0), mat(0x9ca3af, { flatShading: true }), (o.size || .22) * .5));
+    return { g, top: .5, r: .3 };
+  },
+  pole(o) {
+    const g = new THREE.Group();
+    g.add(mesh(new THREE.CylinderGeometry(.06, .08, 1.6, 8), mat(0x8b5a2b), .8));
+    g.add(mesh(new THREE.BoxGeometry(.5, .06, .06), mat(0x8b5a2b), 1.45));
+    return { g, top: 1.6, r: .3 };
   },
   cloud() {
     const g = new THREE.Group(), m = mat('white');
@@ -223,13 +277,14 @@ const KINDS = {
 window.KINDS = Object.keys(KINDS);
 
 // ---- state built in setup -------------------------------------------------
-let TL, OBJ = {}, LINKS = [], TAGS = [], CAMK = [], BEAMS = [];
+let TL, OBJ = {}, LINKS = [], TAGS = [], CAMK = [], BEAMS = [], SPARKS = [], CLOUDS = [], PAPER = false;
 const P = id => OBJ[id] ? OBJ[id].pos : id;           // object id or [x, z]
 
 function strip(a, b, width, color, y, lineColor) {
   const [ax, az] = a, [bx, bz] = b, len = Math.hypot(bx - ax, bz - az);
   const g = new THREE.Group();
   g.add(mesh(new THREE.BoxGeometry(width, .04, len), mat(color, { roughness: .8 }), y, false));
+  if (lineColor && !PAPER) g.add(mesh(new THREE.BoxGeometry(width + .4, .03, len), mat(0xd6d3d1), y - .01, false));
   if (lineColor) for (let s = -len / 2 + .3; s < len / 2 - .2; s += .7)
     g.add(mesh(new THREE.BoxGeometry(.07, .05, .35), mat(lineColor), y + .01, false).translateZ(s));
   g.position.set((ax + bx) / 2, 0, (az + bz) / 2);
@@ -239,6 +294,8 @@ function strip(a, b, width, color, y, lineColor) {
 
 window.setup = tl => {
   TL = tl;
+  PAPER = tl.ground === 'paper';
+  if (PAPER) document.body.classList.add('paper');
   const ev = tl.events;
   for (const e of ev.filter(e => e.add)) {
     const { g, top, floats, vehicle, r } = (KINDS[e.add] || KINDS.box)(e);
@@ -251,6 +308,12 @@ window.setup = tl => {
     }
     const ring = new THREE.Mesh(new THREE.RingGeometry(.8, 1.0, 48), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 }));
     ring.rotation.x = -Math.PI / 2; ring.position.y = .03; g.add(ring); o.ring = ring;
+    // a puff of dust where it lands
+    if (!o.floats && !PAPER) {
+      o.dust = [];
+      const dm = new THREE.MeshBasicMaterial({ color: 0xf5ead6, transparent: true, opacity: 0 });
+      for (let i = 0; i < 10; i++) { const d = new THREE.Mesh(new THREE.IcosahedronGeometry(.09, 0), dm); d.userData.a = i / 10 * Math.PI * 2; scene.add(d); o.dust.push(d); }
+    }
     scene.add(g); OBJ[e.id] = o;
   }
   for (const e of ev) {
@@ -264,6 +327,17 @@ window.setup = tl => {
     if (e.style === 'road' || e.style === 'river') {
       const road = e.style === 'road';
       l.strip = strip(A, B, e.width || (road ? .9 : 1.8), road ? 0x475569 : 0x60a5fa, .03, road ? 0xffffff : null);
+    } else if (!PAPER) {
+      // a cable that hangs between its two ends, drawn as two halves that meet in the middle
+      const hA = attachY(a), hB = attachY(b), sag = Math.min(.18 + len * .05, .6);
+      const mid = new THREE.Vector3((A[0] + B[0]) / 2, Math.max((hA + hB) / 2 - sag, .15), (A[1] + B[1]) / 2);
+      l.mid = mid;
+      l.tubes = [[A, hA], [B, hB]].map(([p, h]) => {
+        const p0 = new THREE.Vector3(p[0], h, p[1]);
+        const c = new THREE.QuadraticBezierCurve3(p0, new THREE.Vector3((p0.x + mid.x) / 2, (p0.y + mid.y) / 2 - sag * .35, (p0.z + mid.z) / 2), mid);
+        const m = new THREE.Mesh(new THREE.TubeGeometry(c, 24, .055, 8), mat(0x3b3f4a, { roughness: .4 }));
+        m.castShadow = true; scene.add(m); m.userData.n = m.geometry.index.count; return m;
+      });
     } else {
       l.halves = [[A, B], [B, A]].map(([f, to]) => {
         const m = mesh(new THREE.CylinderGeometry(.075, .075, 1, 12), mat(0xc4b5fd));
@@ -272,12 +346,22 @@ window.setup = tl => {
       });
     }
     l.x = sprite('✕', { bg: '#ef4444', fg: '#ffffff', font: 150, h: 200 });
-    l.x.position.set((A[0] + B[0]) / 2, 1, (A[1] + B[1]) / 2); scene.add(l.x);
+    l.x.position.set((A[0] + B[0]) / 2, l.mid ? l.mid.y + .7 : 1, (A[1] + B[1]) / 2); scene.add(l.x);
     LINKS.push(l);
   }
   const findLink = (a, b) => LINKS.find(l => (l.a === a && l.b === b) || (l.a === b && l.b === a));
   for (const e of ev) {
-    if (e.fail) { const l = findLink(...e.fail); l && l.fail.push(e.t); }
+    if (e.fail) {
+      const l = findLink(...e.fail); if (!l) continue;
+      l.fail.push(e.t);
+      const R = mulberry(Math.round(e.t * 1000)), m = new THREE.MeshBasicMaterial({ color: 0xffd23f });
+      const at0 = l.mid || new THREE.Vector3((P(l.a)[0] + P(l.b)[0]) / 2, .4, (P(l.a)[1] + P(l.b)[1]) / 2);
+      for (let i = 0; i < 18; i++) {
+        const sp = new THREE.Mesh(new THREE.BoxGeometry(.07, .07, .07), i % 3 ? m : new THREE.MeshBasicMaterial({ color: 0xff7a1a }));
+        sp.visible = false; scene.add(sp);
+        SPARKS.push({ m: sp, t: e.t, p: at0.clone(), v: new THREE.Vector3((R() - .5) * 4, 2 + R() * 3, (R() - .5) * 4) });
+      }
+    }
     if (e.fix) { const l = findLink(...e.fix); l && l.fail.push(-e.t); }
     if (e.unlink) { const l = findLink(...e.unlink); l && (l.t1 = e.t); }
     if (e.route) for (let i = 0; i < e.route.length - 1; i++) { const l = findLink(e.route[i], e.route[i + 1]); l && l.route.push({ t: e.t, c: col(e.color || 'purple') }); }
@@ -307,22 +391,39 @@ window.setup = tl => {
   LINKS.forEach(l => [P(l.a), P(l.b)].forEach(p => { xs.push(p[0]); zs.push(p[1]); }));
   const pad = 1.6, minX = Math.min(...xs, -2) - pad, maxX = Math.max(...xs, 2) + pad, minZ = Math.min(...zs, -2) - pad, maxZ = Math.max(...zs, 2) + pad;
   const bw = maxX - minX, bd = maxZ - minZ;
-  const topC = tl.ground === 'grass' ? 0xd9f99d : 0xfbf7ef;
-  const base = new THREE.Mesh(new THREE.BoxGeometry(bw, .7, bd), [mat(0x6d3fd0), mat(0x6d3fd0), mat(topC), mat(0x4c2a99), mat(0x7c4ddf), mat(0x7c4ddf)]);
-  base.position.set((minX + maxX) / 2, -.35, (minZ + maxZ) / 2); base.receiveShadow = true; scene.add(base);
-  const grid = new THREE.GridHelper(1, Math.round(Math.max(bw, bd) * 2), 0xe7ddf7, 0xefe8fa);
-  grid.scale.set(bw, 1, bd); grid.position.set(base.position.x, .002, base.position.z); scene.add(grid);
-  sun.position.set(base.position.x + 6, 16, base.position.z + 8); sun.target.position.copy(base.position);
-  const r = Math.max(bw, bd) / 2 + 2;
-  Object.assign(sun.shadow.camera, { left: -r, right: r, top: r, bottom: -r }); sun.shadow.camera.updateProjectionMatrix();
+  if (PAPER) {
+    const bw = maxX - minX, bd = maxZ - minZ;
+    const base = new THREE.Mesh(new THREE.BoxGeometry(bw, .7, bd), [mat(0x6d3fd0), mat(0x6d3fd0), mat(0xfbf7ef), mat(0x4c2a99), mat(0x7c4ddf), mat(0x7c4ddf)]);
+    base.position.set((minX + maxX) / 2, -.35, (minZ + maxZ) / 2); base.receiveShadow = true; scene.add(base);
+    const grid = new THREE.GridHelper(1, Math.round(Math.max(bw, bd) * 2), 0xe7ddf7, 0xefe8fa);
+    grid.scale.set(bw, 1, bd); grid.position.set(base.position.x, .002, base.position.z); scene.add(grid);
+    scene.fog = null;
+  } else world(minX, maxX, minZ, maxZ);
+  sun.position.set((minX + maxX) / 2 + 7, 16, (minZ + maxZ) / 2 + 9); sun.target.position.set((minX + maxX) / 2, 0, (minZ + maxZ) / 2);
+  const r = Math.max(maxX - minX, maxZ - minZ) / 2 + 4;
+  Object.assign(sun.shadow.camera, { left: -r, right: r, top: r, bottom: -r, far: 60 }); sun.shadow.camera.updateProjectionMatrix();
 
-  // camera keyframes: frame what is visible, or focus on one object
-  const times = [...new Set([0, ...ev.filter(e => e.add || e.remove || e.camera || e.link || e.unlink).map(e => e.t)])].sort((a, b) => a - b);
+  // camera keyframes: each beat frames what it is about (the objects its actions name);
+  // a beat with big text, or with nothing named, shows the whole scene
+  const refsOf = e => [e.add ? e.id : null, e.move, e.on, e.tag && e.tag.on, ...[].concat(e.pulse || []), ...(e.link || []), ...(e.fail || []), ...(e.fix || []), ...(e.route || []), ...(e.beam || []), ...(e.path || [])]
+    .filter(x => typeof x === 'string' && OBJ[x]);
   const camEv = ev.filter(e => e.camera);
-  for (const t of times) {
+  const nb = (tl.beats || []).length;
+  const focusOf = b => {
+    const be = ev.filter(e => e.beat === b);
+    if (!be.length || be.some(e => e.big || e.end)) return null;
+    const ids = [...new Set(be.flatMap(refsOf))];
+    return ids.length ? ids : null;
+  };
+  const keys = [0, ...(tl.beats || []).map(b => b.start), ...ev.filter(e => e.add || e.remove || e.link || e.unlink || e.camera).map(e => e.t)];
+  for (const t of [...new Set(keys)].sort((a, b) => a - b)) {
     let focus = null;
     for (const e of camEv) if (e.t <= t) focus = e.camera === 'auto' ? null : e.camera;
-    CAMK.push({ t, v: framing(t + .4, focus) });
+    if (!focus && nb) {
+      let b = 0; while (b + 1 < nb && tl.beats[b + 1].start <= t + .01) b++;
+      focus = focusOf(b);
+    }
+    CAMK.push({ t, v: framing(t + .5, focus) });
   }
   CAMK.forEach((k, i) => k.from = i ? camAt(k.t, i - 1) : k.v);
   document.getElementById('title').innerHTML = tl.title || '';
@@ -332,29 +433,154 @@ window.setup = tl => {
   }
 };
 
-function framing(t, focus) {
-  if (focus) {
-    const o = OBJ[focus.on || focus];
-    return { x: o.pos[0], z: o.pos[1], span: focus.zoom || 5 };
+// where a cable meets an object: just under the roof of a house, on top of a box
+function attachY(id) {
+  const o = OBJ[id];
+  if (!o) return .35;
+  return Math.max(.35, Math.min(o.top * .6, 1.0));
+}
+
+// ---- the world: grass, a cutaway of the soil at the front edge, and props ---
+function world(minX, maxX, minZ, maxZ) {
+  const R = mulberry(hashStr(TL.id || 'reel'));
+  const X0 = minX - 32, X1 = maxX + 32, Z0 = minZ - 46, Z1 = maxZ, gw = X1 - X0, gd = Z1 - Z0, cx = (X0 + X1) / 2, cz = (Z0 + Z1) / 2;
+  const grass = at(mesh(new THREE.BoxGeometry(gw, .3, gd), mat(0x7cc75a), 0, false), cx, -.15, cz);
+  grass.castShadow = false;
+  at(mesh(new THREE.BoxGeometry(gw, .12, .3), mat(0x8fd46a), 0, false), cx, -.02, Z1 - .1);
+  for (const [y0, y1, c] of [[-.3, -1.15, 0xa0703f], [-1.15, -1.95, 0x82552f], [-1.95, -2.7, 0x8d9097]]) {
+    const m = at(mesh(new THREE.BoxGeometry(gw, y0 - y1, gd), mat(c, { roughness: .95 }), 0, false), cx, (y0 + y1) / 2, cz);
+    m.castShadow = false;
   }
+  // pebbles in the cut face
+  for (let i = 0; i < 70; i++) {
+    const x = minX - 12 + R() * (maxX - minX + 24), y = -.45 - R() * 2.1, r = .06 + R() * .12;
+    at(mesh(new THREE.DodecahedronGeometry(r, 0), mat(y < -1.95 ? 0x6b7280 : 0xc8a77a, { flatShading: true }), 0, false), x, y, Z1 + .01);
+  }
+  // keep props off the story: objects, cables, roads and paths
+  const blockers = [], segs = [];
+  Object.values(OBJ).forEach(o => blockers.push([o.pos[0], o.pos[1], o.r + .7]));
+  LINKS.forEach(l => segs.push([P(l.a), P(l.b)]));
+  Object.values(OBJ).forEach(o => o.moves.forEach(m => m.pts.slice(1).forEach((p, i) => segs.push([m.pts[i], p]))));
+  const dSeg = (x, z, [[ax, az], [bx, bz]]) => {
+    const dx = bx - ax, dz = bz - az, L = dx * dx + dz * dz || 1, u = clamp(((x - ax) * dx + (z - az) * dz) / L);
+    return Math.hypot(x - ax - u * dx, z - az - u * dz);
+  };
+  const free = (x, z, r) => blockers.every(([bx, bz, br]) => Math.hypot(x - bx, z - bz) > r + br) && segs.every(sg => dSeg(x, z, sg) > r + .55);
+  const inside = (x, z) => x > minX && x < maxX && z > minZ && z < maxZ;
+  const placed = [];
+  const put = (kind, x, z, r, o = {}) => {
+    if (!free(x, z, r) || placed.some(([px, pz, pr]) => Math.hypot(x - px, z - pz) < r + pr)) return false;
+    const { g } = KINDS[kind]({ seed: Math.floor(R() * 1e6), ...o });
+    g.position.set(x, 0, z); g.rotation.y = R() * Math.PI * 2; g.scale.setScalar(o.scale || 1);
+    g.traverse(m => { if (m.isMesh) { m.castShadow = m.castShadow && inside(x, z); m.receiveShadow = true; } });
+    scene.add(g); placed.push([x, z, r]); return true;
+  };
+  // inside the story area only low things, so nothing hides the action
+  const area = (maxX - minX) * (maxZ - minZ);
+  for (let i = 0; i < area * .09; i++) {
+    const x = minX + R() * (maxX - minX), z = minZ + R() * (maxZ - minZ), k = R();
+    put(k < .55 ? 'flowers' : k < .85 ? 'bush' : 'rock', x, z, .4, { scale: .8 + R() * .4 });
+  }
+  // around it: trees, pines and a few neighbours' houses, thinning out with distance
+  const roofs = [0xe0703a, 0xc2410c, 0xb45309, 0xdc2626, 0x9a3412];
+  for (let i = 0; i < 260; i++) {
+    const x = minX - 14 + R() * (maxX - minX + 28), z = minZ - 30 + R() * (maxZ - minZ + 30);
+    if (inside(x, z) || z > maxZ - .6) continue;
+    const k = R();
+    if (k < .12) put('house', x, z, 1.1, { color: roofs[Math.floor(R() * roofs.length)], scale: .9 + R() * .3 });
+    else if (k < .5) put('tree', x, z, .7, { scale: .9 + R() * .7 });
+    else if (k < .75) put('pine', x, z, .6, { scale: .9 + R() * .8 });
+    else if (k < .9) put('bush', x, z, .45, { scale: 1 + R() * .5 });
+    else put('flowers', x, z, .4);
+  }
+  // grass tufts everywhere (one instanced mesh)
+  const tuft = new THREE.ConeGeometry(.045, .22, 4); tuft.translate(0, .11, 0);
+  const tufts = new THREE.InstancedMesh(tuft, mat(0x5fae45, { flatShading: true }), 900);
+  const M = new THREE.Matrix4(); let n = 0;
+  for (let i = 0; i < 4000 && n < 900; i++) {
+    const x = minX - 10 + R() * (maxX - minX + 20), z = minZ - 14 + R() * (maxZ - minZ + 14);
+    if (!free(x, z, .05)) continue;
+    M.makeRotationY(R() * 3).setPosition(x, 0, z); tufts.setMatrixAt(n++, M);
+  }
+  tufts.count = n; scene.add(tufts);
+  // clouds drifting in the sky behind
+  for (let i = 0; i < 8; i++) {
+    const { g } = KINDS.cloud({});
+    g.scale.setScalar(1.6 + R() * 1.6);
+    g.userData.x0 = minX - 20 + R() * (maxX - minX + 40);
+    g.position.set(g.userData.x0, 5 + R() * 6, minZ - 14 - R() * 26);
+    g.traverse(m => { if (m.isMesh) m.castShadow = false; });
+    scene.add(g); CLOUDS.push(g);
+  }
+}
+
+// ---- camera: low and cinematic; each beat frames the objects it is about --
+const EL = WIDE ? .36 : .44, FOVR = FOV * Math.PI / 180;
+const BAND = WIDE ? [-.55, .72] : [-.42, .6];   // free screen band (NDC y) between the top text and the captions
+const cam2 = new THREE.PerspectiveCamera(FOV, W / H, .1, 400), V = new THREE.Vector3();
+function pose(x, z, dist, yaw = 0, el = EL) {
+  const p = new THREE.Vector3(x + Math.sin(yaw) * dist * Math.cos(el), dist * Math.sin(el), z + Math.cos(yaw) * dist * Math.cos(el));
+  return { p, target: new THREE.Vector3(x, .6, z) };
+}
+function project(pts, x, z, dist, el) {
+  const { p, target } = pose(x, z, dist, 0, el);
+  cam2.position.copy(p); cam2.lookAt(target); cam2.updateMatrixWorld();
+  let x0 = 9, x1 = -9, y0 = 9, y1 = -9;
+  for (const q of pts) { V.set(q[0], q[1], q[2]).project(cam2); x0 = Math.min(x0, V.x); x1 = Math.max(x1, V.x); y0 = Math.min(y0, V.y); y1 = Math.max(y1, V.y); }
+  return { x0, x1, y0, y1 };
+}
+// the closest camera that keeps every point inside the free band, centred in it
+function fit(pts, minDist, el = EL) {
+  let x = 0, z = 0;
+  pts.forEach(q => { x += q[0]; z += q[2]; }); x /= pts.length; z /= pts.length;
+  let dist = minDist;
+  for (let it = 0; it < 4; it++) {
+    let lo = minDist, hi = 80;
+    for (let k = 0; k < 18; k++) {
+      const mid = (lo + hi) / 2, b = project(pts, x, z, mid, el);
+      if (b.x0 < -.86 || b.x1 > .86 || b.y1 - b.y0 > BAND[1] - BAND[0]) lo = mid; else hi = mid;
+    }
+    dist = hi;
+    const b = project(pts, x, z, dist, el);
+    const wy = (BAND[0] + BAND[1]) / 2 - (b.y0 + b.y1) / 2, wx = -(b.x0 + b.x1) / 2;
+    // move the aim so the projected box sits in the middle of the band
+    const halfH = dist * Math.tan(FOVR / 2);
+    z += wy * halfH / Math.sin(el + .15);
+    x -= wx * halfH * (W / H);
+  }
+  return { x, z, dist, el };
+}
+function pointsOf(o, t) {
+  const tg = TAGS.find(g => g.on === o.id && t >= g.t0 && t < g.t1);
+  const hw = tg ? Math.max(o.r, .4 * tg.s.userData.aspect + .3) : o.r, top = o.top + (tg ? 1.35 : .2) + (o.floats ? 1.2 : 0);
+  return [[o.pos[0] - hw, 0, o.pos[1] - o.r], [o.pos[0] + hw, 0, o.pos[1] + o.r], [o.pos[0] - hw, top, o.pos[1]], [o.pos[0] + hw, top, o.pos[1]]];
+}
+function framing(t, focus) {
+  if (focus && !Array.isArray(focus)) {
+    const o = OBJ[focus.on || focus];
+    return fit(pointsOf(o, t), (focus.zoom || 5) * 1.2);
+  }
+  const vis = Object.values(OBJ).filter(o => t >= o.t0 && t < o.t1);
+  let objs = focus ? vis.filter(o => focus.includes(o.id)) : vis;
+  if (!objs.length) objs = vis;
   const pts = [];
-  Object.values(OBJ).filter(o => t >= o.t0 && t < o.t1).forEach(o => { pts.push([o.pos[0] - o.r, o.pos[1] - o.r], [o.pos[0] + o.r, o.pos[1] + o.r]); o.moves.filter(m => m.t0 <= t + 3).forEach(m => pts.push(...m.pts)); });
-  LINKS.filter(l => l.t0 <= t && t < l.t1).forEach(l => pts.push(P(l.a), P(l.b)));
-  // tags are wider than their object: keep the whole bubble in frame
-  TAGS.filter(g => t >= g.t0 && t < g.t1 && OBJ[g.on] && t < OBJ[g.on].t1).forEach(g => {
-    const o = OBJ[g.on], hw = .4 * g.s.userData.aspect + .8;
-    pts.push([o.pos[0] - hw, o.pos[1]], [o.pos[0] + hw, o.pos[1]]);
-  });
-  if (!pts.length) return { x: 0, z: 0, span: 6 };
-  const xs = pts.map(p => p[0]), zs = pts.map(p => p[1]);
-  const w = Math.max(...xs) - Math.min(...xs) + 2.2, d = Math.max(...zs) - Math.min(...zs) + 2.2;
-  // in a vertical frame only the band between the card and the captions is free
-  const span = Math.max(d * (WIDE ? 1.15 : 1.5), w / (W / H) * (WIDE ? .62 : .66));
-  return { x: (Math.max(...xs) + Math.min(...xs)) / 2, z: (Math.max(...zs) + Math.min(...zs)) / 2, span: Math.max(span, 4.5) };
+  objs.forEach(o => { pts.push(...pointsOf(o, t)); o.moves.filter(m => m.t0 <= t + 3 && m.t1 >= t).forEach(m => m.pts.forEach(p => pts.push([p[0], 0, p[1]]))); });
+  if (!focus) LINKS.filter(l => l.t0 <= t && t < l.t1).forEach(l => [P(l.a), P(l.b)].forEach(p => pts.push([p[0], 0, p[1]])));
+  if (!pts.length) return { x: 0, z: 0, dist: 12, el: EL };
+  // a close-up of something at the back looks over whatever stands in front of it
+  let el = EL;
+  if (focus) {
+    const fx = objs.map(o => o.pos[0]), fz = objs.map(o => o.pos[1]);
+    const blocked = vis.some(o => !focus.includes(o.id) && o.pos[1] > Math.max(...fz) + .5 && o.pos[1] < Math.max(...fz) + 9
+      && o.pos[0] > Math.min(...fx) - 2 && o.pos[0] < Math.max(...fx) + 2);
+    if (blocked) el = WIDE ? .68 : .8;
+  }
+  return fit(pts, focus ? 10.5 : 10, el);
 }
 function camAt(t, i = CAMK.findLastIndex(k => k.t <= t)) {
-  const k = CAMK[Math.max(i, 0)], f = ease(win(t, k.t, 1.3));
-  return { x: k.from.x + (k.v.x - k.from.x) * f, z: k.from.z + (k.v.z - k.from.z) * f, span: k.from.span + (k.v.span - k.from.span) * f };
+  const k = CAMK[Math.max(i, 0)], f = ease(win(t, k.t, 1.4));
+  const L = (a, b) => a + (b - a) * f;
+  return { x: L(k.from.x, k.v.x), z: L(k.from.z, k.v.z), dist: L(k.from.dist, k.v.dist), el: L(k.from.el ?? EL, k.v.el ?? EL) };
 }
 
 function posAt(o, t) {
@@ -374,14 +600,34 @@ function posAt(o, t) {
 
 let cardKey = '';
 window.renderAt = t => {
-  const c = camAt(t), sway = Math.sin(t * .22) * .12, el = WIDE ? .78 : .92;
-  const dist = c.span / 2 / Math.tan(FOV * Math.PI / 360) * 1.05 + 2;
-  camera.position.set(c.x + Math.sin(sway) * dist * Math.cos(el), dist * Math.sin(el), c.z + Math.cos(sway) * dist * Math.cos(el));
-  camera.lookAt(c.x, 0, c.z + (WIDE ? 0 : c.span * .01));
+  const c = camAt(t), sway = Math.sin(t * .22) * .1;
+  const cp = pose(c.x, c.z, c.dist * (1 + .015 * Math.sin(t * .35)), sway, c.el);
+  camera.position.copy(cp.p); camera.lookAt(cp.target);
+  if (scene.fog) { scene.fog.near = c.dist + 12; scene.fog.far = c.dist + 70; }
+  for (const cl of CLOUDS) cl.position.x = cl.userData.x0 + t * .25;
 
   for (const o of Object.values(OBJ)) {
-    const s = back(win(t, o.t0, .4)) * (1 - ease(win(t, o.t1, .35)));
+    // objects drop in, bounce, squash a little on landing, and puff dust
+    const gone = 1 - ease(win(t, o.t1, .35));
+    const s = (PAPER || o.floats ? back(win(t, o.t0, .4)) : ease(win(t, o.t0, .12))) * gone;
     o.g.visible = s > .001; o.g.scale.setScalar(Math.max(s * o.k, .0001));
+    let drop = 0;
+    if (!PAPER && !o.floats) {
+      drop = (1 - bounce(win(t, o.t0, .55))) * 2.6;
+      const sq = win(t, o.t0 + .38, .3), q = Math.sin(sq * Math.PI) * (1 - sq) * .35;
+      o.g.scale.y = Math.max(s * o.k * (1 - q), .0001);
+      if (o.dust) {
+        const dk = win(t, o.t0 + .38, .7), on = dk > 0 && dk < 1;
+        o.dust.forEach(d => {
+          d.visible = on;
+          if (!on) return;
+          const rr = o.r * .8 + dk * (.6 + o.r * .5);
+          d.position.set(o.pos[0] + Math.cos(d.userData.a) * rr, .08 + dk * .25, o.pos[1] + Math.sin(d.userData.a) * rr);
+          d.scale.setScalar(.6 + dk * 1.4 * o.k);
+          d.material.opacity = (1 - dk) * .85;
+        });
+      }
+    }
     const [x, z] = posAt(o, t);
     let glow = 0;
     for (const p of o.pulses) if (t >= p.t && t < p.t + 1) { glow = 1 - (t - p.t); o.ring.material.color.setHex(p.c); }
@@ -391,7 +637,7 @@ window.renderAt = t => {
     let lift = 1.15;
     if (o.floats) for (const q of Object.values(OBJ)) if (!q.floats && !q.vehicle && t >= q.t0 && t < q.t1 && Math.hypot(q.pos[0] - x, q.pos[1] - z) < .9) lift = Math.max(lift, q.top + .55);
     o.lift = lift;
-    o.g.position.set(x, (o.floats ? lift + Math.sin(t * 3) * .1 : 0) + hop, z);
+    o.g.position.set(x, (o.floats ? lift + Math.sin(t * 3) * .1 : 0) + hop + drop, z);
     if (o.vehicle && o.heading !== undefined) o.g.rotation.y = o.heading;
     const spin = o.g.getObjectByName('spin'); if (spin) spin.rotation.set(t * .6, t * .9, 0);
     o.ring.visible = !o.floats;
@@ -408,11 +654,28 @@ window.renderAt = t => {
       l.strip.children[0].material.color.setHex(broken > 0 ? COLORS.red : rt?.c ?? (l.strip.children.length > 1 ? 0x475569 : 0x60a5fa));
       continue;
     }
+    if (l.tubes) {
+      for (const tb of l.tubes) {
+        const n = Math.floor(tb.userData.n * grow * (1 - .4 * broken) / 6) * 6;
+        tb.geometry.setDrawRange(0, n); tb.visible = n > 0;
+        tb.material.color.setHex(broken > 0 ? COLORS.red : rt?.c ?? 0x3b3f4a);
+        tb.material.emissive.setHex(broken > 0 ? COLORS.red : rt?.c ?? 0);
+        tb.material.emissiveIntensity = rt?.c || broken > 0 ? .45 : 0;
+      }
+      continue;
+    }
     for (const h of l.halves) {
       h.scale.set(rt?.c ? 1.6 : 1, rt?.c ? 1.6 : 1, Math.max(l.len / 2 * grow * (1 - .35 * broken), .0001));
       h.visible = grow > 0;
       h.material.color.setHex(broken > 0 ? COLORS.red : rt?.c ?? 0xc4b5fd);
     }
+  }
+  for (const sp of SPARKS) {
+    const k = t - sp.t;
+    sp.m.visible = k > 0 && k < .9;
+    if (!sp.m.visible) continue;
+    sp.m.position.set(sp.p.x + sp.v.x * k, Math.max(.03, sp.p.y + sp.v.y * k - 4.9 * k * k), sp.p.z + sp.v.z * k);
+    sp.m.scale.setScalar(1 - k);
   }
   for (const bm of BEAMS) {
     const A = OBJ[bm.a], B = OBJ[bm.b];

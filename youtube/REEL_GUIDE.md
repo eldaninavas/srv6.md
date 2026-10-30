@@ -46,6 +46,23 @@ until the reveal. `youtube/reels/l01.yaml` is the reference.
 - Use `{unlink: [a, b]}` to take a messy solution away before the better
   one replaces it, and `end_card` for a subtitle that fits the story.
 
+## Look and sound (automatic)
+
+- The default look is a little world: sky, grass, a cutaway of the soil at
+  the front, trees, bushes, flowers, neighbours' houses and drifting clouds,
+  all placed around the story so nothing covers it. `ground: paper` keeps
+  the old flat purple diorama.
+- Objects drop in and bounce with a puff of dust; cables hang between their
+  ends; a broken cable throws sparks.
+- The camera follows each beat: it frames the objects that beat's actions
+  name, and the whole scene on beats with big text or nothing named.
+- Captions show two words at a time, timed to the voice with Whisper
+  (`tools/align.py`); `caption_words: 3` for longer lines.
+- Sound effects come from the actions (pop, string twang, snap, ding,
+  engine, whoosh, chime) and quiet music plays under the voice.
+  `sfx: false`, `music: none`, `sfx_volume`, `music_volume` tune them.
+- Check the voice with `~/.cache/tts-venv/bin/python youtube/tools/voicecheck.py <yaml>`.
+
 ## Format
 
 ```yaml

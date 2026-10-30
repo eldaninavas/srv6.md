@@ -87,19 +87,53 @@ def narrate(spec, texts, cache):
     return [load_human(p) for p in keyed]
 
 
-def add_music(spec, narration, total, out):
-    """Mix quiet synthesized music under the voice; it ducks a little more while the voice speaks."""
+def mix_audio(spec, narration, events, total, out):
+    """Voice on top; quiet synthesized music that ducks under the voice; sound effects from the events."""
     import zlib
     import music
-    bed = os.path.join(out, "music.wav")
-    sf.write(bed, music.render(total, zlib.crc32(spec["id"].encode())).T, music.SR)
+    import sfx
+    seed = zlib.crc32(spec["id"].encode())
+    ins, graph, mixes = ["-i", narration], ["[0:a]aresample=48000,pan=stereo|c0=c0|c1=c0,asplit=2[v][sc]"], ["[v]"]
+    if spec.get("music", "cute") != "none":
+        bed = os.path.join(out, "music.wav")
+        sf.write(bed, music.render(total, seed).T, music.SR)
+        ins += ["-i", bed]
+        graph.append(f"[{len(ins) // 2 - 1}:a]volume={spec.get('music_volume', 0.13)}[m];"
+                     "[m][sc]sidechaincompress=threshold=0.015:ratio=4:attack=60:release=700[md]")
+        mixes.append("[md]")
+    else:
+        graph[0] = graph[0].replace(",asplit=2[v][sc]", "[v]")
+    if spec.get("sfx", True):
+        fx = os.path.join(out, "sfx.wav")
+        sf.write(fx, sfx.track(events, total, seed), sfx.SR)
+        ins += ["-i", fx]
+        graph.append(f"[{len(ins) // 2 - 1}:a]volume={spec.get('sfx_volume', 0.75)},pan=stereo|c0=c0|c1=c0[fx]")
+        mixes.append("[fx]")
+    graph.append("".join(mixes) + f"amix=inputs={len(mixes)}:duration=first:normalize=0")
     mix = os.path.join(out, "mix.wav")
-    vol = spec.get("music_volume", 0.13)
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", narration, "-i", bed, "-filter_complex",
-                    "[0:a]aresample=48000,pan=stereo|c0=c0|c1=c0,asplit=2[v][sc];"
-                    f"[1:a]volume={vol}[m];[m][sc]sidechaincompress=threshold=0.015:ratio=4:attack=60:release=700[md];"
-                    "[v][md]amix=inputs=2:duration=first:normalize=0", mix], check=True)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex", ";".join(graph), mix], check=True)
     return mix
+
+
+def align(texts, clips, cache):
+    """Heard word times per clip (see align.py), cached by audio; None where Whisper is not installed."""
+    import hashlib
+    if not os.path.exists(TTS_PY):
+        return [None] * len(clips)
+    os.makedirs(cache, exist_ok=True)
+    items = []
+    for text, clip in zip(texts, clips):
+        k = hashlib.sha1(clip.tobytes() + text.encode()).hexdigest()[:16]
+        items.append({"wav": os.path.join(cache, k + ".wav"), "text": text, "out": os.path.join(cache, k + ".json")})
+    todo = [it for it in items if not os.path.exists(it["out"])]
+    if todo:
+        for it in todo:
+            sf.write(it["wav"], clips[items.index(it)], SR)
+        job = os.path.join(cache, "job.json")
+        with open(job, "w") as f:
+            json.dump({"items": todo}, f)
+        subprocess.run([TTS_PY, os.path.join(HERE, "align.py"), job], check=True)
+    return [json.load(open(it["out"])) for it in items]
 
 
 def pron(text):
@@ -116,8 +150,8 @@ def load_human(path):
     return data
 
 
-def chunks(text, t0, t1, size=3):
-    """Spread the caption words over [t0, t1] by length; group them in short lines."""
+def chunks(text, t0, t1, size=2, times=None):
+    """Time the caption words (heard times when aligned, else spread by length); group them in short lines."""
     words = text.split()
     weights = [len(re.sub(r"\W", "", w)) + 2 for w in words]
     total, t, timed = sum(weights), t0, []
@@ -125,10 +159,18 @@ def chunks(text, t0, t1, size=3):
         d = (t1 - t0) * wt / total
         timed.append({"w": w, "t0": round(t, 3), "t1": round(t + d, 3)})
         t += d
+    if times and len(times) == len(words):
+        for w, tt in zip(timed, times):
+            if tt:
+                w["t0"] = round(t0 + tt[0], 3)
+        for a, b in zip(timed, timed[1:]):
+            b["t0"] = max(b["t0"], a["t0"] + .05)
+            a["t1"] = b["t0"]
+        timed[-1]["t1"] = max(timed[-1]["t0"] + .3, t1)
     out, cur = [], []
     for w in timed:
         cur.append(w)
-        if len(cur) == size or sum(len(x["w"]) for x in cur) >= 11 or re.search(r"[.,:;?!]$", w["w"]):
+        if len(cur) == size or sum(len(x["w"]) for x in cur) >= 12 or re.search(r"[.,:;?!]$", w["w"]):
             out.append(cur)
             cur = []
     if cur:
@@ -145,6 +187,7 @@ def compile_actions(beat_no, actions, start, dur, words, known):
     events = []
     for a in actions or []:
         e = dict(a)
+        e["beat"] = beat_no - 1
         # YAML 1.1 reads a bare `on:` key as the boolean True
         for d in [e] + [v for v in e.values() if isinstance(v, dict)]:
             if True in d:
@@ -196,11 +239,13 @@ def main():
         synth = narrate(spec, [b["say"] for b, r in zip(spec["beats"], recs) if not r], os.path.join(out, "tts"))
         clips = [load_human(r) if r else synth.pop(0) for r in recs]
     gap = spec.get("gap", GAP)
+    texts = [b.get("text", b["say"]) for b in spec["beats"]]
+    timing = [None] * len(clips) if args.check else align(texts, clips, os.path.join(out, "align"))
     t = LEAD
     for i, (b, clip) in enumerate(zip(spec["beats"], clips), 1):
         dur = len(clip) / SR
         beats.append({"start": round(t, 3), "dur": round(dur + gap, 3)})
-        beat_caps = chunks(b.get("text", b["say"]), t, t + dur)
+        beat_caps = chunks(texts[i - 1], t, t + dur, spec.get("caption_words", 2), timing[i - 1])
         caps += beat_caps
         events += compile_actions(i, b.get("do"), t, dur, [w for c in beat_caps for w in c["words"]], known)
         audio += [clip, np.zeros(int(gap * SR), "float32")]
@@ -223,11 +268,10 @@ def main():
 
     wav = os.path.join(out, "narration.wav")
     sf.write(wav, np.concatenate(audio), SR)
-    if spec.get("music", "cute") != "none":
-        wav = add_music(spec, wav, total, out)
+    wav = mix_audio(spec, wav, events, total, out)
     tl = {"events": events, "chunks": caps, "total": round(total, 3), "title": spec.get("title", ""),
           "titleUntil": beats[0]["start"] + beats[0]["dur"] - gap, "endAt": end_at, "endCard": spec.get("end_card"),
-          "ground": spec.get("ground"), "format": spec.get("format", "vertical")}
+          "ground": spec.get("ground"), "beats": beats, "id": rid, "format": spec.get("format", "vertical")}
     tl_path = os.path.join(out, "timeline.json")
     with open(tl_path, "w") as f:
         json.dump(tl, f)
