@@ -9,7 +9,7 @@ caption: |
 
   #Networking #Internet #SubmarineCables #Telecom #NetworkEngineering #Fiber
 beats:
-  - say: "Imagine your cousin lives on the other side of the ocean, and you want to tell them something. Right now."
+  - say: "Imagine your cousin moved to the other side of the ocean, and you want to tell them something. Right now."
     do:
       - {at: 0, add: house, id: you, pos: [0, 6.4], color: purple}
       - {at: 0, tag: {on: you, text: "You", color: purple}}

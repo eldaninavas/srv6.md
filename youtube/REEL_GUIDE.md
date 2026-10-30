@@ -19,6 +19,9 @@ TikTok) told as a story in a 3D diorama. Each one is a YAML file in
 - **Name the technology only after the viewer already understands the
   idea**, then tie it back to the story in one sentence.
 - End with the payoff and "Learn it for free at srv6 dot md".
+- **Avoid words the voice can read two ways** (it guesses wrong): lives,
+  live, read, close, lead, record, minute, wind, tear, object, present,
+  content. Rephrase: "your cousin moved to…", not "your cousin lives…".
 - Friendly and warm, short sentences, contractions, a few exclamations.
   The facts must still be exactly what the lesson's srv6.md page says.
 
