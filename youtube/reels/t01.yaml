@@ -1,0 +1,58 @@
+# Telecom story: why your call doesn't drop while you drive (handover).
+id: t01
+engine: chatterbox
+exaggeration: 0.75
+speed: 1.1
+caption: |
+  You're on a call, driving down the highway... why doesn't it drop? 📱🚗
+
+  Learn how networks really work → link in bio (srv6.md)
+
+  #Telecom #5G #Networking #CellTowers #Handover #NetworkEngineering
+beats:
+  - say: "You're on a phone call, and you jump in the car."
+    do:
+      - {at: 0, link: [[0, 6.8], [0, -6.4]], style: road, width: 1.2}
+      - {at: 0, add: car, id: you, pos: [0, 6.2], color: purple, scale: 1.7}
+      - {at: "phone", add: tower, id: tw1, pos: [2.3, 4.6]}
+      - {at: "call", beam: [tw1, you]}
+      - {at: "call", tag: {on: you, text: "On a call", color: purple}}
+
+  - say: "Your phone talks to that tower. But you're driving away from it!"
+    do:
+      - {at: "tower", pulse: tw1, color: yellow}
+      - {at: "driving", move: you, path: [[0, 6.2], [0, 2.6]], dur: 3}
+
+  - say: "The signal gets weaker, and weaker."
+    do:
+      - {at: "gets", unbeam: [tw1, you]}
+      - {at: "weaker", beam: [tw1, you], weak: true}
+      - {at: "weaker", tag: {on: you, text: "Weak signal", color: orange}}
+
+  - say: "But before it drops, your phone is already listening to the next tower."
+    do:
+      - {at: "before", move: you, path: [[0, 2.6], [0, 0.6]], dur: 3}
+      - {at: "already", add: tower, id: tw2, pos: [-2.3, -0.2]}
+      - {at: "listening", beam: [tw2, you], weak: true, color: green}
+      - {at: "tower", pulse: tw2, color: green}
+
+  - say: "So the network moves your call over. A handover! You don't even notice."
+    do:
+      - {at: "moves", unbeam: [tw1, you]}
+      - {at: "moves", unbeam: [tw2, you]}
+      - {at: "over", beam: [tw2, you], color: green}
+      - {at: "handover", big: "Handover", sub: "your call jumps to the next tower", dur: 2.2}
+      - {at: "notice", tag: {on: you, text: "Still talking!", color: green}}
+
+  - say: "And it keeps happening, tower after tower, the whole trip."
+    do:
+      - {at: "keeps", move: you, path: [[0, 0.6], [0, -5.6]], dur: 3.2}
+      - {at: "tower", add: tower, id: tw3, pos: [2.3, -4.6]}
+      - {at: "after", unbeam: [tw2, you]}
+      - {at: "after", beam: [tw3, you]}
+      - {at: "after", pulse: tw3, color: yellow}
+
+  - say: "That's how a call survives a road trip. Learn how networks work at srv6 dot md."
+    text: "That's how a call survives a road trip. Learn how networks work at srv6.md"
+    do:
+      - {at: "Learn", end: true}

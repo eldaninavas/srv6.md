@@ -5,8 +5,9 @@
 # jammed) and a longer ring around the east side. Every office on its own
 # picks the shortest way; with SRv6 you write the east side on the package.
 id: s01
-voice: af_bella
-speed: 1.0
+engine: chatterbox
+exaggeration: 0.75
+speed: 1.1
 caption: |
   How does a package find its way across the city... and what if YOU could choose the route? That's SRv6. ⚡
 
@@ -14,7 +15,7 @@ caption: |
 
   #SRv6 #SegmentRouting #IPv6 #NetworkEngineering #CCIE #Networking
 beats:
-  - say: "Imagine you have to send a package to a friend, all the way across the city."
+  - say: "Imagine sending a package to a friend, across the city."
     do:
       - {at: 0, add: house, id: you, pos: [0, 6.6], color: purple}
       - {at: 0, tag: {on: you, text: "You", color: purple}}
@@ -22,80 +23,74 @@ beats:
       - {at: "friend", add: house, id: friend, pos: [0, -6.6], color: green}
       - {at: "friend", tag: {on: friend, text: "Your friend", color: green}}
 
-  - say: "So you drop it at the post office, and every office along the way decides where it goes next."
+  - say: "Every post office on the way picks the shortest road."
     do:
-      - {at: "post", add: router, id: o1, pos: [0, 4]}
-      - {at: "post", link: [you, o1]}
-      - {at: "every", add: router, id: mid, pos: [0, 0.2]}
-      - {at: "every", add: router, id: o2, pos: [0, -3.6]}
-      - {at: "every", add: router, id: e1, pos: [3.1, 2.2]}
-      - {at: "every", add: router, id: e2, pos: [3.1, -1.8]}
-      - {at: "every", add: router, id: e3, pos: [2.4, -5.2]}
-      - {at: "along", link: [o1, mid]}
-      - {at: "along", link: [mid, o2]}
-      - {at: "along", link: [o2, friend]}
-      - {at: "along", link: [o1, e1]}
-      - {at: "along", link: [e1, e2]}
-      - {at: "along", link: [e2, o2]}
-      - {at: "along", link: [e2, e3]}
-      - {at: "along", link: [e3, friend]}
-      - {at: "drop", move: pkt, path: [you, o1], dur: 1.2}
-      - {at: "decides", tag: {on: o1, text: "Where to?", color: orange}}
-
-  - say: "It works! But you get zero say in the route. Every office picks the shortest way, straight through downtown, right into the traffic."
-    do:
-      - {at: "works", untag: o1}
+      - {at: "Every", add: router, id: o1, pos: [0, 4]}
+      - {at: "Every", link: [you, o1]}
+      - {at: "post", add: router, id: mid, pos: [0, 0.2]}
+      - {at: "post", add: router, id: o2, pos: [0, -3.6]}
+      - {at: "post", add: router, id: e1, pos: [3.1, 2.2]}
+      - {at: "post", add: router, id: e2, pos: [3.1, -1.8]}
+      - {at: "post", add: router, id: e3, pos: [2.4, -5.2]}
+      - {at: "way", link: [o1, mid]}
+      - {at: "way", link: [mid, o2]}
+      - {at: "way", link: [o2, friend]}
+      - {at: "way", link: [o1, e1]}
+      - {at: "way", link: [e1, e2]}
+      - {at: "way", link: [e2, o2]}
+      - {at: "way", link: [e2, e3]}
+      - {at: "way", link: [e3, friend]}
+      - {at: "picks", move: pkt, path: [you, o1], dur: 1}
       - {at: "shortest", route: [o1, mid, o2], color: orange}
+
+  - say: "Straight through downtown. Right into traffic!"
+    do:
+      - {at: "Straight", move: pkt, path: [o1, mid], dur: 1.2}
       - {at: "downtown", add: building, id: b1, pos: [-1.7, 1.2], height: 1.6}
       - {at: "downtown", add: building, id: b2, pos: [-1.8, -0.9], height: 1.2}
       - {at: "downtown", add: building, id: b3, pos: [1.4, -0.5], height: 1.4, color: 0xfde68a}
-      - {at: "downtown", move: pkt, path: [o1, mid], dur: 1.4}
       - {at: "traffic", add: car, id: c1, pos: [0.7, 1.6], color: blue}
       - {at: "traffic", add: car, id: c2, pos: [-0.7, -1.2], color: yellow}
       - {at: "traffic", add: car, id: c3, pos: [0.6, -1.9], color: pink}
       - {at: "traffic", pulse: mid, color: red}
       - {at: "traffic", tag: {on: mid, text: "Traffic jam!", color: red}}
 
-  - say: "So what if you could write the whole route on the package yourself? First, around the east side. Then, to your friend."
+  - say: "So what if you wrote the route on the package yourself?"
     do:
       - {at: 0, remove: pkt}
       - {at: 0, unroute: true}
       - {at: "what", add: packet, id: pkt2, pos: [0, 6.6]}
-      - {at: "write", card: {title: "Your route, written on the package", chips: [["East side", active], ["Your friend", next]]}}
-      - {at: "east", tag: {on: e1, text: "Stop 1", color: purple}}
-      - {at: "east", pulse: e1}
-      - {at: "east", route: [you, o1, e1, e2, o2, friend]}
-      - {at: "friend", pulse: friend, color: green}
+      - {at: "route", route: [you, o1, e1, e2, o2, friend]}
+      - {at: "route", card: {title: "Your route, on the package", chips: [["East side", active], ["Your friend", next]]}}
 
-  - say: "That's SRv6! Each stop on your list is an IPv6 address... and an instruction."
+  - say: "That's SRv6! Your packet carries where it goes now, the whole route, and your data."
     do:
-      - {at: "SRv6", big: "SRv6", sub: "Segment Routing over IPv6", dur: 2.2}
-      - {at: "SRv6", move: pkt2, path: [you, o1, e1], dur: 2.6}
-      - {at: "instruction", pulse: e1}
-      - {at: "instruction", card: {title: "Your route, written on the package", chips: [["East side", done], ["Your friend", active]]}}
+      - {at: "SRv6", packet: {title: "Your SRv6 packet", rows: [["Going to now", "East side", purple], ["The whole route", "East side → Your friend", dark], ["Inside", "Your data", orange]]}, dur: 5.2}
 
-  - say: "And the offices in between? They don't even look at your note. They just forward it, like always."
+  - say: "Offices in between just forward it."
     do:
-      - {at: "between", move: pkt2, path: [e1, e2], dur: 1.6}
+      - {at: "Offices", move: pkt2, path: [you, o1, e1, e2], dur: 2.6}
+      - {at: "between", pulse: e1}
+      - {at: "between", card: {title: "Your route, on the package", chips: [["East side", done], ["Your friend", active]]}}
       - {at: "forward", tag: {on: e2, text: "Just forwards", color: dark}}
 
-  - say: "But what if a road suddenly closes?"
+  - say: "A road closes? The next office adds a detour."
     do:
       - {at: "closes", untag: e2}
       - {at: "closes", fail: [e2, o2]}
       - {at: "closes", pulse: e2, color: red}
-
-  - say: "No problem. The office right next to it adds one detour to your note, and your package still arrives. In milliseconds."
-    do:
-      - {at: "detour", card: {title: "Your route, written on the package", chips: [["East side", done], ["Detour", repair], ["Your friend", next]]}}
+      - {at: "detour", card: {title: "Your route, on the package", chips: [["East side", done], ["Detour", repair], ["Your friend", next]]}}
       - {at: "detour", route: [e2, e3, friend], color: red}
-      - {at: "package", move: pkt2, path: [e2, e3, friend], dur: 2}
+
+  - say: "Delivered! In milliseconds."
+    do:
+      - {at: "Delivered", move: pkt2, path: [e2, e3, friend], dur: 1.4}
       - {at: "milliseconds", pulse: friend, color: green}
       - {at: "milliseconds", tag: {on: friend, text: "Delivered!", color: green}}
-      - {at: "milliseconds", card: {title: "Your route, written on the package", chips: [["East side", done], ["Detour", done], ["Your friend", done]]}}
+      - {at: "milliseconds", card: {title: "Your route, on the package", chips: [["East side", done], ["Detour", done], ["Your friend", done]]}}
 
-  - say: "One address can carry the whole route. That's SRv6. Learn it for free, at srv6 dot md."
-    text: "One address can carry the whole route. That's SRv6. Learn it for free at srv6.md"
+  - say: "Learn SRv6 for free, at srv6 dot md."
+    text: "Learn SRv6 for free at srv6.md"
     do:
       - {at: "Learn", end: true}
       - {at: "Learn", card: null}

@@ -1,6 +1,6 @@
 # Writing an SRv6.md story reel
 
-A reel is a 45–60 second vertical video (Instagram Reels, YouTube Shorts,
+A reel is a 30–40 second vertical video (Instagram Reels, YouTube Shorts,
 TikTok) told as a story in a 3D diorama. Each one is a YAML file in
 `youtube/reels/<id>.yaml`, rendered by `youtube/tools/reel3d.py`.
 `youtube/reels/s01.yaml` is the reference: read it before writing a new one.
@@ -22,6 +22,8 @@ TikTok) told as a story in a 3D diorama. Each one is a YAML file in
 - **Avoid words the voice can read two ways** (it guesses wrong): lives,
   live, read, close, lead, record, minute, wind, tear, object, present,
   content. Rephrase: "your cousin moved to…", not "your cousin lives…".
+- **Short.** 30–40 seconds in total, 6–8 beats, 5–12 words per beat.
+  Every sentence earns its place.
 - Friendly and warm, short sentences, contractions, a few exclamations.
   The facts must still be exactly what the lesson's srv6.md page says.
 
@@ -54,16 +56,18 @@ about -3.5…3.5 and use z from about -7 (back) to 7 (front).
 | highlight a path | `{route: [you, r1, r2], color: purple}`, clear all with `{unroute: true}` |
 | break / repair a link | `{fail: [r1, r2]}`, `{fix: [r1, r2]}` |
 | bubble over an object | `{tag: {on: r1, text: "Where to?", color: orange}}`, `{untag: r1}` |
+| radio beam (follows moving objects) | `{beam: [tower1, car], color: yellow}`, faint with `weak: true`; remove with `{unbeam: [tower1, car]}` |
 | bounce + ring | `{pulse: r1, color: green}` |
 | remove | `{remove: car1}` |
 | top card | `{card: {title: "Your route", chips: [["East side", active], ["Friend", next]]}}`; states: `active`, `next`, `done`, `repair`; hide with `{card: null}` |
 | big text | `{big: "128 bits", sub: "one IPv6 address", dur: 2.5}` |
+| packet modal (very simple) | `{packet: {title: "Your SRv6 packet", rows: [["Going to now", "East side", purple], ["Your route", "East side → Friend", dark], ["Inside", "Your data", orange]]}, dur: 4}` |
 | camera close-up | `{camera: {on: r1, zoom: 5}}`, back with `{camera: auto}` |
 | end card | `{end: true}` (in the last beat, on "Learn") |
 
 Objects: `router`, `ship`, `house`, `building` (`height`), `datacenter`, `server`,
 `gpu`, `tower`, `truck`, `car`, `person`, `tree`, `cloud`, `packet`,
-`sign` (`text`), `box` (`size: [w, h, d]`). Colors: purple, green, grey,
+`sign` (`text`), `box` (`size: [w, h, d]`). Any object takes `scale: 1.5`. Colors: purple, green, grey,
 red, orange, blue, yellow, pink, teal, dark, white, brown, or `"#rrggbb"`.
 
 ## Check and render

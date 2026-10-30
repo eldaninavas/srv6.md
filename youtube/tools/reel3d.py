@@ -42,12 +42,45 @@ def voice_for(spec):
     lang = {"en": "en-us", "es": "es"}.get(spec.get("lang", "en"), "en-us")
 
     def speak(text):
-        for a, b in PRONOUNCE.items():
-            text = re.sub(a, b, text)
-        samples, sr = k.create(text, voice=spec.get("voice", "af_heart"), speed=spec.get("speed", 1.05), lang=lang)
+        samples, sr = k.create(pron(text), voice=spec.get("voice", "af_heart"), speed=spec.get("speed", 1.05), lang=lang)
         assert sr == SR
         return samples
     return speak
+
+
+TTS_PY = os.path.expanduser("~/.cache/tts-venv/bin/python")
+
+
+def narrate(spec, texts, cache):
+    """Synthesize every line once; cached by text and voice settings, so re-renders are instant."""
+    import hashlib
+    os.makedirs(cache, exist_ok=True)
+    engine = spec.get("engine", "kokoro")
+    keyed = []
+    for text in texts:
+        k = hashlib.sha1(json.dumps([engine, spec.get("voice"), spec.get("speed"), spec.get("exaggeration"),
+                                     spec.get("ref"), text]).encode()).hexdigest()[:16]
+        keyed.append(os.path.join(cache, k + ".wav"))
+    todo = [(t, p) for t, p in zip(texts, keyed) if not os.path.exists(p)]
+    if todo and engine == "chatterbox":
+        job = os.path.join(cache, "job.json")
+        ref = spec.get("ref")
+        with open(job, "w") as f:
+            json.dump({"exaggeration": spec.get("exaggeration", 0.7), "cfg": spec.get("cfg", 0.35),
+                       "ref": os.path.join(YT, ref) if ref else None,
+                       "items": [{"text": pron(t), "out": p} for t, p in todo]}, f)
+        subprocess.run([TTS_PY, os.path.join(HERE, "tts_chatterbox.py"), job], check=True)
+    elif todo:
+        speak = voice_for(spec)
+        for t, p in todo:
+            sf.write(p, speak(t), SR)
+    return [load_human(p) for p in keyed]
+
+
+def pron(text):
+    for a, b in PRONOUNCE.items():
+        text = re.sub(a, b, text)
+    return text
 
 
 def load_human(path):
@@ -70,7 +103,7 @@ def chunks(text, t0, t1, size=3):
     out, cur = [], []
     for w in timed:
         cur.append(w)
-        if len(cur) == size or re.search(r"[.,:;?!]$", w["w"]):
+        if len(cur) == size or sum(len(x["w"]) for x in cur) >= 11 or re.search(r"[.,:;?!]$", w["w"]):
             out.append(cur)
             cur = []
     if cur:
@@ -104,7 +137,7 @@ def compile_actions(beat_no, actions, start, dur, words, known):
                 raise SystemExit(f"beat {beat_no}: add needs an id")
             known.add(e["id"])
         refs = [e.get("move"), e.get("on")] + list(e.get("path", [])) + list(e.get("link", [])) + list(e.get("fail", [])) \
-            + list(e.get("route", [])) + [x for k in ("pulse", "remove") for x in ([e[k]] if isinstance(e.get(k), str) else e.get(k, []))]
+            + list(e.get("route", [])) + list(e.get("beam", [])) + list(e.get("unbeam", [])) + [x for k in ("pulse", "remove") for x in ([e[k]] if isinstance(e.get(k), str) else e.get(k, []))]
         if isinstance(e.get("tag"), dict):
             refs.append(e["tag"].get("on"))
         if isinstance(e.get("camera"), dict):
@@ -129,18 +162,16 @@ def main():
     os.makedirs(out, exist_ok=True)
     human = os.path.join(YT, "voice", f"{rid}-3d")
 
-    speak, audio, beats, caps, events, known = None, [np.zeros(int(LEAD * SR), "float32")], [], [], [], set()
+    audio, beats, caps, events, known = [np.zeros(int(LEAD * SR), "float32")], [], [], [], set()
+    recs = [next((p for p in (os.path.join(human, f"{i:02}{e}") for e in (".wav", ".m4a")) if os.path.exists(p)), None)
+            for i in range(1, len(spec["beats"]) + 1)]
+    if args.check:
+        clips = [np.zeros(int(len(b["say"].split()) / 2.6 * SR), "float32") for b in spec["beats"]]
+    else:
+        synth = narrate(spec, [b["say"] for b, r in zip(spec["beats"], recs) if not r], os.path.join(out, "tts"))
+        clips = [load_human(r) if r else synth.pop(0) for r in recs]
     t = LEAD
-    for i, b in enumerate(spec["beats"], 1):
-        if args.check:
-            clip = np.zeros(int(len(b["say"].split()) / 2.6 * SR), "float32")
-        else:
-            rec = next((p for p in (os.path.join(human, f"{i:02}{e}") for e in (".wav", ".m4a")) if os.path.exists(p)), None)
-            if rec:
-                clip = load_human(rec)
-            else:
-                speak = speak or voice_for(spec)
-                clip = speak(b["say"])
+    for i, (b, clip) in enumerate(zip(spec["beats"], clips), 1):
         dur = len(clip) / SR
         beats.append({"start": round(t, 3), "dur": round(dur + GAP, 3)})
         beat_caps = chunks(b.get("text", b["say"]), t, t + dur)

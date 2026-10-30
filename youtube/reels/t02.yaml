@@ -1,0 +1,68 @@
+# Telecom story: why nobody has signal at a concert (cell capacity).
+id: t02
+engine: chatterbox
+exaggeration: 0.75
+speed: 1.1
+caption: |
+  Full bars at the concert... and your video still won't send. Here's why. 🎤📶
+
+  Learn how networks really work → link in bio (srv6.md)
+
+  #Telecom #5G #Networking #CellTowers #Concert #NetworkEngineering
+beats:
+  - say: "Ever been to a concert where nobody's video will send?"
+    do:
+      - {at: 0, add: box, id: field, pos: [0, -1.2], size: [5.6, 0.12, 4.6], color: 0x86efac}
+      - {at: "concert", add: person, id: p1, pos: [-1.6, 0], color: purple}
+      - {at: "concert", add: person, id: p2, pos: [0, 0.4], color: pink}
+      - {at: "concert", add: person, id: p3, pos: [1.6, 0], color: blue}
+      - {at: "video", add: tower, id: tw, pos: [2.9, 4.4]}
+
+  - say: "Here's why. A cell tower is like one cashier. It can only serve so many people at once."
+    do:
+      - {at: "cashier", tag: {on: tw, text: "One cashier", color: dark}}
+      - {at: "serve", beam: [tw, p1]}
+      - {at: "serve", beam: [tw, p2]}
+      - {at: "serve", beam: [tw, p3]}
+
+  - say: "Now fifty thousand fans post a video. At the same time."
+    do:
+      - {at: "fifty", big: "50,000 fans", sub: "one tower", dur: 2.2}
+      - {at: "fans", add: person, id: p4, pos: [-2.2, -1.4], color: orange}
+      - {at: "fans", add: person, id: p5, pos: [-0.8, -1.2], color: teal}
+      - {at: "fans", add: person, id: p6, pos: [0.8, -1.5], color: yellow}
+      - {at: "fans", add: person, id: p7, pos: [2.2, -1.2], color: red}
+      - {at: "post", add: person, id: p8, pos: [-1.6, -2.8], color: blue}
+      - {at: "post", add: person, id: p9, pos: [0, -2.6], color: purple}
+      - {at: "post", add: person, id: p10, pos: [1.6, -2.9], color: pink}
+      - {at: "time", tag: {on: tw, text: "Full!", color: red}}
+      - {at: "time", pulse: tw, color: red}
+
+  - say: "The line explodes. Your video just spins."
+    do:
+      - {at: "line", unbeam: [tw, p2]}
+      - {at: "spins", tag: {on: p1, text: "Loading...", color: orange}}
+
+  - say: "So operators drive in extra towers on trucks, and hide small antennas all around the stadium."
+    do:
+      - {at: "drive", add: truck, id: tr, pos: [-3.4, 7], color: orange}
+      - {at: "drive", move: tr, path: [[-3.4, 7], [-3.4, 4.4]], dur: 1.8}
+      - {at: "towers", add: tower, id: tw2, pos: [-2.4, 4.2], color: 0xfdba74}
+      - {at: "small", add: tower, id: s1, pos: [-3.2, -3.6], color: teal}
+      - {at: "antennas", add: tower, id: s2, pos: [3.2, -3.6], color: teal}
+
+  - say: "More cells, fewer people per cell. Everyone gets a turn!"
+    do:
+      - {at: "More", untag: tw}
+      - {at: "More", beam: [tw2, p4]}
+      - {at: "More", beam: [tw2, p5]}
+      - {at: "fewer", beam: [s1, p8]}
+      - {at: "fewer", beam: [s1, p9]}
+      - {at: "fewer", beam: [s2, p10]}
+      - {at: "fewer", beam: [s2, p7]}
+      - {at: "turn", tag: {on: p1, text: "Posted!", color: green}}
+
+  - say: "Learn how networks really work, at srv6 dot md."
+    text: "Learn how networks really work at srv6.md"
+    do:
+      - {at: "Learn", end: true}
