@@ -10,11 +10,11 @@ engine: chatterbox
 exaggeration: 0.75
 tempo: 0.85            # Chatterbox rushes; slow it a little, same pitch
 gap: 0.6
-end_card: {url: srv6.md, sub: "How the internet really works"}
+end_card: {url: "How IT Connects", sub: "Follow for more stories like this"}
 caption: |
   You've been building the internet since you were a kid. You just didn't know it. 🥫🧵
 
-  Learn how networks really work → link in bio (srv6.md)
+  Follow How IT Connects for more stories like this.
 
   #Internet #Networking #Telecom #HowItWorks #NetworkEngineering #Routers
 beats:
@@ -183,7 +183,6 @@ beats:
       - {at: "Fiber", route: [you, hub, hub2, cousin], color: yellow}
       - {at: "internet", big: "The internet", sub: "you built it!", dur: 2.6}
 
-  - say: "Want to know how it really works? Start for free at srv6 dot md."
-    text: "Want to know how it really works? Start for free at srv6.md"
+  - say: "Want more stories like this? Follow How IT Connects!"
     do:
-      - {at: "Start", end: true}
+      - {at: "Follow", end: true}
