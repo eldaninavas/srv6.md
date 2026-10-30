@@ -175,7 +175,7 @@ beats:
       - {at: "call", move: msg3, path: [cousin, hub2, hub, you], dur: 2.4}
       - {at: "exactly", remove: [msg, msg2, msg3]}
 
-  - say: "Those boxes? Routers. The strings? Fiber. And all of it together? The internet."
+  - say: "Those boxes? Routers. The strings? Fiber. And all of it, together, is the internet."
     do:
       - {at: 0, untag: cousin}
       - {at: "Routers", tag: {on: hub, text: "Router", color: dark}}

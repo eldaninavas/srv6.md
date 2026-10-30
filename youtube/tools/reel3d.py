@@ -31,7 +31,9 @@ GAP = 0.25        # silence after each beat (spec "gap" overrides)
 LEAD, TAIL = 0.3, 2.2
 KOKORO = os.path.expanduser("~/.cache/kokoro")
 # how the voice should read terms it would otherwise spell or mangle
-PRONOUNCE = {r"\bSRv6\b": "S R v 6", r"\bIPv6\b": "I P v 6", r"\bIPv4\b": "I P v 4", r"\buSIDs?\b": "micro-SID",
+# phonetic spellings: Chatterbox mangles "S R v 6" and lowercase "srv6" ("sssrrv6")
+PRONOUNCE = {r"(?i)\bsrv6 dot md\b": "ess are vee six dot em dee", r"(?i)\bSRv6\b": "ess are vee six",
+             r"(?i)\bIPv6\b": "eye pee vee six", r"(?i)\bIPv4\b": "eye pee vee four", r"\buSIDs?\b": "micro-SID",
              r"\bTI-LFA\b": "T I L F A", r"\bSRH\b": "S R H", r"\bMPLS\b": "M P L S", r"\bBGP\b": "B G P",
              r"\bIS-IS\b": "I S I S", r"\bLDP\b": "L D P", r"\bVPN\b": "V P N", r"\bGPUs?\b": "G P U"}
 
@@ -59,7 +61,7 @@ def narrate(spec, texts, cache):
     keyed = []
     for text in texts:
         k = hashlib.sha1(json.dumps([engine, spec.get("voice"), spec.get("speed"), spec.get("exaggeration"),
-                                     spec.get("ref"), text]).encode()).hexdigest()[:16]
+                                     spec.get("ref"), pron(text)]).encode()).hexdigest()[:16]
         keyed.append(os.path.join(cache, k + ".wav"))
     todo = [(t, p) for t, p in zip(texts, keyed) if not os.path.exists(p)]
     if todo and engine == "chatterbox":
