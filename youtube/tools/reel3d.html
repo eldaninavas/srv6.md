@@ -1,0 +1,234 @@
+<!doctype html>
+<!-- 3D SRv6 diorama for vertical reels. reel3d.mjs calls setup(timeline)
+     once, then renderAt(t) for every frame: the whole picture is a pure
+     function of t, so frames render deterministically and in any order. -->
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Inter;font-weight:800;src:url(../../node_modules/@fontsource/inter/files/inter-latin-800-normal.woff2) format('woff2')}
+@font-face{font-family:Inter;font-weight:600;src:url(../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2) format('woff2')}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;font-family:Inter,sans-serif;
+  background:radial-gradient(120% 80% at 50% 30%,#fdf6ff 0%,#efe4ff 45%,#d9c8fb 100%)}
+canvas{position:absolute;inset:0}
+#brand{position:absolute;top:84px;left:0;right:0;text-align:center;font-weight:800;font-size:46px;color:#3b1d7a;letter-spacing:-.5px}
+#brand span{color:#8b5cf6}
+#title{position:absolute;top:200px;left:60px;right:60px;text-align:center;font-weight:800;font-size:112px;line-height:1.02;color:#2b1650;letter-spacing:-3px}
+#title b{color:#8b5cf6}
+#hdr{position:absolute;top:170px;left:0;right:0;display:flex;justify-content:center;transform-origin:50% 0}
+#hdr .card{background:#1d0f3d;border-radius:44px;padding:30px 44px 40px;box-shadow:0 16px 0 #0e0620}
+#hdr .t{color:#c4b5fd;font-weight:800;font-size:50px;margin-bottom:22px;text-align:center}
+#hdr .row{display:flex;gap:22px;justify-content:center}
+#hdr .chip{min-width:120px;padding:12px 28px;border-radius:30px;font-weight:800;font-size:72px;text-align:center;color:#fff;background:#4c3a7a}
+#hdr .active{background:#8b5cf6}#hdr .repair{background:#ef4444}#hdr .done{background:#3a2a62;color:#7c6aa8}
+#hdr .chip small{display:block;font-size:30px;margin-top:-6px;opacity:.85}
+#cap{position:absolute;left:50px;right:50px;top:1560px;text-align:center;font-weight:800;font-size:96px;line-height:1.08;color:#fff;letter-spacing:-1px;
+  paint-order:stroke fill;-webkit-text-stroke:14px #1d0f3d}
+#cap .w{display:inline-block;margin:0 .12em}
+#cap .on{color:#ffd23f}
+#end{position:absolute;left:0;right:0;top:1360px;text-align:center}
+#end .url{display:inline-block;background:#8b5cf6;color:#fff;font-weight:800;font-size:92px;padding:26px 56px;border-radius:40px;letter-spacing:-2px;box-shadow:0 18px 0 #5b2fb0}
+#end .sub{margin-top:44px;font-weight:800;font-size:58px;color:#2b1650}
+</style>
+<script type="importmap">{"imports":{"three":"../../node_modules/three/build/three.module.js"}}</script>
+</head><body>
+<div id="brand">SRv6<span>.md</span></div>
+<div id="title"></div>
+<div id="hdr"><div class="card"><div class="t">SRv6 segment list</div><div class="row"></div></div></div>
+<div id="cap"></div>
+<div id="end"><div class="url">srv6.md/learn</div><div class="sub">Free SRv6 course</div></div>
+<script type="module">
+import * as THREE from 'three';
+
+const W = 1080, H = 1920;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H); renderer.setPixelRatio(1);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, W / H, 0.1, 200);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xb9a3e8, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+sun.position.set(6, 14, 8); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9 });
+scene.add(sun);
+
+// ---- diorama base -------------------------------------------------------
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: .55, ...o });
+const base = new THREE.Mesh(new THREE.BoxGeometry(8, .7, 13),
+  [mat(0x6d3fd0), mat(0x6d3fd0), mat(0xfbf7ef), mat(0x4c2a99), mat(0x7c4ddf), mat(0x7c4ddf)]);
+base.position.y = -.35; base.receiveShadow = true; scene.add(base);
+const grid = new THREE.GridHelper(12, 24, 0xe7ddf7, 0xefe8fa);
+grid.scale.set(8 / 12, 1, 13 / 12); grid.position.y = .002; scene.add(grid);
+
+// ---- topology: S at the front, D at the back -----------------------------
+const NODES = {
+  S: { p: [0, 4.6], c: 0x22c55e }, A: { p: [-2.3, 1.6], c: 0x94a3b8 }, B: { p: [2.3, 1.6], c: 0x8b5cf6 },
+  C: { p: [-2.3, -1.6], c: 0x94a3b8 }, E: { p: [2.3, -1.6], c: 0x94a3b8 }, D: { p: [0, -4.6], c: 0x8b5cf6 },
+};
+const LINKS = [['S', 'A'], ['S', 'B'], ['A', 'B'], ['A', 'C'], ['B', 'E'], ['C', 'E'], ['C', 'D'], ['E', 'D']];
+const v3 = (n, y = 0) => new THREE.Vector3(NODES[n].p[0], y, NODES[n].p[1]);
+
+function label(text, { w = 256, h = 256, bg = '#ffffff', fg = '#2b1650', font = 150, r = 60 } = {}) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  g.fillStyle = bg; g.beginPath(); g.roundRect(8, 8, w - 16, h - 16, r); g.fill();
+  g.fillStyle = fg; g.font = `800 ${font}px Inter`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(text, w / 2, h / 2 + font * .05);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+  s.renderOrder = 10; return s;
+}
+
+for (const [name, n] of Object.entries(NODES)) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(.62, .68, .55, 40), mat(0xffffff));
+  body.position.y = .28; body.castShadow = true;
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(.5, .5, .1, 40), mat(n.c, { emissive: n.c, emissiveIntensity: .15 }));
+  cap.position.y = .6; cap.castShadow = true;
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(.685, .685, .12, 40), mat(n.c));
+  band.position.y = .2;
+  const tag = label(name, { bg: '#ffffff', fg: '#' + n.c.toString(16).padStart(6, '0') });
+  tag.scale.set(.75, .75, 1); tag.position.y = 1.35;
+  const ring = new THREE.Mesh(new THREE.RingGeometry(.75, .95, 48), new THREE.MeshBasicMaterial({ color: n.c, transparent: true, opacity: 0 }));
+  ring.rotation.x = -Math.PI / 2; ring.position.y = .02;
+  g.add(body, cap, band, tag, ring);
+  g.position.copy(v3(name));
+  scene.add(g);
+  Object.assign(n, { g, ring });
+}
+
+const links = LINKS.map(([a, b]) => {
+  // two halves meeting in the middle, so a failed link can split apart
+  const halves = [[a, b], [b, a]].map(([from, to]) => {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(.075, .075, 1, 12), mat(0xc4b5fd));
+    m.geometry.translate(0, .5, 0); m.geometry.rotateX(Math.PI / 2);
+    m.position.copy(v3(from, .32)); m.lookAt(v3(to, .32)); m.castShadow = true;
+    scene.add(m); return m;
+  });
+  return { a, b, halves, len: v3(a).distanceTo(v3(b)) };
+});
+const linkED = links.find(l => l.a === 'E' && l.b === 'D');
+const boom = label('✕', { bg: '#ef4444', fg: '#ffffff', font: 170 });
+boom.position.copy(v3('E', 1).lerp(v3('D', 1), .5)); scene.add(boom);
+const ipv6Tag = label('just IPv6 ✓', { w: 640, h: 200, bg: '#1d0f3d', fg: '#ffffff', font: 92, r: 70 });
+ipv6Tag.position.copy(v3('E', 2.35)); scene.add(ipv6Tag);
+const vpnTag = label('VPN ✓', { w: 440, h: 200, bg: '#22c55e', fg: '#ffffff', font: 100, r: 70 });
+vpnTag.position.copy(v3('D', 2.4)); scene.add(vpnTag);
+
+// ---- the packet and its SRv6 header --------------------------------------
+const packet = new THREE.Group();
+const box = new THREE.Mesh(new THREE.BoxGeometry(.62, .62, .62), mat(0xff8a1f, { emissive: 0xff7a00, emissiveIntensity: .35 }));
+box.castShadow = true; packet.add(box);
+scene.add(packet);
+let headerKey = '';
+function drawHeader(chips) {
+  const key = JSON.stringify(chips); if (key === headerKey) return; headerKey = key;
+  document.querySelector('#hdr .row').innerHTML = chips.map(c =>
+    `<div class="chip ${c.state === 'active' && c.repair ? 'repair' : c.state}">${c.label}${c.repair ? '<small>repair</small>' : ''}</div>`).join('');
+}
+
+// ---- timeline helpers ----------------------------------------------------
+let TL;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c = 1.9; x = clamp(x); return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const at = (act, f) => { const b = TL.beats.find(b => b.act === act); return b.start + f * b.dur; };
+const prog = (t, act, f0, f1) => clamp((t - at(act, f0)) / (at(act, f1) - at(act, f0)));
+
+window.setup = tl => {
+  TL = tl;
+  const P = n => NODES[n].p;
+  // packet keyframes: [time, [x, z]]
+  TL.keys = [
+    [0, [0, 1.2]], [at('list', .05), [0, 1.2]], [at('list', .3), P('S')],
+    [at('travel', .1), P('S')], [at('travel', .5), P('B')],
+    [at('transit', .05), P('B')], [at('transit', .45), P('E')],
+    [at('fail', .42), P('E')], [at('fail', .6), P('C')], [at('fail', .68), P('C')], [at('fail', .86), P('D')],
+  ];
+  TL.pulses = [['S', at('list', .3), 0x22c55e], ['B', at('travel', .5), 0x8b5cf6], ['E', at('transit', .45), 0x94a3b8],
+    ['C', at('fail', .6), 0xef4444], ['D', at('fail', .86), 0x22c55e]];
+  document.getElementById('title').innerHTML = tl.title || '';
+};
+
+function packetXZ(t) {
+  const k = TL.keys; if (t >= k[k.length - 1][0]) return k[k.length - 1][1];
+  for (let i = 0; i < k.length - 1; i++) if (t < k[i + 1][0]) {
+    const f = ease(clamp((t - k[i][0]) / (k[i + 1][0] - k[i][0] || 1)));
+    return [k[i][1][0] + (k[i + 1][1][0] - k[i][1][0]) * f, k[i][1][1] + (k[i + 1][1][1] - k[i][1][1]) * f];
+  }
+  return k[0][1];
+}
+
+function chipsAt(t) {
+  if (t < at('list', .35)) return null;
+  const B = { label: 'B' }, D = { label: 'D' };
+  const chips = t < at('list', .62) ? [B] : [B, D];
+  if (t < at('travel', .55)) { B.state = 'active'; D.state = 'next'; }
+  else { B.state = 'done'; D.state = 'active'; }
+  if (t >= at('fail', .3) && t < at('fail', .66)) { chips.splice(1, 0, { label: 'C', repair: true, state: 'active' }); D.state = 'next'; }
+  if (t >= at('outro', .12)) D.state = 'done';
+  return chips;
+}
+
+window.renderAt = t => {
+  // camera: close on the packet, pull back as the fabric builds, drift, rise at the end
+  const wide = ease(prog(t, 'build', 0, .75)), up = ease(prog(t, 'outro', .15, .9));
+  const sway = Math.sin(t * .22) * 1.6 * wide;
+  camera.position.set(sway, 5.2 + 12 * wide + 3 * up, 6.4 + 8.6 * wide + 2 * up);
+  camera.lookAt(0, .4 - 1.9 * wide - .6 * up, 1.2 - 2.2 * wide);
+
+  // routers pop in, then the links grow
+  Object.values(NODES).forEach((n, i) => {
+    const s = back(prog(t, 'build', .08 + i * .08, .2 + i * .08));
+    n.g.scale.setScalar(Math.max(s, .0001));
+    let glow = 0;
+    for (const [name, pt, color] of TL.pulses) if (NODES[name] === n && t >= pt && t < pt + 1) {
+      glow = 1 - (t - pt); n.ring.material.color.setHex(color);
+    }
+    n.ring.material.opacity = glow * .9; n.ring.scale.setScalar(1 + (1 - glow) * .8);
+    n.g.position.y = glow > 0 ? Math.sin((1 - glow) * Math.PI) * .25 : 0;
+  });
+  const grow = ease(prog(t, 'build', .6, .95));
+  const broken = ease(prog(t, 'fail', .04, .2));
+  for (const l of links) for (const h of l.halves) {
+    const half = l.len / 2 * grow * (l === linkED ? 1 - .35 * broken : 1);
+    h.scale.set(1, 1, Math.max(half, .0001));
+    h.material.color.setHex(l === linkED && broken > 0 ? 0xef4444 : 0xc4b5fd);
+  }
+  boom.scale.setScalar(.9 * back(prog(t, 'fail', .1, .25)) + .0001);
+  ipv6Tag.scale.set(2.6, .81, 1).multiplyScalar(back(prog(t, 'transit', .45, .6)) * (1 - prog(t, 'fail', 0, .1)) + .0001);
+  vpnTag.scale.set(1.8, .81, 1).multiplyScalar(back(prog(t, 'outro', .1, .25)) + .0001);
+
+  // packet: hovers, travels, then drops into D
+  const [x, z] = packetXZ(t);
+  const sink = ease(prog(t, 'outro', .05, .25));
+  const pop = back(prog(t, 'intro', 0, .25));
+  packet.position.set(x, 1.15 + Math.sin(t * 3) * .1 - .8 * sink, z);
+  packet.scale.setScalar(Math.max(pop * (1 - sink), .0001));
+  box.rotation.set(t * .6, t * .9, 0);
+
+  const chips = chipsAt(t);
+  const hs = chips ? back(prog(t, 'list', .32, .45)) * (1 - prog(t, 'outro', .3, .45)) : 0;
+  if (chips) drawHeader(chips);
+  const hdr = document.getElementById('hdr');
+  hdr.style.opacity = hs > .01 ? 1 : 0; hdr.style.transform = `scale(${hs})`;
+
+  renderer.render(scene, camera);
+
+  // overlays: hook title, word-by-word captions, end card
+  const title = document.getElementById('title');
+  title.style.opacity = 1 - clamp((t - at('intro', .85)) / .3);
+  const cap = document.getElementById('cap');
+  const end = document.getElementById('end');
+  const endOn = clamp((t - at('outro', .55)) / .3);
+  end.style.opacity = endOn; end.style.transform = `scale(${.85 + .15 * back(endOn)})`;
+  let chunk = null;
+  for (const c of TL.chunks) if (t >= c.t0 && t < c.t1) chunk = c;
+  if (!chunk || endOn > 0) { cap.innerHTML = ''; return; }
+  const k = clamp((t - chunk.t0) / .12);
+  cap.style.transform = `scale(${.8 + .2 * back(k)})`;
+  cap.innerHTML = chunk.words.map(w => `<span class="w${t >= w.t0 && t < w.t1 ? ' on' : ''}">${w.w}</span>`).join(' ');
+};
+window.ready = document.fonts.ready.then(() => true);
+</script>
+</body></html>

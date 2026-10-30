@@ -1,0 +1,34 @@
+# 3D vertical reel (Instagram Reels / YouTube Shorts / TikTok), rendered by
+# youtube/tools/reel3d.py. `say` is what the voice reads, `text` is the
+# on-screen caption, `act` drives the animation in youtube/tools/reel3d.html.
+id: s01
+voice: af_heart
+title: "SRv6 in <b>60 seconds</b>"
+caption: |
+  SRv6 in 60 seconds: one IPv6 address can carry the whole path. ⚡
+
+  Free SRv6 course → link in bio (srv6.md/learn)
+
+  #SRv6 #SegmentRouting #IPv6 #NetworkEngineering #CCIE #Networking
+beats:
+  - act: intro
+    say: "One IPv6 address can steer a packet across an entire network."
+    text: "One IPv6 address can steer a packet across an entire network."
+  - act: build
+    say: "This is S R v 6. Segment Routing over IPv6."
+    text: "This is SRv6. Segment Routing over IPv6."
+  - act: list
+    say: "The source writes the path into the packet, as a list of segments. Go to B. Then to D."
+    text: "The source writes the path into the packet, as a list of segments. Go to B. Then to D."
+  - act: travel
+    say: "Each segment is an IPv6 address, and an instruction. B runs its instruction, then points the packet at D."
+    text: "Each segment is an IPv6 address, and an instruction. B runs it, then points the packet at D."
+  - act: transit
+    say: "Routers in the middle just forward IPv6. No labels. No L D P. No tunnel state."
+    text: "Routers in the middle just forward IPv6. No labels. No LDP. No tunnel state."
+  - act: fail
+    say: "If a link fails, the router next to it adds one repair segment, and traffic keeps flowing in milliseconds."
+    text: "If a link fails, the router next to it adds one repair segment, and traffic keeps flowing in milliseconds."
+  - act: outro
+    say: "That's S R v 6. Learn it free, at S R v 6 dot M D."
+    text: "That's SRv6. Learn it free at srv6.md"
