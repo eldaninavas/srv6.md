@@ -6,6 +6,7 @@ engine: chatterbox
 exaggeration: 0.75
 tempo: 0.85
 gap: 0.6
+cover: {t: 42.3, title: "Why your call <b>doesn't drop</b> in the car"}
 end_card: {url: "How IT Connects", sub: "Follow for more stories like this"}
 caption: |
   Why your call doesn't drop in the car 📱🚗 One tower, then the next, then a tunnel with no sky, and grandma never notices.
@@ -35,9 +36,16 @@ beats:
       - {at: "cat", tag: {on: gma, text: "My new cat!", color: pink}}
       - {at: "driving", move: you, path: [[0, 6.6], [0, 2.6]], dur: 3}
 
+  - say: "She even sends you a photo of the cat. Not now, grandma, you're driving!"
+    do:
+      - {at: "photo", untag: gma}
+      - {at: "photo", tag: {on: gma, text: "Look! The cat!", color: pink}}
+      - {at: "Not", tag: {on: you, text: "Not now, grandma!", color: orange}}
+
   - say: "But the farther you go, the weaker the signal gets."
     do:
       - {at: 0, untag: tw1}
+      - {at: 0, untag: you}
       - {at: "farther", unbeam: [tw1, you]}
       - {at: "farther", beam: [tw1, you], weak: true}
       - {at: "weaker", tag: {on: you, text: "Weak signal", color: orange}}
@@ -55,6 +63,12 @@ beats:
     do:
       - {at: "patch", pulse: [tw1, tw2, tw3], color: yellow}
       - {at: "cell", tag: {on: tw2, text: "A cell", color: green}}
+
+  - say: "And the patches overlap just a little, so there's never a gap between them."
+    do:
+      - {at: 0, untag: tw2}
+      - {at: "overlap", pulse: [c1, c2], color: green}
+      - {at: "gap", pulse: c3, color: green}
 
   - say: "Before your tower fades out, your phone is already listening to the next one."
     do:
@@ -92,6 +106,10 @@ beats:
     do:
       - {at: "cuts", tag: {on: gma, text: "Hello...?", color: grey}}
 
+  - say: "Ten seconds of silence. It feels like forever."
+    do:
+      - {at: "silence", tag: {on: tn, text: "...", color: grey}}
+
   - say: "So engineers hide small antennas inside tunnels, all along the way."
     do:
       - {at: 0, untag: tn}
@@ -120,6 +138,11 @@ beats:
     do:
       - {at: 0, unbeam: [a2, you]}
       - {at: "Five", big: "1 call, 5 towers", sub: "and not one dropped word", dur: 2.6}
+
+  - say: "And grandma? She still thinks phones work by magic."
+    do:
+      - {at: "grandma", tag: {on: gma, text: "Magic!", color: pink}}
+      - {at: "magic", pulse: gma, color: yellow}
 
   - say: "Those patches are called cells. That's why your phone is called a cell phone!"
     do:

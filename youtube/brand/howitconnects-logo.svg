@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5eb6ff"/><stop offset="1" stop-color="#7c4ddf"/>
+    </linearGradient>
+    <linearGradient id="tin" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#cfd6e0"/><stop offset=".45" stop-color="#ffffff"/><stop offset="1" stop-color="#aab4c3"/>
+    </linearGradient>
+    <radialGradient id="glow"><stop offset="0" stop-color="#fff7c2"/><stop offset=".45" stop-color="#ffd23f"/><stop offset="1" stop-color="#ffd23f" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1080" height="1080" fill="url(#bg)"/>
+  <!-- string: a smile between the cans -->
+  <path d="M386 505 Q540 880 694 505" fill="none" stroke="#1d0f3d" stroke-opacity=".25" stroke-width="22" stroke-linecap="round" transform="translate(0 14)"/>
+  <path d="M386 505 Q540 880 694 505" fill="none" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/>
+  <!-- packet of light on the string -->
+  <circle cx="540" cy="693" r="70" fill="url(#glow)"/>
+  <circle cx="540" cy="693" r="26" fill="#ffd23f" stroke="#1d0f3d" stroke-width="8"/>
+  <!-- left can, open end facing right -->
+  <g transform="translate(250 568) rotate(65)">
+    <rect x="-95" y="-150" width="190" height="290" rx="26" fill="url(#tin)" stroke="#1d0f3d" stroke-width="14"/>
+    <rect x="-95" y="-40" width="190" height="80" fill="#8b5cf6" stroke="#1d0f3d" stroke-width="10"/>
+    <ellipse cx="0" cy="-150" rx="95" ry="30" fill="#e8edf3" stroke="#1d0f3d" stroke-width="14"/>
+    <ellipse cx="0" cy="-150" rx="66" ry="17" fill="#2b1650"/>
+  </g>
+  <!-- right can -->
+  <g transform="translate(830 568) rotate(-65)">
+    <rect x="-95" y="-150" width="190" height="290" rx="26" fill="url(#tin)" stroke="#1d0f3d" stroke-width="14"/>
+    <rect x="-95" y="-40" width="190" height="80" fill="#ffd23f" stroke="#1d0f3d" stroke-width="10"/>
+    <ellipse cx="0" cy="-150" rx="95" ry="30" fill="#e8edf3" stroke="#1d0f3d" stroke-width="14"/>
+    <ellipse cx="0" cy="-150" rx="66" ry="17" fill="#2b1650"/>
+  </g>
+  <!-- little sound waves over the line -->
+  <g fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round" opacity=".9">
+    <path d="M490 420 q50 -40 100 0"/><path d="M455 360 q85 -65 170 0"/>
+  </g></svg>

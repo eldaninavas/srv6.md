@@ -11,7 +11,7 @@ without an explicit OK for that post.
 | Day | Date | Id | Story | Status |
 |-----|------|----|-------|--------|
 | Sat | Oct 31 | l01 | **You built the internet** | ready |
-| Sun | Nov 1 | l02 | **Why your call doesn't drop in the car** | to do |
+| Sun | Nov 1 | l02 | **Why your call doesn't drop in the car** | ready |
 | Mon | Nov 2 | l03 | **How a message crosses the ocean** | to do |
 | Tue | Nov 3 | l04 | **Why you have no signal at a concert** | to do |
 | Wed | Nov 4 | l05 | **How Wi-Fi reaches your room** | to do |

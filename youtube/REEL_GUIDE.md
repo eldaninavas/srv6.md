@@ -72,6 +72,10 @@ until the reveal. `youtube/reels/l01.yaml` is the reference.
    (`#internet`, `#5g`, `#wifi`, `#fiber`) + `#howitworks #engineering
    #science #technology`.
 
+The cover: `cover: {t: 42, title: "Why your call <b>doesn't drop</b> in the car"}`
+renders `out/<id>-3d/cover.jpg` (that frame, no captions, big title; `<b>` is
+yellow). Keep the title in the middle: the profile grid crops the cover to 3:4.
+
 No link in the caption (it does not click); no wall of hashtags.
 
 ## Format

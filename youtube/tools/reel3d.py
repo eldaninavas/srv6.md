@@ -287,6 +287,18 @@ def main():
         mp4 = os.path.join(out, f"{rid}.mp4")
         subprocess.run(["node", mjs, tl_path, wav, mp4], check=True)
         print(f"{mp4}  {total:.1f}s")
+    # the reel cover: one frame of the video, no captions, with a big title on top
+    if spec.get("cover") and not args.frame:
+        cv = spec["cover"]
+        ctl = dict(tl, title=cv["title"], titleUntil=1e9, chunks=[], endAt=1e9)
+        ctl["events"] = [e for e in tl["events"] if not ("big" in e or "packet" in e)]
+        cpath = os.path.join(out, "cover.json")
+        with open(cpath, "w") as f:
+            json.dump(ctl, f)
+        png = os.path.join(out, "cover.png")
+        subprocess.run(["node", mjs, cpath, wav, "-", "--frames", str(cv.get("t", total / 2)), png], check=True)
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", png, "-q:v", "2", os.path.join(out, "cover.jpg")], check=True)
+        print(os.path.join(out, "cover.jpg"))
 
 
 if __name__ == "__main__":

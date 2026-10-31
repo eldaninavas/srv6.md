@@ -19,6 +19,8 @@ canvas{position:absolute;inset:0}
 #brand span{color:#c4b5fd}
 #title{position:absolute;top:200px;left:60px;right:60px;text-align:center;font-weight:800;font-size:112px;line-height:1.02;color:#2b1650;letter-spacing:-3px}
 #title b{color:#8b5cf6}
+body:not(.paper) #title{top:330px;color:#fff;paint-order:stroke fill;-webkit-text-stroke:22px #1d0f3d;text-shadow:0 12px 0 rgba(0,0,0,.3)}
+body:not(.paper) #title b{color:#ffd23f}
 #hdr{position:absolute;top:150px;left:0;right:0;display:flex;justify-content:center;transform-origin:50% 0}
 #hdr .card{background:#1d0f3d;border-radius:38px;padding:22px 36px 28px;box-shadow:0 16px 0 #0e0620;max-width:960px}
 #hdr .t{color:#c4b5fd;font-weight:800;font-size:40px;margin-bottom:16px;text-align:center}
@@ -581,7 +583,7 @@ function fit(pts, minDist, el = EL) {
   return { x, z, dist, el };
 }
 function pointsOf(o, t) {
-  const tg = TAGS.find(g => g.on === o.id && t >= g.t0 && t < g.t1);
+  const tg = TAGS.find(g => g.on === o.id && t + 3 >= g.t0 && t < g.t1);  // includes bubbles about to appear
   const hw = tg ? Math.max(o.r, .4 * tg.s.userData.aspect + .3) : o.r, top = o.top + (tg ? 1.35 : .2) + (o.floats ? 1.2 : 0);
   return [[o.pos[0] - hw, 0, o.pos[1] - o.r], [o.pos[0] + hw, 0, o.pos[1] + o.r], [o.pos[0] - hw, top, o.pos[1]], [o.pos[0] + hw, top, o.pos[1]]];
 }

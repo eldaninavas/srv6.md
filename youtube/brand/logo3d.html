@@ -1,0 +1,68 @@
+<!doctype html>
+<!-- 3D logo for @howitconnects: two tin-can phones joined by a string, a packet of light on it. -->
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;width:1080px;height:1080px;overflow:hidden;
+background:radial-gradient(75% 75% at 35% 25%,#7cc8ff 0%,#6f8cf2 45%,#6a3fd6 100%)}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"../../node_modules/three/build/three.module.js","three/addons/":"../../node_modules/three/examples/jsm/"}}</script>
+</head><body><script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+const S = 1080, r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+r.setSize(S, S); r.setPixelRatio(1); r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+r.toneMapping = THREE.NeutralToneMapping; r.toneMappingExposure = 1.0; r.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(r.domElement);
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(), .04).texture;
+const cam = new THREE.PerspectiveCamera(30, 1, .1, 100); cam.position.set(0, 3.2, 14.2); cam.lookAt(0, -.05, 0);
+const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(3, 8, 6); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 8; Object.assign(key.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6 });
+scene.add(key, new THREE.HemisphereLight(0xdff1ff, 0x6a3fd6, .9));
+const rim = new THREE.DirectionalLight(0xc4b5fd, 1.6); rim.position.set(-6, 3, -6); scene.add(rim);
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: .14 }));
+shadow.rotation.x = -Math.PI / 2; shadow.position.y = -1.55; shadow.receiveShadow = true; scene.add(shadow);
+
+const metal = new THREE.MeshStandardMaterial({ color: 0xe6ebf2, metalness: .95, roughness: .22 });
+const inside = new THREE.MeshStandardMaterial({ color: 0x8a93a3, metalness: .9, roughness: .4, side: THREE.BackSide });
+function can(label) {
+  const g = new THREE.Group(), R = .78, H = 1.9;
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(R, R, H, 64, 1, true), metal); g.add(body);
+  g.add(new THREE.Mesh(new THREE.CylinderGeometry(R * .995, R * .995, H, 64, 1, true), inside));
+  const lab = new THREE.Mesh(new THREE.CylinderGeometry(R + .012, R + .012, H * .52, 64, 1, true),
+    new THREE.MeshStandardMaterial({ color: label, roughness: .35, metalness: .1 })); g.add(lab);
+  for (const y of [-H / 2, H / 2, -H * .26, H * .26, -H * .38, H * .38]) {
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(R + .01, Math.abs(y) === H / 2 ? .055 : .022, 12, 64), metal);
+    ring.rotation.x = Math.PI / 2; ring.position.y = y; g.add(ring);
+  }
+  const bottom = new THREE.Mesh(new THREE.CircleGeometry(R, 64), metal); bottom.rotation.x = Math.PI / 2; bottom.position.y = -H / 2 + .08; g.add(bottom);
+  g.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+  return g;
+}
+// open ends point out and a little toward us; bottoms (with the string) face each other
+const L = can(0x8b5cf6), Rc = can(0xffc928);
+// each can lies on its side, mouth out and up a little, then turns toward the camera so the mouth shows
+const hold = (c, side) => { const h = new THREE.Group(); c.rotateZ(side * (Math.PI / 2 - .3)); h.add(c);
+  h.rotation.y = side * .62; h.position.set(side * -2.05, .35, 0); scene.add(h); };
+hold(L, 1); hold(Rc, -1);
+scene.updateMatrixWorld(true);
+const end = c => new THREE.Vector3(0, -.95 + .08, 0).applyMatrix4(c.matrixWorld);
+const a = end(L), b = end(Rc), low = new THREE.Vector3(0, -.75, .25);
+const curve = new THREE.CatmullRomCurve3([a, new THREE.Vector3((a.x + low.x) / 2, (a.y + low.y) / 2 - .25, .15), low, new THREE.Vector3((b.x + low.x) / 2, (b.y + low.y) / 2 - .25, .15), b]);
+const string = new THREE.Mesh(new THREE.TubeGeometry(curve, 120, .045, 12), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .7 }));
+string.castShadow = true; scene.add(string);
+// the packet of light, with a little trail behind it
+const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(128, 128, 0, 128, 128, 128); gr.addColorStop(0, 'rgba(255,248,200,1)'); gr.addColorStop(.3, 'rgba(255,210,63,.75)'); gr.addColorStop(1, 'rgba(255,210,63,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
+const P = curve.getPointAt(.5);
+const pk = new THREE.Mesh(new THREE.SphereGeometry(.24, 48, 32), new THREE.MeshStandardMaterial({ color: 0xffd23f, emissive: 0xffb800, emissiveIntensity: .55, roughness: .3 }));
+pk.position.copy(P); scene.add(pk);
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+halo.scale.setScalar(1.25); halo.material.opacity = .65; halo.position.copy(P); scene.add(halo);
+const pl = new THREE.PointLight(0xffd23f, 4, 3); pl.position.copy(P); scene.add(pl);
+for (const [u, s] of [[.43, .13], [.385, .09], [.35, .06]]) {
+  const d = new THREE.Mesh(new THREE.SphereGeometry(s, 24, 16), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: .9, toneMapped: false }));
+  d.position.copy(curve.getPointAt(u)); scene.add(d);
+}
+r.render(scene, cam);
+window.done = true;
+</script></body></html>
