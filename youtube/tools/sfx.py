@@ -128,7 +128,9 @@ def track(events, total, seed=0):
     for e in sorted(events, key=lambda e: e["t"]):
         t = e["t"]
         if "add" in e:
-            if e["add"] == "packet":
+            if e["add"] == "cell":
+                put("shimmer", t, shimmer(rng), .35, .3)
+            elif e["add"] == "packet":
                 put("blip", t, blip(rng), .5)
             else:
                 put("pop", t + LAND, pop(rng), .55)

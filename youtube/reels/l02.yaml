@@ -1,0 +1,132 @@
+# Long story (~1:40): a call with grandma survives a whole drive (cells,
+# handover, antennas in a tunnel). One road that the car follows from the
+# front (z 6.6) to grandma's house at the back; towers alternate sides.
+id: l02
+engine: chatterbox
+exaggeration: 0.75
+tempo: 0.85
+gap: 0.6
+end_card: {url: "How IT Connects", sub: "Follow for more stories like this"}
+caption: |
+  Why your call doesn't drop in the car 📱🚗 One tower, then the next, then a tunnel with no sky, and grandma never notices.
+
+  👇 Comment what we should build next.
+
+  #5g #cellphone #howitworks #engineering #technology
+beats:
+  - say: "Sunday afternoon. You're driving to grandma's house, and she calls you."
+    do:
+      - {at: 0, link: [[0, 7.6], [0, -8]], style: road, width: 1.2}
+      - {at: 0, add: car, id: you, pos: [0, 6.6], color: purple, scale: 1.6}
+      - {at: 0, tag: {on: you, text: "You", color: purple}}
+      - {at: "grandma's", add: house, id: gma, pos: [-2.4, -7.4], color: pink}
+      - {at: "grandma's", tag: {on: gma, text: "Grandma", color: pink}}
+      - {at: "calls", tag: {on: you, text: "Ring ring!", color: green}}
+
+  - say: "Your phone talks to a tower. The tall one, right by the highway."
+    do:
+      - {at: "tower", add: tower, id: tw1, pos: [2.4, 4.6]}
+      - {at: "tower", beam: [tw1, you]}
+      - {at: "tall", tag: {on: tw1, text: "Your tower", color: dark}}
+
+  - say: "Grandma tells you all about her new cat. And you keep on driving."
+    do:
+      - {at: 0, untag: you}
+      - {at: "cat", tag: {on: gma, text: "My new cat!", color: pink}}
+      - {at: "driving", move: you, path: [[0, 6.6], [0, 2.6]], dur: 3}
+
+  - say: "But the farther you go, the weaker the signal gets."
+    do:
+      - {at: 0, untag: tw1}
+      - {at: "farther", unbeam: [tw1, you]}
+      - {at: "farther", beam: [tw1, you], weak: true}
+      - {at: "weaker", tag: {on: you, text: "Weak signal", color: orange}}
+
+  - say: "One tower can't cover the whole country. So towers are placed like a honeycomb."
+    do:
+      - {at: "One", untag: gma}
+      - {at: "towers", add: tower, id: tw2, pos: [-2.4, 0.2]}
+      - {at: "towers", add: tower, id: tw3, pos: [2.4, -4.2]}
+      - {at: "honeycomb", add: cell, id: c1, pos: [2.4, 4.6], color: purple}
+      - {at: "honeycomb", add: cell, id: c2, pos: [-2.4, 0.2], color: green}
+      - {at: "honeycomb", add: cell, id: c3, pos: [2.4, -4.2], color: yellow}
+
+  - say: "Each one covers its own little patch. We call that patch a cell."
+    do:
+      - {at: "patch", pulse: [tw1, tw2, tw3], color: yellow}
+      - {at: "cell", tag: {on: tw2, text: "A cell", color: green}}
+
+  - say: "Before your tower fades out, your phone is already listening to the next one."
+    do:
+      - {at: 0, untag: tw2}
+      - {at: "Before", move: you, path: [[0, 2.6], [0, 0.8]], dur: 2.6}
+      - {at: "listening", beam: [tw2, you], weak: true, color: green}
+      - {at: "next", pulse: tw2, color: green}
+
+  - say: "And the network moves your call over. Grandma doesn't hear a thing!"
+    do:
+      - {at: "moves", unbeam: [tw1, you]}
+      - {at: "moves", unbeam: [tw2, you]}
+      - {at: "over", beam: [tw2, you], color: green}
+      - {at: "over", untag: you}
+      - {at: "Grandma", tag: {on: gma, text: "...so fluffy!", color: pink}}
+
+  - say: "That's a handover. And it happens again, and again, the whole way there."
+    do:
+      - {at: "handover", big: "Handover", sub: "your call hops to the next tower", dur: 2.4}
+      - {at: "again", move: you, path: [[0, 0.8], [0, -2.2]], dur: 2.6}
+      - {at: "whole", unbeam: [tw2, you]}
+      - {at: "whole", beam: [tw3, you], color: yellow}
+      - {at: "whole", pulse: tw3, color: green}
+
+  - say: "But then, a tunnel! Solid rock all around you. No signal gets in."
+    do:
+      - {at: 0, untag: gma}
+      - {at: "tunnel", add: tunnel, id: tn, pos: [0, -4.6], size: 3}
+      - {at: "rock", move: you, path: [[0, -2.2], [0, -4.6]], dur: 1.6}
+      - {at: "No", unbeam: [tw3, you]}
+      - {at: "signal", tag: {on: tn, text: "No signal!", color: red}}
+      - {at: "signal", pulse: tn, color: red}
+
+  - say: "Grandma's voice cuts out, right in the middle of the cat story."
+    do:
+      - {at: "cuts", tag: {on: gma, text: "Hello...?", color: grey}}
+
+  - say: "So engineers hide small antennas inside tunnels, all along the way."
+    do:
+      - {at: 0, untag: tn}
+      - {at: "small", add: tower, id: a1, pos: [1.6, -3.0], scale: 0.45, color: teal}
+      - {at: "antennas", add: tower, id: a2, pos: [-1.6, -6.2], scale: 0.45, color: teal}
+      - {at: "inside", beam: [a1, you], color: teal}
+      - {at: "way", pulse: [a1, a2], color: green}
+
+  - say: "Your call comes right back. And grandma is still talking about the cat."
+    do:
+      - {at: "back", tag: {on: tn, text: "Back!", color: green}}
+      - {at: "grandma", untag: gma}
+      - {at: "cat", tag: {on: gma, text: "...and the cat...", color: pink}}
+
+  - say: "You pull up at her house. She opens the door, and hangs up the phone."
+    do:
+      - {at: 0, untag: tn}
+      - {at: "pull", unbeam: [a1, you]}
+      - {at: "pull", move: you, path: [[0, -4.6], [0, -6.8], [-0.9, -7.2]], dur: 2.4}
+      - {at: "pull", beam: [a2, you], color: teal}
+      - {at: "door", untag: gma}
+      - {at: "door", tag: {on: gma, text: "Hi, sweetie!", color: pink}}
+      - {at: "door", pulse: gma, color: green}
+
+  - say: "One call. Five towers. And you never noticed a thing."
+    do:
+      - {at: 0, unbeam: [a2, you]}
+      - {at: "Five", big: "1 call, 5 towers", sub: "and not one dropped word", dur: 2.6}
+
+  - say: "Those patches are called cells. That's why your phone is called a cell phone!"
+    do:
+      - {at: 0, untag: gma}
+      - {at: "cells", pulse: [c1, c2, c3], color: yellow}
+      - {at: "cell", big: "Cell phone", sub: "a phone that hops from cell to cell", dur: 2.8}
+
+  - say: "Want more stories like this? Follow How IT Connects!"
+    do:
+      - {at: "Follow", end: true}

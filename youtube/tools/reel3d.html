@@ -247,6 +247,26 @@ const KINDS = {
     g.add(mesh(new THREE.DodecahedronGeometry(o.size || .22, 0), mat(0x9ca3af, { flatShading: true }), (o.size || .22) * .5));
     return { g, top: .5, r: .3 };
   },
+  cell(o) {
+    // the patch one tower covers: a flat, see-through hexagon on the ground
+    const g = new THREE.Group(), R = o.size || 2.6;
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(R, R, .02, 6), new THREE.MeshBasicMaterial({ color: col(o.color || 'yellow'), transparent: true, opacity: .28, depthWrite: false }));
+    m.position.y = .1; m.rotation.y = Math.PI / 6; m.renderOrder = 2; g.add(m);
+    const edge = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), new THREE.LineBasicMaterial({ color: col(o.color || 'yellow') }));
+    edge.position.y = .11; edge.rotation.y = Math.PI / 6; g.add(edge);
+    return { g, top: .3, r: .6, flat: true };
+  },
+  tunnel(o) {
+    // a short tunnel through a grassy hill, along z; whatever drives in disappears under the roof
+    const g = new THREE.Group(), L = o.size || 3, rock = mat(0x8d8f97, { flatShading: true });
+    for (const x of [-1, 1]) g.add(mesh(new THREE.BoxGeometry(.4, 1.2, L), rock, .6).translateX(x));
+    g.add(mesh(new THREE.BoxGeometry(2.4, .35, L), rock, 1.37));
+    const hill = mesh(new THREE.SphereGeometry(1.6, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x6fbf4f, { flatShading: true }), 1.5);
+    hill.scale.set(1, .55, L / 3.2); g.add(hill);
+    g.add(mesh(new THREE.BoxGeometry(1.6, .9, .05), mat(0x1f2937), .45).translateZ(L / 2 + .01));
+    g.add(mesh(new THREE.BoxGeometry(1.6, .9, .05), mat(0x1f2937), .45).translateZ(-L / 2 - .01));
+    return { g, top: 2.4, r: 1.4 };
+  },
   pole(o) {
     const g = new THREE.Group();
     g.add(mesh(new THREE.CylinderGeometry(.06, .08, 1.6, 8), mat(0x8b5a2b), .8));
@@ -306,9 +326,9 @@ window.setup = tl => {
   if (PAPER) document.body.classList.add('paper');
   const ev = tl.events;
   for (const e of ev.filter(e => e.add)) {
-    const { g, top, floats, vehicle, r } = (KINDS[e.add] || KINDS.box)(e);
+    const { g, top, floats, vehicle, r, flat } = (KINDS[e.add] || KINDS.box)(e);
     const k = e.scale || 1;
-    const o = { id: e.id, g, top: top * k, k, floats, vehicle, r: r ?? (e.size ? Math.max(e.size[0], e.size[2]) / 2 : .7), pos: e.pos || P(e.on) || [0, 0], t0: e.t, t1: 1e9, moves: [], pulses: [] };
+    const o = { id: e.id, g, top: top * k, k, floats, vehicle, flat, r: r ?? (e.size ? Math.max(e.size[0], e.size[2]) / 2 : .7), pos: e.pos || P(e.on) || [0, 0], t0: e.t, t1: 1e9, moves: [], pulses: [] };
     if (e.label) {
       const s = sprite(e.label, { fg: hex(e.color || 'purple'), font: 110, h: 180 });
       s.scale.set(.6 * s.userData.aspect, .6, 1); s.position.y = top + .5; g.add(s);
@@ -317,7 +337,7 @@ window.setup = tl => {
     const ring = new THREE.Mesh(new THREE.RingGeometry(.8, 1.0, 48), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 }));
     ring.rotation.x = -Math.PI / 2; ring.position.y = .03; g.add(ring); o.ring = ring;
     // a puff of dust where it lands
-    if (!o.floats && !PAPER) {
+    if (!o.floats && !o.flat && !PAPER) {
       o.dust = [];
       const dm = new THREE.MeshBasicMaterial({ color: 0xf5ead6, transparent: true, opacity: 0 });
       for (let i = 0; i < 10; i++) { const d = new THREE.Mesh(new THREE.IcosahedronGeometry(.09, 0), dm); d.userData.a = i / 10 * Math.PI * 2; scene.add(d); o.dust.push(d); }
@@ -619,10 +639,10 @@ window.renderAt = t => {
   for (const o of Object.values(OBJ)) {
     // objects drop in, bounce, squash a little on landing, and puff dust
     const gone = 1 - ease(win(t, o.t1, .35));
-    const s = (PAPER || o.floats ? back(win(t, o.t0, .4)) : ease(win(t, o.t0, .12))) * gone;
+    const s = (PAPER || o.floats || o.flat ? back(win(t, o.t0, .4)) : ease(win(t, o.t0, .12))) * gone;
     o.g.visible = s > .001; o.g.scale.setScalar(Math.max(s * o.k, .0001));
     let drop = 0;
-    if (!PAPER && !o.floats) {
+    if (!PAPER && !o.floats && !o.flat) {
       drop = (1 - bounce(win(t, o.t0, .55))) * 2.6;
       const sq = win(t, o.t0 + .38, .3), q = Math.sin(sq * Math.PI) * (1 - sq) * .35;
       o.g.scale.y = Math.max(s * o.k * (1 - q), .0001);
