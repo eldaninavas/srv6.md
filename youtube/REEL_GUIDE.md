@@ -63,6 +63,17 @@ until the reveal. `youtube/reels/l01.yaml` is the reference.
   `sfx: false`, `music: none`, `sfx_volume`, `music_volume` tune them.
 - Check the voice with `~/.cache/tts-venv/bin/python youtube/tools/voicecheck.py <yaml>`.
 
+## Instagram caption (the loconstruiste pattern)
+
+1. "How X works / was built" + one emoji.
+2. One line of curiosity: the surprising steps the video goes through.
+3. A comment prompt: "👇 Comment what we should build next." (or a question).
+4. Exactly 5 hashtags (Instagram's limit): 1–2 for the topic
+   (`#internet`, `#5g`, `#wifi`, `#fiber`) + `#howitworks #engineering
+   #science #technology`.
+
+No link in the caption (it does not click); no wall of hashtags.
+
 ## Format
 
 ```yaml

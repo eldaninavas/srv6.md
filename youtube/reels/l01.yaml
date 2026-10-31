@@ -12,11 +12,11 @@ tempo: 0.85            # Chatterbox rushes; slow it a little, same pitch
 gap: 0.6
 end_card: {url: "How IT Connects", sub: "Follow for more stories like this"}
 caption: |
-  You've been building the internet since you were a kid. You just didn't know it. 🥫🧵
+  How the internet was built 🌐 From two tin cans and a string to routers, fiber, and a backup cable for the night a truck snaps the line.
 
-  Follow How IT Connects for more stories like this.
+  👇 Comment what we should build next.
 
-  #Internet #Networking #Telecom #HowItWorks #NetworkEngineering #Routers
+  #internet #howitworks #engineering #science #technology
 beats:
   - say: "When you were a kid, your best friend's house was right across the street."
     do:
