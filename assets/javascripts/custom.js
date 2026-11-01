@@ -60,6 +60,47 @@ if (typeof document$ !== "undefined") {
   });
 }
 
+// --- Mobile drawer: open on the top-level menu ---
+// Below 76.25em the sidebar is Material's drawer, which opens on the current
+// page's section panel: on the home page that is "Home" (five links and a
+// back arrow), so the rest of the site looks missing. Close those panels on
+// every page load; the current section stays highlighted in the top-level
+// list. Also drop navigation.expand's indeterminate state, which on tablet
+// widths makes Material swallow the first tap on a section's chevron.
+// The desktop sidebar state comes back if the window is widened.
+
+var drawerQuery = window.matchMedia("(max-width: 76.234375em)");
+
+function drawerToggles() {
+  return document.querySelectorAll(".md-sidebar--primary .md-nav__toggle:not(#__toc)");
+}
+
+function resetDrawer() {
+  if (!drawerQuery.matches) return;
+  drawerToggles().forEach(function (t) {
+    if (t.checked) t.setAttribute("data-srv6-checked", "");
+    t.classList.remove("md-toggle--indeterminate");
+    t.indeterminate = false;
+    t.checked = false;
+  });
+}
+
+drawerQuery.addEventListener("change", function (e) {
+  if (e.matches) return resetDrawer();
+  drawerToggles().forEach(function (t) {
+    if (t.hasAttribute("data-srv6-checked")) t.checked = true;
+    if (t.checked) return;
+    t.classList.add("md-toggle--indeterminate");
+    t.indeterminate = true;
+  });
+});
+
+if (typeof document$ !== "undefined") {
+  document$.subscribe(resetDrawer);
+} else {
+  document.addEventListener("DOMContentLoaded", resetDrawer);
+}
+
 // --- SRv6 support matrix: platform and category filters ---
 // hooks/support_matrix.py renders the table and hidden controls; the first
 // cell of each row carries data-cat and each header cell data-p.
