@@ -97,7 +97,7 @@ extra_css:
   - assets/stylesheets/custom.css?v=20261101
 
 extra_javascript:
-  - assets/javascripts/custom.js
+  - assets/javascripts/custom.js?v=20261101
 
 plugins:
   - search:
