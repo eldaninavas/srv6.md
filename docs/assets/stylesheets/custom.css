@@ -125,16 +125,19 @@
   border-left: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Section headers — small, muted, separated */
-[data-md-color-scheme="slate"] .md-nav__item--section > .md-nav__link {
-  color: rgba(255, 255, 255, 0.4) !important;
-  font-weight: 600;
-  font-size: 0.52rem !important;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-top: 1rem;
-  padding-bottom: 0.3rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+/* Section headers — small, muted, separated. Desktop only: below 76.25em
+   the sidebar is Material's drawer, where sections are drill-down items. */
+@media screen and (min-width: 76.25em) {
+  [data-md-color-scheme="slate"] .md-nav__item--section > .md-nav__link {
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-weight: 600;
+    font-size: 0.52rem !important;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
 }
 
 /* Nav links — light grey, no purple */
@@ -163,16 +166,18 @@
   border-left: 1px solid rgba(0, 0, 0, 0.07);
 }
 
-/* Section headers — small, muted, separated */
-[data-md-color-scheme="default"] .md-nav__item--section > .md-nav__link {
-  color: rgba(0, 0, 0, 0.35) !important;
-  font-weight: 600;
-  font-size: 0.52rem !important;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-top: 1rem;
-  padding-bottom: 0.3rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+/* Section headers — small, muted, separated (desktop only, as above) */
+@media screen and (min-width: 76.25em) {
+  [data-md-color-scheme="default"] .md-nav__item--section > .md-nav__link {
+    color: rgba(0, 0, 0, 0.35) !important;
+    font-weight: 600;
+    font-size: 0.52rem !important;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
 }
 
 /* Nav links — dark grey, no purple */
@@ -411,15 +416,33 @@
 }
 
 /* --- Sidebar & TOC Typography (GitBook-like compact) --- */
-.md-sidebar .md-nav__link {
-  font-size: 0.62rem;
-  padding: 0.2rem 0.6rem 0.2rem 1rem;
-  line-height: 1.3;
-  margin: 0;
+/* Desktop only: the mobile drawer keeps Material's larger tap targets */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar .md-nav__link {
+    font-size: 0.62rem;
+    padding: 0.2rem 0.6rem 0.2rem 1rem;
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .md-sidebar .md-nav__item--nested > .md-nav__link {
+    font-size: 0.62rem;
+  }
 }
 
-.md-sidebar .md-nav__item--nested > .md-nav__link {
-  font-size: 0.62rem;
+/* Mobile drawer: a section with an index page wraps its link and chevron in
+   a padded div, so taps above or below the label hit nothing. Move the
+   padding onto the link and chevron so the whole row is tappable. */
+@media screen and (max-width: 76.234375em) {
+  .md-nav--primary .md-nav__container.md-nav__link {
+    padding: 0;
+  }
+  .md-nav--primary .md-nav__container > a.md-nav__link {
+    padding: 0.6rem 0.4rem 0.6rem 0.8rem;
+  }
+  .md-nav--primary .md-nav__container > label.md-nav__link {
+    padding: 0.6rem 0.8rem 0.6rem 0.4rem;
+  }
 }
 
 /* TOC (right sidebar) — needs more space than left nav */
@@ -427,6 +450,7 @@
   font-size: 0.6rem;
   padding: 0.3rem 0.6rem;
   line-height: 1.5;
+  margin: 0;
 }
 
 .md-sidebar--secondary .md-nav__title {
@@ -449,25 +473,29 @@
   background: #f7f7f8;
 }
 
-/* Kill ALL Material elevation/shadow/background on lifted nav */
-.md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
-  box-shadow: none !important;
-  background: transparent !important;
-}
+/* Kill ALL Material elevation/shadow/background on lifted nav. Desktop only:
+   in the mobile drawer every nested .md-nav is a stacked panel that needs
+   its opaque background, or the parent list shows through it. */
+@media screen and (min-width: 76.25em) {
+  .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
+    box-shadow: none !important;
+    background: transparent !important;
+  }
 
-.md-nav--lifted .md-nav[data-md-level="1"],
-.md-nav--lifted .md-nav[data-md-level="1"] > .md-nav__list {
-  box-shadow: none !important;
-  background: transparent !important;
-}
+  .md-nav--lifted .md-nav[data-md-level="1"],
+  .md-nav--lifted .md-nav[data-md-level="1"] > .md-nav__list {
+    box-shadow: none !important;
+    background: transparent !important;
+  }
 
-.md-nav--lifted::before,
-.md-nav--lifted > .md-nav__list::before,
-.md-nav--lifted > .md-nav__list > .md-nav__item::before,
-.md-nav--lifted > .md-nav__list > .md-nav__item--active::before {
-  display: none !important;
-  box-shadow: none !important;
-  background: none !important;
+  .md-nav--lifted::before,
+  .md-nav--lifted > .md-nav__list::before,
+  .md-nav--lifted > .md-nav__list > .md-nav__item::before,
+  .md-nav--lifted > .md-nav__list > .md-nav__item--active::before {
+    display: none !important;
+    box-shadow: none !important;
+    background: none !important;
+  }
 }
 
 /* Remove any pseudo-element overlays from sidebar nav */

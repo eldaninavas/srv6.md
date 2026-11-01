@@ -94,7 +94,7 @@ theme:
     - header.autohide
 
 extra_css:
-  - assets/stylesheets/custom.css?v=20261025
+  - assets/stylesheets/custom.css?v=20261101
 
 extra_javascript:
   - assets/javascripts/custom.js
